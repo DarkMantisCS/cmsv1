@@ -13,11 +13,7 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
  */
 abstract class CoreClass{
 
-    public $objPage, $objUser, $objTPL, $objSQL, $objTime, $objForm;
-
-	public function __construct(){
-
-	}
+	public function __construct(){ }
 
     /**
      * Sets a variable with a value
@@ -28,8 +24,6 @@ abstract class CoreClass{
      *
      * @param   string 	$var
      * @param   mixed	$value
-     *
-     * @return  null
      */
 	public function setVar($var, $value){
 		$this->$var = $value;

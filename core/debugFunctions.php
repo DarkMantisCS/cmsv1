@@ -81,54 +81,49 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 			$type = ucfirst(gettype($avar));
 			if ($type == 'String') {
 				$type_color = '<span style="color:green">';
-
 			} elseif($type == 'Integer') {
 				$type_color = '<span style="color:red">';
-
 			} elseif($type == 'Double') {
-				$type_color = '<span style="color:#0099c5">';
-				$type = 'Float';
-
+				$type_color = '<span style="color:#0099c5">'; $type = 'Float';
 			} elseif($type == 'Boolean') {
 				$type_color = '<span style="color:#92008d">';
-
 			} elseif($type == 'NULL') {
 				$type_color = '<span style="color:black">';
-
 			} elseif($type == 'Resource') {
 				$type_color = '<span style="color:#00c19f">';
-
-				$avar = $var_name == "['password']" ? str_pad('', (strlen($avar)), '*') : $avar;
-				if (is_array($avar)) {
-					$count = count($avar);
-					$return .= $indent.($var_name ? $var_name.'=> ' : '').'<span style="color:#a2a2a2">'.$type.'('.$count.')</span><br />'.$indent.'(<br />';
-					$keys = array_keys($avar);
-					foreach($keys as $name) {
-						$value = &$avar[$name];
-						$return .= do_dump($value, "['$name']", $indent.$do_dump_indent, $reference);
-					}
-					$return .= "$indent)<br />";
-				} elseif(is_object($avar)) {
-					$return .= "$indent$var_name <span style='color:#a2a2a2'>$type</span><br />$indent(<br />";
-					foreach($avar as $name => $value) $return .= do_dump($value, "$name", $indent.$do_dump_indent, $reference);
-					$return .= "$indent)<br />";
-				} elseif(is_int($avar)) {
-					$return .= "$indent$var_name = <span style='color:#a2a2a2'>$type(".strlen($avar).")</span> $type_color$avar</span><br />";
-				} elseif(is_string($avar)) {
-					$return .= "$indent$var_name = <span style='color:#a2a2a2'>$type(".strlen($avar).")</span> $type_color\"".str_replace(str_split("\t\n\r\0\x0B"), '', htmlspecialchars($avar))."\"</span><br />";
-				} elseif(is_float($avar)) {
-					$return .= "$indent$var_name = <span style='color:#a2a2a2'>$type(".strlen($avar).")</span> $type_color$avar</span><br />";
-				} elseif(is_bool($avar)) {
-					$return .= "$indent$var_name = <span style='color:#a2a2a2'>$type(".strlen($avar).")</span> $type_color".($avar == 1 ? "true" : "false")."</span><br />";
-				} elseif(is_null($avar)) {
-					$return .= "$indent$var_name = <span style='color:#a2a2a2'>$type(".strlen($avar).")</span> {$type_color}NULL</span><br />";
-				} elseif(is_resource($avar)) {
-					$return .= "$indent$var_name = <span style='color:#a2a2a2'>$type</span> $type_color$avar</span><br />";
-				} else {
-					$return .= "$indent$var_name = <span style='color:#a2a2a2'>$type(".strlen($avar).")</span> $avar<br />";
-				}
-				$var = $var[$keyvar];
 			}
+
+			$avar = $var_name == "['password']" ? str_pad('', (strlen($avar)), '*') : $avar;
+			if (is_array($avar)) {
+				$count = count($avar);
+				$return .= $indent.($var_name ? $var_name.'=> ' : '').'<span style="color:#a2a2a2">'.$type.'('.$count.')</span><br />'.$indent.'(<br />';
+				$keys = array_keys($avar);
+				foreach($keys as $name) {
+					$value = &$avar[$name];
+					$return .= do_dump($value, "['$name']", $indent.$do_dump_indent, $reference);
+				}
+				$return .= "$indent)<br />";
+			} elseif(is_object($avar)) {
+				$return .= "$indent$var_name <span style='color:#a2a2a2'>$type</span><br />$indent(<br />";
+				foreach($avar as $name => $value) $return .= do_dump($value, "$name", $indent.$do_dump_indent, $reference);
+				$return .= "$indent)<br />";
+			} elseif(is_int($avar)) {
+				$return .= "$indent$var_name = <span style='color:#a2a2a2'>$type(".strlen($avar).")</span> $type_color$avar</span><br />";
+			} elseif(is_string($avar)) {
+				$return .= "$indent$var_name = <span style='color:#a2a2a2'>$type(".strlen($avar).")</span> $type_color\"".str_replace(str_split("\t\n\r\0\x0B"), '', htmlspecialchars($avar))."\"</span><br />";
+			} elseif(is_float($avar)) {
+				$return .= "$indent$var_name = <span style='color:#a2a2a2'>$type(".strlen($avar).")</span> $type_color$avar</span><br />";
+			} elseif(is_bool($avar)) {
+				$return .= "$indent$var_name = <span style='color:#a2a2a2'>$type(".strlen($avar).")</span> $type_color".($avar == 1 ? "true" : "false")."</span><br />";
+			} elseif(is_null($avar)) {
+				$return .= "$indent$var_name = <span style='color:#a2a2a2'>$type(".strlen($avar).")</span> {$type_color}NULL</span><br />";
+			} elseif(is_resource($avar)) {
+				$return .= "$indent$var_name = <span style='color:#a2a2a2'>$type</span> $type_color$avar</span><br />";
+			} else {
+				$return .= "$indent$var_name = <span style='color:#a2a2a2'>$type(".strlen($avar).")</span> $avar<br />";
+			}
+			$var = $var[$keyvar];
+
 			return $return;
 		}
 	}

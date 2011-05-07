@@ -14,4 +14,9 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
     define('HTTP_POST', ($_SERVER['REQUEST_METHOD']=='POST' ? true : false));
     define('HTTP_GET', 	($_SERVER['REQUEST_METHOD']=='GET' ? true : false));
 
+//Hook Priority Constants
+    define('LOW', 1);
+    define('MED', 2);
+    define('HIGH', 3);
+
 ?>
