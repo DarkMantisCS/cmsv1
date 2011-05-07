@@ -11,7 +11,13 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
  * @since       1.0.0
  * @author      xLink
  */
-abstract class Core {
+abstract class CoreClass{
+
+    public $objPage, $objUser, $objTPL, $objSQL, $objTime, $objForm;
+
+	public function __construct(){
+
+	}
 
     /**
      * Sets a variable with a value

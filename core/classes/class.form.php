@@ -11,7 +11,7 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
  * @since       1.0.0
  * @author      xLink
  */
-class form {
+class form extends CoreClass{
 
     /**
      * Starts a new form off
