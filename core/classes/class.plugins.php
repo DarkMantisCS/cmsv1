@@ -2,7 +2,9 @@
 /*======================================================================*\
 ||              Cybershade CMS - Your CMS, Your Way                     ||
 \*======================================================================*/
-if(!defined('INDEX_CHECK')){die('Error: Cannot access directly.');}
+if (!defined('INDEX_CHECK')) {
+    die('Error: Cannot access directly.');
+}
 
 /**
  * Handles the plugin system for the CMS
@@ -11,11 +13,14 @@ if(!defined('INDEX_CHECK')){die('Error: Cannot access directly.');}
  * @since       1.0.0
  * @author      xLink
  */
-class plugins extends coreClass{
+class plugins extends coreClass
+{
 
     private $hooks = array();
 
-	public function __construct() { }
+    public function __construct()
+    {
+    }
 
     /**
      * Get plugin list from the database, and attempt to load them in
@@ -28,27 +33,33 @@ class plugins extends coreClass{
      *
      * @return  bool
      */
-    public function loadHooks($plugin){
+    public function loadHooks($plugin)
+    {
 
         //make sure we didnt get an empty var...
-        if(!is_array($plugin) || is_empty($plugin)){
+        if (!is_array($plugin) || is_empty($plugin)) {
             //if we did try and get a fresh copy from the db
-            $plugin = $this->objSQL->getTable('SELECT * FROM '.$this->objSQL->prefix().'plugins');
+            $plugin = $this->objSQL->getTable('SELECT * FROM ' . $this->objSQL->prefix() .
+                'plugins');
 
-            if(!is_array($plugin) || is_empty($plugin)){
+            if (!is_array($plugin) || is_empty($plugin)) {
                 return false; //no luck this time so just die quietly
             }
         }
 
         //loop though each plugin
-        foreach($plugin as $hook){
-                $hookStr = $hook['filePath'];
+        foreach ($plugin as $hook) {
+            $hookStr = $hook['filePath'];
             //make sure its actually a file and is readable
-                if(!is_file($hookStr) || !is_readable($hookStr)){ continue; }
+            if (!is_file($hookStr) || !is_readable($hookStr)) {
+                continue;
+            }
             //also make sure its enabled..
-                if(!$hook['enabled']){ continue; }
+            if (!$hook['enabled']) {
+                continue;
+            }
             //and then include it :D
-                include_once( str_replace('./', cmsROOT.'', $hookStr) );
+            include_once (str_replace('./', cmsROOT . '', $hookStr));
         }
 
         //everything worked as expected so just return true;
@@ -69,47 +80,56 @@ class plugins extends coreClass{
      *
      * @return  string
      */
-    public function hook($hook, &$args='', $option='run', $priority=MED){
+    public function hook($hook, &$args = '', $option = 'run', $priority = MED)
+    {
         //decide what we need to do here
-        switch($option){
+        switch ($option) {
             case 'run':
                 $hooks = $this->hooks;
                 //make sure we have something to run with
-                if(!is_array($hooks) || is_empty($hooks)){ return; }
+                if (!is_array($hooks) || is_empty($hooks)) {
+                    return;
+                }
 
                 //loop though each 'priority'
-                foreach(array('1', '2', '3') as $priority){
-                    if(!is_array($hooks[$hook][$priority]) || is_empty($hooks[$hook][$priority])){ continue; }
+                foreach (array('1', '2', '3') as $priority) {
+                    if (!is_array($hooks[$hook][$priority]) || is_empty($hooks[$hook][$priority])) {
+                        continue;
+                    }
 
                     // and then each hook
-                    while(current($hooks[$hook][$priority])){
+                    while (current($hooks[$hook][$priority])) {
                         //get func name
                         $function = key($hooks[$hook][$priority]);
                         $cb = '';
 
                         //make sure we can call it still
-                        if(is_callable($function)){ $cb = call_user_func($function, $args); }
+                        if (is_callable($function)) {
+                            $cb = call_user_func($function, $args);
+                        }
 
                         //check to see if we got a response from the func, this should be true
-                        if(is_empty($cb)){ $cb = false; }
+                        if (is_empty($cb)) {
+                            $cb = false;
+                        }
 
                         //assign it to the array and continue
                         $result[$hook][$priority][$function] = $cb;
                         next($hooks[$hook][$priority]);
-                     }
+                    }
                 }
                 return $result;
-            break;
+                break;
 
             case 'add':
                 //register the hook with the system
                 $this->hooks[$hook][$priority][$args] = 'fail';
-            break;
+                break;
 
             case 'rm':
                 //remove the hook from the system
                 unset($this->hooks[$hook][$priority][$args]);
-            break;
+                break;
         }
     }
 
@@ -124,7 +144,8 @@ class plugins extends coreClass{
      * @param   string  $callback
      * @param 	int 	$priority
      */
-    public function addHook($hook, $callback, $priority=MED){
+    public function addHook($hook, $callback, $priority = MED)
+    {
         $this->hook($hook, $callback, 'add', $priority);
     }
 
@@ -139,7 +160,8 @@ class plugins extends coreClass{
      * @param   string  $callback
      * @param 	int 	$priority
      */
-    public function delHook($hook, $callback, $priority=MED){
+    public function delHook($hook, $callback, $priority = MED)
+    {
         $this->hook($hook, $callback, 'rm', $priority);
     }
 

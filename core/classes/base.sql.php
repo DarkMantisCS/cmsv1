@@ -36,6 +36,4 @@ interface SQLBase{
 
 }
 
-
-
 ?>
