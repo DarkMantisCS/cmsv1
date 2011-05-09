@@ -5,13 +5,16 @@
 if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 
 /**
- * Group Class designed to allow easier access to expand on the group system implemented
+ * Class to create and maintain forms
  *
  * @version     1.0
  * @since       1.0.0
  * @author      xLink
  */
-class form extends CoreClass{
+class form extends coreClass{
+
+	public function __construct() { }
+
 
     /**
      * Starts a new form off
@@ -35,10 +38,10 @@ class form extends CoreClass{
         );
 
 		return '<form name="'.$name.'" id="'.$name.'" '.
-					(!is_empty($args['method'])     ? 'method="'.$args['method'].'" ' 		: ' method="'.$_SERVER['PHP_SELF'].'" ').
+					(!is_empty($args['method'])     ? 'method="'.$args['method'].'" ' 		: 'method="'.$_SERVER['PHP_SELF'].'" ').
 					(!is_empty($args['action'])     ? 'action="'.$args['action'].'" ' 		: null).
 					($args['onsubmit']   			? 'onsubmit="'.$args['onsubmit'].'" ' 	: null).
-					'novalidate="'.($args['novalidate']).'" '.
+					'novalidate="'.($args['novalidate']==true ? 'true' : 'false').'"'.
 					(!is_empty($args['extra'])      ? $args['extra'] 						: null).
 				'>'."\n";
     }

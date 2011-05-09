@@ -93,34 +93,44 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 				$type_color = '<span style="color:#00c19f">';
 			}
 
-			$avar = $var_name == "['password']" ? str_pad('', (strlen($avar)), '*') : $avar;
+			$keyNames = array('[\'password\']', '[\'pin\']');
+			$avar = in_array($var_name, $keyNames) ? str_pad('', (strlen($avar)), '*') : $avar;
 			if (is_array($avar)) {
 				$count = count($avar);
 				$return .= $indent.($var_name ? $var_name.'=> ' : '').'<span style="color:#a2a2a2">'.$type.'('.$count.')</span><br />'.$indent.'(<br />';
 				$keys = array_keys($avar);
 				foreach($keys as $name) {
 					$value = &$avar[$name];
-					$return .= do_dump($value, "['$name']", $indent.$do_dump_indent, $reference);
+					$return .= doDump($value, "['$name']", $indent.$do_dump_indent, $reference);
 				}
 				$return .= "$indent)<br />";
 			} elseif(is_object($avar)) {
 				$return .= "$indent$var_name <span style='color:#a2a2a2'>$type</span><br />$indent(<br />";
-				foreach($avar as $name => $value) $return .= do_dump($value, "$name", $indent.$do_dump_indent, $reference);
+				$_indent = $indent.$do_dump_indent;
+				foreach($avar as $key => $value){
+					$return .= "$_indent$key <span style='color:#a2a2a2'>$type</span><br />$_indent(<br />$_indent)<br />";
+				}
 				$return .= "$indent)<br />";
 			} elseif(is_int($avar)) {
-				$return .= "$indent$var_name = <span style='color:#a2a2a2'>$type(".strlen($avar).")</span> $type_color$avar</span><br />";
+				$return .= "$indent$var_name = <span style='color:#a2a2a2'>$type(".strlen($avar).")</span>".
+								"$type_color$avar</span><br />";
 			} elseif(is_string($avar)) {
-				$return .= "$indent$var_name = <span style='color:#a2a2a2'>$type(".strlen($avar).")</span> $type_color\"".str_replace(str_split("\t\n\r\0\x0B"), '', htmlspecialchars($avar))."\"</span><br />";
+				$return .= "$indent$var_name = <span style='color:#a2a2a2'>$type(".strlen($avar).")</span>".
+								"$type_color\"".str_replace(str_split("\t\n\r\0\x0B"), '', htmlspecialchars($avar))."\"</span><br />";
 			} elseif(is_float($avar)) {
-				$return .= "$indent$var_name = <span style='color:#a2a2a2'>$type(".strlen($avar).")</span> $type_color$avar</span><br />";
+				$return .= "$indent$var_name = <span style='color:#a2a2a2'>$type(".strlen($avar).")</span>".
+								"$type_color$avar</span><br />";
 			} elseif(is_bool($avar)) {
-				$return .= "$indent$var_name = <span style='color:#a2a2a2'>$type(".strlen($avar).")</span> $type_color".($avar == 1 ? "true" : "false")."</span><br />";
+				$return .= "$indent$var_name = <span style='color:#a2a2a2'>$type(".strlen($avar).")</span>".
+								"$type_color".($avar == 1 ? "true" : "false")."</span><br />";
 			} elseif(is_null($avar)) {
-				$return .= "$indent$var_name = <span style='color:#a2a2a2'>$type(".strlen($avar).")</span> {$type_color}NULL</span><br />";
+				$return .= "$indent$var_name = <span style='color:#a2a2a2'>$type(".strlen($avar).")</span>".
+								"{$type_color}NULL</span><br />";
 			} elseif(is_resource($avar)) {
 				$return .= "$indent$var_name = <span style='color:#a2a2a2'>$type</span> $type_color$avar</span><br />";
 			} else {
-				$return .= "$indent$var_name = <span style='color:#a2a2a2'>$type(".strlen($avar).")</span> $avar<br />";
+				$return .= "$indent$var_name = <span style='color:#a2a2a2'>$type(".strlen($avar).")</span>".
+								"$avar<br />";
 			}
 			$var = $var[$keyvar];
 
@@ -146,11 +156,10 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 		$msg = array();
 		$x = 0;
 		foreach($a as $key => $file) {
-			$filename = explode((stristr(PHP_OS, 'WIN') ? '\\' : '/'), $file['file']);
 			$msg[] = outputDebug($file, ($x==0 ? $info : NULL), $nl);
 			$x++;
 		}
-		return implode('', $msg);
+		return implode('', $msg).$nl;
 	}
 
 	/**
@@ -167,12 +176,13 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 	 * @return  string
 	 */
 	function outputDebug($file, $info = null, $nl='<br />') {
+		$filename = explode((stristr(PHP_OS, 'WIN') ? '\\' : '/'), $file['file']);
 		$msg = ($info !== null ? '<strong>['.$info.']</strong> <br />' : null).
 					' Called on line <strong>'.$file['line'].'
 						</strong> of file <strong>'.$filename[count($filename) - 1].
 						'</strong> via function <strong>'.$file['function'].
 						'</strong> with arguments: (\''.
-						(is_object($file['args'])
+						(is_array($file['args'])
 							? secureMe(implode('\', \'', $file['args']))
 							: null).
 						'\')'.$nl;

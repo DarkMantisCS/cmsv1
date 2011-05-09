@@ -11,9 +11,11 @@ if(!defined('INDEX_CHECK')){die('Error: Cannot access directly.');}
  * @since       1.0.0
  * @author      xLink
  */
-class plugins extends CoreClass{
+class plugins extends coreClass{
 
     private $hooks = array();
+
+	public function __construct() { }
 
     /**
      * Get plugin list from the database, and attempt to load them in
@@ -44,7 +46,7 @@ class plugins extends CoreClass{
             //make sure its actually a file and is readable
                 if(!is_file($hookStr) || !is_readable($hookStr)){ continue; }
             //also make sure its enabled..
-                if($hook['enabled'] != 1){ continue; }
+                if(!$hook['enabled']){ continue; }
             //and then include it :D
                 include_once( str_replace('./', cmsROOT.'', $hookStr) );
         }
