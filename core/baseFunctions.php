@@ -12,7 +12,7 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
      * @author  xLink
      */
     function cmsError(){
-        $args = func_get_args(); #echo dump($args);
+        $args = func_get_args();
         $filename = explode((stristr(PHP_OS, 'WIN') ? '\\' : '/'), $args[2]);
         if($args[0]!=8){
             $msg = '<b>CMS Error:</b> <i>'.$args[1].'</i> in <b>'.(defined('IS_ADMIN')&&IS_ADMIN ? $args[2] : $filename[(count($filename)-1)]).'</b> on line <b>'.$args[3].'</b>';
@@ -286,7 +286,7 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
     }
 
     /**
-     * Sends an email to the intended target
+     * Returns a list of all directories and files
      *
      * @version	1.0
      * @since   1.0.0
@@ -310,7 +310,7 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 				$fullpath = $path . '/' . $file;
 				$fkey = strtolower($file);
 				while(array_key_exists($fkey, $fileNames)) {
-					$fkey .= ' ';
+				$fkey .= ' ';
 				}
 
 				$a = stat($fullpath);
@@ -348,8 +348,11 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
      * @return 	string
      */
 	function formatBytes($size) {
-	    $units = array(' B', ' KB', ' MB', ' GB', ' TB');
-	    for ($i = 0; $size >= 1024 && $i < 4; $i++){ $size /= 1024; }
+		$units = array(' B', ' KB', ' MB', ' GB', ' TB');
+		for ($i = 0; $size >= 1024 && $i < 4; $i++){
+			$size /= 1024;
+		}
+
 	    return round($size, 2).$units[$i];
 	}
 

@@ -5,7 +5,7 @@
 if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 
 /**
- *
+ * SQL Class interface, defines the needed functionality for the SQL Drivers
  *
  * @version     1.0
  * @since       1.0.0

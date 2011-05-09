@@ -13,20 +13,45 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
  */
 class mysql extends coreClass implements SQLBase{
 
+    /**
+     * Sets up a new MySQL Class
+     *
+     * @version	1.0
+     * @since   1.0.0
+     * @author  xLink
+     *
+     * @param   array	$config
+     *
+     * @return  bool
+     */
 	public function __construct($config=array()) {
 		if(is_empty($config)){
 			return false;
 		}
 
 		$this->db = array(
-			'host'		=> doArgs('host', '', $config),
-			'username'	=> doArgs('username', '', $config),
-			'password'	=> doArgs('password', '', $config),
-			'database'	=> doArgs('database', '', $config),
-			'prefix'	=> doArgs('prefix', '', $config),
+			'host'		=> doArgs('host', '', $config, 'is_empty'),
+			'username'	=> doArgs('username', '', $config, 'is_empty'),
+			'password'	=> doArgs('password', '', $config, 'is_empty'),
+			'database'	=> doArgs('database', '', $config, 'is_empty'),
+			'prefix'	=> doArgs('prefix', '', $config, 'is_empty'),
 		);
+
+		return true;
 	}
 
+    /**
+     * Sets up a connection to the database
+     *
+     * @version	1.0
+     * @since   1.0.0
+     * @author  xLink
+     *
+     * @param   bool 	$debug
+     * @param   bool 	$logging
+     *
+     * @return  bool
+     */
     public function connect($debug=false, $logging=false) {
         $this->error = false;
         $this->failed = false;
@@ -56,12 +81,19 @@ class mysql extends coreClass implements SQLBase{
         }
 
         if($this->persistent == false && !defined('NO_DB')) {
-            $this->record_message('CMS is not using a persistant connection with the database.', 'WARNING');
+            $this->recordMessage('CMS is not using a persistant connection with the database.', 'WARNING');
         }
 
         return true;
     }
 
+    /**
+     * Disconnects the current connection
+     *
+     * @version	1.0
+     * @since   1.0.0
+     * @author  xLink
+     */
     public function disconnect(){
         $this->freeResult();
         if($this->persistent == false){
@@ -89,6 +121,17 @@ class mysql extends coreClass implements SQLBase{
         }
     }
 
+    /**
+     * Escapes a string ready for the database
+     *
+     * @version	1.0
+     * @since   1.0.0
+     * @author  xLink
+     *
+     * @param 	mixed 	$string
+     *
+     * @return 	mixed
+     */
     public function escape($string){
         if(function_exists('mysql_real_escape_string') && $this->link_id) {
             if(is_array($string)){
@@ -107,14 +150,41 @@ class mysql extends coreClass implements SQLBase{
         }
     }
 
+    /**
+     * Retreives the last error reported
+     *
+     * @version	1.0
+     * @since   1.0.0
+     * @author  xLink
+     *
+     * @return 	string
+     */
     public function getError() {
         return mysql_error($this->link_id);
     }
 
+    /**
+     * Selects the database for use
+     *
+     * @version	1.0
+     * @since   1.0.0
+     * @author  xLink
+     *
+     * @param 	string 	$db
+     *
+     * @return 	bool
+     */
     public function selectDb($db) {
-        @mysql_select_db($db, $this->link_id) or $this->record_message(NULL, 'ERROR');
+        return mysql_select_db($db, $this->link_id) or $this->recordMessage(NULL, 'ERROR');
     }
 
+    /**
+     * Selects the database for use
+     *
+     * @version	1.0
+     * @since   1.0.0
+     * @author  xLink
+     */
     public function freeResult() {
         if(isset($this->results) && is_resource($this->results)) {
             mysql_free_result($this->results);
@@ -122,6 +192,17 @@ class mysql extends coreClass implements SQLBase{
         }
     }
 
+    /**
+     * Gets the specified table prefix
+     *
+     * @version	1.0
+     * @since   1.0.0
+     * @author  xLink
+     *
+     * @param 	string 	$mode
+     *
+     * @return 	string
+     */
     function prefix($mode='') {
         if(isset($this->prefix[$mode])){
             return $this->prefix[$mode];
@@ -133,6 +214,18 @@ class mysql extends coreClass implements SQLBase{
         return false;
     }
 
+    /**
+     * Adds a new prefix to the collection, useful for bridging projects
+     *
+     * @version	1.0
+     * @since   1.0.0
+     * @author  xLink
+     *
+     * @param 	string 	$mode
+     * @param	string 	$prefix
+     *
+     * @return 	bool
+     */
     function addPrefix($mode, $prefix){
     	if($mode == 0){
     		return false;
@@ -143,6 +236,17 @@ class mysql extends coreClass implements SQLBase{
         return true;
     }
 
+    /**
+     * Adds a new prefix to the collection, useful for bridging projects
+     *
+     * @version	1.0
+     * @since   1.0.0
+     * @author  xLink
+     *
+     * @param 	string 	$db
+     *
+     * @return 	bool
+     */
 	public function prepare(){
 		//grab the functions args
 		$args = func_get_args();
@@ -160,14 +264,26 @@ class mysql extends coreClass implements SQLBase{
 		return call_user_func_array('sprintf', $args);
 	}
 
-    public function query($query, $log = false) {
+    /**
+     * Queries the database
+     *
+     * @version	1.0
+     * @since   1.0.0
+     * @author  xLink
+     *
+     * @param 	string 	$query
+     * @param	string 	$log
+     *
+     * @return 	resource
+     */
+	public function query($query, $log = false) {
         $this->freeResult();
 
         $this->query_time = microtime(true);
 
-        if($log){ $this->record_mysql($query, $log, User::getIP()); }
+        if($log){ $this->recordLog($query, $log, User::getIP()); }
 
-        $this->results = mysql_query($query, $this->link_id) or $this->record_message(mysql_error(), 'WARNING');
+        $this->results = mysql_query($query, $this->link_id) or $this->recordMessage(mysql_error(), 'WARNING');
 
         if($this->debug){
             $a = debug_backtrace();
@@ -191,7 +307,19 @@ class mysql extends coreClass implements SQLBase{
         return $this->results;
     }
 
-
+    /**
+     * Gets a row count from a table
+     *
+     * @version	1.0
+     * @since   1.0.0
+     * @author  xLink
+     *
+     * @param 	string 	$table
+     * @param	string 	$clause
+     * @param 	string 	$log
+     *
+     * @return 	int
+     */
     public function getInfo($table, $clause=null, $log=false){
     	$statement = 'SELECT COUNT(*) FROM `$P'.$table.'`';
     	if(!is_empty($clause)){
@@ -203,6 +331,20 @@ class mysql extends coreClass implements SQLBase{
         return $line['COUNT(*)'];
     }
 
+    /**
+     * Gets a row count from a table
+     *
+     * @version	1.0
+     * @since   1.0.0
+     * @author  xLink
+     *
+     * @param 	string 	$table
+     * @param 	string 	$field
+     * @param	string 	$clause
+     * @param 	string 	$log
+     *
+     * @return 	string
+     */
     public function getValue($table, $field, $clause=null, $log=false){
     	$statement = 'SELECT %1$s FROM `$P%2$s`';
     	if(!is_empty($clause)){
@@ -216,11 +358,23 @@ class mysql extends coreClass implements SQLBase{
         return $line[$field];
     }
 
+    /**
+     * Gets a row from a table
+     *
+     * @version	1.0
+     * @since   1.0.0
+     * @author  xLink
+     *
+     * @param 	string 	$query
+     * @param 	string 	$log
+     *
+     * @return 	array
+     */
     public function getLine($query, $log=false) {
         $this->query($query, $log);
 
         if(!is_resource($this->results)) {
-            $this->record_message('getLine: ('.$query.')', 'ERROR');
+            $this->recordMessage('getLine: ('.$query.')', 'ERROR');
         } else {
             $line = mysql_fetch_assoc($this->results);
             $this->freeResult();
@@ -229,11 +383,23 @@ class mysql extends coreClass implements SQLBase{
         return false;
     }
 
+    /**
+     * Returns query results in the form of an array
+     *
+     * @version	1.0
+     * @since   1.0.0
+     * @author  xLink
+     *
+     * @param 	string 	$query
+     * @param 	string 	$log
+     *
+     * @return 	array
+     */
     public function getTable($query, $log=false) {
         $this->query($query, $log);
 
         if(!is_resource($this->results)) {
-            $this->record_message('getTable: ('.$query.')', 'ERROR');
+            $this->recordMessage('getTable: ('.$query.')', 'ERROR');
         } else {
 	        $table = array();
             while($line = mysql_fetch_assoc($this->results)) {
@@ -246,7 +412,19 @@ class mysql extends coreClass implements SQLBase{
         return false;
     }
 
-
+    /**
+     * Inserts a row into specified table
+     *
+     * @version	1.0
+     * @since   1.0.0
+     * @author  xLink
+     *
+     * @param 	string 	$query
+     * @param 	array 	$array
+     * @param 	string 	$log
+     *
+     * @return 	array
+     */
     function insertRow($table, $array, $log = false){
     	if(is_empty($array)){ return false; }
 
@@ -271,6 +449,20 @@ class mysql extends coreClass implements SQLBase{
 		return mysql_insert_id($this->link_id);
 	}
 
+    /**
+     * Updates a table
+     *
+     * @version	1.0
+     * @since   1.0.0
+     * @author  xLink
+     *
+     * @param 	string 	$query
+     * @param 	array 	$array
+     * @param 	string 	clause
+     * @param 	string 	$log
+     *
+     * @return 	array
+     */
 	function updateRow($table, $array, $clause, $log=false){
     	if(is_empty($array)){ return false; }
 
@@ -290,11 +482,101 @@ class mysql extends coreClass implements SQLBase{
 		return mysql_affected_rows();
 	}
 
+    /**
+     * Deletes row(s) form a table
+     *
+     * @version	1.0
+     * @since   1.0.0
+     * @author  xLink
+     *
+     * @param 	string 	$query
+     * @param 	string 	clause
+     * @param 	string 	$log
+     *
+     * @return 	array
+     */
     public function deleteRow($table, $clause, $log=false){
         $this->query($this->prepare('SELECT FROM `$P$s` WHERE %s', $table, $clause), $log);
 
         return mysql_affected_rows($this->link_id);
     }
+
+    /**
+     * Records a message in the footer debug
+     *
+     * @version	1.0
+     * @since   1.0.0
+     * @author  xLink
+     *
+     * @param 	string 	$message
+     * @param 	string 	$mode
+     */
+    function recordMessage($message, $mode=false) {
+        $this->failed = true;
+        if($this->debug) {
+            $a = debug_backtrace();
+            $file = $a[2];
+            if(isset($file['args'])){
+                foreach($file['args'] as $k => $v){
+                    $file['args'][$k] = (is_array($v) ? serialize($v) : $v);
+                }
+            }
+
+            $message = secureMe($message);
+            $pinpoint = '<br /><div class="content padding"><strong>'.realpath($file['file']).'</strong> @ <strong>'.$file['line'].
+							'</strong> // Affected '.mysql_affected_rows().' rows.. <br /> '.$file['function'].'(<strong>\''.
+							(isset($file['args']) ? secureMe(implode('\', \'', $file['args'])) : NULL).'\'</strong>); </div>';
+
+            if($mode == 'WARNING'){
+                $this->debugtext[] = array(
+                    'query'     => '<span style="color:orange"><b>WARNING:</b></span> '.$message.$pinpoint,
+                    'time'      => '---------',
+                    'status'    => 'warning'
+                );
+            } else {
+                $max = count($this->debugtext);
+                $this->debugtext[$max - 1] = array(
+                    'query'     => '<span style="color:red"><b>ERROR:</b></span> '.$message.$pinpoint,
+                    'time'      => '---------',
+                    'status'    => 'error'
+                );
+            }
+        }
+    }
+
+    /**
+     * Records a sql query in the database with a log message
+     *
+     * @version	1.0
+     * @since   1.0.0
+     * @author  xLink
+     *
+     * @param 	string 	$query
+     * @param 	string 	$log
+     */
+    function recordLog($query, $log) {
+        global $config;
+
+        $uid = '0';
+        $username = 'Guest';
+
+        if(isset($config['global']['user']['id']) && isset($config['global']['user']['username'])) {
+            $uid = $config['global']['user']['id'];
+            $username = $config['global']['user']['username'];
+        }
+
+        $info['uid'] 			= $uid;
+        $info['username'] 		= $username;
+        $info['description'] 	= $log;
+        $info['query'] 			= $query;
+        $info['refer'] 			= stripslashes($_SERVER['HTTP_REFERER']);
+        $info['date'] 			= time();
+        $info['ip_address'] 	= User::GetIP();
+
+        $this->insertRow('logs', $info, false);
+    }
+
+
 
 }
 

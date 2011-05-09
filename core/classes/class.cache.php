@@ -11,7 +11,7 @@ if(!defined('INDEX_CHECK')){die('Error: Cannot access directly.');}
  * @since       1.0.0
  * @author      xLink
  */
-class Cache extends coreClass{
+class cache extends coreClass{
 
     var $cacheToggle = '';
     var $output = array();

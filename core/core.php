@@ -24,7 +24,7 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
      * cmsROOT - Internal way of getting to the project root
      * @note for internal use, use cmsROOT, for external use, eg js and html paths, use root();
      */
-    define('cmsROOT', (isset($cmsROOT) && !empty($cmsROOT) ? $cmsROOT : NULL));
+    define('cmsROOT', (isset($cmsROOT) && !empty($cmsROOT) ? $cmsROOT : NULL)); unset($cmsROOT);
 
     //so we can turn errors off if we are not running locally
     define('LOCALHOST', (isset($_SERVER['HTTP_HOST']) && $_SERVER['HTTP_HOST']=='localhost') ? true : false);
@@ -76,11 +76,11 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
     }
 
     (LOCALHOST ? set_error_handler('cmsError') : '');
-    if($redoHandler && cmsDEBUG==1){
+    if($redoHandler && cmsDEBUG == true){
         set_error_handler('error_handler');
         set_exception_handler('exception_handler');
         register_shutdown_function('fatal_error_handler');
-    }
+    }unset($redoHandler);
 
     //set the default timezone
     if(function_exists('date_default_timezone_set')){
@@ -123,19 +123,19 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 		$classes['objSQL']		= array($classDir.'driver.mysql.php', $config['db']);
 	}
 
+	$classes['objCache']		= array($classDir.'class.cache.php', array(
+									'useCache' 	=> $cacheWritable,
+									'cacheDir' 	=> $cachePath
+								));
 
 	$classes['objTPL']			= array($classDir.'class.template.php', array(
 									'root' 		=> '.',
 									'useCache' 	=> $cacheWritable,
 									'cacheDir' 	=> $cachePath.'template/'
 								));
-	$classes['objCache']		= array($classDir.'class.cache.php', array(
-									'useCache' 	=> $cacheWritable,
-									'cacheDir' 	=> $cachePath
-								));
-	$classes['objForm']			= array($classDir.'class.form.php');
 	$classes['objPlugins']		= array($classDir.'class.plugins.php');
-
+	$classes['objPage']			= array($classDir.'class.page.php');
+	$classes['objForm']			= array($classDir.'class.form.php');
 
 	$objCore = new coreClass;
 	$objCore->setup($classes);

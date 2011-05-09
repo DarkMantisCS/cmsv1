@@ -15,7 +15,6 @@ class form extends coreClass{
 
 	public function __construct() { }
 
-
     /**
      * Starts a new form off
      *
