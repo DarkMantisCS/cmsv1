@@ -14,7 +14,7 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 interface SQLBase{
 
 	public function __construct($config=array());
-	public function connect($debug, $logging);
+	public function connect($persistent, $debug, $logging);
 	public function disconnect();
 	public function selectDb($db);
 
@@ -30,12 +30,10 @@ interface SQLBase{
 	public function getLine($query, $log=false);
 	public function getTable($query, $log=false);
 
-	public function insertRow($table, $array, $log = false);
+	public function insertRow($table, $array, $log=false);
 	public function updateRow($table, $array, $clause, $log=false);
 	public function deleteRow($table, $clause, $log=false);
 
 }
-
-
 
 ?>

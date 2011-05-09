@@ -5,36 +5,36 @@
 if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 
 /**
- * Class to create and maintain forms
- *
- * @version     1.0
- * @since       1.0.0
- * @author      xLink
- */
+* Class to create and maintain forms
+*
+* @version     1.0
+* @since       1.0.0
+* @author      xLink
+*/
 class form extends coreClass{
 
 	public function __construct() { }
 
-    /**
-     * Starts a new form off
-     *
-     * @version	1.0
-     * @since   1.0.0
-     * @author  xLink
-     *
-     * @param   string $name
-     * @param   array  $args
-     *
-     * @return  string
-     */
-    public function start($name, $args=array()){
-        $args = array(
-            'method'        => doArgs('method', 	null, 	$args),
-            'action'        => doArgs('action', 	null, 	$args),
-            'onsubmit'      => doArgs('onsubmit', 	false, 	$args),
-            'extra'      	=> doArgs('extra', 		null, 	$args),
-            'novalidate'    => doArgs('novalidate', false, 	$args),
-        );
+	/**
+	 * Starts a new form off
+	 *
+	 * @version	1.0
+	 * @since   1.0.0
+	 * @author  xLink
+	 *
+	 * @param   string $name
+	 * @param   array  $args
+	 *
+	 * @return  string
+	 */
+	public function start($name, $args=array()){
+		$args = array(
+			'method'        => doArgs('method', 	null, 	$args),
+			'action'        => doArgs('action', 	null, 	$args),
+			'onsubmit'      => doArgs('onsubmit', 	false, 	$args),
+			'extra'      	=> doArgs('extra', 		null, 	$args),
+			'novalidate'    => doArgs('novalidate', false, 	$args),
+		);
 
 		return '<form name="'.$name.'" id="'.$name.'" '.
 					(!is_empty($args['method'])     ? 'method="'.$args['method'].'" ' 		: 'method="'.$_SERVER['PHP_SELF'].'" ').
@@ -43,62 +43,62 @@ class form extends coreClass{
 					'novalidate="'.($args['novalidate']==true ? 'true' : 'false').'"'.
 					(!is_empty($args['extra'])      ? $args['extra'] 						: null).
 				'>'."\n";
-    }
-
-    /**
-     * Finishes the form - mebe useful for something else in the future
-     *
-     * @version	1.0
-     * @since   1.0.0
-     * @author  xLink
-     *
-     * @return  string
-     */
-    public function finish(){
-    	return '</form>';
 	}
 
-    /**
-     * Mould for the input tag, this supports a fair amount of tags
-     *
-     * @version	1.0
-     * @since   1.0.0
-     * @author  xLink
-     *
-     * @param   string 	$name
-     * @param   string 	$type
-     * @param   string 	$value
-     * @param   array 	$args
-     *
-     * @return  string
-     */
+	/**
+	 * Finishes the form - mebe useful for something else in the future
+	 *
+	 * @version	1.0
+	 * @since   1.0.0
+	 * @author  xLink
+	 *
+	 * @return  string
+	 */
+	public function finish(){
+		return '</form>';
+	}
+
+	/**
+	 * Mould for the input tag, this supports a fair amount of tags
+	 *
+	 * @version	1.0
+	 * @since   1.0.0
+	 * @author  xLink
+	 *
+	 * @param   string 	$name
+	 * @param   string 	$type
+	 * @param   string 	$value
+	 * @param   array 	$args
+	 *
+	 * @return  string
+	 */
 	public function inputbox($name, $type='text', $value='', $args=array()){
-        $args = array(
-            'id'            => doArgs('id', 			$name, 	$args),
-            'class'         => doArgs('class', 			null, 	$args),
-            'checked'       => doArgs('checked', 		false, 	$args),
-            'disabled'      => doArgs('disabled', 		false, 	$args),
-            'br'            => doArgs('br', 			false, 	$args),
-            'extra'         => doArgs('extra', 			null, 	$args),
-            'xssFilter'     => doArgs('xssFilter', 		true, 	$args),
+		$args = array(
+			'id'            => doArgs('id', 			$name, 	$args),
+			'class'         => doArgs('class', 			null, 	$args),
+			'checked'       => doArgs('checked', 		false, 	$args),
+			'disabled'      => doArgs('disabled', 		false, 	$args),
+			'br'            => doArgs('br', 			false, 	$args),
+			'extra'         => doArgs('extra', 			null, 	$args),
+			'xssFilter'     => doArgs('xssFilter', 		true, 	$args),
 
-            //HTML5 tag additions
-            'required'     	=> doArgs('required', 		false, 	$args),
-            'placeholder'   => doArgs('placeholder', 	null, 	$args),
-            'autofocus'     => doArgs('autofocus', 		false, 	$args),
-            'min'   		=> doArgs('min', 			0, 		$args, 'is_number'),
-            'max'     		=> doArgs('max', 			0, 		$args, 'is_number'),
-            'step'     		=> doArgs('step', 			0, 		$args, 'is_number'),
+			//HTML5 tag additions
+			'required'     	=> doArgs('required', 		false, 	$args),
+			'placeholder'   => doArgs('placeholder', 	null, 	$args),
+			'autofocus'     => doArgs('autofocus', 		false, 	$args),
+			'min'   		=> doArgs('min', 			0, 		$args, 'is_number'),
+			'max'     		=> doArgs('max', 			0, 		$args, 'is_number'),
+			'step'     		=> doArgs('step', 			0, 		$args, 'is_number'),
 
-            //CMS addition - will set the field to auto complete usernames
-            'autocomplete'  => doArgs('autocomplete', 	true, 	$args),
-        );
+			//CMS addition - will set the field to auto complete usernames
+			'autocomplete'  => doArgs('autocomplete', 	true, 	$args),
+		);
 
-        $typeVali = array( 'button', 'checkbox', 'file', 'hidden', 'image', 'password', 'radio', 'reset', 'submit', 'text',
+		$typeVali = array( 'button', 'checkbox', 'file', 'hidden', 'image', 'password', 'radio', 'reset', 'submit', 'text',
 							//html5 specials
 							'email', 'url', 'number', 'range', 'search', 'datetime-local', 'datetime', 'date', 'time', 'week', 'month' );
 
-        return '<input type="'.(in_array($type, $typeVali) ? $type : 'text').'" '.
+		return '<input type="'.(in_array($type, $typeVali) ? $type : 'text').'" '.
 					'class="'.$args['class'].'" name="'.$name.'" id="'.$args['id'].'" '.
 					($args['xssFilter']===true			? 'value="'.htmlspecialchars($value).'" ' 	: 'value="'.$value.'" ').
 
@@ -114,37 +114,37 @@ class form extends coreClass{
 					($args['disabled']===true			? 'disabled="disabled" '					: null).
 					($args['autocomplete']===false		? 'autocomplete="off" '						: null).
 					(!is_empty($args['extra'])			? $args['extra']							: null).
-                '/>'.
+				'/>'.
 					($args['br']===true					? '<br />'."\n"								: '');
-    }
+	}
 
-    /**
-     * Output a textarea input box
-     *
-     * @version	1.0
-     * @since   1.0.0
-     * @author  xLink
-     *
-     * @param   string 	$name
+	/**
+	 * Output a textarea input box
+	 *
+	 * @version	1.0
+	 * @since   1.0.0
+	 * @author  xLink
+	 *
+	 * @param   string 	$name
 	 * @param   string 	$value
-     * @param   array	$args
-     *
-     * @return  string
-     */
-    public function textarea($name='textarea', $value=null, $args=array()){
-        $args = array(
-            'cols'      => doArgs('cols', 45, $args),
-            'rows'      => doArgs('rows', 5, $args),
+	 * @param   array	$args
+	 *
+	 * @return  string
+	 */
+	public function textarea($name='textarea', $value=null, $args=array()){
+		$args = array(
+			'cols'      => doArgs('cols', 45, $args),
+			'rows'      => doArgs('rows', 5, $args),
 
-        	'id'		=> doArgs('id', $name, $args),
-            'class'     => doArgs('class', null, $args),
-            'disabled'  => doArgs('disabled', false, $args),
-            'br'        => doArgs('br', false, $args),
-            'extra'     => doArgs('extra', null, $args),
-            'xssFilter' => doArgs('xssFilter', true, $args),
-        );
+			'id'		=> doArgs('id', $name, $args),
+			'class'     => doArgs('class', null, $args),
+			'disabled'  => doArgs('disabled', false, $args),
+			'br'        => doArgs('br', false, $args),
+			'extra'     => doArgs('extra', null, $args),
+			'xssFilter' => doArgs('xssFilter', true, $args),
+		);
 
-        return '<textarea '.
+		return '<textarea '.
 					'name="'.$name.'" id="'.$args['id'].'" '.
 					'class="'.($args['class']).'" '.
 					'cols="'.(is_number($args['cols']) 	? $args['cols'] 			: 45).'" '.
@@ -153,171 +153,171 @@ class form extends coreClass{
 					($args['disabled']===true   		? 'disabled="disabled" '    : null).
 				'>'.($args['xssFilter']===true  		? htmlspecialchars($value)  : $value).'</textarea>'.
 					($args['br']===true         		? '<br />'."\n"             : '');
-    }
+	}
 
-    /**
-     * Output a submit or reset button
-     *
-     * @version	1.0
-     * @since   1.0.0
-     * @author  xLink
-     *
-     * @param   string 	$name
+	/**
+	 * Output a submit or reset button
+	 *
+	 * @version	1.0
+	 * @since   1.0.0
+	 * @author  xLink
+	 *
+	 * @param   string 	$name
 	 * @param   string 	$value
-     * @param   array 	$args
-     *
-     * @return  string
-     */
-    public function button($name=null, $value, $args=array()){
-        $type = ($name=='submit' ? 'submit' : ($name=='reset' ? 'reset' : doArgs('type', 'button', $args)));
-        $name = doArgs('name', $name, $args);
+	 * @param   array 	$args
+	 *
+	 * @return  string
+	 */
+	public function button($name=null, $value, $args=array()){
+		$type = ($name=='submit' ? 'submit' : ($name=='reset' ? 'reset' : doArgs('type', 'button', $args)));
+		$name = doArgs('name', $name, $args);
 
-        return $this->inputbox($name, $type, $value, $args);
-    }
+		return $this->inputbox($name, $type, $value, $args);
+	}
 
-    /**
-     * New Radio Button
-     *
-     * @version	1.0
-     * @since   1.0.0
-     * @author  xLink
-     *
-     * @param   string 	$name
-     * @param   string 	$value
-     * @param   string 	$defaultSetting
-     * @param   array 	$args
-     *
-     * @return  string
-     */
+	/**
+	 * New Radio Button
+	 *
+	 * @version	1.0
+	 * @since   1.0.0
+	 * @author  xLink
+	 *
+	 * @param   string 	$name
+	 * @param   string 	$value
+	 * @param   string 	$defaultSetting
+	 * @param   array 	$args
+	 *
+	 * @return  string
+	 */
 	public function radio($name='radio', $value=array(), $defaultSetting=null, $args=array()){
-        $args = array(
-        	'id'		=> doArgs('id', $name, $args),
-            'class'     => doArgs('class', null, $args),
-            'disabled'  => doArgs('disabled', false, $args),
-            'br'        => doArgs('br', false, $args),
-            'xssFilter' => doArgs('xssFilter', true, $args),
+		$args = array(
+			'id'		=> doArgs('id', $name, $args),
+			'class'     => doArgs('class', null, $args),
+			'disabled'  => doArgs('disabled', false, $args),
+			'br'        => doArgs('br', false, $args),
+			'xssFilter' => doArgs('xssFilter', true, $args),
 
-            'showValue' => doArgs('showValue', true, $args),
-        );
+			'showValue' => doArgs('showValue', true, $args),
+		);
 
 		$return = null;
 		foreach($val as $key => $value){
-            $value = ($args['xssFilter']===true ? htmlspecialchars($value) : $value);
-            $return .= ($args['showLabels']===true ? '<label>' : '').
-                            '<input type="radio"'.
+			$value = ($args['xssFilter']===true ? htmlspecialchars($value) : $value);
+			$return .= ($args['showLabels']===true ? '<label>' : '').
+							'<input type="radio"'.
 								'name="'.$name.'" id="'.$args['id'].'" '.
 								($args['xssFilter']===true    			? 'value="'.htmlspecialchars($key).'" ' : 'value="'.$key.'" ').
 								($defaultSetting==$key                  ? 'checked="checked" '      			: null).
-                            '/>'.($args['showValue']===true             ? ' '.$value                			: null).
-                        ($args['showLabels']===true ? '</label>' : '').
-                                ($args['br']===true                     ? '<br />'."\n"             			: '');
+							'/>'.($args['showValue']===true             ? ' '.$value                			: null).
+						($args['showLabels']===true ? '</label>' : '').
+								($args['br']===true                     ? '<br />'."\n"             			: '');
 		}
 
 
 		return $return;
 	}
 
-    /**
-     * Created a new checkbox
-     *
-     * @version	1.0
-     * @since   1.0.0
-     * @author  xLink
-     *
-     * @param   string 	$name
-     * @param   string 	$value
-     * @param   bool 	$checked
-     * @param   array 	$args
-     *
-     * @return  string
-     */
-    public function checkbox($name='check', $value='', $checked=false, $args=array()){
-        $args['checked'] = $checked;
+	/**
+	 * Created a new checkbox
+	 *
+	 * @version	1.0
+	 * @since   1.0.0
+	 * @author  xLink
+	 *
+	 * @param   string 	$name
+	 * @param   string 	$value
+	 * @param   bool 	$checked
+	 * @param   array 	$args
+	 *
+	 * @return  string
+	 */
+	public function checkbox($name='check', $value='', $checked=false, $args=array()){
+		$args['checked'] = $checked;
 
-        return $this->inputbox($name, 'checkbox', $value, $args);
-    }
+		return $this->inputbox($name, 'checkbox', $value, $args);
+	}
 
-    /**
-     * Select box tag - convert any array to a select box...i think :D
-     *
-     * @version	1.0
-     * @since   1.0.0
-     * @author  xLink
-     *
-     * @param   string 	$name
-     * @param   array 	$options
-     * @param   array 	$args
-     *
-     * @return  string
-     */
-    public function select($name, $options, $args=array()){
-        $args = array(
-        	'id'		=> doArgs('id', 		$name, $args),
-            'selected'  => doArgs('selected', 	null, $args),
-            'noKeys'  	=> doArgs('noKeys', 	false, $args),
+	/**
+	 * Select box tag - convert any array to a select box...i think :D
+	 *
+	 * @version	1.0
+	 * @since   1.0.0
+	 * @author  xLink
+	 *
+	 * @param   string 	$name
+	 * @param   array 	$options
+	 * @param   array 	$args
+	 *
+	 * @return  string
+	 */
+	public function select($name, $options, $args=array()){
+		$args = array(
+			'id'		=> doArgs('id', 		$name, $args),
+			'selected'  => doArgs('selected', 	null, $args),
+			'noKeys'  	=> doArgs('noKeys', 	false, $args),
 
-            'class'     => doArgs('class', 		null, $args),
-            'disabled'  => doArgs('disabled', 	false, $args),
-            'extra'     => doArgs('extra', 		null, $args),
-            'xssFilter' => doArgs('xssFilter', 	true, $args),
-        );
+			'class'     => doArgs('class', 		null, $args),
+			'disabled'  => doArgs('disabled', 	false, $args),
+			'extra'     => doArgs('extra', 		null, $args),
+			'xssFilter' => doArgs('xssFilter', 	true, $args),
+		);
 
 
-        $extra = $args['extra'];
-        $selected = $args['selected'];
-        $noKeys = $args['noKeys'];
-        $val = '<select name="'.$name.'" id="'.$args['id'].'" '.
+		$extra = $args['extra'];
+		$selected = $args['selected'];
+		$noKeys = $args['noKeys'];
+		$val = '<select name="'.$name.'" id="'.$args['id'].'" '.
 					(!is_empty($args['class']) 	? 'class="'.$args['class'].'" ' : null).
 					($args['disabled']===true 	? 'disabled="disabled" ' 		: null).
 					$args['extra'].'>'."\n";
 
-        foreach ($options as $k => $v){
-            if(is_array($v)){
-                $val .= '<optgroup label="'.$k.'">'."\n";
-                foreach($v as $a => $b){
-                    if(is_array($b)){
-                        $val .= $this->processSelect($b, $selected, $noKeys);
-                    }else{
-                        $val .= '<option value="'.$a.'"'.(md5($a)==md5($selected) ? ' selected="true"' : null).'>'.($noKeys===true ? $a : $b).'</option>'."\n";
-                    }
-                }
-            }else{
-                $val .= '<option value="'.$k.'"'.(md5($k)==md5($selected) ? ' selected="true"' : null).'>'.($noKeys===true ? $k : $v).'</option>'."\n";
-            }
-        }
-        $val .= '</select>'."\n";
-        return $val;
-    }
+		foreach ($options as $k => $v){
+			if(is_array($v)){
+				$val .= '<optgroup label="'.$k.'">'."\n";
+				foreach($v as $a => $b){
+					if(is_array($b)){
+						$val .= $this->processSelect($b, $selected, $noKeys);
+					}else{
+						$val .= '<option value="'.$a.'"'.(md5($a)==md5($selected) ? ' selected="true"' : null).'>'.($noKeys===true ? $a : $b).'</option>'."\n";
+					}
+				}
+			}else{
+				$val .= '<option value="'.$k.'"'.(md5($k)==md5($selected) ? ' selected="true"' : null).'>'.($noKeys===true ? $k : $v).'</option>'."\n";
+			}
+		}
+		$val .= '</select>'."\n";
+		return $val;
+	}
 
-    /**
-     * Private recursion for select tag.
-     *
-     * @version	1.0
-     * @since   1.0.0
-     * @author  xLink
-     *
-     * @param   array 	$options
-     * @param   string 	$selected
-     * @param   bool	$noKeys
-     *
-     * @return  string
-     */
-    private function processSelect($options, $selected, $noKeys=false){
-        foreach ($options as $k => $v){
-            if(is_array($v)){
-                foreach($v as $a => $b){
-                    if(is_array($b)){
-                        $val .= $this->processSelect($b, $selected, $noKeys);
-                    }else{
-                        $val .= '<option value="'.$a.'"'.(md5($a)==md5($selected) ? ' selected="true" ' : null).'>'.($noKeys===true ? $b : $a).'</option>'."\n";
-                    }
-                }
-            }else{
-                $val .= '<option value="'.$k.'"'.(md5($k)==md5($selected) ? ' selected="true" ' : null).'>'.($noKeys===true ? $v : $k).'</option>'."\n";
-            }
-        }
-        return $val;
-    }
+	/**
+	 * Private recursion for select tag.
+	 *
+	 * @version	1.0
+	 * @since   1.0.0
+	 * @author  xLink
+	 *
+	 * @param   array 	$options
+	 * @param   string 	$selected
+	 * @param   bool	$noKeys
+	 *
+	 * @return  string
+	 */
+	private function processSelect($options, $selected, $noKeys=false){
+		foreach ($options as $k => $v){
+			if(is_array($v)){
+				foreach($v as $a => $b){
+					if(is_array($b)){
+						$val .= $this->processSelect($b, $selected, $noKeys);
+					}else{
+						$val .= '<option value="'.$a.'"'.(md5($a)==md5($selected) ? ' selected="true" ' : null).'>'.($noKeys===true ? $b : $a).'</option>'."\n";
+					}
+				}
+			}else{
+				$val .= '<option value="'.$k.'"'.(md5($k)==md5($selected) ? ' selected="true" ' : null).'>'.($noKeys===true ? $v : $k).'</option>'."\n";
+			}
+		}
+		return $val;
+	}
 
 }
 ?>
