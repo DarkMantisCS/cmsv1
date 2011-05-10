@@ -262,7 +262,7 @@ class mysql extends coreClass implements SQLBase{
 		$args[0] = $query;
 
 		//return thru sprintf
-		return call_user_func_array('sprintf', $args);
+		return (count($args)>1 ? call_user_func_array('sprintf', $args) : $query);
 	}
 
 	/**
