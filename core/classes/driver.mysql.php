@@ -176,7 +176,7 @@ class mysql extends coreClass implements SQLBase{
 	 * @return 	bool
 	 */
 	public function selectDb($db) {
-		return mysql_select_db($db, $this->link_id) or $this->recordMessage(NULL, 'ERROR');
+		return mysql_select_db($db, $this->link_id) or $this->recordMessage(null, 'ERROR');
 	}
 
 	/**
@@ -298,10 +298,10 @@ class mysql extends coreClass implements SQLBase{
 			$query = secureMe($query);
 			$pinpoint = '<br /><div class="content padding"><strong>'.realpath($file['file']).'</strong> @ <strong>'.$file['line'].
 							'</strong> // Affected '.mysql_affected_rows().' rows.. <br /> '.$file['function'].'(<strong>\''.
-							(isset($file['args']) ? secureMe(implode('\', \'', $file['args'])) : NULL).'\'</strong>); </div>';
+							(isset($file['args']) ? secureMe(implode('\', \'', $file['args'])) : null).'\'</strong>); </div>';
 			$this->debugtext[] = array('query' => $query.$pinpoint, 'time' => substr((microtime(true) - $this->query_time), 0, 7), 'status' => 'ok');
 		}else{
-			$this->debugtext[] = array('query' => $query, 'time' => NULL, 'status' => 'ok');
+			$this->debugtext[] = array('query' => $query, 'time' => null, 'status' => 'ok');
 		}
 
 
@@ -436,7 +436,7 @@ class mysql extends coreClass implements SQLBase{
 
 		foreach($array as $elem => $value) {
 			if($value === null){
-				$listOfValues .= $comma .'NULL';
+				$listOfValues .= $comma .'null';
 			}else{
 				$listOfValues .= $comma .'\''. (string)$value .'\'';
 			}
@@ -472,7 +472,7 @@ class mysql extends coreClass implements SQLBase{
 
 		foreach($array as $index => $value){
 			if($value === null){
-				$query .= '`'.$index.'`=NULL, ';
+				$query .= '`'.$index.'`=null, ';
 			}else{
 				$query .= '`'.$index.'`=\''.$this->escape($value).'\', ';
 			}
@@ -527,7 +527,7 @@ class mysql extends coreClass implements SQLBase{
 			$message = secureMe($message);
 			$pinpoint = '<br /><div class="content padding"><strong>'.realpath($file['file']).'</strong> @ <strong>'.$file['line'].
 							'</strong> // Affected '.mysql_affected_rows().' rows.. <br /> '.$file['function'].'(<strong>\''.
-							(isset($file['args']) ? secureMe(implode('\', \'', $file['args'])) : NULL).'\'</strong>); </div>';
+							(isset($file['args']) ? secureMe(implode('\', \'', $file['args'])) : null).'\'</strong>); </div>';
 
 			if($mode == 'WARNING'){
 				$this->debugtext[] = array(

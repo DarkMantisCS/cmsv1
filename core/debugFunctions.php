@@ -87,7 +87,7 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 				$type_color = '<span style="color:#0099c5">'; $type = 'Float';
 			} elseif($type == 'Boolean') {
 				$type_color = '<span style="color:#92008d">';
-			} elseif($type == 'NULL') {
+			} elseif($type == 'null') {
 				$type_color = '<span style="color:black">';
 			} elseif($type == 'Resource') {
 				$type_color = '<span style="color:#00c19f">';
@@ -125,7 +125,7 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 								"$type_color".($avar == 1 ? "true" : "false")."</span><br />";
 			} elseif(is_null($avar)) {
 				$return .= "$indent$var_name = <span style='color:#a2a2a2'>$type(".strlen($avar).")</span>".
-								"{$type_color}NULL</span><br />";
+								"{$type_color}null</span><br />";
 			} elseif(is_resource($avar)) {
 				$return .= "$indent$var_name = <span style='color:#a2a2a2'>$type</span> $type_color$avar</span><br />";
 			} else {
@@ -156,7 +156,7 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 		$msg = array();
 		$x = 0;
 		foreach($a as $key => $file) {
-			$msg[] = outputDebug($file, ($x==0 ? $info : NULL), $nl);
+			$msg[] = outputDebug($file, ($x==0 ? $info : null), $nl);
 			$x++;
 		}
 		return implode('', $msg).$nl;
