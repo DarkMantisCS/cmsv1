@@ -7,9 +7,9 @@ if(!defined('INDEX_CHECK')){die('Error: Cannot access directly.');}
 /**
  * This class handles page generation
  *
- * @version     1.0
- * @since       1.0.0
- * @author      xLink
+ * @version 	1.0
+ * @since 		1.0.0
+ * @author 		xLink
  */
 class page extends coreClass{
 
@@ -285,14 +285,29 @@ class page extends coreClass{
 			}
 		}
 
-        if(!is_dir(cmsROOT.'themes/'.$theme.'/') || !is_readable(cmsROOT.'themes/'.$theme.'/cfg.php')){
-            return false;
-        }
+		if(!is_dir(cmsROOT.'themes/'.$theme.'/') || !is_readable(cmsROOT.'themes/'.$theme.'/cfg.php')){
+			return false;
+		}
 
 		self::$THEME = $theme;
 		self::$THEME_DIR = cmsROOT.'themes/'.$theme.'/';
 
 		return true;
+	}
+
+	function showHeader($simple=false){
+
+	}
+
+	function showFooter($simple=false){
+
+	}
+
+	function setInitVars(){
+		$vars = $this->getVar('tplVars');
+
+		$extras = page::$THEME.'extras.php';
+		if(is_readable($extras)){ include($extras); }
 	}
 }
 ?>
