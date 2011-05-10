@@ -34,12 +34,12 @@ class cache extends coreClass{
 	 * @since       1.0.0
 	 * @author      xLink
 	 */
-	function initCache($name, $file, $query, &$result, $callback=NULL){
+	function initCache($name, $file, $query, &$result, $callback=null){
 		if($this->cacheToggle && is_file($this->cacheDir . $file)){
 			include ($this->cacheDir . $file);
 			$result = $$name;
 
-		}else if($callback!==NULL){
+		}else if($callback!==null){
 			eval('$result = '.$callback.'();');
 
 		}else{

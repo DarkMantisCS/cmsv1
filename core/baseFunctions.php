@@ -19,7 +19,7 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 			if(defined('INSTALLER')){
 				die($msg);
 			}else{
-				msg('ERR', $msg, NULL, NULL, NULL, false);
+				msg('ERR', $msg, null, null, null, false);
 			}
 		}
 	}
@@ -164,7 +164,7 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 
 
 	/**
-	 * Checks to see if the var is empty, checks against NULL, empty array and false
+	 * Checks to see if the var is empty, checks against null, empty array and false
 	 *
 	 * @version	1.0
 	 * @since   1.0.0
@@ -422,23 +422,79 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 	}
 
 
-	//
-	//-- MSG Functions
-	//
+	/**
+	 * Returns a language var ready to be used on the page.
+	 *
+	 * @version	2.0
+	 * @since	1.0.0
+	 *
+	 * @param	string 	$langVar
+	 * @param	...
+	 *
+	 * @return 	string
+	 */
+	function langVar(){
+		global $_lang;
+
+		//get how many arguments the function received
+		$args = func_get_args();
+		$var = $args[0]; //the lang var should be the first argument anyways
+
+		$var = doArgs($var, null, $_lang); //get the corresponding lang var
+
+		//quick test to make sure the lang var exists
+		if(is_empty($var)){ return false; }
+
+			//swap the first argument for the language var
+			foreach($args as $k => $v){ $vars[$k] = ($k==0 ? $var : $v); }
+
+		if(is_array($var)){
+			foreach($var as $k => $v){
+				$var[secureMe($k, 'langVar')] = secureMe($v, 'langVar');
+			}
+		}else{
+			$var = secureMe($var, 'langVar');
+		}
+		return count($args)>1 ? call_user_func_array('sprintf', $vars) : $var;
+	}
+
+	/**
+	 * Adds a language file to the global language array
+	 *
+	 * @version	1.0
+	 * @since   1.0.0
+	 *
+	 * @param   string 	$file
+	 *
+	 * @return 	bool
+	 */
+	function translateFile($file){
+		global $_lang;
+
+		if(is_file($file) && is_readable($file)){
+			include_once($file);
+			return true;
+		}
+		return false;
+	}
+
+//
+//-- MSG Functions
+//
 	/**
 	 * Displays a formatted error on screen.
 	 *
 	 * @version	2.0 		Updated to work with 0.8 structure
 	 * @since   0.6.0
 	 */
-	function msg($msg_type, $message, $tplVar=NULL, $title=NULL){
+	function msg($msg_type, $message, $tplVar=null, $title=null){
 		global $objTPL, $objPage, $objModule;
 
 		if(!is_object($objTPL) || !is_object($objPage)){
 			echo $message; exit;
 		}
 
-		$handle = '__msg_'.($tplVar===NULL ? rand(0, 1000) : $tplVar);
+		$handle = '__msg_'.($tplVar===null ? rand(0, 1000) : $tplVar);
 		$handle = (is_object($objModule) && $tplVar=='body' ? 'body' : $handle);
 		$objTPL->set_filenames(array(
 			$handle	=> cmsROOT.'modules/core/template/message.tpl'
@@ -450,18 +506,18 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 			case 'ok': 		$img = '/'.root().'images/ok.png'; 		$type = 'status'; 	break;
 			case 'info': 	$img = '/'.root().'images/info.png';	$type = 'warning'; 	break;
 
-			default: $img = NULL; break;
+			default: $img = null; break;
 		}
 
 		$objTPL->assign_vars(array(
 			'L_MSG_TYPE'	=> (is_empty($title) ? langVar('MSG_'.strtoupper($msg_type)) : $title),
 			'L_MSG'			=> $message,
-			'IMG'           => isset($img) && $img!==NULL ? '<img src="'.$img.'" style="height: 48px; width: 48px;">' : '',
+			'IMG'           => isset($img) && $img!==null ? '<img src="'.$img.'" style="height: 48px; width: 48px;">' : '',
 			'ALIGN'         => 'left',
 			'TYPE'          => $type,
 		));
 
-		if($tplVar===NULL){
+		if($tplVar===null){
 			$objTPL->pparse($handle);
 		}else if($tplVar=='return'){
 			return $objTPL->get_html($handle);

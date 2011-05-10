@@ -24,7 +24,7 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 	 * cmsROOT - Internal way of getting to the project root
 	 * @note for internal use, use cmsROOT, for external use, eg js and html paths, use root();
 	 */
-	define('cmsROOT', (isset($cmsROOT) && !empty($cmsROOT) ? $cmsROOT : NULL)); unset($cmsROOT);
+	define('cmsROOT', (isset($cmsROOT) && !empty($cmsROOT) ? $cmsROOT : null)); unset($cmsROOT);
 
 	//so we can turn errors off if we are not running locally
 	define('LOCALHOST', (isset($_SERVER['HTTP_HOST']) && $_SERVER['HTTP_HOST']=='localhost') ? true : false);
@@ -145,5 +145,3 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 
 	$objCore = new coreClass;
 	$objCore->setup($classes);
-
-
