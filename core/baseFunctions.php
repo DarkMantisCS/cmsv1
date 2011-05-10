@@ -67,7 +67,7 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 	 * @return 	string
 	 */
 	function secureMe($string, $mode='html') {
-		switch($mode) {
+		switch(strtolower($mode)) {
 			case 'html':
 				$string = htmlspecialchars($string);
 			break;
@@ -80,9 +80,21 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 				$string = mysql_real_escape_string($string);
 			break;
 
-			case 'langVar':
+			case 'langvar':
 				$string = htmlspecialchars($string);
 				$string = str_replace(array('&gt;', '&lt;', '&amp;', '&quot;'), array('>', '<', '&', '"'), $string);
+			break;
+
+			case 'num':
+				if(!ctype_digit((string)$string)){
+					$string = preg_replace('/[^0-9]/', '', $string);
+				}
+			break;
+
+			case 'alphanum':
+				if(!ctype_alnum((string)$string)){
+					$string = preg_replace('/[^a-zA-Z0-9-_]/', '', $string);
+				}
 			break;
 
 			default: break;

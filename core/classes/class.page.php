@@ -13,7 +13,7 @@ if(!defined('INDEX_CHECK')){die('Error: Cannot access directly.');}
  */
 class page extends coreClass{
 
-	static $THEME = '', $THEME_DIR = '';
+	static $THEME = '', $THEME_ROOT = '';
 	private $jsFiles = array(), $cssFiles = array(), $jsCode  = array(), $cssCode = array();
 	private $tplVars = array(), $pageCrumbs = array();
 
@@ -31,18 +31,6 @@ class page extends coreClass{
 			'simpleTpl' => false,
 			'pageTitle'	=> '',
 		));
-	}
-
-	/**
-	 * Starts the page timer.
-	 *
-	 * @version	1.0
-	 * @since   1.0.0
-	 *
-	 * @return 	int
-	 */
-	function doPageTimer(){
-		return microtime(true);
 	}
 
 	/**
@@ -269,7 +257,7 @@ class page extends coreClass{
 	 */
 	public function setTheme($theme=null){
 		if(is_empty($theme)){
-			$theme = $config['site']['theme'];
+			$theme = $this->config('site', 'theme');
 		}
 
 		if(User::$IS_ONLINE &&
@@ -290,24 +278,177 @@ class page extends coreClass{
 		}
 
 		self::$THEME = $theme;
-		self::$THEME_DIR = cmsROOT.'themes/'.$theme.'/';
+		self::$THEME_ROOT = cmsROOT.'themes/'.$theme.'/';
 
 		return true;
 	}
 
+	/**
+	 * Loads the theme header up
+	 *
+	 * @version 2.0
+	 * @since 	1.0.0
+	 *
+	 * @param 	bool $simple
+	 */
 	function showHeader($simple=false){
+		if($this->header['completed']){ return; }
+
+		//figure out which version of the header we wanna use
+		$header = ($simple ? 'simple_header.tpl' : 'header.tpl');
+
+		//set simpleTpl, so anything that needs to output layout other than these funcs know what to expect
+		$tplVar = ($this->getVar('simpleTpl')===true ? true : ($simple===true ? true : false) );
+		$this->setVar('simpleTpl', $tplVar);
+
+		//set the page header template file
+		$this->objTPL->set_filenames(array(
+			'tpl_header' => self::$THEME_ROOT . $header
+		));
+
+		//set $nl as a new line
+		$nl = "\n";
+
+	//
+	//--Load Meta Definitions
+	//
+		//generate an array of meta lines
+		$metaArray = array(
+			'author' 			=> $this->config('cms', 'name', 'Cybershade CMS'),
+			'description' 		=> $this->config('site', 'description'),
+			'keywords'			=> $this->config('site', 'keywords'),
+			'copyright'			=> langVar('L_SITE_COPYRIGHT', $this->config('site', 'title'), $this->config('cms', 'name'), cmsVERSION),
+			'generator'			=> $this->config('cms', 'name').' v'.cmsVERSION,
+			'ROBOTS'			=> 'INDEX, FOLLOW',
+			'GOOGLEBOT'			=> 'INDEX, FOLLOW',
+		);
+
+		//add a hook to it so it can be added to
+        $this->objPlugins->hook('CMSPage_meta', $metaArray);
+
+        //set a default value, and go with it
+        $meta = '<meta http-equiv="content-language" content="'.$this->config('site', 'language').'" />'.$nl;
+        if(count($metaArray)){
+			foreach($metaArray as $name => $value){
+				$meta .= sprintf('<meta name="%s" content="%s" />', $name, $array).$nl;
+			}
+		}
+		$meta .= '<link rel="alternate" type="application/atom+xml" title="'.$this->config('site', 'title').' '.langVar('RSS_FEED').'" href="/'.root().'rss.php" />'.$nl;
+
+	//
+	//--Load JS
+	//
+		$jsFiles[] = '/'.root().'scripts/protolicous-min.js';
+		$jsFiles[] = '/'.root().'scripts/jquery-min.js';
+		$jsFiles[] = '/'.root().'scripts/extras-min.js';
+		$jsFiles = array_merge($jsFiles, $this->jsFiles);
+
+		//if the template has an extras.js add it
+		if(file_exists(page::$THEME_ROOT . 'extras.js')){
+			$jsFiles[] = '/'.root().'themes/'. page::$THEME .'/extras.js';
+		}
+
+        //only add the user js file if theyre logged in
+        if(user::$IS_ONLINE){
+            $jsFiles[] = '/'.root().'user.php';
+        }
+
+		//hook here too
+        $this->objPlugins->hook('CMSPage_jsFiles', $jsFiles);
+
+		$analyticsKey = secureMe($this->config('site', 'analytics', ''), 'alphaNum');
+		if(!is_empty($analyticsKey)){
+	        $jsCode[] = 'var _gaq = _gaq || []; '.
+						'_gaq.push(["_setAccount", "'.$analyticsKey.'"]); '.
+						'_gaq.push(["_trackPageview"]); '.
+
+						'(function() { '.
+						    'var ga = document.createElement("script"); ga.type = "text/javascript"; ga.async = true; '.
+						    'ga.src = ("https:" == document.location.protocol ? "https://ssl" : "http://www") + ".google-analytics.com/ga.js"; '.
+						    'var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(ga, s); '.
+						'})(); ';
+		}
+
+echo dump($jsFiles, $file);
+
+
+
+
+
+
+
+
+
+
+
+
 
 	}
 
+	/**
+	 * Loads the theme footer and debug up if needed
+	 *
+	 * @version 2.0
+	 * @since 	1.0.0
+	 *
+	 * @param 	bool $simple
+	 */
 	function showFooter($simple=false){
 
 	}
 
-	function setInitVars(){
+	/**
+	 * Loads the inital vars for the tpls
+	 *
+	 * @version 2.0
+	 * @since 	1.0.0
+	 */
+	function setThemeVars(){
 		$vars = $this->getVar('tplVars');
 
-		$extras = page::$THEME.'extras.php';
+		//incude extras.php from the theme if it exists
+		$extras = Page::$THEME_ROOT.'extras.php';
 		if(is_readable($extras)){ include($extras); }
+
+		//define array of vars that we want
+		$vars = array(
+			'ROOT'				=> root(),
+			'THEME_ROOT'		=> self::$THEME_ROOT,
+
+			'SITE_NAME'			=> $this->config('site', 'site_name'),
+
+			'ROW_COLOR1'		=> $vars['row_color1'],
+			'ROW_COLOR2'		=> $vars['row_color2'],
+
+			'USERNAME'			=> $this->objUser->grab('username'),
+
+			'U_LOGIN'			=> '/'.root().'login.php',
+			'U_LOGOUT'			=> '/'.root().'login.php?action=logout&check='.$this->objUser->grab('usercode'),
+		);
+
+		//hook onto the array to allow others to add to this list
+		$this->objPlugins->hook('CMSCore_global_tplvars', $vars);
+
+		//if user is online, set the IS_ONLINE, and IS_LOGGED_IN blocks
+		if(User::$IS_ONLINE){
+			$this->objTPL->assign_block_vars('IS_ONLINE', array());
+			$this->objTPL->assign_block_vars('IS_LOGGED_IN', array());
+		}
+
+		//if user is not online, set the NOT_LOGGED_IN
+		if(!User::$IS_ONLINE){
+			$this->objTPL->assign_block_vars('NOT_LOGGED_IN', array());
+		}
+
+		//if user is logged in, and is admin
+		if(User::$IS_ONLINE && $this->objUser->checkPermissions($this->objUser->grab('id'), ADMIN)){
+			$this->objTPL->assign_block_vars('IS_ADMIN', array());
+		}
+
+		//merge, assign and unset ^_^
+		$vars = (!is_empty($_more_vars) && is_array($_more_vars) ? array_merge($vars, $_more_vars) : $vars);
+		$this->objTPL->assign_vars($vars);
+		unset($vars);
 	}
 }
 ?>

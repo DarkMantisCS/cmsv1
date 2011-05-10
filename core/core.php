@@ -7,6 +7,7 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 //
 //--Before we begin, lets define some stuff up
 //
+	$START_CMS_LOAD = microtime(true);
 	//Lets set a simple error template up till we have the template engine going
 	$errorTPL = '<h3>%s</h3> <p>%s Killing Process...</p>';
 	@set_magic_quotes_runtime(false);
@@ -141,7 +142,11 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 
 	$classes['objPlugins']		= array($classDir.'class.plugins.php');
 	$classes['objPage']			= array($classDir.'class.page.php');
+	$classes['objUser']			= array($classDir.'class.user.php');
 	$classes['objForm']			= array($classDir.'class.form.php');
 
 	$objCore = new coreClass;
 	$objCore->setup($classes);
+
+	//globalise the class names
+	foreach($classes as $objName => $args){ $$objName = $objCore->$objName; }

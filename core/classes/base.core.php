@@ -106,5 +106,26 @@ class coreClass{
 		return (isset($this->$var) ? $this->$var : false);
 	}
 
+
+	/**
+	 * Returns a config variable
+	 *
+	 * @version	1.0
+	 * @since 	1.0.0
+	 * @author 	xLink
+	 *
+	 * @param 	string 	$array
+	 * @param 	string 	$setting
+	 * @param 	mixed 	$default
+	 *
+	 * @return 	mixed
+	 */
+    function config($array, $setting, $default=null){
+        global $config;
+
+        return doArgs($setting, $default, $config[$array]);
+    }
+
+
 }
 ?>
