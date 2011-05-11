@@ -3,7 +3,7 @@
     </div>
     
     <div id="footer" class="padding">
-        {L_PAGE_GEN}<br />{L_SITE_COPYRIGHT}<br />{TPL_INFO}
+        {L_PAGE_GEN}<br />{L_SITE_COPYRIGHT}<br />{L_TPL_INFO}
     </div> 
        
     <!-- BEGIN debug -->
@@ -18,7 +18,7 @@
 
         <table width="100%" border="0" cellspacing="0" cellpadding="0">
             <tr><td>{debug.LOG}</td></tr>
-            <tr><td>{debug.DBUG}</td></tr>
+            <tr><td>{debug.DEBUG}</td></tr>
         </table>
     </div>    
     <!-- END debug -->

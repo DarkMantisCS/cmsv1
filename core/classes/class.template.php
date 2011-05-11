@@ -271,7 +271,8 @@ class template extends coreClass{
 	 * Root-level variable assignment. Adds to current assignments, overriding
 	 * any existing variable assignment with the same name.
 	 */
-	public function assign_vars($vararray) {
+	public function assign_vars($vararray){
+		if(!is_array($vararray) || is_empty($vararray)){ return false; }
 		reset($vararray);
 		while(list($key, $val) = each($vararray)) {
 			$this->_tpldata['.'][0][$key] = $val;

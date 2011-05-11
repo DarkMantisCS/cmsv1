@@ -12,7 +12,7 @@ function menuChecker($link=''){
     return NULL;
 }
 
-$_menu = '';#get_menu('main_nav', 'array');
+$_menu = array();#get_menu('main_nav', 'array');
 $menu = '';
 if(count($_menu)>0){
     foreach($_menu as $m){

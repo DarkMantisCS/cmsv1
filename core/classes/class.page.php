@@ -534,8 +534,15 @@ class page extends coreClass{
 	 * @param 	bool $simple
 	 */
 	function showFooter($simple=false){
+		global $START_CMS_LOAD;
+
 		//no need for a footer if the header hasnt been called to
 		if(!$this->header['completed']){ return; }
+
+		//add this in just at the top of the block, this'll be echo'd in between the header and footer
+		if(!isset($_SESSION['notifications'])){
+			echo '<div id="notificationGrabber" style="display:none;"></div>';
+		}
 
 		//figure out which version of the footer we wanna use
 		if($this->getVar('simpleTpl')){ $simple = true; }
@@ -545,6 +552,83 @@ class page extends coreClass{
 		$this->objTPL->set_filenames(array(
 			'tpl_footer' => self::$THEME_ROOT . $footer
 		));
+
+	//
+	//--Output the Footer
+	//
+		$queries = 0; $_timer = 0; $crons = null; $debug = $this->objSQL->debugtext;
+		if(!is_empty($debug)){
+			foreach($debug as $row){
+				if($row['time']!= '---------'){ $queries++; }
+				if($row['status']  == 'error'){ $queries++; }
+				$_timer += $row['time'];
+			}
+		}
+
+    	//check for admin privs and file(debug) existing in the root
+		if(User::$IS_ADMIN && !file_exists('debug')){
+			//if the debug happened..
+			if($this->objSQL->debug){
+				$string = null;
+				if(!is_empty($debug)){
+					foreach($debug as $row){
+						$string .= '<tr class="'.($counter++%2==0 ? 'row_color1' : 'row_color2').'">'.
+									'<td align="center">'.$row['time'].'</td><td>'.$row['query'].'</td></tr>';
+					}
+				}
+
+				//output some debug vars
+				if(!is_array($this->debugVars)){
+					$this->debugVars[] = dump($_POST);
+					$this->debugVars[] = dump($_SESSION);
+					$this->debugVars[] = dump($config);
+				}
+				$this->objTPL->assign_block_vars('debug', array(
+					'CONTENT'  => $string,
+					'DEBUG'    => implode("\n", $this->debugVars),
+				));
+
+				//grab the logs and output em if needed
+				$logs = $this->objSQL->getTable('SELECT * FROM `$Plogs` ORDER BY id DESC LIMIT 10');
+				if(!is_empty($logs)){
+					foreach($logs as $log){
+						$this->objTPL->assign_block_vars('debug.log', array(
+							'DESC'      => $log['description'],
+							'IP'        => $log['ip_address'],
+							'SQL'       => $log['query'],
+							'TIME'      => $this->objTime->mk_time($log['date']),
+						));
+					}
+				}
+			}
+
+            $crons = '<br />
+            Next Hourly CRON -> '.$this->objTime->mk_time($this->config('statistics', 'hourly_cron')+$this->config('site', 'hourly_time')).'<br />
+            Next Daily CRON ->  '.$this->objTime->mk_time($this->config('statistics', 'daily_cron')+$this->config('site', 'daily_time')).'<br />
+            Next Weekly CRON -> '.$this->objTime->mk_time($this->config('statistics', 'weekly_cron')+$this->config('site', 'weekly_time')).'<br />
+            Current Time:       '.$this->objTime->mk_time(time());
+		}
+
+		$page_gen = NULL;
+		if(User::$IS_ADMIN){
+			$this->timer = isset($START_CMS_LOAD) ? $START_CMS_LOAD : microtime(true);
+			$generation = round(microtime(true)-$this->timer, 5);
+			$page_gen = langVar('L_PAGE_GEN', $queries, $_timer, $generation,
+							$this->objTime->mk_time(($this->config('statistics', 'hourly_cron')+$this->config('site', 'hourly_time'))));
+		}
+		$footer = array();
+		if(is_readable(page::$THEME_ROOT.'cfg.php')){
+			include(page::$THEME_ROOT.'cfg.php');
+			$footer += array(
+				'L_TPL_INFO' =>  langVar('TPL_INFO', '<a href="'.$mod_url.'">'.$mod_name.'</a>', $mod_author, $mod_version).' | '.langVar('L_LANG_PACK'),
+			);
+		}
+		$footer += array(
+			'L_PAGE_GEN'		=> $page_gen,
+			'L_SITE_COPYRIGHT'	=> langVar('L_SITE_COPYRIGHT', $this->config('site', 'title'), $this->config('cms', 'name'), cmsVERSION),
+		);
+
+		$this->objTPL->assign_vars($footer);
 
 		$this->objTPL->parse('tpl_footer');
 	}

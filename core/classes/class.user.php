@@ -16,6 +16,11 @@ class user extends coreClass
     private $is_online = false;
 	public $groups, $permissions;
 
+	static $IS_ONLINE = false;
+	static $IS_ADMIN = false;
+	public function grab(){}
+	public function checkPermisisons(){}
+
 	/**
 	 * Variables to cache within the class, Cuts down on SQL Queries
 	 */
