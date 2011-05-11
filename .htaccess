@@ -1,0 +1,47 @@
+Options -Indexes -MultiViews
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    <IfModule mod_env.c>
+        setEnv REWRITE 1
+    </IfModule>
+    
+##Kill recursive redirects
+RewriteCond %{ENV:REDIRECT_STATUS} 200
+RewriteRule .* - [L]
+
+##Make sure we get 1 version of the domain only
+RewriteCond %{HTTP_HOST} ^cybershade.org
+RewriteRule (.*) http://www.cybershade.org/$1 [R=301,L]
+
+##minifing techniques
+RewriteRule ^images/([^.]*)-min.css						core/lib/min/index.php?g=$1 [QSA,L]
+RewriteRule ^scripts/([^.]*)-min.js						core/lib/min/index.php?g=$1 [QSA,L]
+RewriteRule ^template/([^/]*)/(.*\.css)				    core/lib/min/index.php?b=template/$1&f=$2 [QSA,L]
+RewriteRule ^template/([^/]*)/(.*\.js)				    core/lib/min/index.php?b=template/$1&f=$2 [QSA,L]
+RewriteRule ^modules/([^/]*)/styles/(.*\.css)			core/lib/min/index.php?b=modules/$1/styles&f=$2 [QSA,L]
+RewriteRule ^modules/([^/]*)/scripts/(.*\.js)			core/lib/min/index.php?b=modules/$1/scripts&f=$2 [QSA,L]
+
+##control panels
+RewriteRule ^admin/([^/]*)/([^.]*)(.*)					control.php?__mode=admin&__module=$1&__action=$2&__extra=$3 [QSA,L]
+RewriteRule ^admin($|/)								    control.php?__mode=admin [QSA,L]
+RewriteRule ^mod/([^/]*)/([^.]*)(.*)					control.php?__mode=mod&__module=$1&__action=$2&__extra=$3 [QSA,L]
+RewriteRule ^mod($|/)								    control.php?__mode=mod [QSA,L]
+RewriteRule ^user/([^/]*)/([^.]*)(.*)					control.php?__mode=user&__module=$1&__action=$2&__extra=$3 [QSA,L]
+RewriteRule ^user($|/)								    control.php?__mode=user [QSA,L]
+
+##extra module bits
+RewriteRule ^modules/([^/]*)/([^.]*)(.*)			    modules.php?__module=$1&__action=$2&__extra=$3 [QSA,L]
+RewriteRule ^modules($|/)								modules.php [QSA,L]
+
+##try and make it use nice urls
+RewriteRule ^pb($|/)([^.]*)(.*)	                        modules.php?__module=pastebin&__action=$2&__extra=$3 [QSA,L]
+RewriteRule ^wiki($|/)([^.]*)(.*)	                    modules.php?__module=wiki&__action=$2&__extra=$3 [QSA,L]
+RewriteRule ^forum($|/)([^.]*)(.*)	                    modules.php?__module=forum&__action=$2&__extra=$3 [QSA,L]
+
+</IfModule>
+
+<IfModule mod_deflate.c>
+	AddOutputFilterByType DEFLATE application/x-javascript text/css text/html text/xml
+</IfModule>

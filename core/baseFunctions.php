@@ -490,54 +490,183 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 		return false;
 	}
 
+function show_menu($module, $pageId='default'){}
+
 //
 //-- MSG Functions
 //
 	/**
 	 * Displays a formatted error on screen.
 	 *
-	 * @version	2.0 		Updated to work with 0.8 structure
-	 * @since   0.6.0
+	 * @version	3.0
+	 * @since   1.0.0
 	 */
-	function msg($msg_type, $message, $tplVar=null, $title=null){
-		global $objTPL, $objPage, $objModule;
+	function msg($msg_type, $message, $tplVar=NULL, $title=NULL){
+	    global $objTPL, $objPage, $objModule;
 
-		if(!is_object($objTPL) || !is_object($objPage)){
-			echo $message; exit;
-		}
+	    if(!is_object($objTPL) || !is_object($objPage)){ echo $message; exit; }
 
-		$handle = '__msg_'.($tplVar===null ? rand(0, 1000) : $tplVar);
-		$handle = (is_object($objModule) && $tplVar=='body' ? 'body' : $handle);
+		$handle = '__msg_'.($tplVar===NULL ? rand(0, 1000) : $tplVar);
+		$handle = (is_object($objModule) && $tplVar=='body') ? 'body' : $handle;
 		$objTPL->set_filenames(array(
 			$handle	=> cmsROOT.'modules/core/template/message.tpl'
 		));
 
 		switch(strtolower($msg_type)){
-			case 'fail': 	$img = '/'.root().'images/fail.png';	$type = 'error';	break;
-			case 'err': 	$img = '/'.root().'images/fail.png';	$type = 'error';	break;
-			case 'ok': 		$img = '/'.root().'images/ok.png'; 		$type = 'status'; 	break;
-			case 'info': 	$img = '/'.root().'images/info.png';	$type = 'warning'; 	break;
+	        case 'fail':    $img = '/'.root().'images/fail.png'; $type = 'error';    break;
+	        case 'ok':      $img = '/'.root().'images/ok.png';   $type = 'status';   break;
+	        case 'info':    $img = '/'.root().'images/info.png'; $type = 'warning';  break;
 
-			default: $img = null; break;
-		}
+	        default: $img = NULL; break;
+	    }
 
 		$objTPL->assign_vars(array(
 			'L_MSG_TYPE'	=> (is_empty($title) ? langVar('MSG_'.strtoupper($msg_type)) : $title),
 			'L_MSG'			=> $message,
-			'IMG'           => isset($img) && $img!==null ? '<img src="'.$img.'" style="height: 48px; width: 48px;">' : '',
+			'IMG'           => isset($img) && !is_empty($img) ? '<img src="'.$img.'" style="height: 48px; width: 48px;">' : '',
 			'ALIGN'         => 'left',
 			'TYPE'          => $type,
 		));
 
-		if($tplVar===null){
-			$objTPL->pparse($handle);
+	    if($tplVar===NULL){
+	    	$objTPL->parse($handle);
 		}else if($tplVar=='return'){
-			return $objTPL->get_html($handle);
+	    	return $objTPL->get_html($handle);
 		}else if($handle=='body'){
-			$objTPL->pparse($handle, false);
-		}else{
-			$objTPL->assign_var_from_handle($tplVar, $handle);
+	    	$objTPL->parse($handle, false);
+	    }else{
+	        $objTPL->assign_var_from_handle($tplVar, $handle);
 		}
+	}
+
+	/**
+	 * Displays a confirmation messagebox.
+	 *
+	 * @version	1.0
+	 * @since   1.0.0
+	 * @author 	xLink
+	 *
+	 * @param 	string $type
+	 * @param 	string $msg
+	 * @param 	string $title
+	 * @param 	string $tplVar
+	 *
+	 * @return 	bool
+	 */
+	function confirmMsg($type, $msg, $title=NULL, $tplVar=NULL){
+	    global $objPage, $objForm, $objUser;
+
+		//check if we have confirmed either way yet
+		if(!HTTP_POST){
+			//setup redirects and session ids
+			$_SESSION['site']['confirm']['return'] = (isset($_SERVER['HTTP_REFERER'])&&!is_empty($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '/'.root().'');
+	        $_SESSION['site']['confirm']['sessid'] = $sessid = $objUser->mkPasswd($objUser->grab('username').time());
+
+	        //and the form, atm its gotta be crude, it'll be sexied up for the rebuild
+			$newMsg = $objForm->start('msg', 'POST', '');
+			$newMsg .= $msg.'<br />';
+			$newMsg .= $objForm->inputbox('hidden', $sessid, 'sessid').'<br />';
+			$newMsg .= '<div align="center">'.$objForm->button('Continue', 'submit').' '.$objForm->button('Go Back', 'submit').'</div>';
+			$newMsg .= $objForm->finish();
+
+			//use msg() to output and return false so the code wont exec below
+			echo msg($type, $newMsg, $tplVar, $title);
+
+			return false;
+		}else{
+			//now we have confirmed, lets do a little sanity checking
+			$redir = $_SESSION['site']['confirm']['return'];
+
+			//we have the sessid
+			if(!isset($_POST['sessid'])){ hmsgDie('FAIL', 'Error: Please confirm your intentions via the form.'); }
+			if($_POST['sessid']!=$_SESSION['site']['confirm']['sessid']){ hmsgDie('FAIL', 'Error: Could not verify your intentions.'); }
+
+			//dont need this anymore
+			unset($_SESSION['site']['confirm']);
+
+			//make sure we actually have the submit
+			if(!isset($_POST['submit'])){ hmsgDie('FAIL', 'Error: Could not verify your intentions.'); }
+
+			//now check for what we expect and act accordingly
+			if($_POST['submit']=='Continue'){
+				return true;
+			}
+
+			if($_POST['submit']=='Go Back'){
+				$objPage->redirect($redir, 0, 3);
+				hmsgDie('INFO', 'Redirecting you back.');
+			}
+
+			//if we get here, they tried to play us, so lets just return false anyway
+			return false;
+		}
+	}
+
+	/**
+	 * Shows a message and then exit the current page with a footer.
+	 *
+	 * @version	2.0 		Updated to work with 0.8 structure
+	 * @since   0.6.0
+	 */
+	function msgDie($msg_type, $message, $line=NULL, $file=NULL, $query=NULL, $footer=true){
+	    global $objTPL, $objPage;
+
+	    if(!is_object($objTPL) || !is_object($objPage)){ echo $message; exit; }
+	    $header = $objPage->getVar('header');
+	    if(!$header['completed']){ $objPage->showHeader(true); }
+
+		$objTPL->set_filenames(array(
+			'__msgBody'	=> 'modules/core/template/message.tpl'
+		));
+
+		$query = !is_empty($query) ? $query : NULL;
+		$line  = !is_empty($line)  ? $line  : NULL;
+		$file  = !is_empty($file)  ? $file  : NULL;
+
+		switch(strtolower($msg_type)){
+	        case 'fail':    $img = '/'.root().'images/fail.png'; $type = 'error';    break;
+	        case 'ok':      $img = '/'.root().'images/ok.png';   $type = 'status';   break;
+	        case 'info':    $img = '/'.root().'images/info.png'; $type = 'warning';  break;
+
+	        default: $img = NULL; break;
+	    }
+
+		$objTPL->assign_vars(array(
+			'L_MSG_TYPE'	=> langVar('MSG_'.strtoupper($msg_type)),
+			'L_MSG'			=> $message,
+			'QUERY'			=> $query,
+			'LINE'			=> 'Line: '.$line,
+			'FILE'			=> 'File: '.$file,
+			'IMG'           => isset($img) && !is_empty($img) ? '<img src="'.$img.'" style="height: 48px; width: 48px;">' : '',
+			'ALIGN'         => 'center',
+			'TYPE'          => $type,
+		));
+
+		$gen_time = '0';
+		$objTPL->parse('__msgBody');
+
+		if($footer){
+	        $objPage->showFooter(false, false);
+		}
+	    exit;
+	}
+
+	/**
+	 * Displays the header with an error.
+	 *
+	 * @version	1.0
+	 * @since   0.8.0
+	 */
+	function hmsgDie($type, $msg){
+	    global $objPage;
+
+	    $doSimple = false;
+	    if(AJAX_CALL || isset($_GET['ajax']) ||$objPage->getVar('simpleTpl')){
+	    	$doSimple = true;
+		}
+
+	    $objPage->showHeader($doSimple);
+	    msgDie($type, $msg, '', '', '', !$doSimple);
 	}
 
 

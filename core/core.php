@@ -91,20 +91,21 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 		date_default_timezone_set('Europe/London'); //ive set it to London, as i use the GMdate functions
 	}
 
-
-	//include the main file
-	$file = cmsROOT.'core/classes/base.core.php';
-	if(!is_readable($file)){
-		msgDie('FAIL', sprintf($errorTPL, 'Fatal Error - 404', 'We have been unable to locate/read the class.core.php file.'));
-	}else{ require_once($file); }
-
-
 	//
 	//--Classes Setup
 	//
 	$classDir = cmsROOT.'core/classes/';
 	$classes = array();
 	//$classes[$varName] => array($classPath, [args array('var'=>'value')])
+
+	//load in outside classes
+	$classFiles = array('base.core.php', 'base.sql.php', 'class.phpass.php');#, 'class.recaptcha.php');
+		foreach($classFiles as $file){
+			$file = $classDir.$file;
+			if(!is_file($file) || !is_readable($file)){
+				msgDie('FAIL', sprintf($errorTPL, 'Fatal Error - 404', 'We have been unable to locate/read the '.$file.' file.'));
+			}else{ require_once($file); }
+		}
 
 	//cache setup
 	$cachePath = cmsROOT.'cache/';
@@ -115,10 +116,7 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 
 	$cacheWritable = (is_writable($cache_path) ? true : false);
 
-	//load in the sql interface
-
-	require_once($classDir.'base.sql.php');
-	//try and load it
+	//try and load in the sql driver
 	$file = $classDir.'driver.'.$config['db']['driver'].'.php';
 	if(is_file($file) && is_readable($file)){
 		$classes['objSQL']		= array($file, $config['db']);
@@ -141,9 +139,9 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 								));
 
 	$classes['objPlugins']		= array($classDir.'class.plugins.php');
-	$classes['objPage']			= array($classDir.'class.page.php');
-	$classes['objUser']			= array($classDir.'class.user.php');
-	$classes['objForm']			= array($classDir.'class.form.php');
+	$classes['objPage'] 		= array($classDir.'class.page.php');
+	$classes['objUser'] 		= array($classDir.'class.user.php');
+	$classes['objForm'] 		= array($classDir.'class.form.php');
 
 	$objCore = new coreClass;
 	$objCore->setup($classes);

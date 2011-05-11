@@ -59,6 +59,21 @@ class page extends coreClass{
 		$this->tplVars = array_merge($this->tplVars, $values);
 	}
 
+
+	/**
+	 * Sets the menu to the version that is wanted.
+	 *
+	 * @version	1.0
+	 * @since   1.0.0
+	 * @author  xLink
+	 *
+	 * @param   string  $moduleName
+	 * @param   string  $pageId
+	 */
+    public function setMenu($moduleName, $pageId='default'){
+        $this->moduleMenu = array('module' => $moduleName, 'pageId' => $pageId);
+    }
+
 	/**
 	 * Adds a JS File to be output
 	 *
@@ -306,8 +321,9 @@ class page extends coreClass{
 			'tpl_header' => self::$THEME_ROOT . $header
 		));
 
-		//set $nl as a new line
-		$nl = "\n";
+		//set some vars we need later on
+		$nl = "\n"; $js = null; $css = null;
+		$jsCode = $jsFiles = $cssCode = $cssFiles = array();
 
 	//
 	//--Load Meta Definitions
@@ -327,10 +343,11 @@ class page extends coreClass{
         $this->objPlugins->hook('CMSPage_meta', $metaArray);
 
         //set a default value, and go with it
-        $meta = '<meta http-equiv="content-language" content="'.$this->config('site', 'language').'" />'.$nl;
+        $meta = '<meta http-equiv="content-type" content="text/html; charset=utf-8" />'.$nl;
+        $meta .= '<meta http-equiv="content-language" content="'.$this->config('site', 'language').'" />'.$nl;
         if(count($metaArray)){
 			foreach($metaArray as $name => $value){
-				$meta .= sprintf('<meta name="%s" content="%s" />', $name, $array).$nl;
+				$meta .= sprintf('<meta name="%s" content="%s" />', $name, $value).$nl;
 			}
 		}
 		$meta .= '<link rel="alternate" type="application/atom+xml" title="'.$this->config('site', 'title').' '.langVar('RSS_FEED').'" href="/'.root().'rss.php" />'.$nl;
@@ -338,9 +355,11 @@ class page extends coreClass{
 	//
 	//--Load JS
 	//
+		//files first
 		$jsFiles[] = '/'.root().'scripts/protolicous-min.js';
 		$jsFiles[] = '/'.root().'scripts/jquery-min.js';
 		$jsFiles[] = '/'.root().'scripts/extras-min.js';
+		//load in the anything thats been passed in via addJSFiles()
 		$jsFiles = array_merge($jsFiles, $this->jsFiles);
 
 		//if the template has an extras.js add it
@@ -356,6 +375,12 @@ class page extends coreClass{
 		//hook here too
         $this->objPlugins->hook('CMSPage_jsFiles', $jsFiles);
 
+		//now add em to the $js
+		foreach($jsFiles as $file){
+			$js .= sprintf('<script src="%s"></script>', $file).$nl;
+		}
+
+		//support for google analytics out of the box
 		$analyticsKey = secureMe($this->config('site', 'analytics', ''), 'alphaNum');
 		if(!is_empty($analyticsKey)){
 	        $jsCode[] = 'var _gaq = _gaq || []; '.
@@ -369,20 +394,135 @@ class page extends coreClass{
 						'})(); ';
 		}
 
-echo dump($jsFiles, $file);
+		//grab the current notifications and if needed output them to the page
+		$notifGrab = $this->getVar('notification'); $notifications = null;
+		if(!is_empty($notifGrab)){
+	        $notifications = '<script type="text/javascript">document.observe(\'dom:loaded\', function(){ '.$notifGrab.' });</script>';
+		}
+
+		//load in the anything thats been passed in via addJSCode()
+		$jsCode = array_merge($jsCode, $this->jsCode);
+
+		//hook here too
+        $this->objPlugins->hook('CMSPage_jsCode', $jsCode);
+
+		//now add em to the $js
+		foreach($jsCode as $code){
+			$js .= '<script>'.$nl. $code .$nl.'</script>'.$nl;
+		}
+
+		$headerJs = null; //this is the var we will store this JS
+		$header_jsCode = array();	$header_jsFiles = array(); //these are for the hooks to populate
+
+		//process the js files for the header
+        $this->objPlugins->hook('CMSPage_header_jsFiles', $header_jsFiles);
+        if(!count($header_jsFiles)){
+			foreach($header_jsFiles as $file){
+				$headerJs .= sprintf('<script src="%s"></script>', $file).$nl;
+			}
+        }
+
+        //now the code
+        $header_jsCode = 'var ROOT = "'.root().'"; var usertpl = "'.root().self::$THEME_ROOT.'"; ';
+
+        $this->objPlugins->hook('CMSPage_header_jsCode', $header_jsCode);
+        if(!count($header_jsFiles)){
+			foreach($header_jsFiles as $file){
+				$headerJs .= sprintf('<script>%s</script>', $file).$nl;
+			}
+        }
 
 
+	//
+	//--Load CSS
+	//
+		$cssTag = '<link rel="stylesheet" href="%s" />';
+
+		//we want the default css minified dont forget!
+		$cssFiles[] = '/'.root().'images/default-min.css';
+
+		//load in the anything thats been passed in via addCSSFile()
+		$cssFiles = array_merge($cssFiles, $this->cssFiles);
+
+		//hookty hook
+        $this->objPlugins->hook('CMSPage_cssFiles', $cssFiles);
+
+		//add it to the $css
+		foreach($cssFiles as $file){
+			$css .= sprintf($cssTag, $file).$nl;
+		}
 
 
+		//load in the anything thats been passed in via addCSSCode()
+		$cssCode = array_merge($cssCode, $this->cssCode);
 
+		//hook in here too
+		$this->objPlugins->hook('CMSPage_cssCode', $cssCode);
 
+		//add it to the $css
+		foreach($cssCode as $code){
+			$css .= '<style>'.$nl.$code.$nl.'</style>'.$nl;
+		}
 
+	//
+	//--Header Vars
+	//
+		if(file_exists(self::$THEME_ROOT.'images/favicon.ico')){
+			$meta .= '<link rel="shortcut icon" href="/'.root().self::$THEME_ROOT.'images/favicon.ico" />';
+		}
 
+		//if the site is closed, the only way they can get this far is if the user has privs so
+		if($this->config('site', 'closed') == 1){
+			$this->setVar('HEADER_MSG', 'This website is in maintainence mode.');
+		}
 
+		//if we want to put out a msg in the header as a warning or something
+		$headerMsg = $this->getVar('HEADER_MSG');
+		if(!is_empty($headerMsg)){
+			$this->objTPL->assign_vars('__MSG', array('MSG' => $headerMsg));
+		}
 
+		//get some stuff from the config so they can be called in the template
+		$array = array(
+			'SITE_TITLE'	=> $this->config('site', 'title'),
+			'CMS_VERSION'	=> $this->config('cms', 'version'),
 
+			//some template stuff
+			'PAGE_TITLE'	=> $this->getVar('pageTitle'),
+			'_META'			=> $meta,
+			'BREADCRUMB'	=> $this->showPagecrumbs().'<span id="ajaxcrumb">&nbsp;</span>',
 
+			'_JS_FOOTER'	=> $js . $notifications,
+			'_JS_HEADER'	=> $headerJs,
+			'_CSS'			=> $css,
+		);
 
+	//
+	//--Menu Setup
+	//
+
+		$noMenu = false;
+		if(!defined('NOMENU')){ $noMenu = true; }
+
+		$menu = $this->getVar('moduleMenu');
+		if($menu['module'] === false){ $noMenu = false; }
+
+		//we cant do nothin without any blocks
+		if(isset($config['menu_blocks']) && !is_empty($config['menu_blocks'])){
+			//if it got set to null, or wasnt set atall, default to the core menu
+			if($menu['module']===NULL){ $menu['module'] = 'core'; }
+
+			//then do the output
+			if(show_menu($menu['module'], $menu['pageId']) === true){
+				$this->objTPL->assign_block_vars('menu', array());
+			}
+		}
+
+		//ouput the header and set completed to 1
+		$this->objTPL->assign_vars($array);
+		$this->objTPL->parse('tpl_header');
+
+		$this->header['completed'] = 1;
 	}
 
 	/**
@@ -394,7 +534,19 @@ echo dump($jsFiles, $file);
 	 * @param 	bool $simple
 	 */
 	function showFooter($simple=false){
+		//no need for a footer if the header hasnt been called to
+		if(!$this->header['completed']){ return; }
 
+		//figure out which version of the footer we wanna use
+		if($this->getVar('simpleTpl')){ $simple = true; }
+		$footer = ($simple ? 'simple_footer.tpl' : 'footer.tpl');
+
+		//set the page footer template file
+		$this->objTPL->set_filenames(array(
+			'tpl_footer' => self::$THEME_ROOT . $footer
+		));
+
+		$this->objTPL->parse('tpl_footer');
 	}
 
 	/**
@@ -413,7 +565,7 @@ echo dump($jsFiles, $file);
 		//define array of vars that we want
 		$vars = array(
 			'ROOT'				=> root(),
-			'THEME_ROOT'		=> self::$THEME_ROOT,
+			'THEME_ROOT'		=> root(). self::$THEME_ROOT,
 
 			'SITE_NAME'			=> $this->config('site', 'site_name'),
 
