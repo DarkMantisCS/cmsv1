@@ -63,7 +63,7 @@ class user extends coreClass
 	/**
      * Inserts a users info into the database.
      *
-     * @version 1.0
+     * @version 1.1
      * @since   0.8.0
      *
      * @param	array $userInfo   Array of the users details.
@@ -97,14 +97,16 @@ class user extends coreClass
 
         // Implement a hook after a users' registration has completed
 		$this->objPlugins->hook( 'CMSUser_After_Registered', $insertID );
+		$result = ( is_number( $insertID ) ? $insertID : false );
 
-		return ( is_number( $insertID ) ? $insertID : false );
+		unset( $userInfo, $insertID );
+		return $result;
     }
 
     /**
      * Retreives the UID from the username.
      *
-     * @version 1.0
+     * @version 1.1
      * @since   0.7.0
      *
      * @param	string $username      Username used to retreive the UID
@@ -126,14 +128,16 @@ class user extends coreClass
 
         $test = $this->objSQL->getValue('users', 'id', "username = '".$username."'");
         $this->gIbU[$username] = $test!==NULL ? $test : 0;
+		$result = $this->gIbU[$username];
 
-        return $this->gIbU[$username];
+		unset( $username, $test );
+        return $result;
 	}
 
     /**
      * Retreives the Username from the UID.
      *
-     * @version 1.0
+     * @version 1.1
      * @since   0.7.0
      *
      * @param	int $uid      UID used to retreive the Username
@@ -155,8 +159,10 @@ class user extends coreClass
 
         $test = $this->objSQL->getValue('users', 'username', "id = '".$uid."'");
         $this->gUbI[$uid] = $test!==NULL ? $test : 'Guest';
+        $result = $this->gUbI[$uid];
 
-        return $this->gUbI[$uid];
+		unset( $test, $uid );
+        return $result;
 	}
 
     /**
@@ -197,7 +203,7 @@ class user extends coreClass
     /**
      * Returns an online indicator according to $timestamp.
      *
-     * @version 1.0
+     * @version 1.1
      * @since   0.7.0
      *
      * @param	int $timestamp      The timestamp of the user
@@ -243,13 +249,16 @@ class user extends coreClass
 			}
 		}
 		$img = sprintf( $string, $vars[$type], langVar($type) );
-        return (strcmp($returnType, 'raw')==0 ? $raw : $img);
+		$result = (strcmp($returnType, 'raw')==0 ? $raw : $img);
+
+		unset( $timestamp, $hidden, $returnType, $vars, $type, $raw, $img );
+        return $result;
     }
 
     /**
      * Returns a reference to a users profile using one of the formats
      *
-     * @version 1.0
+     * @version 1.1
      * @since   0.0.0
      *
      * @param	mixed	$uid        Username or UID.
@@ -377,7 +386,11 @@ class user extends coreClass
 
         $this->profile[$mode][$uquery[(is_number($uid) ? 'username' : 'id')]]  = $this->profile[$mode][$uid];
         $this->cacheUsers[$uquery[(is_number($uid) ? 'username' : 'id')]]      = $this->cacheUsers[$uid];
-        return $this->profile[$mode][$uid];
+        $result = $this->profile[$mode][$uid];
+
+        unset( $user, $group, $color, $title, $font, $banned, $user_link, $user_nlink, $user_raw, $mode, $uid,
+				$query, $where, $curr, $row, $userGroup, $is_banned );
+        return $result;
     }
 
 
@@ -401,7 +414,8 @@ class user extends coreClass
      *
      * @return  string				Fully Parsed Avatar
      */
-    function parseAvatar($uid, $size=100, $query=NULL){
+    function parseAvatar($uid, $size=100, $query=NULL)
+	{
 	    if(isset($this->avatar[$uid])){return sprintf($this->avatar[$uid], $size, $size);}
         $_avatar = '/'.root().'images/no_avatar.png';
 
@@ -412,20 +426,24 @@ class user extends coreClass
         }
         if(!is_array($query)){
         	$this->avatar[$uid] = '<img src="%s" height="%d" width="%d" class="avatar" />';
-            return sprintf($this->avatar[$uid], $_avatar, $size, $size);
+            $result = sprintf($this->avatar[$uid], $_avatar, $size, $size);
         }
+        else
+        {
+	        $avatar = $this->DoImage($query['avatar']);
+	        $avatar = $avatar!==false ? $avatar : $_avatar;
+	        $username = $query['username'];
+	        $username_avatar = $query['username'].'_avatar';
+	        $user = strtolower($username);
 
-        $avatar = $this->DoImage($query['avatar']);
-        $avatar = $avatar!==false ? $avatar : $_avatar;
-        $username = $query['username'];
-        $username_avatar = $query['username'].'_avatar';
-        $user = strtolower($username);
+	        $result = $this->avatar[$uid] = sprintf(
+				'<a href="%s" class="lightwindow" title="%s" avatar="%s"><img src="%1$s" height="%d" width="%d" name="%s" id="%s" title="%1$s" class="avatar" avatar="%s" /></a>',
+				$avatar, langVar('USERS_AVATAR', $username), $user, $size, $size, $username_avatar, $username_avatar, $username
+			);
+		}
 
-        $this->avatar[$uid] = sprintf(
-			'<a href="%s" class="lightwindow" title="%s" avatar="%s"><img src="%1$s" height="%d" width="%d" name="%s" id="%s" title="%1$s" class="avatar" avatar="%s" /></a>',
-			$avatar, langVar('USERS_AVATAR', $username), $user, $size, $size, $username_avatar, $username_avatar, $username
-		);
-        return $this->avatar[$uid];
+		unset( $uid, $size, $query, $_avatar, $avatar, $username, $username_avatar, $user );
+		return $result;
     }
 
     /**
@@ -440,45 +458,61 @@ class user extends coreClass
      */
 	 function DoImage($content) {
     	global $objBBCode;
-        if(!isset($objBBCode)){
-			if(is_empty($content)){ return false; }
-			return htmlspecialchars($content);
+        if(!isset($objBBCode))
+		{
+			if(is_empty($content)){ $result = false; }
+			$result = htmlspecialchars($content);
         }
-        $content = trim($objBBCode->UnHTMLEncode(strip_tags($content)));
-        if (preg_match("/\\.(?:gif|jpeg|jpg|jpe|png)$/", $content)) {
-            if (preg_match("/^[a-zA-Z0-9_][^:]+$/", $content)) {
-                if (!preg_match("/(?:\\/\\.\\.\\/)|(?:^\\.\\.\\/)|(?:^\\/)/", $content)) {
-                    $info = @getimagesize($content);
-                    if ($info[2] == IMAGETYPE_GIF || $info[2] == IMAGETYPE_JPEG || $info[2] == IMAGETYPE_PNG) {
-                        return htmlspecialchars($content);
-                    }
-                }
-            } else if ($objBBCode->IsValidURL($content, false)) {
-                return htmlspecialchars($content);
-            }
-        }
-        return false;
+        else
+        {
+	        $content = trim($objBBCode->UnHTMLEncode(strip_tags($content)));
+	        if (preg_match("/\\.(?:gif|jpeg|jpg|jpe|png)$/", $content))
+			{
+	            if (preg_match("/^[a-zA-Z0-9_][^:]+$/", $content))
+				{
+	                if (!preg_match("/(?:\\/\\.\\.\\/)|(?:^\\.\\.\\/)|(?:^\\/)/", $content))
+					{
+	                    $info = @getimagesize($content);
+	                    if ($info[2] == IMAGETYPE_GIF || $info[2] == IMAGETYPE_JPEG || $info[2] == IMAGETYPE_PNG)
+						{
+	                        $result = htmlspecialchars($content);
+	                    }
+	                }
+	            }
+				else if ($objBBCode->IsValidURL($content, false))
+				{
+	               $result = htmlspecialchars($content);
+	            }
+	        }
+    	}
+
+        unset( $content, $info );
+        return $result;
     }
 
     /**
      * Returns the validity of an email address
      *
-     * @version 1.0
+     * @version 1.1
      * @since   0.8.0
      *
      * @param	string	$content	Email Address
      *
      * @return  Bool				True if email address is valid
      */
-    function DoEmail($content) {
+    function DoEmail($content)
+	{
         global $objBBCode;
         $content = strtolower($content);
         $email = $objBBCode->UnHTMLEncode(strip_tags($content));
         if ($objBBCode->IsValidEmail($email)){
-            return true;
+            $result = true;
         }else{
-            return false;
+            $result = false;
         }
+
+        unset( $content, $email );
+        return $result;
     }
 
     /**
@@ -491,7 +525,8 @@ class user extends coreClass
      *
      * @return  Bool				True if is valid username
      */
-    function verifyUsername($username){
+    function verifyUsername($username)
+	{
         if(strlen($username) > 25 || strlen($username) < 2){ return false; }
         if(preg_match('#[^a-z0-9_\-@^]#i', $username)){ return false; }
 
@@ -501,7 +536,7 @@ class user extends coreClass
     /**
      * Sets the users password.
      *
-     * @version 1.0
+     * @version 1.1
      * @since   0.8.0
      *
      * @param	mixed $uid            Username or UID.
@@ -509,15 +544,19 @@ class user extends coreClass
      *
      * @return  bool                  True on success
      */
-    function setPassword($uid, $password, $log=NULL){
-        $array['password'] = $this->mkPasswd($password);
-        $array['forgotpassword'] = 0;
+    function setPassword($uid, $password, $log=NULL)
+	{
+        $update['password'] = $this->mkPasswd($password);
+        $update['forgotpassword'] = 0;
+        $result = false;
 
-        if($this->updateUserSettings($uid, $array, $log)){
-            $this->objPlugins->execHook('CMSCore_userPasswordChanged', func_get_args());
-            return true;
+        if($this->updateUserSettings($uid, $update, $log)){
+            $this->objPlugins->hook('CMSUser_userPasswordChanged', func_get_args());
+            $result = true;
         }
-        return false;
+
+        unset( $uid, $password, $log, $update );
+        return $result;
     }
 
     /**
@@ -539,13 +578,14 @@ class user extends coreClass
         // Hash the password
         $hashed = $objPass->HashPassword($string);
 
+		unset($objPass, $string, $salt, $ajax);
         return $hashed;
     }
 
     /**
      * Checks if the username exists in the database.
      *
-     * @version 2.0
+     * @version 2.1
      * @since   0.6.0
      *
      * @param	string $username      Username to be checked
@@ -556,14 +596,16 @@ class user extends coreClass
 	{
         $id = $this->objSQL->getValue('users', 'id', 'username="'.$this->objSQL->escape($username).'"');
 
-        if(!is_empty($id) && $id > 0){ return true; }
-        return false;
+        $result = ( (!is_empty($id) && $id) > 0 ? true : false );
+
+        unset( $id, $username );
+        return $result;
     }
 
     /**
      * Checks if the email exists in the database.
      *
-     * @version 2.0
+     * @version 2.1
      * @since   0.6.0
      *
      * @param	string $email     Email to be checked
@@ -572,12 +614,89 @@ class user extends coreClass
      */
     function emailExists($email)
 	{
-        $id = $this->objSQL->getValue('users', 'email', 'email ="'.$this->objSQL->escape($email).'"');
+        $id = $this->objSQL->getValue( 'users', 'email', sprintf('email = \'%s\'', $this->objSQL->escape($email)) );
 
-        if($id!==NULL && !empty($id)){ return true; }
+        $result = ( !is_empty($id) ? true : false );
+
+        unset($id, $email);
+        return $result;
+    }
+
+    /**
+     * Updates the users settings according to $settings.
+     *
+     * @version 1.
+     * @since   0.5.0
+     *
+     * @param	mixed $uid        Username or UID.
+     * @param	array $settings   An array of settings (Names => Values)
+     *
+     * @return  bool              True on success
+     */
+    function updateUserSettings($uid, array $settings, $log=NULL)
+	{
+        $update = array();
+
+        foreach($settings as $setting => $value)
+		{
+            $update[$setting] = $value;
+        }
+        $result = $this->objSQL->updateRow('users', $update, 'id='.$uid, 0, $log);
+		$result = ( is_number($result) ? true : false );
+
+		unset($update, $uid, $settings, $log);
+        return $result;
+    }
+
+    /**
+     * Updates the users on-site location
+     *
+     * @version 1.0
+     * @since   0.7.0
+     *
+     * @return  bool	True on Successful Update
+     */
+    function updateLocation()
+	{
+        // generate the array for the db update
+    	$update['timestamp']     =   time();
+        $update['location']      =   isset($_SERVER['REQUEST_URI']) ? htmlspecialchars($_SERVER['REQUEST_URI']) : NULL;
+        $update['referer']       =   isset($_SERVER['HTTP_REFERER']) ? htmlspecialchars($_SERVER['HTTP_REFERER']) : NULL;
+
+        //force the location system to ignore js and css files, these like to be the entry in the database which isnt useful
+        if(preg_match('/(scripts|styles|js|css|xml)/sm', $update['location']))
+		{
+            unset($update['location']);
+        }
+
+        if(isset($_SESSION['user']['userkey']))
+		{
+            $this->objSQL->updateRow('online', $update, sprintf('`userkey` = \'%s\'', $_SESSION['user']['userkey']));
+            $result = ( is_number(mysql_affected_rows()) ? true : false );
+        }
+
+        unset($update);
         return false;
     }
 
-    // REALLY TIRED, Will carry on this class tomorrow... well in like 19 hrs. :/
+    /**
+     * Bans a user account.
+     *
+     * @version 1.0
+     * @since   0.8.0
+     *
+     * @param	mixed $uid        Username or UID.
+     *
+     * @return  bool              True on success
+     */
+    function banUser($uid)
+	{
+    	$this->objPlugins->hook('CMSUser_beforeUserBanned', $uid);
+        $result = $this->updateUserSettings($uid, array('banned' => '1'));
+    	$this->objPlugins->hook('CMSUser_afterUserBanned', $uid);
+
+		unset( $uid );
+    	return $result;
+    }
 }
 ?>
