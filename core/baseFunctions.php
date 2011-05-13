@@ -130,6 +130,47 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 	}
 
 	/**
+	 * Turns a string SEO Friendly
+	 *
+	 * @version	1.0
+	 * @since   1.0.0
+	 *
+	 * @param	string	$text
+	 *
+	 * @return 	string
+	 */
+	function seo($text){
+		$text = strtr($text, array('&amp' => ' and ', '/' => '-', '.' => '-'));
+		$text = html_entity_decode($text);
+
+		static $search, $replace;
+			if (!$search) {
+				$search = $replace = array();
+				// Get the HTML entities table into an array
+				$trans = get_html_translation_table(HTML_ENTITIES);
+				// Go through the entity mappings one-by-one
+				foreach ($trans as $literal => $entity) {
+					// Make sure we don't process any other characters such as fractions, quotes etc:
+					if (ord($literal) >= 192) {
+						// Get the accented form of the letter
+						$search[] = $literal;
+						// Get e.g. 'E' from the string '&Eacute'
+						$replace[] = $entity[1];
+					}
+				}
+			}
+			str_replace($search, $replace, $text);
+
+			$text = trim(preg_replace('/[^a-z \d\-]/i', '', $text));
+			$text = strtr(strtolower($text), array(' ' => '-'));
+			$text = preg_replace('/[\-]{2,}/', '-', $text);
+			$text = rtrim($text, '-');
+			if(is_number($text)) { $text = 'number-'.$text; } // numeric names would confuse everything
+	 	return $text;
+	}
+
+
+	/**
 	 * Run a function recursivly through an array
 	 * http://www.php.net/manual/en/function.array-walk-recursive.php#99639
 	 *

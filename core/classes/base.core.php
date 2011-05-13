@@ -20,8 +20,7 @@ class coreClass{
 	 * @since 	1.0.0
 	 * @author 	xLink
 	 *
-	 * @param 	string 	$var
-	 * @param 	mixed	$value
+	 * @param 	bool 	$classes
 	 */
 	final public function setup($classes=false){
 		if(!is_array($classes)){ return false; }
