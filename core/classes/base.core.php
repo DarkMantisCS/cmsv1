@@ -39,6 +39,7 @@ class coreClass{
 				//set the class to new var and continue
 				if(!isset($path[1])){ $path[1] = array(); }
 				$this->$var = new $class($path[1]);
+				$this->classes[$var] = $this->$var;
 			}else{
 				die('Error: Couldn\'t load '.$var.'; File not found.');
 			}

@@ -13,8 +13,6 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 */
 class form extends coreClass{
 
-	public function __construct() { }
-
 	/**
 	 * Starts a new form off
 	 *
@@ -22,8 +20,8 @@ class form extends coreClass{
 	 * @since   1.0.0
 	 * @author  xLink
 	 *
-	 * @param   string $name
-	 * @param   array  $args
+	 * @param   string $name 	Name of the form
+	 * @param   array  $args	Arguments to pass to the form header
 	 *
 	 * @return  string
 	 */
@@ -231,7 +229,7 @@ class form extends coreClass{
 	 *
 	 * @return  string
 	 */
-	public function checkbox($name='check', $value='', $checked=false, $args=array()){
+	function checkbox($name='check', $value='', $checked=false, $args=array()){
 		$args['checked'] = $checked;
 
 		return $this->inputbox($name, 'checkbox', $value, $args);
@@ -250,7 +248,7 @@ class form extends coreClass{
 	 *
 	 * @return  string
 	 */
-	public function select($name, $options, $args=array()){
+	public static function select($name, $options, $args=array()){
 		$args = array(
 			'id'		=> doArgs('id', 		$name, $args),
 			'selected'  => doArgs('selected', 	null, $args),
@@ -309,11 +307,13 @@ class form extends coreClass{
 					if(is_array($b)){
 						$val .= $this->processSelect($b, $selected, $noKeys);
 					}else{
-						$val .= '<option value="'.$a.'"'.(md5($a)==md5($selected) ? ' selected="true" ' : null).'>'.($noKeys===true ? $b : $a).'</option>'."\n";
+						$val .= '<option value="'.$a.'"'.(md5($a)==md5($selected) ? ' selected="true" ' : null).'>'.
+									($noKeys===true ? $b : $a).'</option>'."\n";
 					}
 				}
 			}else{
-				$val .= '<option value="'.$k.'"'.(md5($k)==md5($selected) ? ' selected="true" ' : null).'>'.($noKeys===true ? $v : $k).'</option>'."\n";
+				$val .= '<option value="'.$k.'"'.(md5($k)==md5($selected) ? ' selected="true" ' : null).'>'.
+							($noKeys===true ? $v : $k).'</option>'."\n";
 			}
 		}
 		return $val;

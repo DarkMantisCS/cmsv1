@@ -25,16 +25,14 @@ class mysql extends coreClass implements SQLBase{
 	 * @return	bool
 	 */
 	public function __construct($config=array()) {
-		if(is_empty($config)){
-			return false;
-		}
+		if(is_empty($config)){ return false; }
 
 		$this->db = array(
-			'host'		=> doArgs('host', 		'', $config, 'is_empty'),
-			'username'	=> doArgs('username', 	'', $config, 'is_empty'),
-			'password'	=> doArgs('password', 	'', $config, 'is_empty'),
-			'database'	=> doArgs('database', 	'', $config, 'is_empty'),
-			'prefix'	=> doArgs('prefix', 	'', $config, 'is_empty'),
+			'host'		=> doArgs('host', 		'', $config),
+			'username'	=> doArgs('username', 	'', $config),
+			'password'	=> doArgs('password', 	'', $config),
+			'database'	=> doArgs('database', 	'', $config),
+			'prefix'	=> doArgs('prefix', 	'', $config),
 		);
 
 		return true;
@@ -53,7 +51,6 @@ class mysql extends coreClass implements SQLBase{
 	 * @return  bool
 	 */
 	public function connect($persistent=false, $debug=false, $logging=false) {
-		$this->error = false;
 		$this->failed = false;
 		$this->debug = $debug;
 		$this->logging = $logging;
@@ -70,7 +67,7 @@ class mysql extends coreClass implements SQLBase{
 			$this->link_id = @mysql_connect($this->db['host'], $this->db['username'], $this->db['password']);
 		}
 
-		if($this->link_id){
+		if($this->failed){
 			$this->errorMsg = 'Cannot connect to the database - verify username and password.';
 			return false;
 		}
@@ -238,15 +235,18 @@ class mysql extends coreClass implements SQLBase{
 	}
 
 	/**
-	 * Adds a new prefix to the collection, useful for bridging projects
+	 * Prepares the query for use, escapes parameters, sets table prefix.
 	 *
 	 * @version	1.0
 	 * @since   1.0.0
 	 * @author  xLink
 	 *
-	 * @param 	string 	$db
+	 * @param 	string 	$query
+	 * @param	string  $arg1
+	 * @param	string  $arg2
+	 * @param	...
 	 *
-	 * @return 	bool
+	 * @return 	string
 	 */
 	public function prepare(){
 		//grab the functions args
@@ -256,7 +256,7 @@ class mysql extends coreClass implements SQLBase{
 		$query = str_replace('$P', $this->prefix(), $args[0]);
 
 		//escape the rest of the arguments
-		$args = $this->escape($args);
+		#$args = $this->escape($args);
 
 		//make sure the query is 'normal'
 		$args[0] = $query;
@@ -282,7 +282,7 @@ class mysql extends coreClass implements SQLBase{
 
 		$this->query_time = microtime(true);
 
-		if($log){ $this->recordLog($query, $log, User::getIP()); }
+		if($log){ $this->recordLog($query, $log); }
 
 		$this->results = mysql_query($query, $this->link_id) or $this->recordMessage(mysql_error(), 'WARNING');
 
@@ -425,9 +425,9 @@ class mysql extends coreClass implements SQLBase{
 	 * @param 	array 	$array
 	 * @param 	string 	$log
 	 *
-	 * @return 	array
+	 * @return 	int
 	 */
-	function insertRow($table, $array, $log = false){
+	function insertRow($table, $array, $log=false){
 		if(is_empty($array)){ return false; }
 
 		$comma = null;
@@ -438,14 +438,14 @@ class mysql extends coreClass implements SQLBase{
 			if($value === null){
 				$listOfValues .= $comma .'null';
 			}else{
-				$listOfValues .= $comma .'\''. (string)$value .'\'';
+				$listOfValues .= $comma .'\''. $this->escape((string)$value) .'\'';
 			}
 
 			$listOfElements .= $comma .'`'. $elem .'`';
-			$comma = ',';
+			$comma = ', ';
 		}
 
-		$query = 'INSERT HIGH_PROORITY INTO `$P%1$s` (%2$s) VALUES(%3$s)';
+		$query = 'INSERT HIGH_PRIORITY INTO `$P%1$s` (%2$s) VALUES (%3$s)';
 		$query = $this->prepare($query, $table, $listOfElements, $listOfValues);
 		$this->query($query, $log);
 		return mysql_insert_id($this->link_id);
@@ -463,7 +463,7 @@ class mysql extends coreClass implements SQLBase{
 	 * @param 	string 	clause
 	 * @param 	string 	$log
 	 *
-	 * @return 	array
+	 * @return 	int
 	 */
 	function updateRow($table, $array, $clause, $log=false){
 		if(is_empty($array)){ return false; }
@@ -474,7 +474,7 @@ class mysql extends coreClass implements SQLBase{
 			if($value === null){
 				$query .= '`'.$index.'`=null, ';
 			}else{
-				$query .= '`'.$index.'`=\''.$this->escape($value).'\', ';
+				$query .= '`'.$index.'`="'.$this->escape($value).'", ';
 			}
 		}
 
@@ -573,7 +573,7 @@ class mysql extends coreClass implements SQLBase{
 		$info['query'] 			= $query;
 		$info['refer'] 			= stripslashes($_SERVER['HTTP_REFERER']);
 		$info['date'] 			= time();
-		$info['ip_address'] 	= User::GetIP();
+		$info['ip_address'] 	= '127.0.0.1';
 
 		$this->insertRow('logs', $info, false);
 	}

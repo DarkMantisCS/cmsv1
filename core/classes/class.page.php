@@ -59,7 +59,6 @@ class page extends coreClass{
 		$this->tplVars = array_merge($this->tplVars, $values);
 	}
 
-
 	/**
 	 * Sets the menu to the version that is wanted.
 	 *
@@ -176,7 +175,7 @@ class page extends coreClass{
 	 *
 	 * @return 	string
 	 */
-	function showPagecrumbs(){
+	public function showPagecrumbs(){
 		$breadcrumbs = $this->pageCrumbs;
 		if(is_empty($breadcrumbs)){ return null; }
 
@@ -258,7 +257,6 @@ class page extends coreClass{
 		}
 	}
 
-
 	/**
 	 * Set the Page Theme
 	 *
@@ -267,8 +265,10 @@ class page extends coreClass{
 	 * @author  xLink
 
 	 * @param	string	$location
-	 * @param	int		$mode - Definitions - 1=>GET['redirect'], 2=>HTTP_REFFERER, => 0=>$location
+	 * @param	int		$mode 	Definitions - 1=>GET['redirect'], 2=>HTTP_REFFERER, => 0=>$location
 	 * @param	int 	$time
+	 *
+	 * @return 	bool
 	 */
 	public function setTheme($theme=null){
 		if(is_empty($theme)){
@@ -306,7 +306,7 @@ class page extends coreClass{
 	 *
 	 * @param 	bool $simple
 	 */
-	function showHeader($simple=false){
+	public function showHeader($simple=false){
 		if($this->header['completed']){ return; }
 
 		//figure out which version of the header we wanna use
@@ -533,7 +533,7 @@ class page extends coreClass{
 	 *
 	 * @param 	bool $simple
 	 */
-	function showFooter($simple=false){
+	public function showFooter($simple=false){
 		global $START_CMS_LOAD;
 
 		//no need for a footer if the header hasnt been called to
@@ -639,7 +639,7 @@ class page extends coreClass{
 	 * @version 2.0
 	 * @since 	1.0.0
 	 */
-	function setThemeVars(){
+	public function setThemeVars(){
 		$vars = $this->getVar('tplVars');
 
 		//incude extras.php from the theme if it exists
