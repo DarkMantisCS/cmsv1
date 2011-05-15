@@ -353,9 +353,7 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 		$fileNames = array();
 		$i = 0;
 
-		if(!is_dir($path)) {
-			return array();
-		}
+		if(!is_dir($path)){ return array(); }
 
 		if($dh = opendir($path)) {
 			while(($file = readdir($dh)) !== false) {
@@ -368,7 +366,7 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 
 				$a = stat($fullpath);
 				$files[$fkey]['size'] = $a['size'];
-				$files[$fkey]['sizetext'] = ($a['size'] == 0) ? formatBytes($a['size']) : '-';
+				$files[$fkey]['sizetext'] = ($a['size'] > 0) ? formatBytes($a['size']) : '-';
 				$files[$fkey]['name'] = $file;
 				$files[$fkey]['type'] = filetype($fullpath);
 				$fileNames[$i++] = $fkey;
@@ -378,7 +376,7 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 			die('Cannot open directory: ' . $path);
 		}
 
-		if(is_empty($fileName)){ return array(); }
+		if(is_empty($fileNames)){ return array(); }
 
 		sort($fileNames, SORT_STRING);
 		$sortedFiles = array();

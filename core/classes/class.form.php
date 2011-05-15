@@ -229,7 +229,7 @@ class form extends coreClass{
 	 *
 	 * @return  string
 	 */
-	function checkbox($name='check', $value='', $checked=false, $args=array()){
+	public function checkbox($name='check', $value='', $checked=false, $args=array()){
 		$args['checked'] = $checked;
 
 		return $this->inputbox($name, 'checkbox', $value, $args);
@@ -248,7 +248,7 @@ class form extends coreClass{
 	 *
 	 * @return  string
 	 */
-	public static function select($name, $options, $args=array()){
+	public function select($name, $options, $args=array()){
 		$args = array(
 			'id'		=> doArgs('id', 		$name, $args),
 			'selected'  => doArgs('selected', 	null, $args),

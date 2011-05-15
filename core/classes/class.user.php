@@ -11,8 +11,7 @@ if(!defined('INDEX_CHECK')){die('Error: Cannot access directly.');}
  * @since       1.0.0
  * @author      Jesus
  */
-class user extends coreClass
-{
+class user extends coreClass{
     private $is_online = false;
 	public $groups, $permissions;
 

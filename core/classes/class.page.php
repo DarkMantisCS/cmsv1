@@ -219,7 +219,7 @@ class page extends coreClass{
 	 * @author  xLink
 
 	 * @param	string	$location
-	 * @param	int		$mode - Definitions - 1=>GET['redirect'], 2=>HTTP_REFFERER, => 0=>$location
+	 * @param	int		$mode 		Definitions - 1=>GET['redirect'], 2=>HTTP_REFFERER, => 0=>$location
 	 * @param	int 	$time
 	 */
 	public function redirect($location=null, $mode=null, $time=0){
@@ -264,9 +264,7 @@ class page extends coreClass{
 	 * @since   1.0.0
 	 * @author  xLink
 
-	 * @param	string	$location
-	 * @param	int		$mode 	Definitions - 1=>GET['redirect'], 2=>HTTP_REFFERER, => 0=>$location
-	 * @param	int 	$time
+	 * @param	bool 	$theme
 	 *
 	 * @return 	bool
 	 */
