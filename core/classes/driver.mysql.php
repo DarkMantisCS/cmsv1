@@ -82,6 +82,7 @@ class mysql extends coreClass implements SQLBase{
 			$this->recordMessage('CMS is not using a persistant connection with the database.', 'WARNING');
 		}
 
+		unset($this->db['password']);
 		return true;
 	}
 

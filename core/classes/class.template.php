@@ -6,12 +6,12 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 
 
 /**
-*
-*
-* @version     1.0
-* @since       1.0.0
-* @author      xLink
-*/
+ *
+ *
+ * @version     1.0
+ * @since       1.0.0
+ * @author      xLink
+ */
 class template extends coreClass{
 
 	// variable that holds all the data we'll be substituting into
@@ -54,10 +54,10 @@ class template extends coreClass{
 
 		$this->use_cache = $args['useCache'];
 		if($this->use_cache) {
-			if($_cache_directory) {
+			if(is_dir($args['cacheDir']) && is_writeable($args['cacheDir'])) {
 				$this->cache_directory = $args['cacheDir'];
 			} else {
-				$this->cache_directory = $args['root'].'/cache';
+				$this->cache_directory = $args['root'].'/cache/template/';
 			}
 		}
 	}

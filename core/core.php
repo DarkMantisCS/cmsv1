@@ -109,12 +109,12 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 
 	//cache setup
 	$cachePath = cmsROOT.'cache/';
-	if (is_dir($cachePath) && !is_writable($cachePath)){ @chmod($cachePath, 0775); }
-	if (!is_writable($cachePath)){
+	if(is_dir($cachePath) && !is_writable($cachePath)){ @chmod($cachePath, 0775); }
+	if(!is_writable($cachePath)){
 		msgDie('FAIL', sprintf($errorTPL, 'Fatal Error', 'Could not set CHMOD permissions on "<i>cache/</i>" set to 775 to continue.'));
 	}
 
-	$cacheWritable = (is_writable($cache_path) ? true : false);
+	$cacheWritable = (is_writable($cachePath) ? true : false);
 
 	//try and load in the sql driver
 	$file = $classDir.'driver.'.$config['db']['driver'].'.php';
@@ -135,7 +135,7 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 	unset($classes);
 
 	$objCore->objSQL->connect(true, false, false);
-
+	unset($config['db']);
 //
 //--Cache Vars init
 //
@@ -143,12 +143,12 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 		if(!isset($config_db)){ 			newCache('config', $config_db); }
 
 		//We have no configuration DB, and the one generated was NULL...
-		/*if(!isset($config_db) || $config_db===NULL || empty($config_db)){
+		if(!isset($config_db) || $config_db===NULL || empty($config_db)){
 			//this will only happen if the CMS wasnt installed properly
 			//or hasnt got access to her original tables
 			msgDie('FAIL', sprintf($errorTPL, 'Fatal Error',
 				'Cannot load CMS Configuration, make sure installation ran properly and mySQL user has access to tables.'));
-		}*/
+		}
 
 		//generate an array with names of files that should be added to the master config array()
 		//NULL _SHOULD_ be the last 'file'
@@ -165,17 +165,17 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 		if(!isset($plugins_db)){ 			newCache('plugins', $plugins_db); }
 
 		//sort through the configuration crap, spit out a useable version :D
-		#foreach($config_db as $array){ $config[$array['array']][$array['var']] = $array['value']; }
+		foreach($config_db as $array){ $config[$array['array']][$array['var']] = $array['value']; }
 		unset($config_db);
-
-	//set all the *_db vars above into the $config array
+echo dump($config);
+		//set all the *_db vars above into the $config array
 		$x = 0;
 		while($var = $cache_gen[$x]){
 			if(!is_empty($var)){
 				$gen = NULL;
 				$gen = isset(${$var.'_db'}) ? ${$var.'_db'} : NULL;
 
-				if(is_empty($gen) || !is_array($gen) || $gen===false){
+				if(!is_array($gen) || is_empty($gen) || $gen===false){
 					$config[$var] = NULL;
 				}else{
 					foreach($gen as $k => $v){ $config[$var][$k] = $v; }

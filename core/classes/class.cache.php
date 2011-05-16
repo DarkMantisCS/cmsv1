@@ -73,27 +73,27 @@ class cache extends coreClass{
 		unset($this->output);
 
 		//query db
+		$query = $this->objSQL->prepare($query);
 		$query = $this->objSQL->getTable($query);
 
 		//check to make sure it worked
-		if(!$query){
-			$this->output = false;
-			return false;
-		}
+		if(!$query){ $this->output = false; }
 
 		//loop through each row of the returned array
-		foreach($query as $row){
-			$nline = array();
+		if(is_array($query) && !is_empty($query)){
+			foreach($query as $row){
+				$nline = array();
 
-			//and through each column of the row
-			foreach($row as $k => $v){
-				if(!is_number($k) && $k!='0'){
-					$nline[$k] = $v;
+				//and through each column of the row
+				foreach($row as $k => $v){
+					if(!is_number($k) && $k!='0'){
+						$nline[$k] = $v;
+					}
 				}
-			}
 
-			//grab generated array
-			$this->output[] = $nline;
+				//grab generated array
+				$this->output[] = $nline;
+			}
 		}
 
 		//if we can cache it
@@ -114,17 +114,21 @@ class cache extends coreClass{
 
     function generate_statistics_cache(){
     //grab some info to put into the stat file
-		$this->objSQL->recordMessage("Cache: Recalculating Statistics", "WARNING");
-		$p = $this->objSQL->prefix();
+		$this->objSQL->recordMessage('Cache: Recalculating Statistics', 'WARNING');
 		//total members in db
-			$total_members  = $this->objSQL->getInfo('users', NULL);
+			$total_members  = $this->objSQL->getInfo('users');
 		//last user info, for the stat menu
-			$last_user      = $this->objSQL->getLine('SELECT id, username FROM '.$this->objSQL->prefix().'users ORDER BY id DESC LIMIT 1');
+			$query = $this->objSQL->prepare('SELECT id, username FROM $Pusers ORDER BY id DESC LIMIT 1');
+			$last_user      = $this->objSQL->getLine($query);
 		//online members and guests
-			$online_users   = $this->objSQL->getTable('SELECT DISTINCT username FROM '.$p.'online WHERE username != "Guest"');
-			$online_guests  = $this->objSQL->getTable('SELECT DISTINCT ip_address FROM '.$p.'online WHERE username = "Guest"');
+			$query = $this->objSQL->prepare('SELECT DISTINCT username FROM $Ponline WHERE username != "Guest"');
+			$online_users   = $this->objSQL->getTable($query);
+
+			$query = $this->objSQL->prepare('SELECT DISTINCT ip_address FROM $Ponline WHERE username = "Guest"');
+			$online_guests  = $this->objSQL->getTable($query);
 		//get cron updates
-			$cron = $this->objSQL->getTable('SELECT * FROM '.$p.'statistics');
+			$query = $this->objSQL->prepare('SELECT * FROM $Pstatistics');
+			$cron = $this->objSQL->getTable($query);
 
 		if($cron){
 			foreach($cron as $i){
@@ -150,7 +154,7 @@ class cache extends coreClass{
 		);
 
 		if($this->cache_toggle) {
-			$fp = @fopen($this->cache_dir . "cache_statistics.php", "wb");
+			$fp = @fopen($this->cache_dir . 'cache_statistics.php', 'wb');
 			if(!$fp){ return false; }
 
 			fwrite($fp, '<?php'."\n"."if(!defined('INDEX_CHECK')){die('Error: Cannot access directly.');}".

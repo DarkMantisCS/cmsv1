@@ -483,7 +483,7 @@ class page extends coreClass{
 		//get some stuff from the config so they can be called in the template
 		$array = array(
 			'SITE_TITLE'	=> $this->config('site', 'title'),
-			'CMS_VERSION'	=> $this->config('cms', 'version'),
+			'CMS_VERSION'	=> cmsVERSION,
 
 			//some template stuff
 			'PAGE_TITLE'	=> $this->getVar('pageTitle'),
