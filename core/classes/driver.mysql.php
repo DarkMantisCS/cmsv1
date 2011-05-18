@@ -499,9 +499,6 @@ class mysql extends coreClass implements SQLBase{
 			}
 		}
 
-echo dump($clause);
-		$clause = $this->autoPrepare($clause);
-echo dump($clause);
 		$query = substr($query, 0, -2).' WHERE '.$this->autoPrepare($clause).' LIMIT 1';
 
 		$this->query($this->prepare($query, $table), $log);
