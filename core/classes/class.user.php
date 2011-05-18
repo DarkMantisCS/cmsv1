@@ -18,7 +18,7 @@ class user extends coreClass{
 	static $IS_ONLINE = false;
 	static $IS_ADMIN = false;
 	public function grab(){}
-	public function checkPermisisons(){}
+	public function checkPermissions(){ return true;}
 
 	/**
 	 * Variables to cache within the class, Cuts down on SQL Queries

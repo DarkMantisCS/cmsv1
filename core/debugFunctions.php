@@ -219,7 +219,7 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 			return 0;
 		}
 
-		printf('debug ['.($info === null ? null : $info).']<strong>%s</strong>> [ <strong>%d-%d</strong> ] Exec: <strong>%.4f</strong> Memory: <strong>%d KB</strong>'.$nl, $file, $start_code_line, $code_line, (time() + microtime() - $start_time), ceil(memory_get_usage() / 1024));
+		printf('debug ['.($info === null ? null : $info).']<strong>%s</strong>> [ <strong>%d-%d</strong> ] Exec: <strong>%.4f</strong> Memory: <strong>%s</strong>'.$nl, $file, $start_code_line, $code_line, (time() + microtime() - $start_time), formatBytes(memory_get_usage()));
 		$start_time = time() + microtime();
 		$start_code_line = $code_line;
 	}

@@ -30,7 +30,7 @@ class coreClass{
 			//make sure the file is there
 			if(file_exists($path[0]) && is_readable($path[0])){
 				//require the file
-				include($path[0]);
+				include_once($path[0]);
 
 				//grab the class name from the file and make sure it exists before continuing
 				$class = inBetween('.', '.php', $path[0]);

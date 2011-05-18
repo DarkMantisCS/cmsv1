@@ -67,11 +67,11 @@ class page extends coreClass{
 	 * @author  xLink
 	 *
 	 * @param   string  $moduleName
-	 * @param   string  $pageId
+	 * @param   string  $page_id
 	 */
-    public function setMenu($moduleName, $pageId='default'){
-        $this->moduleMenu = array('module' => $moduleName, 'pageId' => $pageId);
-    }
+	public function setMenu($moduleName, $page_id='default'){
+		$this->moduleMenu = array('module' => $moduleName, 'page_id' => $page_id);
+	}
 
 	/**
 	 * Adds a JS File to be output
@@ -305,6 +305,8 @@ class page extends coreClass{
 	 * @param 	bool $simple
 	 */
 	public function showHeader($simple=false){
+		global $config;
+
 		if($this->header['completed']){ return; }
 
 		//figure out which version of the header we wanna use
@@ -503,7 +505,7 @@ class page extends coreClass{
 		if(!defined('NOMENU')){ $noMenu = true; }
 
 		$menu = $this->getVar('moduleMenu');
-		if($menu['module'] === false){ $noMenu = false; }
+		if($menu['module'] === false){ $noMenu = true; }
 
 		//we cant do nothin without any blocks
 		if(isset($config['menu_blocks']) && !is_empty($config['menu_blocks'])){
@@ -511,7 +513,8 @@ class page extends coreClass{
 			if($menu['module']===NULL){ $menu['module'] = 'core'; }
 
 			//then do the output
-			if(show_menu($menu['module'], $menu['pageId']) === true){
+			$menuSetup = show_menu($menu['module'], $menu['page_id']);
+			if($menuSetup){
 				$this->objTPL->assign_block_vars('menu', array());
 			}
 		}

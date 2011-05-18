@@ -105,6 +105,7 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 				msgDie('FAIL', sprintf($errorTPL, 'Fatal Error - 404', 'We have been unable to locate/read the '.$file.' file.'));
 			}else{ require_once($file); }
 		}
+
 	$objCore = new coreClass;
 
 	//cache setup
@@ -131,6 +132,7 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 									'cacheDir' 	=> $cachePath
 								));
 
+	//init the sql and cache classes, we need these before we can go any further
 	$objCore->setup($classes);
 	unset($classes);
 
@@ -139,6 +141,7 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 //
 //--Cache Vars init
 //
+
 		//if it didnt, check to see which of the files didnt get added and try to get them manually
 		if(!isset($config_db)){ 			newCache('config', $config_db); }
 
@@ -150,6 +153,11 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 				'Cannot load CMS Configuration, make sure installation ran properly and mySQL user has access to tables.'));
 		}
 
+		//sort through the configuration crap, spit out a useable version :D
+		foreach($config_db as $array){ $config[$array['array']][$array['var']] = $array['value']; }
+		unset($config_db);
+
+
 		//generate an array with names of files that should be added to the master config array()
 		//NULL _SHOULD_ be the last 'file'
 		$cache_gen  = array('menus', 'menu_setups', 'menu_blocks', 'groups', 'bans', 'group_subscriptions', 'statistics', 'modules', 'plugins', NULL);
@@ -158,32 +166,33 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 		if(!isset($menu_setups_db)){ 		newCache('menu_setups', $menu_setups_db); }
 		if(!isset($menu_blocks_db)){ 		newCache('menu_blocks', $menu_blocks_db); }
 		if(!isset($groups_db)){ 			newCache('groups', $groups_db); }
-		if(!isset($bans_db)){ 				newCache('bans', $bans_db); }
 		if(!isset($user_permissions_db)){ 	newCache('group_subscriptions', $user_permissions_db); }
+		if(!isset($bans_db)){ 				newCache('bans', $bans_db); }
 		if(!isset($statistics_db)){ 		newCache('statistics', $statistics_db); }
 		if(!isset($modules_db)){ 			newCache('modules', $modules_db); }
 		if(!isset($plugins_db)){ 			newCache('plugins', $plugins_db); }
 
-		//sort through the configuration crap, spit out a useable version :D
-		foreach($config_db as $array){ $config[$array['array']][$array['var']] = $array['value']; }
-		unset($config_db);
-echo dump($config);
+
 		//set all the *_db vars above into the $config array
 		$x = 0;
 		while($var = $cache_gen[$x]){
-			if(!is_empty($var)){
-				$gen = NULL;
-				$gen = isset(${$var.'_db'}) ? ${$var.'_db'} : NULL;
+			$x++; //do this here it only increments $cache_gen anyway
 
-				if(!is_array($gen) || is_empty($gen) || $gen===false){
-					$config[$var] = NULL;
-				}else{
-					foreach($gen as $k => $v){ $config[$var][$k] = $v; }
+			//if var is empty, continue, no point wasting time
+			if(is_empty($var)){ continue; }
+
+			//setup $gen for the var
+			$gen = isset(${$var.'_db'}) ? ${$var.'_db'} : NULL;
+
+			if(!is_array($gen) || is_empty($gen)){
+				$config[$var] = NULL;
+			}else{
+				foreach($gen as $k => $v){
+					$config[$var][$k] = $v;
 				}
 			}
 
 			unset(${$var.'_db'});
-			$x++;
 		}
 
 		//clean the variable pool, keeping things nice and tidy
@@ -193,6 +202,7 @@ echo dump($config);
 		if(is_empty($config['menu_blocks']) && !defined('NOMENU')){
 			 define('NOMENU', true);
 		}
+
 
 	$classes['objTPL']			= array($classDir.'class.template.php', array(
 									'root' 		=> '.',
@@ -204,6 +214,7 @@ echo dump($config);
 	$classes['objPage'] 		= array($classDir.'class.page.php');
 	$classes['objUser'] 		= array($classDir.'class.user.php');
 	$classes['objForm'] 		= array($classDir.'class.form.php');
+
 	$objCore->setup($classes);
 
 	//globalise the class names

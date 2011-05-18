@@ -555,7 +555,7 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 			break;
 			case 'menus':
 				$objCore->objCache->initCache('menus_db',			'cache_menus.php',
-					'SELECT * FROM $Pmenus ORDER BY `disporder` ASC', $new_file);
+					'SELECT * FROM $Pmenus ORDER BY `order` ASC', $new_file);
 			break;
 			case 'menu_setups':
 				$objCore->objCache->initCache('menu_setups_db',		'cache_menu_setups.php',
@@ -588,8 +588,222 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 		}
 	}
 
+	/**
+	 * Parse an .ini string into a useable array
+	 *
+	 * @version 1.0
+	 * @since 	1.0.0
+	 *
+	 * @param 	string 	$string
+	 * @param 	bool 	$processSelections
+	 *
+	 * @return 	string
+	 */
+    function parseMenuParams($str, $processSections=false){
+		$lines 	= explode("\n", $str);
+		$return = array();
+		$inSect = false;
 
-	function show_menu($module, $pageId='default'){}
+		//make sure we have something to play with first
+		if(!count($lines)){ return false; }
+
+		foreach($lines as $line){
+			$line = trim($line);
+
+			//make sure $line isnt empty, or starts with a comment
+			if(is_empty($line) || $line[0] == '#' || $line[0] == ';'){ continue; }
+
+			//test to see if we are in a section
+			if($line[0] == '[' && $endIdx = strpos($line, ']')){
+				$inSect = substr($line, 1, $endIdx-1);
+				continue;
+			}
+
+			//We dont use "=== false" because value 0 is not valid as well
+			if(!strpos($line, '=')){ continue; }
+
+			$tmp = explode('=', $line, 2);
+			if($processSections && $inSect){
+				$return[$inSect][trim($tmp[0])] = ltrim($tmp[1]);
+			}else{
+				$return[trim($tmp[0])] = ltrim($tmp[1]);
+			}
+		}
+		return $return;
+	}
+
+	/**
+	 * Configures the Menu system and outputs the requested version
+	 *
+	 * @version 3.5
+	 * @since 	1.0.0
+	 *
+	 * @param 	string $module
+	 * @param 	string $page_id
+	 *
+	 * @return 	bool
+	 */
+	function show_menu($module, $page_id='default'){
+		global $config, $objCore;
+
+		//either this or globalling a shit ton of vars?
+		$objUser = $objCore->objUser;
+		$objSQL = $objCore->objSQL;
+		$objTPL = $objCore->objTPL;
+
+		//if we havent got what we need, attempt to grab it
+		if(!isset($config['menu_setups']) || $config['menu_setups']===NULL){
+			$query = 'SELECT * FROM $Pmenu_setups WHERE module = "%s" AND page_id = "%s" ORDER BY `order` ASC';
+			$config['menu_setups'] = $objSQL->getTable($objSQL->prepare($query, $module, $page_id));
+		}
+
+        //make sure we have something to play with
+        if(is_empty($config['menu_setups'])){ return false; }
+
+        //sort out where the menus are supposed to go
+        $menu = array();
+        foreach($config['menu_setups'] as $row){
+			//if its not on the side wer looking for, move on
+			if(strtolower($module) != strtolower($row['module']) || $page_id != $row['page_id']){ continue; }
+
+			//set the menu position in the array, default to the left side
+			switch($row['position']){
+				default:
+				case 0: $menu['left'][] 	= $row; break;
+				case 1: $menu['right'][] 	= $row; break;
+				case 2: $menu['center'][] 	= $row; break;
+			}
+        }
+
+		//no point continuing if we arnt populated
+		if(is_empty($menu)){ return false; }
+
+		//loop thru left right and center
+		foreach($menu as $k => $menuBlock){
+			foreach($menuBlock as $row){
+				//loop thru the block lookin for the right one
+				foreach($config['menu_blocks'] as $menu){
+					//if its not the one we need, continue
+					if(strtolower($menu['unique_id']) != strtolower($row['menu_id'])){ continue; }
+
+					//now check if we can call the function
+					if(!function_exists($menu['function'])){
+						if(is_empty($menu['module'])){ $menu['module'] = 'core'; }
+						if(is_file(cmsROOT.'modules/'.$menu['module'].'/block.php')){
+							include_once cmsROOT.'modules/'.$menu['module'].'/block.php';
+						}
+					}
+					break; //just so the foreach dosent write over $menu
+				}
+
+				//check perms, no point processing that info if they cant view it anyway
+				if(!$objUser->checkPermissions($objUser->grab('id'), $menu['perms'])){
+					continue;
+				}
+
+				$i = $row['id'];
+
+				if(isset($cachee[$i])){
+					$content = $cachee[$i];
+				}else{
+                    //parse the params for this menu block..
+                    $params = (is_empty($row['params']) ? array() : parseMenuParams($row['params']));
+
+                    //set various things up accordingly
+                    $title = doArgs('menu_title', $params['menu_title'], $params);
+					$content = langVar('INVALID_FUNCTION', $menu['function'].'()');
+
+					//can we call the function or do we have to generate from get_menu()?
+					if(is_callable($menu['function']) && $objUser->checkPermissions($objUser->grab('id'), $menu['perms'])){
+						//we wanna add in some custom params
+							$args = array(
+								'uniqueId' => $menu['uniqueId'],
+								'block' => $k.'_menu',
+								'title' => $title
+							);
+							$params = array_merge($args, $params);
+						//call the function
+							$content = call_user_func($menu['function'], $params);
+
+					}else if(is_empty($menu['function']) || $menu['function']=='NULL'){
+						//switch so we get the right menu
+						switch($params['menu_name']){
+							case 'NULL':        /* Dont do anythin to this one */                       break;
+							case 'main_menu':   $params['menu_name'] = 'menu_mm';                       break;
+							default:            $params['menu_name'] = 'menu_'.$params['menu_name'];    break;
+						}
+                        //get the menu and assign it to the tpl
+                        $return = get_menu($params['menu_name'], 'link');
+                        echo dump($return, 'get_menu return');
+                        if(!is_empty($return)){ $content = $return; }
+					}
+					//do this so we dont have to keep processing the same menu
+        			$cachee[$i] = $content;
+				}
+				//output it on the template
+    			$objTPL->assign_block_vars($k.'_menu', array(
+    				'TITLE'            => $title,
+    				'CONTENT'          => $content,
+    			));
+			}
+            //let the page class know we've been busy and to show the menu
+            return true;
+        }
+        //nothing happened, so return false
+        return false;
+	}
+
+	/**
+	 * Returns the menu links for a specific menu
+	 *
+	 * @version 2.0
+	 * @since 	1.0.0
+	 *
+	 * @param 	string $name
+	 * @param 	string $returnType
+	 *
+	 * @return 	array/string
+	 */
+	function get_menu($menu_id, $returnType='link'){
+		global $objUser, $config;
+
+		//set some inital vars
+		$return = ($returnType=='array' ? array() : '');
+		$i = 0;
+
+		if(is_empty($config['menus'])){ return $return; }
+
+		foreach($config['menus'] as $menu){
+			//make sure we have the right name
+			if(strtolower($menu_id) != strtolower($menu['menu_id'])){ continue; }
+
+			//make sure the current users permissions covers this menu item
+			if(!$objUser->checkPermissions($objUser->grab('id'), $menu['perms'])){ continue; }
+
+			$link = $menu['external']==1 ? $menu['link_value'] : '/'.root().$menu['link_value'];
+			$blank = $menu['blank']==1 ? ' target="_blank"' : '';
+
+			$start = $stop = '';
+			if(!is_empty($menu['link_color'])){
+				$start = '<font style="color: '.$menu['link_color'].';">';
+				$stop = '</font>';
+			}
+
+			//setup the return value based on what we wanted
+			if($returnType=='array'){
+				$return[$i]['full_link'] = '<a href="'.$link.'"'.$blank.'>'.$start.$menu['link_name'].$stop.'</a>';
+				$return[$i]['options']['link'] = $link;
+				$return[$i]['options']['name'] = $menu['link_name'];
+				$return[$i]['options']['blank'] = $blank;
+				$return[$i]['options']['color'] = $menu['link_color'];
+			}else{
+				$return .= '<a href="'.$link.'"'.$blank.'>'.$start.$menu['link_name'].$stop.'</a><br />'."\n";
+			}
+			$i++;
+        }
+    	return $return;
+    }
+
 
 //
 //-- MSG Functions
