@@ -46,9 +46,9 @@ class coreClass{
 		}
 
 		//loop through the classes after they have been all init'd
-		foreach($classes as $objName => $args){
+		foreach($this->classes as $objName => $args){
 			//loop through the list again
-			foreach($classes as $class => $args){
+			foreach($this->classes as $class => $args){
 				//if this one is == parent, skip it..
 				if($objName == $class){ continue; }
 
@@ -120,12 +120,36 @@ class coreClass{
 	 *
 	 * @return 	mixed
 	 */
-    function config($array, $setting, $default=null){
+    public function config($array, $setting, $default=null){
         global $config;
 
         return doArgs($setting, $default, $config[$array]);
     }
 
+	/**
+	 * Returns the last error set.
+	 *
+	 * @version	1.0
+	 * @since 	1.0.0
+	 * @author 	xLink
+	 *
+	 * @return  string
+	 */
+    public function error(){
+    	return $this->_error;
+	}
 
+	/**
+	 * Allows for an error to be set just before returning false
+	 *
+	 * @version	1.0
+	 * @since 	1.0.0
+	 * @author 	xLink
+	 *
+	 * @param 	string $msg
+	 */
+    public function setError($msg){
+    	$this->_error = (string)$msg;
+	}
 }
 ?>

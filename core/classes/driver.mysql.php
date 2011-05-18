@@ -266,6 +266,26 @@ class mysql extends coreClass implements SQLBase{
 		return (count($args)>1 ? call_user_func_array('sprintf', $args) : $query);
 	}
 
+
+	/**
+	 * Prepares the clauses, this saves the need for manuall calling
+	 *
+	 * @version	1.0
+	 * @since   1.0.0
+	 * @author  xLink
+	 *
+	 * @param 	string 	$query
+	 * @param	string 	$log
+	 *
+	 * @return 	resource
+	 */
+	private function autoPrepare($clause){
+		if(!is_array($clause) || is_empty($clause)){
+			return null;
+		}
+		return call_user_func_array(array($this, 'prepare'), $clause);
+	}
+
 	/**
 	 * Queries the database
 	 *
@@ -325,7 +345,7 @@ class mysql extends coreClass implements SQLBase{
 	public function getInfo($table, $clause=null, $log=false){
 		$statement = 'SELECT COUNT(*) FROM `$P'.$table.'`';
 		if(!is_empty($clause)){
-			$statement .= ' WHERE '.$clause;
+			$statement .= ' WHERE '.$this->autoPrepare($clause);
 		}
 
 		$line = $this->getLine($statement, $log);
@@ -350,7 +370,7 @@ class mysql extends coreClass implements SQLBase{
 	public function getValue($table, $field, $clause=null, $log=false){
 		$statement = 'SELECT %1$s FROM `$P%2$s`';
 		if(!is_empty($clause)){
-			$statement .= ' WHERE '.$clause;
+			$statement .= ' WHERE '.$this->autoPrepare($clause);
 		}
 		$statement .= ' LIMIT 1;';
 
@@ -479,7 +499,10 @@ class mysql extends coreClass implements SQLBase{
 			}
 		}
 
-		$query = substr($query, 0, -2).' WHERE '.$clause.' LIMIT 1';
+echo dump($clause);
+		$clause = $this->autoPrepare($clause);
+echo dump($clause);
+		$query = substr($query, 0, -2).' WHERE '.$this->autoPrepare($clause).' LIMIT 1';
 
 		$this->query($this->prepare($query, $table), $log);
 		return mysql_affected_rows();
@@ -499,7 +522,7 @@ class mysql extends coreClass implements SQLBase{
 	 * @return 	array
 	 */
 	public function deleteRow($table, $clause, $log=false){
-		$this->query($this->prepare('SELECT FROM `$P$s` WHERE %s', $table, $clause), $log);
+		$this->query($this->prepare('SELECT FROM `$P$s` WHERE %s', $table, $this->autoPrepare($clause)), $log);
 
 		return mysql_affected_rows($this->link_id);
 	}

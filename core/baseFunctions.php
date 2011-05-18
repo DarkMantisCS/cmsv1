@@ -702,9 +702,8 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 				}
 
 				$i = $row['id'];
-
-				if(isset($cachee[$i])){
-					$content = $cachee[$i];
+				if(isset($_cachee[$i]) && !is_empty($_cache[$i])){
+					$content = $_cache[$i];
 				}else{
                     //parse the params for this menu block..
                     $params = (is_empty($row['params']) ? array() : parseMenuParams($row['params']));
@@ -716,14 +715,14 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 					//can we call the function or do we have to generate from get_menu()?
 					if(is_callable($menu['function']) && $objUser->checkPermissions($objUser->grab('id'), $menu['perms'])){
 						//we wanna add in some custom params
-							$args = array(
-								'uniqueId' => $menu['uniqueId'],
-								'block' => $k.'_menu',
-								'title' => $title
-							);
-							$params = array_merge($args, $params);
+						$params += array(
+							'uniqueId' 	=> $menu['uniqueId'],
+							'block' 	=> $k.'_menu',
+							'title' 	=> $title
+						);
+
 						//call the function
-							$content = call_user_func($menu['function'], $params);
+						$content = call_user_func($menu['function'], $params);
 
 					}else if(is_empty($menu['function']) || $menu['function']=='NULL'){
 						//switch so we get the right menu
@@ -732,13 +731,15 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 							case 'main_menu':   $params['menu_name'] = 'menu_mm';                       break;
 							default:            $params['menu_name'] = 'menu_'.$params['menu_name'];    break;
 						}
-                        //get the menu and assign it to the tpl
+
+                        //get the menu
                         $return = get_menu($params['menu_name'], 'link');
-                        echo dump($return, 'get_menu return');
-                        if(!is_empty($return)){ $content = $return; }
+                        if(!is_empty($return)){
+                        	$content = $return;
+						}
 					}
 					//do this so we dont have to keep processing the same menu
-        			$cachee[$i] = $content;
+        			$_cache[$i] = $content;
 				}
 				//output it on the template
     			$objTPL->assign_block_vars($k.'_menu', array(
