@@ -112,24 +112,23 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 				}
 				$return .= "$indent)<br />";
 			} elseif(is_int($avar)) {
-				$return .= "$indent$var_name = <span style='color:#a2a2a2'>$type(".strlen($avar).")</span>".
+				$return .= "$indent$var_name = <span style='color:#a2a2a2'>$type(".strlen($avar).")</span> ".
 								"$type_color$avar</span><br />";
 			} elseif(is_string($avar)) {
-				$return .= "$indent$var_name = <span style='color:#a2a2a2'>$type(".strlen($avar).")</span>".
+				$return .= "$indent$var_name = <span style='color:#a2a2a2'>$type(".strlen($avar).")</span> ".
 								"$type_color\"".str_replace(str_split("\t\n\r\0\x0B"), '', htmlspecialchars($avar))."\"</span><br />";
 			} elseif(is_float($avar)) {
-				$return .= "$indent$var_name = <span style='color:#a2a2a2'>$type(".strlen($avar).")</span>".
+				$return .= "$indent$var_name = <span style='color:#a2a2a2'>$type(".strlen($avar).")</span> ".
 								"$type_color$avar</span><br />";
 			} elseif(is_bool($avar)) {
-				$return .= "$indent$var_name = <span style='color:#a2a2a2'>$type(".strlen($avar).")</span>".
+				$return .= "$indent$var_name = <span style='color:#a2a2a2'>$type(".strlen($avar).")</span> ".
 								"$type_color".($avar == 1 ? "true" : "false")."</span><br />";
 			} elseif(is_null($avar)) {
-				$return .= "$indent$var_name = <span style='color:#a2a2a2'>$type(".strlen($avar).")</span>".
-								"{$type_color}null</span><br />";
+				$return .= "$indent$var_name = <span style='color:#a2a2a2'>$type(".strlen($avar).")</span> {$type_color}NULL</span><br />";
 			} elseif(is_resource($avar)) {
 				$return .= "$indent$var_name = <span style='color:#a2a2a2'>$type</span> $type_color$avar</span><br />";
 			} else {
-				$return .= "$indent$var_name = <span style='color:#a2a2a2'>$type(".strlen($avar).")</span>".
+				$return .= "$indent$var_name = <span style='color:#a2a2a2'>$type(".strlen($avar).")</span> ".
 								"$avar<br />";
 			}
 			$var = $var[$keyvar];

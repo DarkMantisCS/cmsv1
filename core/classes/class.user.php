@@ -125,9 +125,6 @@ class user extends coreClass{
 	 * @return  mixed			Field requested or whole user information.
 	 */
 	public function getUserInfo($uid, $field='*'){
-		//figure out if they gave us a username or a user id
-		$user = (is_number($uid) ? '`id` = "%s" ' : '`username` = "%s" ');
-
 		//test for a few bad fields
 		$badFields = array('password', 'pin');
 		if(in_array($field, $badFields)){
@@ -137,17 +134,20 @@ class user extends coreClass{
 
 		//we need to populate the query
 		if(!isset($this->userInfo[$uid])){
+			//figure out if they gave us a username or a user id
+			$user = (is_number($uid) ? 'u.id = "%s" ' : 'u.username = "%s" ');
+
 			$query = $this->objSQL->prepare('SELECT u.*, e.*, u.id as id, o.timestamp '.
-											'FROM `$Pusers` as u '.
-											'LEFT JOIN `$Puser_extras` as e '.
-												'ON u.id = e.uid '.
-											'LEFT JOIN `$Ponline` as o '.
-												'ON u.id = o.uid '.
+											'FROM `$Pusers` u '.
+												'LEFT JOIN `$Puser_extras` e '.
+													'ON u.id = e.uid '.
+												'LEFT JOIN `$Ponline` o '.
+													'ON u.id = o.uid '.
 											'WHERE '.$user.' '.
 											'LIMIT 1;', $uid);
 			$info = $this->objSQL->getLine($query);
 			if(!$info){
-				$this->setError('User query failed. SQL: '. mysql_error());
+				$this->setError('User query failed. SQL: '. mysql_error()."\n".$query);
 				return false;
 			}
 
@@ -161,12 +161,14 @@ class user extends coreClass{
 		}
 
 		//if we didnt want it all then make sure the bit they wanted is there
-		if($field != '*' && isset($this->userInfo[$uid][$field])){
-			return $this->userInfo[$uid][$field];
-		}else{
-			//if what they wanted isnt there, no point returning the whole thing, might confuse a few people
-			$this->setError('Requested field dosen\'t exist.');
-			return false;
+		if($field != '*'){
+			if(isset($this->userInfo[$uid][$field])){
+				return $this->userInfo[$uid][$field];
+			}else{
+				//if what they wanted isnt there, no point returning the whole thing, might confuse a few people
+				$this->setError('Requested field dosen\'t exist.');
+				return false;
+			}
 		}
 
 		//worst case, return the entire user
@@ -194,7 +196,7 @@ class user extends coreClass{
 	 * Retrieves the Username from the UID.
 	 *
 	 * @version 2.0
-	 * @since   0.7.0
+	 * @since   1.0.0
 	 *
 	 * @param	int $uid		UID used to retreive the Username
 	 *
@@ -236,12 +238,12 @@ class user extends coreClass{
 	}
 
 	/**
-	 * Generates a hash from the $password var.
+	 * Generates a hash from the $string var.
 	 *
 	 * @version 2.0
 	 * @since   1.0.0
 	 *
-	 * @param   string $password
+	 * @param   string $string
 	 * @param   string $salt
 	 *
 	 * @return  string                Password Hashed Input
@@ -257,7 +259,32 @@ class user extends coreClass{
 		return $hashed;
 	}
 
+	/**
+	 * Updates the users settings according to $settings.
+	 *
+	 * @version 1.0
+	 * @since   1.0.0
+	 *
+	 * @param	mixed 	$uid 			Username or UID.
+	 * @param	array 	$settings 		An array of settings, (columnName => value).
+	 * @param	string 	$log			String if needs to be set, false otherwise.
+	 *
+	 * @return  bool 					True if settings were fully updated, False if they wasnt.
+	 */
+	function updateUserSettings($uid, array $settings, $log=false){
+		foreach($settings as $setting => $value){
+			$update[$setting] = $value;
+		}
 
+		$userStr = (is_number($uid) ? 'id = "%s" ' : 'username = "%s" ');
+		$return = $this->objSQL->updateRow('users', $updateStr, array($user, $uid), $log);
+		if(!$return){
+			$this->setError('Complete Update failed. SQL: '.mysql_error());
+			return false;
+		}
+
+		return true;
+	}
 
 
 
@@ -265,6 +292,24 @@ class user extends coreClass{
 		return true;
 	}
 
+	/**
+	 * Returns the IP Address of the user, it will get IP from the proxy client if needed.
+	 *
+	 * @version 1.0
+	 * @since   1.0.0
+	 *
+	 * @param	mixed $uid        Username or UID.
+	 *
+	 * @return  mixed             IP address of user.
+	 */
+	public static function getIP(){
+		if 		(getenv('HTTP_X_FORWARDED_FOR')){ $ip = getenv('HTTP_X_FORWARDED_FOR'); }
+		else if (getenv('HTTP_X_FORWARDED'))	{ $ip = getenv('HTTP_X_FORWARDED'); }
+		else if (getenv('HTTP_FORWARDED_FOR'))	{ $ip = getenv('HTTP_FORWARDED_FOR'); }
+		else									{ $ip = $_SERVER['REMOTE_ADDR']; }
+
+		return $ip;
+	}
 
 }
 ?>

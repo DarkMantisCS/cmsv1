@@ -141,7 +141,6 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 //
 //--Cache Vars init
 //
-
 		//if it didnt, check to see which of the files didnt get added and try to get them manually
 		if(!isset($config_db)){ 			newCache('config', $config_db); }
 
@@ -196,7 +195,7 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 		}
 
 		//clean the variable pool, keeping things nice and tidy
-		unset($cache_gen, $var);
+		unset($cache_gen, $config_db, $var);
 
 		//do a few checks on the cache, see whats what
 		if(is_empty($config['menu_blocks']) && !defined('NOMENU')){
@@ -204,6 +203,27 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 		}
 
 
+//
+//--Language Setup
+//
+		//grab the default language info, and test to see if user has a request
+        $language = doArgs('language', 'en', $config['site']);
+        if(isset($_SESSION['user']['language'])){
+            if(is_dir(cmsROOT.'language/'.$_SESSION['user']['language'].'/') &&
+               is_readable(cmsROOT.'language/'.$_SESSION['user']['language'].'/main.php')){
+                    $language = $_SESSION['user']['language'];
+            }
+        }
+
+        if(is_dir(cmsROOT.'language/'.$language.'/') || is_readable(cmsROOT.'language/'.$language.'/main.php')){
+        	require_once(cmsROOT.'language/'.$language.'/main.php');
+        }else{
+            msgDie('FAIL', sprintf($errorTPL, 'Fatal Error', 'Cannot open '.(cmsROOT.'language/'.$language.'/main.php').' for include.'));
+		}
+
+//
+//--More Classes Setup
+//
 	$classes['objTPL']			= array($classDir.'class.template.php', array(
 									'root' 		=> '.',
 									'useCache' 	=> $cacheWritable,
@@ -211,12 +231,16 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 								));
 
 	$classes['objPlugins']		= array($classDir.'class.plugins.php');
-	$classes['objPage'] 		= array($classDir.'class.page.php');
 	$classes['objUser'] 		= array($classDir.'class.user.php');
 	$classes['objForm'] 		= array($classDir.'class.form.php');
+
+	$classes['objPage'] 		= array($classDir.'class.page.php');
 
 	$objCore->setup($classes);
 
 	//globalise the class names
 	foreach($objCore->classes as $objName => $args){ $$objName = $objCore->$objName; }
 	unset($classes, $objCore->classes);
+
+	//start class setups
+	$objPlugins->loadHooks($config['plugins']);

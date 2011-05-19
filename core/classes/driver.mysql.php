@@ -206,6 +206,7 @@ class mysql extends coreClass implements SQLBase{
 		if(isset($this->prefix[$mode])){
 			return $this->prefix[$mode];
 		}
+
 		if(is_empty($mode) || $mode==0){
 			return $this->db['prefix'];
 		}
