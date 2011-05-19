@@ -22,6 +22,7 @@ class user extends coreClass{
 	 *
 	 * @version	1.0
 	 * @since   1.0.0
+	 * @author 	xLink
 	 *
 	 * @param 	bool $value
 	 *

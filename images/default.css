@@ -1,3 +1,41 @@
+*{
+	outline: 0;
+	resize: none; /* kill chromes resizey thing */
+}
+pre, cite {
+	clear: both;
+	display: block;
+}
+p {
+	margin: 5px 0;
+}
+li { padding: 2px 0; }
+blockquote {
+	margin: 0 0 5px 15px;
+	padding-left: 5px;
+}
+
+/** Form Elements **/
+form {}
+label {
+	font-weight: bold;
+	margin: 5px 0;
+}
+input {
+	padding: 2px;
+}
+textarea {
+	width: 400px;
+	padding: 2px;
+	display: block;
+}
+
+/** Table Stuff **/
+.tborder{ }
+.tcat{ }
+.thead{ font-weight: bold; }
+.tfoot{ }
+
 /* CMS Specific Stuff */
 font.username{
 	font-family: Calibri, Arial, Helvetica, sans-serif;
@@ -7,3 +45,36 @@ font.username{
 	text-decoration: none;
 	color: #000000;
 }
+
+
+/* Error Boxes */
+.boxred{ border:solid 1px #FF0000 !important; background-color:#660000 !important; color: #FFFFFF !important;}
+.boxgreen{ border:solid 1px #00CC00 !important; background-color: #009900 !important; color: #FFFFFF !important;}
+
+/* Fix for chrome webkit autofilling form fields, and making them unreadable (yellow background and text) (iccle) */
+input:-webkit-autofill {
+    color: #2a2a2a !important;
+}
+
+.wrap{
+    white-space: pre;           /* CSS 2.0 */
+    white-space: pre-line;      /* CSS 3.0 */
+    white-space: pre-wrap;      /* CSS 2.1 */
+    white-space: -pre-wrap;     /* Opera 4-6 */
+    white-space: -o-pre-wrap;   /* Opera 7 */
+    white-space: -moz-pre-wrap; /* Mozilla */
+    white-space: -hp-pre-wrap;  /* HP Printers */
+    word-wrap: break-word;      /* IE 5+ */
+}
+
+.clear 		 { clear: both; }
+.float-left  { float: left; }
+.float-right { float: right; }
+img.float-left { margin:5px 10px 10px 0; }
+img.float-right { margin:5px 0 10px 10px; }
+.align-left  { text-align: left; }
+.align-right { text-align: right; }
+.align-center { text-align: center; }
+.hidden{ display: none; }
+.iblock{ display: inline-block; }
+.padding{ padding: 5px; }

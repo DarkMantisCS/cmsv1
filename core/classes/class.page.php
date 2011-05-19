@@ -356,7 +356,6 @@ class page extends coreClass{
 	//--Load JS
 	//
 		//files first
-		$jsFiles[] = '/'.root().'scripts/protolicous-min.js';
 		$jsFiles[] = '/'.root().'scripts/jquery-min.js';
 		$jsFiles[] = '/'.root().'scripts/extras-min.js';
 		//load in the anything thats been passed in via addJSFiles()
@@ -566,8 +565,6 @@ class page extends coreClass{
 			}
 		}
 
-$a = User::$IS_ADMIN;
-echo dump($a);
     	//check for admin privs and file(debug) existing in the root
 		if(User::$IS_ADMIN && !file_exists('debug')){
 			//if the debug happened..
@@ -599,7 +596,7 @@ echo dump($a);
 							'DESC'      => $log['description'],
 							'IP'        => $log['ip_address'],
 							'SQL'       => $log['query'],
-							#'TIME'      => $this->objTime->mk_time($log['date']),
+							'TIME'      => $this->objTime->mk_time($log['date']),
 						));
 					}
 				}
@@ -632,7 +629,6 @@ echo dump($a);
 		);
 
 		$this->objTPL->assign_vars($footer);
-
 		$this->objTPL->parse('tpl_footer');
 	}
 

@@ -542,47 +542,47 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 		global $objCore;
 		switch($file){
 			case 'config':
-				$objCore->objCache->initCache('config_db',			'cache_config.php',
-					'SELECT * FROM $Pconfig', $new_file);
+				$objCore->objCache->initCache($file.'_db', 'cache_'.$file.'.php',
+					'SELECT * FROM `$Pconfig`', $new_file);
 			break;
 			case 'groups':
-				$objCore->objCache->initCache('groups_db',			'cache_groups.php',
-					'SELECT * FROM $Pgroups ORDER BY `order` ASC', $new_file);
+				$objCore->objCache->initCache($file.'_db', 'cache_'.$file.'.php',
+					'SELECT * FROM `$Pgroups` ORDER BY `order` ASC', $new_file);
 			break;
 			case 'bans':
-				$objCore->objCache->initCache('bans_db',			'cache_bans.php',
-					'SELECT * FROM $Pbanned', $new_file);
+				//$objCore->objCache->initCache($file.'_db', 'cache_'.$file.'.php',
+				//	'SELECT * FROM `$Pbanned`', $new_file);
 			break;
 			case 'menus':
-				$objCore->objCache->initCache('menus_db',			'cache_menus.php',
-					'SELECT * FROM $Pmenus ORDER BY `order` ASC', $new_file);
+				$objCore->objCache->initCache($file.'_db', 'cache_'.$file.'.php',
+					'SELECT * FROM `$Pmenus` ORDER BY `order` ASC', $new_file);
 			break;
 			case 'menu_setups':
-				$objCore->objCache->initCache('menu_setups_db',		'cache_menu_setups.php',
-					'SELECT * FROM $Pmenu_setups ORDER BY `order` ASC', $new_file);
+				$objCore->objCache->initCache($file.'_db', 'cache_'.$file.'.php',
+					'SELECT * FROM `$Pmenu_setups` ORDER BY `order` ASC', $new_file);
 			break;
 			case 'menu_blocks':
-				$objCore->objCache->initCache('menu_blocks_db',		'cache_menu_blocks.php',
-					'SELECT * FROM $Pmenu_blocks', $new_file);
+				$objCore->objCache->initCache($file.'_db', 'cache_'.$file.'.php',
+					'SELECT * FROM `$Pmenu_blocks`', $new_file);
 			break;
 			case 'group_subscriptions':
-				$objCore->objCache->initCache('user_permissions_db','cache_group_subscriptions.php',
-					'SELECT * FROM $Pgroup_subs', $new_file);
+				$objCore->objCache->initCache($file.'_db', 'cache_'.$file.'.php',
+					'SELECT * FROM `$Pgroup_subs`', $new_file);
 			break;
 			case 'modules':
-				$objCore->objCache->initCache('modules_db',			'cache_modules.php',
-					'SELECT * FROM $Pmodules', $new_file);
+				$objCore->objCache->initCache($file.'_db', 'cache_'.$file.'.php',
+					'SELECT * FROM `$Pmodules`', $new_file);
 			break;
 			case 'plugins':
-				$objCore->objCache->initCache('plugins_db',			'cache_plugins.php',
-					'SELECT * FROM $Pplugins', $new_file);
+				$objCore->objCache->initCache($file.'_db', 'cache_'.$file.'.php',
+					'SELECT * FROM `$Pplugins`', $new_file);
 			break;
 
 		//
 		//--Use Callback functions to generate the required configuations
 		//
 			case 'statistics':
-				$objCore->objCache->initCache('statistics_db',		'cache_statistics.php',
+				$objCore->objCache->initCache($file.'_db', 'cache_'.$file.'.php',
 					NULL, $new_file, 'Cache::generate_statistics_cache');
 			break;
 		}

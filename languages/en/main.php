@@ -9,6 +9,9 @@ $_lang['L_MAINTENANCE'] 	= 'This website is in maintainence mode.';
 $_lang['L_SITE_COPYRIGHT']  = '%s Powered By %s V%s';
 
 //footer lang vars
+$_lang['L_PAGE_GEN']        = '[ Queries: <b>%s</b> | SQL Time: <b>%s</b> | Page Generation Time: <b>%s</b> | Next Cron Update: <b>%s</b> ]';
+$_lang['TPL_INFO']          = 'Theme %s by %s V%s';
+$_lang['L_SITE_COPYRIGHT']  = '%s Powered By %s V%s';
 
 //debug lang vars
 

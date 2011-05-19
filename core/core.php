@@ -161,20 +161,11 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 		//NULL _SHOULD_ be the last 'file'
 		$cache_gen  = array('menus', 'menu_setups', 'menu_blocks', 'groups', 'bans', 'group_subscriptions', 'statistics', 'modules', 'plugins', NULL);
 
-		if(!isset($menus_db)){ 				newCache('menus', $menus_db); }
-		if(!isset($menu_setups_db)){ 		newCache('menu_setups', $menu_setups_db); }
-		if(!isset($menu_blocks_db)){ 		newCache('menu_blocks', $menu_blocks_db); }
-		if(!isset($groups_db)){ 			newCache('groups', $groups_db); }
-		if(!isset($user_permissions_db)){ 	newCache('group_subscriptions', $user_permissions_db); }
-		if(!isset($bans_db)){ 				newCache('bans', $bans_db); }
-		if(!isset($statistics_db)){ 		newCache('statistics', $statistics_db); }
-		if(!isset($modules_db)){ 			newCache('modules', $modules_db); }
-		if(!isset($plugins_db)){ 			newCache('plugins', $plugins_db); }
-
-
 		//set all the *_db vars above into the $config array
 		$x = 0;
 		while($var = $cache_gen[$x]){
+			if(!isset(${$var.'_db'})){ newCache($var, ${$var.'_db'}); }
+
 			$x++; //do this here it only increments $cache_gen anyway
 
 			//if var is empty, continue, no point wasting time
@@ -193,7 +184,7 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 
 			unset(${$var.'_db'});
 		}
-
+echo dump($config);
 	//clean the variable pool, keeping things nice and tidy
 	unset($cache_gen, $config_db, $var);
 
@@ -280,3 +271,12 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 
 	$guestCheck = ($config['global']['user']['id'] == GUEST ? true : false);
 	$objUser->setIsOnline($guestCheck ? false : true);
+
+//
+//--Include the CMS's internal CRON
+//
+        $file = cmsROOT.'core/cron.php';
+        if(!is_readable($file)){
+            msgDie('FAIL', sprintf($errorTPL, 'Fatal Error', 'Cron cannot be found.'));
+        }else{ require_once($file); }
+

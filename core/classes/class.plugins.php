@@ -15,12 +15,10 @@ class plugins extends coreClass{
 
 	private $hooks = array();
 
-	public function __construct() { }
-
 	/**
 	 * Get plugin list from the database, and attempt to load them in
 	 *
-	 * @version	1.0
+	 * @version	1.1
 	 * @since   1.0.0
 	 * @author  xLink
 	 *
@@ -33,10 +31,10 @@ class plugins extends coreClass{
 		//make sure we didnt get an empty var...
 		if(!is_array($plugin) || is_empty($plugin)){
 			//if we did try and get a fresh copy from the db
-			$plugin = $this->objSQL->getTable('SELECT * FROM '.$this->objSQL->prefix().'plugins');
+			$plugin = $this->objSQL->getTable($this->objSQL->prepare('SELECT * FROM `$Pplugins`'));
 
 			if(!is_array($plugin) || is_empty($plugin)){
-				return false; //no luck this time so just die quietly
+				return false; //no luck this time so just return quietly
 			}
 		}
 

@@ -97,7 +97,7 @@ class cache extends coreClass{
 		}
 
 		//if we can cache it
-		if($this->cacheToggle) {
+		if($this->cacheToggle && $this->output!==false) {
 			//lets!
 			$fp = @fopen($this->cacheDir . $file, 'wb');
 				if(!$fp){ return false; }
