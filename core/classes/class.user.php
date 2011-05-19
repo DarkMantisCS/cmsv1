@@ -9,13 +9,13 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
  *
  * @version     1.0
  * @since       1.0.0
- * @author      Jesus
+ * @author      xLink
  */
 class user extends coreClass{
 
 	//some static vars, these save function calls
 	static $IS_ONLINE = false;
-	static $IS_ADMIN = false, $IS_MOD = false, $IS_USER = false;
+	static $IS_ADMIN = true, $IS_MOD = false, $IS_USER = false;
 
 	/**
 	 * Sets the current user to online
@@ -49,6 +49,7 @@ class user extends coreClass{
 	 *
 	 * @version 1.1
 	 * @since   1.0.0
+	 * @author	Jesus
 	 *
 	 * @param	array $userInfo   Array of the users details.
 	 *
@@ -103,6 +104,7 @@ class user extends coreClass{
 	 *
 	 * @version 2.0
 	 * @since   1.0.0
+	 * @author	xLink
 	 *
 	 * @param	string $uid		Either Username of UserID
 	 *
@@ -119,8 +121,10 @@ class user extends coreClass{
 	 *
 	 * @version 1.1
 	 * @since   1.0.0
+	 * @author	xLink
 	 *
 	 * @param	string $uid		Either Username of UserID
+	 * @param	string $field	Name of the field wanted or * for all
 	 *
 	 * @return  mixed			Field requested or whole user information.
 	 */
@@ -180,6 +184,7 @@ class user extends coreClass{
 	 *
 	 * @version 2.0
 	 * @since   1.0.0
+	 * @author	xLink
 	 *
 	 * @param	string $username 	Username used to retreive the UID
 	 *
@@ -197,6 +202,7 @@ class user extends coreClass{
 	 *
 	 * @version 2.0
 	 * @since   1.0.0
+	 * @author	xLink
 	 *
 	 * @param	int $uid		UID used to retreive the Username
 	 *
@@ -214,6 +220,7 @@ class user extends coreClass{
 	 *
 	 * @version 1.0
 	 * @since   1.0.0
+	 * @author	xLink
 	 *
 	 * @return  bool	True on Successful Update
 	 */
@@ -242,6 +249,7 @@ class user extends coreClass{
 	 *
 	 * @version 2.0
 	 * @since   1.0.0
+	 * @author	Jesus
 	 *
 	 * @param   string $string
 	 * @param   string $salt
@@ -264,25 +272,72 @@ class user extends coreClass{
 	 *
 	 * @version 1.0
 	 * @since   1.0.0
+	 * @author	xLink
 	 *
 	 * @param	mixed 	$uid 			Username or UID.
 	 * @param	array 	$settings 		An array of settings, (columnName => value).
-	 * @param	string 	$log			String if needs to be set, false otherwise.
 	 *
 	 * @return  bool 					True if settings were fully updated, False if they wasnt.
 	 */
-	function updateUserSettings($uid, array $settings, $log=false){
-		foreach($settings as $setting => $value){
-			$update[$setting] = $value;
-		}
+	function updateUserSettings($uid, array $setting){
+		unset($setting['id'], $setting['uid'], $setting['password'], $setting['pin']);
 
-		$userStr = (is_number($uid) ? 'id = "%s" ' : 'username = "%s" ');
-		$return = $this->objSQL->updateRow('users', $updateStr, array($user, $uid), $log);
-		if(!$return){
-			$this->setError('Complete Update failed. SQL: '.mysql_error());
+		if(!count($setting)){
+			$this->setError('No setting changes detected. Make sure the array you gave was populated. '.
+								'The following columns are blacklisted from being updated with this function: '.
+								'id, uid, password, pin ');
 			return false;
 		}
 
+		//make sure user exists first
+		$user = $this->getUserInfo($uid, 'id');
+			if(!$user){ return false; }
+
+		//grab the columns for users and user_extras tables
+		if(!isset($this->userColumns)){ 	$this->userColumns 	= $this->objSQL->getColumns('users'); }
+		if(!isset($this->extraColumns)){ 	$this->extraColumns = $this->objSQL->getColumns('user_extras'); }
+			if(!$this->userColumns || !$this->extraColumns){
+				$this->setError('Could not get columns. SQL: '.mysql_error());
+				return false;
+			}
+
+		//run thru the array given to us and assign them to the array needed
+		$userUpdate = $extraUpdate = array();
+		foreach($setting as $column => $value){
+			if(in_array($column, $this->userColumns)){
+				$userUpdate[$column] = $value;
+				continue;
+			}
+
+			if(in_array($column, $this->extraColumns)){
+				$extraUpdate[$column] = $value;
+				continue;
+			}
+		}
+
+		if(!count($userUpdate) && !count($extraUpdate)){
+			$this->setError('Could not find any fields in $settings to update. Aborting.');
+			return false;
+		}
+
+		//now run the updates, and if all goes well return true
+		if(count($userUpdate)){
+			$return = $this->objSQL->updateRow('users', $userUpdate, array('id = "%s" ', $user));
+				if($return===false){
+					$this->setError('User update portion failed. SQL: '.mysql_error());
+					return false;
+				}
+		}
+
+		if(count($extraUpdate)){
+			$return = $this->objSQL->updateRow('user_extras', $extraUpdate, array('uid = "%s" ', $user));
+				if($return===false){
+					$this->setError('Extras update portion failed. SQL: '.mysql_error());
+					return false;
+				}
+		}
+
+		unset($return, $user, $userUpdate, $extraUpdate, $userColumns, $extraColumns);
 		return true;
 	}
 
@@ -297,10 +352,11 @@ class user extends coreClass{
 	 *
 	 * @version 1.0
 	 * @since   1.0.0
+	 * @author	xLink
 	 *
-	 * @param	mixed $uid        Username or UID.
+	 * @param	mixed $uid 		Username or UID.
 	 *
-	 * @return  mixed             IP address of user.
+	 * @return  mixed 			IP address of user.
 	 */
 	public static function getIP(){
 		if 		(getenv('HTTP_X_FORWARDED_FOR')){ $ip = getenv('HTTP_X_FORWARDED_FOR'); }

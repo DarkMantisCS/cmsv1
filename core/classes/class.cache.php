@@ -118,19 +118,19 @@ class cache extends coreClass{
 		//total members in db
 			$total_members  = $this->objSQL->getInfo('users');
 		//last user info, for the stat menu
-			$query = $this->objSQL->prepare('SELECT id, username FROM $Pusers ORDER BY id DESC LIMIT 1');
+			$query = $this->objSQL->prepare('SELECT id, username FROM `$Pusers` ORDER BY id DESC LIMIT 1');
 			$last_user      = $this->objSQL->getLine($query);
 		//online members and guests
-			$query = $this->objSQL->prepare('SELECT DISTINCT username FROM $Ponline WHERE username != "Guest"');
+			$query = $this->objSQL->prepare('SELECT DISTINCT uid FROM `$Ponline` WHERE uid != "0"');
 			$online_users   = $this->objSQL->getTable($query);
 
-			$query = $this->objSQL->prepare('SELECT DISTINCT ip_address FROM $Ponline WHERE username = "Guest"');
+			$query = $this->objSQL->prepare('SELECT DISTINCT ip_address FROM `$Ponline` WHERE uid = "0"');
 			$online_guests  = $this->objSQL->getTable($query);
 		//get cron updates
-			$query = $this->objSQL->prepare('SELECT * FROM $Pstatistics');
+			$query = $this->objSQL->prepare('SELECT * FROM `$Pstatistics`');
 			$cron = $this->objSQL->getTable($query);
 
-		if($cron){
+		if(count($cron) > 0){
 			foreach($cron as $i){
 				if($i['variable']=='hourly_cron'){ 	$hourly = $i['value']; }
 				if($i['variable']=='weekly_cron'){ 	$weekly = $i['value']; }

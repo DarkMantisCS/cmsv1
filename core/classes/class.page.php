@@ -473,7 +473,7 @@ class page extends coreClass{
 
 		//if the site is closed, the only way they can get this far is if the user has privs so
 		if($this->config('site', 'closed') == 1){
-			$this->setVar('HEADER_MSG', 'This website is in maintainence mode.');
+			$this->setVar('HEADER_MSG', langVar('L_MAINTENANCE'));
 		}
 
 		//if we want to put out a msg in the header as a warning or something
@@ -566,6 +566,8 @@ class page extends coreClass{
 			}
 		}
 
+$a = User::$IS_ADMIN;
+echo dump($a);
     	//check for admin privs and file(debug) existing in the root
 		if(User::$IS_ADMIN && !file_exists('debug')){
 			//if the debug happened..
@@ -597,7 +599,7 @@ class page extends coreClass{
 							'DESC'      => $log['description'],
 							'IP'        => $log['ip_address'],
 							'SQL'       => $log['query'],
-							'TIME'      => $this->objTime->mk_time($log['date']),
+							#'TIME'      => $this->objTime->mk_time($log['date']),
 						));
 					}
 				}

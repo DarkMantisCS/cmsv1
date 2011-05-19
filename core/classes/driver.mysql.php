@@ -107,7 +107,9 @@ class mysql extends coreClass implements SQLBase{
 					$this->link_time += $row['time'];
 					$queries++;
 				}
-				if($row['status'] == 'error') $queries_failed++;
+				if($row['status'] == 'error'){
+					$queries_failed++;
+				}
 			}
 
 			$this->queries_executed = $queries + $queries_failed;
@@ -175,6 +177,33 @@ class mysql extends coreClass implements SQLBase{
 	 */
 	public function selectDb($db) {
 		return mysql_select_db($db, $this->link_id) or $this->recordMessage(null, 'ERROR');
+	}
+
+	/**
+	 * Returns the names of columns from a table structure
+	 *
+	 * @version	1.0
+	 * @since   1.0.0
+	 * @author  xLink
+	 *
+	 * @param 	string $table
+	 *
+	 * @return 	array
+	 */
+	public function getColumns($table){
+		$query = $this->prepare('SHOW COLUMNS FROM `$P'.$table.'`');
+		$columns = $this->getTable($query);
+			if(!$columns || (is_array($columns) && !count($columns))){
+				$this->setError('Query failed. SQL: '.mysql_error());
+				return false;
+			}
+
+		$return = array();
+		foreach($columns as $column){
+			$return[] = $column['Field'];
+		}
+
+		return $return;
 	}
 
 	/**
@@ -344,11 +373,12 @@ class mysql extends coreClass implements SQLBase{
 	 * @return 	int
 	 */
 	public function getInfo($table, $clause=null, $log=false){
-		$statement = 'SELECT COUNT(*) FROM `$P'.$table.'`';
+		$statement = 'SELECT COUNT(*) FROM `$P%s`';
 		if(!is_empty($clause)){
 			$statement .= ' WHERE '.$this->autoPrepare($clause);
 		}
 
+		$statement = $this->prepare($statement, $table);
 		$line = $this->getLine($statement, $log);
 
 		return $line['COUNT(*)'];
@@ -535,7 +565,7 @@ class mysql extends coreClass implements SQLBase{
 	 * @param 	string 	$message
 	 * @param 	string 	$mode
 	 */
-	function recordMessage($message, $mode=false) {
+	public function recordMessage($message, $mode=false) {
 		$this->failed = true;
 		if($this->debug) {
 			$a = debug_backtrace();
@@ -578,7 +608,7 @@ class mysql extends coreClass implements SQLBase{
 	 * @param 	string 	$query
 	 * @param 	string 	$log
 	 */
-	function recordLog($query, $log) {
+	public function recordLog($query, $log) {
 		global $config;
 
 		$uid = '0';

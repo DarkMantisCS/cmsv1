@@ -228,7 +228,7 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 	 * @return 	bool
 	 */
 	function is_empty($var) {
-		if(is_null($var) || empty($var) || trim($var)==''){ return true; }
+		if(is_null($var) || empty($var) || (is_string($var) && trim($var)=='')){ return true; }
 		if(is_array($var) && !count($var)){ return true; }
 		if($var === false){ return true; }
 

@@ -136,25 +136,25 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 	$objCore->setup($classes);
 	unset($classes);
 
-	$objCore->objSQL->connect(true, false, false);
+	$objCore->objSQL->connect(true, true, false);
 	unset($config['db']);
 //
 //--Cache Vars init
 //
-		//if it didnt, check to see which of the files didnt get added and try to get them manually
-		if(!isset($config_db)){ 			newCache('config', $config_db); }
+	//if it didnt, check to see which of the files didnt get added and try to get them manually
+	if(!isset($config_db)){ 			newCache('config', $config_db); }
 
-		//We have no configuration DB, and the one generated was NULL...
-		if(!isset($config_db) || $config_db===NULL || empty($config_db)){
-			//this will only happen if the CMS wasnt installed properly
-			//or hasnt got access to her original tables
-			msgDie('FAIL', sprintf($errorTPL, 'Fatal Error',
-				'Cannot load CMS Configuration, make sure installation ran properly and mySQL user has access to tables.'));
-		}
+	//We have no configuration DB, and the one generated was NULL...
+	if(!isset($config_db) || $config_db===NULL || empty($config_db)){
+		//this will only happen if the CMS wasnt installed properly
+		//or hasnt got access to her original tables
+		msgDie('FAIL', sprintf($errorTPL, 'Fatal Error',
+			'Cannot load CMS Configuration, make sure installation ran properly and mySQL user has access to tables.'));
+	}
 
-		//sort through the configuration crap, spit out a useable version :D
-		foreach($config_db as $array){ $config[$array['array']][$array['var']] = $array['value']; }
-		unset($config_db);
+	//sort through the configuration crap, spit out a useable version :D
+	foreach($config_db as $array){ $config[$array['array']][$array['var']] = $array['value']; }
+	unset($config_db);
 
 
 		//generate an array with names of files that should be added to the master config array()
@@ -194,32 +194,32 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 			unset(${$var.'_db'});
 		}
 
-		//clean the variable pool, keeping things nice and tidy
-		unset($cache_gen, $config_db, $var);
+	//clean the variable pool, keeping things nice and tidy
+	unset($cache_gen, $config_db, $var);
 
-		//do a few checks on the cache, see whats what
-		if(is_empty($config['menu_blocks']) && !defined('NOMENU')){
-			 define('NOMENU', true);
-		}
-
+	//do a few checks on the cache, see whats what
+	if(is_empty($config['menu_blocks']) && !defined('NOMENU')){
+		 define('NOMENU', true);
+	}
 
 //
 //--Language Setup
 //
-		//grab the default language info, and test to see if user has a request
-        $language = doArgs('language', 'en', $config['site']);
-        if(isset($_SESSION['user']['language'])){
-            if(is_dir(cmsROOT.'language/'.$_SESSION['user']['language'].'/') &&
-               is_readable(cmsROOT.'language/'.$_SESSION['user']['language'].'/main.php')){
-                    $language = $_SESSION['user']['language'];
-            }
+	//grab the default language info, and test to see if user has a request
+    $language = doArgs('language', 'en', $config['site']);
+    $langDir = cmsROOT.'languages/';
+    if(isset($_SESSION['user']['language'])){
+        if(is_dir($langDir.$_SESSION['user']['language'].'/') &&
+           is_readable($langDir.$_SESSION['user']['language'].'/main.php')){
+                $language = $_SESSION['user']['language'];
         }
+    }
 
-        if(is_dir(cmsROOT.'language/'.$language.'/') || is_readable(cmsROOT.'language/'.$language.'/main.php')){
-        	require_once(cmsROOT.'language/'.$language.'/main.php');
-        }else{
-            msgDie('FAIL', sprintf($errorTPL, 'Fatal Error', 'Cannot open '.(cmsROOT.'language/'.$language.'/main.php').' for include.'));
-		}
+    if(is_dir($langDir.$language.'/') || is_readable($langDir.$language.'/main.php')){
+    	require_once($langDir.$language.'/main.php');
+    }else{
+        msgDie('FAIL', sprintf($errorTPL, 'Fatal Error', 'Cannot open '.($langDir.$language.'/main.php').' for include.'));
+	}
 
 //
 //--More Classes Setup
@@ -230,17 +230,53 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 									'cacheDir' 	=> $cachePath.'template/'
 								));
 
+	$classes['objPage'] 		= array($classDir.'class.page.php');
 	$classes['objPlugins']		= array($classDir.'class.plugins.php');
 	$classes['objUser'] 		= array($classDir.'class.user.php');
+	$classes['objGroup'] 		= array($classDir.'class.groups.php');
+
 	$classes['objForm'] 		= array($classDir.'class.form.php');
+	$classes['objTime'] 		= array($classDir.'class.time.php');
 
-	$classes['objPage'] 		= array($classDir.'class.page.php');
-
+	//init these classes
 	$objCore->setup($classes);
 
 	//globalise the class names
-	foreach($objCore->classes as $objName => $args){ $$objName = $objCore->$objName; }
+	foreach($objCore->classes as $objName => $args){ $$objName =& $objCore->$objName; }
 	unset($classes, $objCore->classes);
 
 	//start class setups
 	$objPlugins->loadHooks($config['plugins']);
+
+	$objPage->setVar('language', $language);
+
+//
+//--Generate a 'Template' for the Session
+//
+	$guest['user'] = array(
+		'id'			=> 0,
+		'username' 		=> 'Guest',
+		'theme'			=> $objCore->config('site', 'theme'),
+		'userkey' 		=> doArgs('userkey', null, $_SESSION['user']),
+		'timezone'		=> doArgs('timezone', null, $_SESSION['user']),
+	);
+
+	//generate user stuff
+	$config['global'] = array(
+		'user' 			=> (isset($_SESSION['user']['id']) ? $_SESSION['user'] : $guest['user']),
+		'ip'			=> User::getIP(),
+		'useragent' 	=> doArgs('HTTP_USER_AGENT', null, $_SERVER),
+		'browser'		=> getBrowser($_SERVER['HTTP_USER_AGENT']),
+		'language'		=> $language,
+		'secure'		=> ($_SERVER['HTTPS'] ? true : false),
+		'root'			=> '/'.root(),
+		'fullPath'		=> $_SERVER['REQUEST_URI'],
+		'url'			=> ($_SERVER['HTTPS'] ? 'https' : 'http').'://'.$_SERVER['HTTP_HOST'].'/'.root(),
+		'fullUrl'		=> ($_SERVER['HTTPS'] ? 'https' : 'http').'://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'],
+	);
+
+	//hook the session template
+	$objPlugins->hook('CMSCore_session_tpl', $config['global']);
+
+	$guestCheck = ($config['global']['user']['id'] == GUEST ? true : false);
+	$objUser->setIsOnline($guestCheck ? false : true);

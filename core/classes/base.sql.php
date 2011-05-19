@@ -17,6 +17,7 @@ interface SQLBase{
 	public function connect($persistent, $debug, $logging);
 	public function disconnect();
 	public function selectDb($db);
+	public function getColumns($table);
 
 	public function getError();
 
