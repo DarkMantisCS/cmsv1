@@ -97,15 +97,8 @@ class cache extends coreClass{
 		}
 
 		//if we can cache it
-		if($this->cacheToggle && $this->output!==false) {
-			//lets!
-			$fp = @fopen($this->cacheDir . $file, 'wb');
-				if(!$fp){ return false; }
-
-			fwrite($fp, '<?php'."\n"."if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }".
-						"\n".'$'.$name.' = '.var_export($this->output, true).';'.
-						"\n".'?>');
-			fclose($fp);
+		if($this->output!==false) {
+			$this->writeFile($name, $this->output);
 		}
 
 		//return the array directly, so its ready for use straight away
@@ -114,7 +107,7 @@ class cache extends coreClass{
 
     function generate_statistics_cache(){
     //grab some info to put into the stat file
-		$this->objSQL->recordMessage('Cache: Recalculating Statistics', 'WARNING');
+		$this->objSQL->recordMessage('Cache: Recalculating Statistics', 'INFO');
 		//total members in db
 			$total_members  = $this->objSQL->getInfo('users');
 		//last user info, for the stat menu
@@ -129,7 +122,7 @@ class cache extends coreClass{
 		//get cron updates
 			$query = $this->objSQL->prepare('SELECT * FROM `$Pstatistics`');
 			$cron = $this->objSQL->getTable($query);
-
+echo dump($cron);
 		if(count($cron) > 0){
 			foreach($cron as $i){
 				if($i['variable']=='hourly_cron'){ 	$hourly = $i['value']; }
@@ -153,19 +146,24 @@ class cache extends coreClass{
 
 		);
 
-		if($this->cache_toggle) {
-			$fp = @fopen($this->cache_dir . 'cache_statistics.php', 'wb');
-			if(!$fp){ return false; }
-
-			fwrite($fp, '<?php'."\n"."if(!defined('INDEX_CHECK')){die('Error: Cannot access directly.');}".
-				"\n".'$statistics_db = ' . var_export(@$this->output, true).';'."\n".
-				'?>');
-			fclose($fp);
-		}
-
-		return @$this->output;
+		$this->writeFile('statistics_db', $this->output);
+		return $this->output;
     }
 
 
+	function writeFile($file, $contents){
+		if(!$this->cache_toggle){ return null; }
+
+		$fileName = $this->cache_dir . 'cache_%s.php';
+		$fp = @fopen(sprintf($fileName, str_replace('_db', '', $file)), 'wb');
+			if(!$fp){ return false; }
+
+		fwrite($fp, '<?php'."\n"."if(!defined('INDEX_CHECK')){die('Error: Cannot access directly.');}".
+			"\n".'$'.$file.' = ' . var_export($contents, true).';'."\n".
+			'?>');
+		fclose($fp);
+
+		return true;
+	}
 }
 ?>

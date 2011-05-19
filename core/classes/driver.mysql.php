@@ -311,7 +311,7 @@ class mysql extends coreClass implements SQLBase{
 	 */
 	private function autoPrepare($clause){
 		if(!is_array($clause) || is_empty($clause)){
-			return null;
+			return $clause;
 		}
 		return call_user_func_array(array($this, 'prepare'), $clause);
 	}
@@ -520,7 +520,7 @@ class mysql extends coreClass implements SQLBase{
 	function updateRow($table, $array, $clause, $log=false){
 		if(is_empty($array)){ return false; }
 
-		$query = 'UPDATE `$P%1$s` SET';
+		$query = 'UPDATE `$P%s` SET';
 
 		foreach($array as $index => $value){
 			if($value === null){
@@ -532,8 +532,10 @@ class mysql extends coreClass implements SQLBase{
 
 		$query = substr($query, 0, -2).' WHERE '.$this->autoPrepare($clause).' LIMIT 1';
 
-		$this->query($this->prepare($query, $table), $log);
-		return mysql_affected_rows();
+		$query = $this->prepare($query, $table);
+		$this->query($query, $log);
+
+		return mysql_affected_rows($this->link_id);
 	}
 
 	/**
@@ -550,7 +552,8 @@ class mysql extends coreClass implements SQLBase{
 	 * @return 	array
 	 */
 	public function deleteRow($table, $clause, $log=false){
-		$this->query($this->prepare('SELECT FROM `$P$s` WHERE %s', $table, $this->autoPrepare($clause)), $log);
+		$query = 'DELETE FROM `$P%s` WHERE '. $this->autoPrepare($clause);
+		$this->query($this->prepare($query, $table), $log);
 
 		return mysql_affected_rows($this->link_id);
 	}
@@ -567,34 +570,40 @@ class mysql extends coreClass implements SQLBase{
 	 */
 	public function recordMessage($message, $mode=false) {
 		$this->failed = true;
-		if($this->debug) {
-			$a = debug_backtrace();
-			$file = $a[2];
-			if(isset($file['args'])){
-				foreach($file['args'] as $k => $v){
-					$file['args'][$k] = (is_array($v) ? serialize($v) : $v);
-				}
-			}
+		if(!$this->debug) { return; }
 
-			$message = secureMe($message);
-			$pinpoint = '<br /><div class="content padding"><strong>'.realpath($file['file']).'</strong> @ <strong>'.$file['line'].
-							'</strong> // Affected '.mysql_affected_rows().' rows.. <br /> '.$file['function'].'(<strong>\''.
-							(isset($file['args']) ? secureMe(implode('\', \'', $file['args'])) : null).'\'</strong>); </div>';
-
-			if($mode == 'WARNING'){
-				$this->debugtext[] = array(
-					'query'		=> '<span style="color:orange"><b>WARNING:</b></span> '.$message.$pinpoint,
-					'time'		=> '---------',
-					'status'	=> 'warning'
-				);
-			} else {
-				$max = count($this->debugtext);
-				$this->debugtext[$max - 1] = array(
-					'query'		=> '<span style="color:red"><b>ERROR:</b></span> '.$message.$pinpoint,
-					'time'		=> '---------',
-					'status'	=> 'error'
-				);
+		$a = debug_backtrace();
+		$file = $a[2];
+		if(isset($file['args'])){
+			foreach($file['args'] as $k => $v){
+				$file['args'][$k] = (is_array($v) ? serialize($v) : $v);
 			}
+		}
+
+		$message = secureMe($message);
+		$pinpoint = '<br /><div class="content padding"><strong>'.realpath($file['file']).'</strong> @ <strong>'.$file['line'].
+						'</strong> // Affected '.mysql_affected_rows().' rows.. <br /> '.$file['function'].'(<strong>\''.
+						(isset($file['args']) ? secureMe(implode('\', \'', $file['args'])) : null).'\'</strong>); </div>';
+
+		if($mode == 'WARNING'){
+			$this->debugtext[] = array(
+				'query'		=> '<div class="padding"><span style="color:orange"><b>WARNING:</b></span> '.$message.$pinpoint.'</div>',
+				'time'		=> '---------',
+				'status'	=> 'warning'
+			);
+		} else if($mode == 'ERROR') {
+			$max = count($this->debugtext);
+			$this->debugtext[$max - 1] = array(
+				'query'		=> '<div class="padding"><span style="color:red"><b>ERROR:</b></span> '.$message.$pinpoint.'</div>',
+				'time'		=> '---------',
+				'status'	=> 'error'
+			);
+		} else {
+			$this->debugtext[] = array(
+				'query'		=> '<div class="padding"><span style="color:blue"><b>INFO:</b></span> '.$message.'</div>',
+				'time'		=> '---------',
+				'status'	=> 'info'
+			);
 		}
 	}
 
@@ -607,27 +616,19 @@ class mysql extends coreClass implements SQLBase{
 	 *
 	 * @param 	string 	$query
 	 * @param 	string 	$log
+	 *
+	 * @return 	bool
 	 */
 	public function recordLog($query, $log) {
-		global $config;
-
-		$uid = '0';
-		$username = 'Guest';
-
-		if(isset($config['global']['user']['id']) && isset($config['global']['user']['username'])) {
-			$uid = $config['global']['user']['id'];
-			$username = $config['global']['user']['username'];
-		}
-
-		$info['uid'] 			= $uid;
-		$info['username'] 		= $username;
+		$info['uid'] 			= (User::$IS_ONLINE ? $this->objUser->grab('id') : '0');
+		$info['username'] 		= (User::$IS_ONLINE ? $this->objUser->grab('username') : 'Guest');
 		$info['description'] 	= $log;
 		$info['query'] 			= $query;
-		$info['refer'] 			= stripslashes($_SERVER['HTTP_REFERER']);
+		$info['refer'] 			= secureMe($_SERVER['HTTP_REFERER']);
 		$info['date'] 			= time();
-		$info['ip_address'] 	= '127.0.0.1';
+		$info['ip_address'] 	= User::getIP();
 
-		$this->insertRow('logs', $info, false);
+		return $this->insertRow('logs', $info, false);
 	}
 }
 

@@ -184,7 +184,7 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 
 			unset(${$var.'_db'});
 		}
-echo dump($config);
+#echo dump($config);
 	//clean the variable pool, keeping things nice and tidy
 	unset($cache_gen, $config_db, $var);
 
@@ -275,8 +275,10 @@ echo dump($config);
 //
 //--Include the CMS's internal CRON
 //
-        $file = cmsROOT.'core/cron.php';
-        if(!is_readable($file)){
-            msgDie('FAIL', sprintf($errorTPL, 'Fatal Error', 'Cron cannot be found.'));
-        }else{ require_once($file); }
+    $file = cmsROOT.'core/cron.php';
+	if(is_readable($file)){
+		require_once($file);
+	}else{
+		msgDie('FAIL', sprintf($errorTPL, 'Fatal Error', 'Cron cannot be found.'));
+	}
 

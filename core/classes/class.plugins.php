@@ -12,7 +12,7 @@ if(!defined('INDEX_CHECK')){die('Error: Cannot access directly.');}
 * @author      xLink
 */
 class plugins extends coreClass{
-
+	private $dontBother = false;
 	private $hooks = array();
 
 	/**
@@ -27,6 +27,7 @@ class plugins extends coreClass{
 	 * @return  bool
 	 */
 	public function loadHooks($plugin){
+		if($this->dontBother == true){ return false; }
 
 		//make sure we didnt get an empty var...
 		if(!is_array($plugin) || is_empty($plugin)){
@@ -34,6 +35,7 @@ class plugins extends coreClass{
 			$plugin = $this->objSQL->getTable($this->objSQL->prepare('SELECT * FROM `$Pplugins`'));
 
 			if(!is_array($plugin) || is_empty($plugin)){
+				$this->dontBother = true;
 				return false; //no luck this time so just return quietly
 			}
 		}
