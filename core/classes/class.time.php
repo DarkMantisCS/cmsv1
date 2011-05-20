@@ -28,13 +28,13 @@ class time extends coreClass {
 		$timestamp = (is_empty($timestamp) ? time() : $timestamp);
 
 		//if we got DST set then go for it
-		if($this->config('site', 'dst') == 1){
+		if($this->config('time', 'dst') == 1){
 			$timestamp = $this->mod_time($timestamp, 0, 0, 1);
 		}
 
 		//if $tz is null, then we want to set this from the site setting or user local setting
 		if(is_empty($tz)){
-			$tz = $this->config('site', 'timezone');
+			$tz = $this->config('time', 'timezone');
 			if(!is_empty($this->objUser->grab('timezone'))){
 				$tz = $this->objUser->grab('timezone');
 			}

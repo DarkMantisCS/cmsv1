@@ -520,7 +520,7 @@ class mysql extends coreClass implements SQLBase{
 	function updateRow($table, $array, $clause, $log=false){
 		if(is_empty($array)){ return false; }
 
-		$query = 'UPDATE `$P%s` SET';
+		$query = 'UPDATE `$P%s` SET ';
 
 		foreach($array as $index => $value){
 			if($value === null){
@@ -573,7 +573,7 @@ class mysql extends coreClass implements SQLBase{
 		if(!$this->debug) { return; }
 
 		$a = debug_backtrace();
-		$file = $a[2];
+		$file = $a[1];
 		if(isset($file['args'])){
 			foreach($file['args'] as $k => $v){
 				$file['args'][$k] = (is_array($v) ? serialize($v) : $v);

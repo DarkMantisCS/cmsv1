@@ -501,13 +501,13 @@ class page extends coreClass{
 	//
 
 		$noMenu = false;
-		if(!defined('NOMENU')){ $noMenu = true; }
+		if(defined('NOMENU') && NOMENU==1){ $noMenu = true; }
 
 		$menu = $this->getVar('moduleMenu');
 		if($menu['module'] === false){ $noMenu = true; }
 
 		//we cant do nothin without any blocks
-		if(isset($config['menu_blocks']) && !is_empty($config['menu_blocks'])){
+		if(!$noMenu && isset($config['menu_blocks']) && !is_empty($config['menu_blocks'])){
 			//if it got set to null, or wasnt set atall, default to the core menu
 			if($menu['module']===NULL){ $menu['module'] = 'core'; }
 
@@ -516,7 +516,10 @@ class page extends coreClass{
 			if($menuSetup){
 				$this->objTPL->assign_block_vars('menu', array());
 			}
-		}
+		}else{
+			//if we cant show menu, may aswell set the no_menu block
+            $this->objTPL->assign_block_vars('no_menu', array());
+        }
 
 		//ouput the header and set completed to 1
 		$this->objTPL->assign_vars($array);
@@ -534,7 +537,7 @@ class page extends coreClass{
 	 * @param 	bool $simple
 	 */
 	public function showFooter($simple=false){
-		global $START_CMS_LOAD;
+		global $START_CMS_LOAD, $config;
 
 		//no need for a footer if the header hasnt been called to
 		if(!$this->header['completed']){ return; }
@@ -613,8 +616,10 @@ class page extends coreClass{
 		if(User::$IS_ADMIN){
 			$this->timer = isset($START_CMS_LOAD) ? $START_CMS_LOAD : microtime(true);
 			$generation = round(microtime(true)-$this->timer, 5);
-			$page_gen = langVar('L_PAGE_GEN', $queries, $_timer, $generation,
-							$this->objTime->mk_time(($this->config('statistics', 'hourly_cron')+$this->config('site', 'hourly_time'))));
+			$nextCron = $this->objTime->mk_time($this->config('statistics', 'hourly_cron') + $this->config('cron', 'hourly_time'));
+			$ramUse = formatBytes(memory_get_usage());
+
+			$page_gen = langVar('L_PAGE_GEN', $queries, $_timer, $generation, $ramUse, $nextCron);
 		}
 		$footer = array();
 		if(is_readable(page::$THEME_ROOT.'cfg.php')){

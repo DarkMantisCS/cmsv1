@@ -249,7 +249,7 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 		'username' 		=> 'Guest',
 		'theme'			=> $objCore->config('site', 'theme'),
 		'userkey' 		=> doArgs('userkey', null, $_SESSION['user']),
-		'timezone'		=> doArgs('timezone', null, $_SESSION['user']),
+		'timezone'		=> doArgs('timezone', $objCore->config('time', 'timezone'), $_SESSION['user']),
 	);
 
 	//generate user stuff

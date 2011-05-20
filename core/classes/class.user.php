@@ -101,20 +101,20 @@ class user extends coreClass{
     }
 
 	/**
-	 * Returns a value set on the current user
+	 * Returns a setting's value set on the current user
 	 *
 	 * @version 2.0
 	 * @since   1.0.0
 	 * @author	xLink
 	 *
-	 * @param	string $uid		Either Username of UserID
+	 * @param	string $setting
 	 *
-	 * @return  mixed			Field requested or whole user information.
+	 * @return  mixed
 	 */
-	public function grab($key){
+	public function grab($setting){
 		global $config;
 
-		return doArgs($value, false, $config['global']);
+		return doArgs($setting, false, $config['global']['user']);
 	}
 
 	/**

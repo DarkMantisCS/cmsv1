@@ -13,21 +13,30 @@ if(!defined('INDEX_CHECK')){die('Error: Cannot access directly.');}
 */
 class cache extends coreClass{
 
-	var $cacheToggle = '';
-	var $output = array();
-	var $cacheDir = '';
+	private $cacheToggle = false;
+	private $output = array();
+	private $cacheDir = '';
+	private $fileTpl = '';
 
 	function __construct($args=array()) {
 		$this->cacheToggle = doArgs('useCache', false, $args);
 		$this->cacheDir = doArgs('cacheDir', '', $args);
+		$this->fileTpl = $this->cacheDir.'cache_%s.php';
 	}
 
 	/**
 	 * Sets up a new cache file
 	 *
-	 * @version     1.0
-	 * @since       1.0.0
-	 * @author      xLink
+	 * @version 1.0
+	 * @since 	1.0.0
+	 * @author  xLink
+	 *
+	 * @param	string 	$name
+	 * @param 	string 	$file
+	 * @param 	var 	$result
+	 * @param	string 	$callback
+	 *
+	 * @return 	bool
 	 */
 	function initCache($name, $file, $query, &$result, $callback=null){
 		if($this->cacheToggle && is_file($this->cacheDir . $file)){
@@ -47,14 +56,16 @@ class cache extends coreClass{
 	/**
 	 * Regenerates a cache file
 	 *
-	 * @version     1.0
-	 * @since       1.0.0
-	 * @author      xLink
+	 * @version 1.0
+	 * @since 	1.0.0
+	 * @author  xLink
+	 *
+	 * @param 	string 	$file
 	 */
 	function regenerateCache($file){
 		//if its present, remove it
-		if(is_readable($this->cacheDir.'cache_'.$file.'.php')){
-			unlink($this->cacheDir.'cache_'.$file.'.php');
+		if(is_readable(sprintf($this->fileTpl, $file))){
+			unlink(sprintf($this->fileTpl, $file));
 		}
 
 		//regenerate a new cache file
@@ -63,11 +74,17 @@ class cache extends coreClass{
 	}
 
 	/**
-	 * Generates a loadable array based on sql query
+	 * Generates and caches a loadable array based on sql query
 	 *
-	 * @version     1.0
-	 * @since       1.0.0
-	 * @author      xLink
+	 * @version 1.0
+	 * @since 	1.0.0
+	 * @author 	xLink
+	 *
+	 * @param 	string 	$name
+	 * @param 	string 	$file
+	 * @param 	string 	$query
+	 *
+	 * @return 	array
 	 */
 	function generateCache($name, $file, $query){
 		unset($this->output);
@@ -77,10 +94,10 @@ class cache extends coreClass{
 		$query = $this->objSQL->getTable($query);
 
 		//check to make sure it worked
-		if(!$query){ $this->output = false; }
+		if($query===false){ $this->output = false; }
 
 		//loop through each row of the returned array
-		if(is_array($query) && !is_empty($query)){
+		if(!is_empty($query)){
 			foreach($query as $row){
 				$nline = array();
 
@@ -105,24 +122,36 @@ class cache extends coreClass{
 		return $this->output;
 	}
 
+	/**
+	 * Generates stats based on current db infomation
+	 *
+	 * @version 1.0
+	 * @since 	1.0.0
+	 * @author 	xLink
+	 *
+	 * @return 	array
+	 */
     function generate_statistics_cache(){
-    //grab some info to put into the stat file
+	    //grab some info to put into the stat file
 		$this->objSQL->recordMessage('Cache: Recalculating Statistics', 'INFO');
-		//total members in db
+			//total members in db
 			$total_members  = $this->objSQL->getInfo('users');
-		//last user info, for the stat menu
+
+			//last user info, for the stat menu
 			$query = $this->objSQL->prepare('SELECT id, username FROM `$Pusers` ORDER BY id DESC LIMIT 1');
 			$last_user      = $this->objSQL->getLine($query);
-		//online members and guests
+
+			//online members and guests
 			$query = $this->objSQL->prepare('SELECT DISTINCT uid FROM `$Ponline` WHERE uid != "0"');
 			$online_users   = $this->objSQL->getTable($query);
 
 			$query = $this->objSQL->prepare('SELECT DISTINCT ip_address FROM `$Ponline` WHERE uid = "0"');
 			$online_guests  = $this->objSQL->getTable($query);
-		//get cron updates
+
+			//get cron updates
 			$query = $this->objSQL->prepare('SELECT * FROM `$Pstatistics`');
 			$cron = $this->objSQL->getTable($query);
-echo dump($cron);
+
 		if(count($cron) > 0){
 			foreach($cron as $i){
 				if($i['variable']=='hourly_cron'){ 	$hourly = $i['value']; }
@@ -151,15 +180,26 @@ echo dump($cron);
     }
 
 
+	/**
+	 * Writes a cache file, this file can be reincluded after
+	 *
+	 * @version 1.0
+	 * @since 	1.0.0
+	 * @author 	xLink
+	 *
+	 * @param 	string 	$file
+	 * @param 	string 	$contents
+	 *
+	 * @return 	bool
+	 */
 	function writeFile($file, $contents){
-		if(!$this->cache_toggle){ return null; }
+		if(!$this->cacheToggle){ return null; }
 
-		$fileName = $this->cache_dir . 'cache_%s.php';
-		$fp = @fopen(sprintf($fileName, str_replace('_db', '', $file)), 'wb');
+		$fp = @fopen(sprintf($this->fileTpl, str_replace('_db', '', $file)), 'wb');
 			if(!$fp){ return false; }
 
 		fwrite($fp, '<?php'."\n"."if(!defined('INDEX_CHECK')){die('Error: Cannot access directly.');}".
-			"\n".'$'.$file.' = ' . var_export($contents, true).';'."\n".
+			"\n".'$'.$file.' = ' .var_export($contents, true).';'."\n".
 			'?>');
 		fclose($fp);
 

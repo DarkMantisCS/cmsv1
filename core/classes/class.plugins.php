@@ -42,13 +42,16 @@ class plugins extends coreClass{
 
 		//loop though each plugin
 		foreach($plugin as $hook){
-				$hookStr = $hook['filePath'];
+			$hookStr = $hook['filePath'];
+
 			//make sure its actually a file and is readable
-				if(!is_file($hookStr) || !is_readable($hookStr)){ continue; }
+			if(!is_file($hookStr) || !is_readable($hookStr)){ continue; }
+
 			//also make sure its enabled..
-				if(!$hook['enabled']){ continue; }
+			if(!$hook['enabled']){ continue; }
+
 			//and then include it :D
-				include_once( str_replace('./', cmsROOT.'', $hookStr) );
+			include_once( str_replace('./', cmsROOT.'', $hookStr) );
 		}
 
 		//everything worked as expected so just return true;

@@ -56,6 +56,21 @@ input:-webkit-autofill {
     color: #2a2a2a !important;
 }
 
+.debug {
+    width: 100%;
+    overflow: auto;
+    margin: 0px 0px 10px 0px;
+    background: white;
+    color: black;
+    font-family: Verdana;
+    border: 1px solid #cccccc;
+    padding: 5px;
+    font-size: 10px;
+    line-height: 13px;
+    display: block;
+    max-width: 1000px;
+}
+
 .wrap{
     white-space: pre;           /* CSS 2.0 */
     white-space: pre-line;      /* CSS 3.0 */

@@ -6,27 +6,23 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 
 //make sure we have a db connection before we continue
 if(defined('NO_DB')){ return; }
-#echo dump($config);
+
     //set hourly cron to exec, run every 1 hour
-    $hourly_cron = false;
-    if(time()-$config['cron']['hourly_cron'] > $objCore->config('statistics', 'hourly_cron')){
-        $objSQL->updateRow('statistics', array('value' => time()), 'variable = "hourly_cron"');
-        $hourly_cron = true;
-    }
+    $crons = array(
+		'hourly' 	=> $config['cron']['hourly_time'],
+		'daily' 	=> $config['cron']['daily_time'],
+		'weekly' 	=> $config['cron']['weekly_time'],
+	);
 
-    //set daily cron to exec, run every 24 hours
-    $daily_cron = false;
-    if(time()-$config['cron']['daily_cron'] > $objCore->config('statistics', 'daily_cron')){
-        $objSQL->updateRow('statistics', array('value' => time()), 'variable = "daily_cron"');
-        $daily_cron = true;
-    }
+	//loop thru each of the crons and set em to go if needed
+	foreach($crons as $name => $time){
+		$name = $name.'_cron'; ${$name} = false;
+	    if((time()-$time) > $objCore->config('statistics', $name)){
+	        $objSQL->updateRow('statistics', array('value' => time()), array('variable = "%s"', $name));
+	        ${$name} = true;
+	    }
+	}
 
-    //set weekly cron to exec, run every 6 days
-    $weekly_cron = false;
-    if(time()-$config['cron']['weekly_cron'] > $objCore->config('statistics', 'weekly_cron')){
-        $objSQL->updateRow('statistics', array('value' => time()), 'variable = "weekly_cron"');
-        $weekly_cron = true;
-    }
 
 //
 //--Start the CRONs
@@ -36,11 +32,9 @@ if(defined('NO_DB')){ return; }
 		$objCache->generate_statistics_cache();
 	}
 
-
 	//do hourly cron
 	if($hourly_cron){
-		$objSQL->recordMessage('Hourly CRON is running', 'INFO');
-
+	$objSQL->recordMessage('Hourly CRON is running', 'INFO');
 
 		//update the user table with last active timestamp from online table
 		$objSQL->query($objSQL->prepare(
@@ -57,22 +51,57 @@ if(defined('NO_DB')){ return; }
 		//remove the inactive ones..atm 20 mins == inactive
 	    $objSQL->deleteRow('online', 'timestamp < '.$objTime->mod_time(time(), 0, 20, 0, 'TAKE'));
 
-
-		$objPlugins->hook('CMSCron_hourly');
+	$objPlugins->hook('CMSCron_hourly');
 	}
 
 	//do daily cron
 	if($daily_cron){
-		$objSQL->recordMessage('Daily CRON is running', 'INFO');
+	$objSQL->recordMessage('Daily CRON is running', 'INFO');
 
-		$objPlugins->hook('CMSCron_daily');
+        //VV Update Checker
+            $errstr = NULL; $errno = 0; $showNew = true;
+            $updateAvalible = false;
+
+            $info = @get_remote_file('www.cybershade.org', '/', 'checkxml.php?action=cmsVersion', $errstr, $errno);
+            if(is_empty($info)){ $showNew = false; }
+            if($showNew){
+                //try and parse the xml back from the server
+                $xml = @simplexml_load_string($info);
+
+                //actually check the version here
+                $updateAvalible =  (version_compare($xml->version, cmsVERSION, '>') ? true : false );
+                if($updateAvalible && $xml->updateType==1){ touch(cmsROOT.'killCMS'); }
+            }
+        unset($errstr, $errno, $showNew, $updateAvalible, $info, $xml);
+        //^^ Update Checker
+
+        $objCache->regenerateCache('group_subscriptions');
+
+	$objPlugins->hook('CMSCron_daily');
 	}
 
 	//do weekly cron
 	if($weekly_cron){
-		$objSQL->recordMessage('Weekly CRON is running', 'INFO');
+	$objSQL->recordMessage('Weekly CRON is running', 'INFO');
 
-		$objPlugins->hook('CMSCron_weekly');
+		//remove a few caches (dw they will regenerate :P)
+		$objCache->regenerateCache('config');
+		$objCache->regenerateCache('groups');
+
+		//Optimise all of the tables in the DB
+		$alltables = $objSQL->getTable('SHOW TABLES');
+		$tables = '';
+		$counter = count($alltables);
+		$x = 0;
+		foreach($alltables as $table){
+			foreach ($table as $tablename){
+				$tables .= '`'.$tablename.'`'.($x++==$counter-1 ? '' : ', ');
+			}
+		}
+		$objSQL->query('OPTIMIZE TABLE '.$tables);
+
+
+	$objPlugins->hook('CMSCron_weekly');
 	}
 
 ?>

@@ -53,56 +53,6 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 		return implode(DIRECTORY_SEPARATOR, $args);
 	}
 
-
-	/**
-	 * Handles securing input/output
-	 *
-	 * @version	1.0
-	 * @since 	1.0.0
-	 * @author 	xLink
-	 *
-	 * @param 	string 	$string
-	 * @param 	string	$mode
-	 *
-	 * @return 	string
-	 */
-	function secureMe($string, $mode='html') {
-		switch(strtolower($mode)) {
-			case 'html':
-				$string = htmlspecialchars($string);
-			break;
-
-			case 'url':
-				$string = urlencode($string);
-			break;
-
-			case 'sql':
-				$string = mysql_real_escape_string($string);
-			break;
-
-			case 'langvar':
-				$string = htmlspecialchars($string);
-				$string = str_replace(array('&gt;', '&lt;', '&amp;', '&quot;'), array('>', '<', '&', '"'), $string);
-			break;
-
-			case 'num':
-				if(!ctype_digit((string)$string)){
-					$string = preg_replace('/[^0-9]/', '', $string);
-				}
-			break;
-
-			case 'alphanum':
-				if(!ctype_alnum((string)$string)){
-					$string = preg_replace('/[^a-zA-Z0-9-_]/', '', $string);
-				}
-			break;
-
-			default: break;
-		}
-
-		return $string;
-	}
-
 	/**
 	 * Determines whether to set
 	 *
@@ -128,47 +78,6 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 		//test and return a value
 		return (isset($args[$key]) && $extra ? $args[$key] : $defaultValue);
 	}
-
-	/**
-	 * Turns a string SEO Friendly
-	 *
-	 * @version	1.0
-	 * @since   1.0.0
-	 *
-	 * @param	string	$text
-	 *
-	 * @return 	string
-	 */
-	function seo($text){
-		$text = strtr($text, array('&amp' => ' and ', '/' => '-', '.' => '-'));
-		$text = html_entity_decode($text);
-
-		static $search, $replace;
-			if (!$search) {
-				$search = $replace = array();
-				// Get the HTML entities table into an array
-				$trans = get_html_translation_table(HTML_ENTITIES);
-				// Go through the entity mappings one-by-one
-				foreach ($trans as $literal => $entity) {
-					// Make sure we don't process any other characters such as fractions, quotes etc:
-					if (ord($literal) >= 192) {
-						// Get the accented form of the letter
-						$search[] = $literal;
-						// Get e.g. 'E' from the string '&Eacute'
-						$replace[] = $entity[1];
-					}
-				}
-			}
-			str_replace($search, $replace, $text);
-
-			$text = trim(preg_replace('/[^a-z \d\-]/i', '', $text));
-			$text = strtr(strtolower($text), array(' ' => '-'));
-			$text = preg_replace('/[\-]{2,}/', '-', $text);
-			$text = rtrim($text, '-');
-			if(is_number($text)) { $text = 'number-'.$text; } // numeric names would confuse everything
-	 	return $text;
-	}
-
 
 	/**
 	 * Run a function recursivly through an array
@@ -212,67 +121,6 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 			return true;
 		}
 
-		return false;
-	}
-
-
-	/**
-	 * Checks to see if the var is empty, checks against null, empty array and false
-	 *
-	 * @version	1.0
-	 * @since   1.0.0
-	 * @author  xLink
-	 *
-	 * @param 	string	$var
-	 *
-	 * @return 	bool
-	 */
-	function is_empty($var) {
-		if(is_null($var) || empty($var) || (is_string($var) && trim($var)=='')){ return true; }
-		if(is_array($var) && !count($var)){ return true; }
-		if($var === false){ return true; }
-
-		return false;
-	}
-
-
-	/**
-	 * Checks to see if the var is a number (0-9 only)
-	 *
-	 * @version	1.0
-	 * @since   1.0.0
-	 * @author  xLink
-	 *
-	 * @param   string 	$number
-	 *
-	 * @return 	bool
-	 */
-	function is_number($number){
-		return (ctype_digit((string)$number) ? true : false);
-	}
-
-	/**
-	 * Retreives part of a string
-	 *
-	 * @version	1.0
-	 * @since   1.0.0
-	 *
-	 * @param   string 	$begin
-	 * @param   string 	$end
-	 * @param   string 	$contents
-	 *
-	 * @return 	string
-	 */
-	function inBetween($begin, $end, $contents) {
-		$pos1 = strpos($contents, $begin);
-		if($pos1 !== false){
-			$pos1 += strlen($begin);
-			$pos2 = strpos($contents, $end, $pos1);
-			if($pos2 !== false){
-				$substr = substr($contents, $pos1, $pos2 - $pos1);
-				return $substr;
-			}
-		}
 		return false;
 	}
 
@@ -386,25 +234,6 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 		}
 
 		return $sortedFiles;
-	}
-
-	/**
-	 * Quickly generate a readable filesize
-	 *
-	 * @version	1.0
-	 * @since   1.0.0
-	 *
-	 * @param   int		$size
-	 *
-	 * @return 	string
-	 */
-	function formatBytes($size) {
-		$units = array(' B', ' KB', ' MB', ' GB', ' TB');
-		for ($i = 0; $size >= 1024 && $i < 4; $i++){
-			$size /= 1024;
-		}
-
-		return round($size, 2).$units[$i];
 	}
 
 	/**
@@ -805,6 +634,250 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
     	return $return;
     }
 
+    /**
+     * Borrowed function from phpbb3 to get contents of a file on remote server
+     *
+     * @version 1.0
+     * @since 1.0.0
+     */
+    function get_remote_file($host, $directory, $filename, &$errstr, &$errno, $port=80, $timeout=10) {
+		if($fsock = @fsockopen($host, $port, $errno, $errstr, $timeout)) {
+			@fputs($fsock, 'GET '.$directory.'/'.$filename.' HTTP/1.1'."\r\n");
+			@fputs($fsock, 'HOST: '.$host."\r\n");
+			@fputs($fsock, 'Connection: close'."\r\n\r\n");
+
+			$file_info = '';
+			$get_info = false;
+
+			while(!@feof($fsock)) {
+				if($get_info) {
+					$file_info .= @fread($fsock, 1024);
+				} else {
+					$line = @fgets($fsock, 1024);
+					if($line == "\r\n") {
+						$get_info = true;
+					} else {
+						if(stripos($line, '404 not found') !== false) {
+							$errstr = 'Error 404: '.$filename;
+							return false;
+						}
+					}
+				}
+			}
+			@fclose($fsock);
+		} else {
+			if($errstr) {
+				return false;
+			} else {
+				$errstr = 'fsockopen is disabled.';
+				return false;
+			}
+		}
+
+		return $file_info;
+	}
+
+//
+//-- String Functions
+//
+	/**
+	 * Handles securing input/output
+	 *
+	 * @version	1.0
+	 * @since 	1.0.0
+	 * @author 	xLink
+	 *
+	 * @param 	string 	$string
+	 * @param 	string	$mode
+	 *
+	 * @return 	string
+	 */
+	function secureMe($string, $mode='html') {
+		switch(strtolower($mode)) {
+			case 'html':
+				$string = htmlspecialchars($string);
+			break;
+
+			case 'url':
+				$string = urlencode($string);
+			break;
+
+			case 'sql':
+				$string = mysql_real_escape_string($string);
+			break;
+
+			case 'langvar':
+				$string = htmlspecialchars($string);
+				$string = str_replace(array('&gt;', '&lt;', '&amp;', '&quot;'), array('>', '<', '&', '"'), $string);
+			break;
+
+			case 'num':
+				if(!ctype_digit((string)$string)){
+					$string = preg_replace('/[^0-9]/', '', $string);
+				}
+			break;
+
+			case 'alphanum':
+				if(!ctype_alnum((string)$string)){
+					$string = preg_replace('/[^a-zA-Z0-9-_]/', '', $string);
+				}
+			break;
+
+			default: break;
+		}
+
+		return $string;
+	}
+
+	/**
+	 * Turns a string SEO Friendly
+	 *
+	 * @version	1.0
+	 * @since   1.0.0
+	 *
+	 * @param	string	$text
+	 *
+	 * @return 	string
+	 */
+	function seo($text){
+		static $search, $replace;
+
+		$text = strtr($text, array('&amp' => ' and ', '/' => '-', '.' => '-'));
+		$text = html_entity_decode($text);
+
+			if (!$search) {
+				$search = $replace = array();
+				// Get the HTML entities table into an array
+				$trans = get_html_translation_table(HTML_ENTITIES);
+				// Go through the entity mappings one-by-one
+				foreach ($trans as $literal => $entity) {
+					// Make sure we don't process any other characters such as fractions, quotes etc:
+					if (ord($literal) >= 192) {
+						// Get the accented form of the letter
+						$search[] = $literal;
+						// Get e.g. 'E' from the string '&Eacute'
+						$replace[] = $entity[1];
+					}
+				}
+			}
+			str_replace($search, $replace, $text);
+
+			$text = trim(preg_replace('/[^a-z \d\-]/i', '', $text));
+			$text = strtr(strtolower($text), array(' ' => '-'));
+			$text = preg_replace('/[\-]{2,}/', '-', $text);
+			$text = rtrim($text, '-');
+			if(is_number($text)) { $text = 'number-'.$text; } // numeric names would confuse everything
+	 	return $text;
+	}
+
+	/**
+	 * Checks to see if the string is empty, checks against null, empty array and false
+	 *
+	 * @version	1.0
+	 * @since   1.0.0
+	 * @author  xLink
+	 *
+	 * @param 	string	$var
+	 *
+	 * @return 	bool
+	 */
+	function is_empty($var) {
+		if(is_null($var) || empty($var) || (is_string($var) && trim($var)=='')){ return true; }
+		if(is_array($var) && !count($var)){ return true; }
+		if($var === false){ return true; }
+
+		return false;
+	}
+
+	/**
+	 * Checks to see if the string is a number (0-9 only)
+	 *
+	 * @version	1.0
+	 * @since   1.0.0
+	 * @author  xLink
+	 *
+	 * @param   string 	$number
+	 *
+	 * @return 	bool
+	 */
+	function is_number($number){
+		return (ctype_digit((string)$number) ? true : false);
+	}
+
+	/**
+	 * Retreives part of a string
+	 *
+	 * @version	1.0
+	 * @since   1.0.0
+	 *
+	 * @param   string 	$begin
+	 * @param   string 	$end
+	 * @param   string 	$contents
+	 *
+	 * @return 	string
+	 */
+	function inBetween($begin, $end, $contents) {
+		$pos1 = strpos($contents, $begin);
+		if($pos1 !== false){
+			$pos1 += strlen($begin);
+			$pos2 = strpos($contents, $end, $pos1);
+			if($pos2 !== false){
+				$substr = substr($contents, $pos1, $pos2 - $pos1);
+				return $substr;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Quickly generate a readable filesize
+	 *
+	 * @version	1.0
+	 * @since   1.0.0
+	 *
+	 * @param   int		$size
+	 *
+	 * @return 	string
+	 */
+	function formatBytes($size) {
+		$units = array(' B', ' KB', ' MB', ' GB', ' TB');
+		for ($i = 0; $size >= 1024 && $i < 4; $i++){
+			$size /= 1024;
+		}
+
+		return round($size, 2).$units[$i];
+	}
+
+	/**
+	 * Cuts down a string to the specified length
+	 *
+	 * @version	1.1
+	 * @since   0.7.0
+	 * @author 	xLink
+	 *
+	 * @param	string 	$text
+	 * @param   int 	$numb
+	 * @param 	bool 	$whiteSpace
+	 *
+	 * @return 	string
+	 */
+    function truncate($text, $numb=80, $whiteSpace=true) {
+    	//check to make sure $text is longer than $numb first
+		if(strlen($text) < $numb) {
+			return $text;
+		}
+
+		$text = substr($text, 0, $numb);
+		if($whiteSpace === true){
+			$text = substr($text, 0, strrpos($text, ' '));
+		}
+
+		if ((substr($text, -1)) == '.') {
+			$text = substr($text, 0, (strrpos($text, '.')));
+		}
+		$etc = '...';
+		return $text.$etc;
+    }
 
 //
 //-- MSG Functions
