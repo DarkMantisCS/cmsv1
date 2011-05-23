@@ -7,7 +7,7 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 //
 //--Before we begin, lets define some stuff up
 //
-	$START_CMS_LOAD = microtime(true);
+	$START_CMS_LOAD = microtime(true); $START_RAM_USE = memory_get_usage();
 	//Lets set a simple error template up till we have the template engine going
 	$errorTPL = '<h3>%s</h3> <p>%s Killing Process...</p>';
 	@set_magic_quotes_runtime(false);
@@ -133,7 +133,11 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 								));
 
 	//init the sql and cache classes, we need these before we can go any further
-	$objCore->setup($classes);
+	$doneSetup = $objCore->setup($classes);
+	if(!$doneSetup){
+		msgDie('FAIL', sprintf($errorTPL, 'Fatal Error',
+			'Cannot load CMS Classes, make sure file structure is intact and $cmsROOT is defined properly if applicable.'));
+	}
 	unset($classes);
 
 	$objCore->objSQL->connect(true, true, false);
@@ -230,7 +234,11 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 	$classes['objTime'] 		= array($classDir.'class.time.php');
 
 	//init these classes
-	$objCore->setup($classes);
+	$doneSetup = $objCore->setup($classes);
+	if(!$doneSetup){
+		msgDie('FAIL', sprintf($errorTPL, 'Fatal Error',
+			'Cannot load CMS Classes, make sure file structure is intact and $cmsROOT is defined properly if applicable.'));
+	}
 
 	//globalise the class names
 	foreach($objCore->classes as $objName => $args){ $$objName =& $objCore->$objName; }
@@ -260,10 +268,10 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 		'browser'		=> getBrowser($_SERVER['HTTP_USER_AGENT']),
 		'language'		=> $language,
 		'secure'		=> ($_SERVER['HTTPS'] ? true : false),
-		'root'			=> '/'.root(),
+		'rootPath'		=> '/'.root(),
 		'fullPath'		=> $_SERVER['REQUEST_URI'],
-		'url'			=> ($_SERVER['HTTPS'] ? 'https' : 'http').'://'.$_SERVER['HTTP_HOST'].'/'.root(),
-		'fullUrl'		=> ($_SERVER['HTTPS'] ? 'https' : 'http').'://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'],
+		'rootUrl'		=> ($_SERVER['HTTPS'] ? 'https' : 'http').'://'.$_SERVER['HTTP_HOST'].'/'.root(),
+		'url'			=> ($_SERVER['HTTPS'] ? 'https' : 'http').'://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'],
 	);
 
 	//hook the session template

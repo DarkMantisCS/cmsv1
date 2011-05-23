@@ -439,6 +439,7 @@ class page extends coreClass{
 
 		//we want the default css minified dont forget!
 		$cssFiles[] = '/'.root().'images/default-min.css';
+		$cssFiles[] = '/'.root().'images/extras-min.css';
 
 		//load in the anything thats been passed in via addCSSFile()
 		$cssFiles = array_merge($cssFiles, $this->cssFiles);
@@ -537,7 +538,7 @@ class page extends coreClass{
 	 * @param 	bool $simple
 	 */
 	public function showFooter($simple=false){
-		global $START_CMS_LOAD, $config;
+		global $START_CMS_LOAD, $START_RAM_USE, $config;
 
 		//no need for a footer if the header hasnt been called to
 		if(!$this->header['completed']){ return; }
@@ -617,7 +618,7 @@ class page extends coreClass{
 			$this->timer = isset($START_CMS_LOAD) ? $START_CMS_LOAD : microtime(true);
 			$generation = round(microtime(true)-$this->timer, 5);
 			$nextCron = $this->objTime->mk_time($this->config('statistics', 'hourly_cron') + $this->config('cron', 'hourly_time'));
-			$ramUse = formatBytes(memory_get_usage());
+			$ramUse = formatBytes(memory_get_usage()-$START_RAM_USE);
 
 			$page_gen = langVar('L_PAGE_GEN', $queries, $_timer, $generation, $ramUse, $nextCron);
 		}

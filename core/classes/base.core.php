@@ -45,6 +45,11 @@ class coreClass{
 			}
 		}
 
+		if(!count($this->classes)){
+			$this->setError('No Classes Defined');
+			return false;
+		}
+
 		//loop through the classes after they have been all init'd
 		foreach($this->classes as $objName => $args){
 			//loop through the list again
