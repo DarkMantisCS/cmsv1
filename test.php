@@ -10,8 +10,15 @@ $objPage->setMenu('core', 'default');
 
 $objPage->showHeader();
 
-$a = $objUser->grab('timezone');
-echo dump($a, 'test');
+?>
+
+<div class="padding" style="background-color: #f1f1f1;">
+<br /><br />
+<input type="text" value="" /><a class="medium blue button">&nbsp;</a>
+<br /><br />
+</div>
+
+<?php
 
 $objPage->showFooter();
 ?>

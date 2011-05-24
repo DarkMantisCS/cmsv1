@@ -301,7 +301,6 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 		return $useragent;
 	}
 
-
 	/**
 	 * Returns a language var ready to be used on the page.
 	 *

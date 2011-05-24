@@ -53,7 +53,16 @@ if (preg_match('/&\\d/', $_SERVER['QUERY_STRING'])) {
 if (isset($_GET['g'])) {
     // well need groups config
     $min_serveOptions['minApp']['groups'] = (require $cmsROOT . 'core/minifierConfig.php');
-}$min_serveOptions['rewriteCssUris'] = false;
+}
+$min_serveOptions['rewriteCssUris'] = false;
+if(isset($_GET['g']) && isset($_GET['t'])){
+	switch($_GET['t']){
+		case 'js': $prefix = 'script_'; break;
+		case 'css': $prefix = 'style_'; break;
+		default: $prefix = ''; break;
+	}
+	$_GET['g'] = $prefix.$_GET['g'];
+}
 if (isset($_GET['f']) || isset($_GET['g'])) {
     // serve!   
     Minify::serve('MinApp', $min_serveOptions);

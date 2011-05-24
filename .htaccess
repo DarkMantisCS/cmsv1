@@ -16,8 +16,8 @@ RewriteCond %{HTTP_HOST} ^cybershade.org
 RewriteRule (.*) http://www.cybershade.org/$1 [R=301,L]
 
 ##minifing techniques
-RewriteRule ^images/([^.]*)-min.css						core/lib/min/index.php?g=$1 [QSA,L]
-RewriteRule ^scripts/([^.]*)-min.js						core/lib/min/index.php?g=$1 [QSA,L]
+RewriteRule ^images/([^.]*)-min.css						core/lib/min/index.php?g=$1&t=css [QSA,L]
+RewriteRule ^scripts/([^.]*)-min.js						core/lib/min/index.php?g=$1&t=js [QSA,L]
 RewriteRule ^template/([^/]*)/(.*\.css)					core/lib/min/index.php?b=template/$1&f=$2 [QSA,L]
 RewriteRule ^template/([^/]*)/(.*\.js)					core/lib/min/index.php?b=template/$1&f=$2 [QSA,L]
 RewriteRule ^modules/([^/]*)/styles/(.*\.css)			core/lib/min/index.php?b=modules/$1/styles&f=$2 [QSA,L]

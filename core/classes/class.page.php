@@ -356,7 +356,7 @@ class page extends coreClass{
 	//--Load JS
 	//
 		//files first
-		$jsFiles[] = '/'.root().'scripts/jquery-min.js';
+		$jsFiles[] = '/'.root().'scripts/framework-min.js';
 		$jsFiles[] = '/'.root().'scripts/extras-min.js';
 		//load in the anything thats been passed in via addJSFiles()
 		$jsFiles = array_merge($jsFiles, $this->jsFiles);
@@ -438,7 +438,7 @@ class page extends coreClass{
 		$cssTag = '<link rel="stylesheet" href="%s" />';
 
 		//we want the default css minified dont forget!
-		$cssFiles[] = '/'.root().'images/default-min.css';
+		$cssFiles[] = '/'.root().'images/framework-min.css';
 		$cssFiles[] = '/'.root().'images/extras-min.css';
 
 		//load in the anything thats been passed in via addCSSFile()

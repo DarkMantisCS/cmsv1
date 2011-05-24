@@ -1,14 +1,13 @@
 <?php
-require $cmsROOT.'scripts/config.php';
-require $cmsROOT.'images/config.php';
-
 $return = array();
 
 //process the scripts
-foreach($scripts as $k => $array){ $return[$k] = rewrite($array, 'scripts'); }
+require $cmsROOT.'scripts/config.php';
+foreach($scripts as $k => $array){ $return['script_'.$k] = rewrite($array, 'scripts'); }
 
 //and then the CSS
-foreach($styles as $k => $array){ $return[$k] = rewrite($array, 'images'); }
+require $cmsROOT.'images/config.php';
+foreach($styles as $k => $array){ $return['style_'.$k] = rewrite($array, 'images'); }
 
 return $return;
 
