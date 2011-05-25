@@ -7,9 +7,7 @@
 // Closure.
 (function(w, d, config, undefined) {
   // If no config, exit.
-  if (!config) {
-    return;
-  }
+  if (!config) { return; }
 
   // Empty vars to use later.
   var url, url_old, timer;
@@ -22,8 +20,21 @@
 
   // Create empty link tag:
   // <link rel="stylesheet" />
+  /*
   var css = d.createElement('link');
-  css.rel = 'stylesheet';
+  */
+  
+  var linkTags = document.getElementsByTagName("link");
+  $.each(linkTags, function(id, e){
+    if(e.id=='adapt'){ linkID = id; return; }
+  });
+  //if(empty(linkID)){ 
+//	var css = d.createElement('link');
+  //}else{
+	var css = linkTags[linkID];
+  //}
+
+  css.rel = 'stylesheet'; 
 
   // Called from within adapt().
   function change(i, width) {
@@ -92,7 +103,7 @@
 
       // Add the CSS, only if path is defined.
       // Use faster document.head if possible.
-      path && (d.head || d.getElementsByTagName('head')[0]).appendChild(css);
+      // path && (d.head || d.getElementsByTagName('head')[0]).appendChild(css);
     }
     else if (url_old !== url) {
       // Apply changes.
