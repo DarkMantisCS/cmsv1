@@ -8,6 +8,9 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 $_lang['L_MAINTENANCE'] 	= 'This website is in maintainence mode.';
 $_lang['L_SITE_COPYRIGHT']  = '%s Powered By %s V%s';
 
+$_lang['L_LOGIN'] 			= 'Login';
+$_lang['L_LOGOUT'] 			= 'Logout';
+
 //footer lang vars
 $_lang['L_PAGE_GEN']        = '[ Queries: <b>%s</b> | SQL Time: <b>%s</b> | Page Generation Time: <b>%s</b> | Memory Usage: <b>%s</b> | Next Cron Update: <b>%s</b> ]';
 $_lang['TPL_INFO']          = 'Theme %s by %s V%s';
