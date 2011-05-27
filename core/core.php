@@ -98,7 +98,7 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 	//$classes[$varName] => array($classPath, [args array('var'=>'value')])
 
 	//load in outside classes
-	$classFiles = array('base.core.php', 'base.sql.php', 'class.phpass.php');#, 'class.recaptcha.php');
+	$classFiles = array('base.core.php', 'base.sql.php', 'class.phpass.php', 'class.recaptcha.php');
 		foreach($classFiles as $file){
 			$file = $classDir.$file;
 			if(!is_file($file) || !is_readable($file)){

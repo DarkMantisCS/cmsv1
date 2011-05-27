@@ -31,14 +31,14 @@ class form extends coreClass{
 			'action'        => doArgs('action', 	null, 	$args),
 			'onsubmit'      => doArgs('onsubmit', 	false, 	$args),
 			'extra'      	=> doArgs('extra', 		null, 	$args),
-			'novalidate'    => doArgs('novalidate', false, 	$args),
+			'validate'    	=> doArgs('validate', 	true, 	$args),
 		);
 
 		return '<form name="'.$name.'" id="'.$name.'" '.
 					(!is_empty($args['method'])     ? 'method="'.$args['method'].'" ' 		: 'method="'.$_SERVER['PHP_SELF'].'" ').
 					(!is_empty($args['action'])     ? 'action="'.$args['action'].'" ' 		: null).
 					($args['onsubmit']   			? 'onsubmit="'.$args['onsubmit'].'" ' 	: null).
-					'novalidate="'.($args['novalidate']==true ? 'true' : 'false').'"'.
+					($args['validate']===false 		? 'novalidate="novalidate" '  			: null).
 					(!is_empty($args['extra'])      ? $args['extra'] 						: null).
 				'>'."\n";
 	}
@@ -101,7 +101,7 @@ class form extends coreClass{
 					($args['xssFilter']===true			? 'value="'.htmlspecialchars($value).'" ' 	: 'value="'.$value.'" ').
 
 					(!is_empty($args['placeholder'])	? 'placeholder="'.$args['placeholder'].'" ' : null).
-					(!is_empty($args['required'])		? 'required="'.$args['required'].'" ' 		: null).
+					($args['required']===true 			? 'required="required" ' 					: null).
 					(!is_empty($args['autofocus'])		? 'autofocus="'.$args['autofocus'].'" ' 	: null).
 
 					(!is_empty($args['min'])			? 'min="'.$args['min'].'" ' 				: null).
@@ -253,6 +253,7 @@ class form extends coreClass{
 			'id'		=> doArgs('id', 		$name, $args),
 			'selected'  => doArgs('selected', 	null, $args),
 			'noKeys'  	=> doArgs('noKeys', 	false, $args),
+			'multi'		=> doArgs('multi', 		false, $args),
 
 			'class'     => doArgs('class', 		null, $args),
 			'disabled'  => doArgs('disabled', 	false, $args),
@@ -260,27 +261,46 @@ class form extends coreClass{
 			'xssFilter' => doArgs('xssFilter', 	true, $args),
 		);
 
+		//added support for multiple selections
+		if($args['multi']===true){
+			$name = $name.'[]';
+			$args['extra'] .= ' multiple="multiple"';
+		}
 
 		$extra = $args['extra'];
 		$selected = $args['selected'];
 		$noKeys = $args['noKeys'];
-		$val = '<select name="'.$name.'" id="'.$args['id'].'" '.
-					(!is_empty($args['class']) 	? 'class="'.$args['class'].'" ' : null).
-					($args['disabled']===true 	? 'disabled="disabled" ' 		: null).
-					$args['extra'].'>'."\n";
 
-		foreach ($options as $k => $v){
+		$option = '<option value="%1$s"%2$s>%3$s</option>'."\n";
+		$val = sprintf('<select name="%1$s" id="%2$s"%3$s%4$s%5$s>',
+					$name,
+					$args['id'],
+					(!is_empty($args['class']) 	? ' class="'.$args['class'].'"' : null),
+					($args['disabled']===true 	? ' disabled="disabled"' 		: null),
+					(!is_empty($args['extra'])  ? ' '.$args['extra'] 			: null)
+				)."\n";
+
+
+		foreach($options as $k => $v){
 			if(is_array($v)){
-				$val .= '<optgroup label="'.$k.'">'."\n";
+				$val .= sprintf('<optgroup label="%s">'."\n", $k);
 				foreach($v as $a => $b){
 					if(is_array($b)){
 						$val .= $this->processSelect($b, $selected, $noKeys);
 					}else{
-						$val .= '<option value="'.$a.'"'.(md5($a)==md5($selected) ? ' selected="true"' : null).'>'.($noKeys===true ? $a : $b).'</option>'."\n";
+						$val .= sprintf($option,
+											$a,
+											(md5($a)==md5($selected) ? ' selected="true"' : null),
+											($noKeys===true ? $a : $b)
+										);
 					}
 				}
 			}else{
-				$val .= '<option value="'.$k.'"'.(md5($k)==md5($selected) ? ' selected="true"' : null).'>'.($noKeys===true ? $k : $v).'</option>'."\n";
+				$val .= sprintf($option,
+									$k,
+									(md5($k)==md5($selected) ? ' selected="true"' : null),
+									($noKeys===true ? $k : $v)
+								);
 			}
 		}
 		$val .= '</select>'."\n";
@@ -319,5 +339,67 @@ class form extends coreClass{
 		return $val;
 	}
 
+
+	public function outputForm($vars, $elements){
+		//make sure we have something to use before continuing
+		if(is_empty($elements)){ $this->setError('Nothing to output'); return false; }
+
+		if(!isset($elements['field']) || is_empty($elements['field'])){
+			$this->setError('Fields are blank or undetectable, make sure they are set using \'field\' key.');
+			return false;
+		}
+
+		//init the template, give it a rand id to stop it clashing with anything else
+		$randID = substr(md5(microtime(true)), 0, 6);
+		$this->objTPL->set_filenames(array(
+			'form_body_'.$randID => 'modules/core/template/formOutput.tpl',
+		));
+
+		$this->objTPL->assign_vars($vars);
+
+		//loop thru each element
+		foreach($elements['field'] as $label => $field){
+			if(is_empty($field)){ continue; }
+
+			$formVars = array();
+
+			//grab the description before we play with the $label
+			$desc = $elements['desc'][$label];
+
+			//upper care the words
+			$label = ucwords($label);
+
+			//if its a header, set it as one with a hr under
+			if($field == '_header_'){
+				$label = '<h3>'.$label.'</h3><hr />';
+			}
+
+			//assign some vars to the template
+			$this->objTPL->assign_block_vars('field', array(
+				'L_LABEL' 		=> $label,
+				'L_LABELFOR'	=> inBetween('name="', '"', $field),
+
+				'F_ELEMENT' 	=> ($field == '_header_' ? '' : $field),
+				'F_INFO'		=> $desc,
+			));
+
+			//if this isnt a 'header' then output the label
+			if($field != '_header_'){
+				$this->objTPL->assign_block_vars('field.label', array());
+			}
+
+			//if we have a description, lets output it with the label
+			if(!is_empty($desc)){
+				$this->objTPL->assign_block_vars('field.desc', array());
+			}
+		}
+
+		//return the html all nicely parsed etc
+		return $this->objTPL->get_html('form_body_'.$randID);
+	}
+
+	function loadCaptcha($var){
+		return $this->objPlugins->hook('CMSForm_Captcha', $var);
+	}
 }
 ?>

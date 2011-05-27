@@ -665,8 +665,8 @@ class page extends coreClass{
 
 			'U_LOGIN'			=> '/'.root().'login.php',
 			'U_LOGOUT'			=> '/'.root().'login.php?action=logout&check='.$this->objUser->grab('usercode'),
-			'U_LOGIN'			=> langVar('L_LOGIN'),
-			'U_LOGOUT'			=> langVar('L_LOGOUT'),
+			'L_LOGIN'			=> langVar('L_LOGIN'),
+			'L_LOGOUT'			=> langVar('L_LOGOUT'),
 		);
 
 		//hook onto the array to allow others to add to this list

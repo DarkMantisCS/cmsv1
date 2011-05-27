@@ -81,13 +81,13 @@ class plugins extends coreClass{
 				if(!is_array($hooks) || is_empty($hooks)){ return; }
 
 				//loop though each 'priority'
-				foreach(array('1', '2', '3') as $priority){
-					if(!is_array($hooks[$hook][$priority]) || is_empty($hooks[$hook][$priority])){ continue; }
+				foreach(array('1', '2', '3') as $prio){
+					if(!is_array($hooks[$hook][$prio]) || is_empty($hooks[$hook][$prio])){ continue; }
 
 					// and then each hook
-					while(current($hooks[$hook][$priority])){
+					while(current($hooks[$hook][$prio])){
 						//get func name
-						$function = key($hooks[$hook][$priority]);
+						$function = key($hooks[$hook][$prio]);
 						$cb = '';
 
 						//make sure we can call it still
@@ -97,11 +97,11 @@ class plugins extends coreClass{
 						if(is_empty($cb)){ $cb = false; }
 
 						//assign it to the array and continue
-						$result[$hook][$priority][$function] = $cb;
-						next($hooks[$hook][$priority]);
+						$result[$hook][$prio][$function] = $cb;
+						next($hooks[$hook][$prio]);
 					 }
 				}
-				return $result;
+				return $result[$hook][$priority][$function];
 			break;
 
 			case 'add':

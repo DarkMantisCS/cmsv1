@@ -1,30 +1,4 @@
-body { margin: 0px; color: #333333;
-background-color: #EDEDED;
-background-image: -webkit-gradient(linear, 0 0, 100% 100%,
-						color-stop(.25, rgba(255, 255, 255, .2)), color-stop(.25, transparent),
-						color-stop(.5, transparent), color-stop(.5, rgba(255, 255, 255, .2)),
-						color-stop(.75, rgba(255, 255, 255, .2)), color-stop(.75, transparent),
-						to(transparent));
-background-image: -webkit-linear-gradient(-45deg, rgba(255, 255, 255, .2) 25%, transparent 25%,
-					transparent 50%, rgba(255, 255, 255, .2) 50%, rgba(255, 255, 255, .2) 75%,
-					transparent 75%, transparent);
-background-image: -moz-linear-gradient(-45deg, rgba(255, 255, 255, .2) 25%, transparent 25%,
-					transparent 50%, rgba(255, 255, 255, .2) 50%, rgba(255, 255, 255, .2) 75%,
-					transparent 75%, transparent);
-background-image: -ms-linear-gradient(-45deg, rgba(255, 255, 255, .2) 25%, transparent 25%,
-					transparent 50%, rgba(255, 255, 255, .2) 50%, rgba(255, 255, 255, .2) 75%,
-					transparent 75%, transparent);
-background-image: -o-linear-gradient(-45deg, rgba(255, 255, 255, .2) 25%, transparent 25%,
-					transparent 50%, rgba(255, 255, 255, .2) 50%, rgba(255, 255, 255, .2) 75%,
-					transparent 75%, transparent);
-background-image: linear-gradient(-45deg, rgba(255, 255, 255, .2) 25%, transparent 25%,
-					transparent 50%, rgba(255, 255, 255, .2) 50%, rgba(255, 255, 255, .2) 75%,
-					transparent 75%, transparent);
-					
--webkit-background-size: 15px 15px;
--moz-background-size: 15px 15px;
-background-size: 15px 15px; /* Controls the size of the stripes */
-}
+body { margin: 0px; color: #333333; background: url('images/bg.jpg') repeat #EDEDED; }
 #breadcrumbs a:hover, a:hover { text-decoration: underline; color: #3C78A7; }
 #breadcrumbs a:active, #breadcrumbs a:visited, #breadcrumbs a:link, 
 a:active, a:visited, a:link { text-decoration: none; color: #3C78A7; }
@@ -229,6 +203,14 @@ footer{
 	border: 1px solid #DDDDDD;
 }
 
+/** Forms **/
+form label { font-weight: bold; margin: 5px 0; }
+form fieldset{ border: 1px solid #000000; }
+form fieldset legend {
+		-webkit-border-radius: 5px;
+		-moz-border-radius: 5px;
+		border-radius: 5px;
+}
 
 
 /** Messages **/

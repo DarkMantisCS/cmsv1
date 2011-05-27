@@ -16,6 +16,10 @@
 <body>
 <div id="site-wrapper" class="container_12 clearfix">
 	<header id="banner">
+	<!--[if lte IE 7]>
+		<div id="topBar" class="align-center"><div class="boxred">ERROR: You are using an unsupported version of Internet Explorer. This version has been deemed useless. Please switch to an updated version of IE, or consider switching to something that can actually parse a webpage. Like <strong>Firefox</strong>!</div></div>
+		<div class="clear">&nbsp;</div>
+	<![endif]-->
 	<!-- BEGIN __MSG -->
 		<div id="topBar"><div class="boxred">{__MSG.MESSAGE}</div></div>
 		<div class="clear">&nbsp;</div>
@@ -33,9 +37,9 @@
 				<!-- BEGIN IS_ONLINE -->
 				<a href="{U_LOGOUT}">{L_LOGOUT}</a> || 
 				<!-- END IS_ONLINE -->
-				<!-- BEGIN IS_NOT_LOGGED_IN -->
+				<!-- BEGIN NOT_LOGGED_IN -->
 				<a href="{U_LOGIN}">{L_LOGIN}</a> || 
-				<!-- END IS_NOT_LOGGED_IN -->
+				<!-- END NOT_LOGGED_IN -->
 				<div id="clock" class="iblock">{TIME}</div>
 			</div>
 		</div>
