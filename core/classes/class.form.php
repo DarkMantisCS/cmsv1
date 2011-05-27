@@ -350,13 +350,13 @@ class form extends coreClass{
 		}
 
 		//init the template, give it a rand id to stop it clashing with anything else
-		$randID = substr(md5(microtime(true)), 0, 6);
+		$randID = inBetween('name="', '"', $vars['FORM_START']);
 		$this->objTPL->set_filenames(array(
 			'form_body_'.$randID => 'modules/core/template/formOutput.tpl',
 		));
 
 		$this->objTPL->assign_vars($vars);
-
+		$this->objTPL->reset_block_vars('field');
 		//loop thru each element
 		foreach($elements['field'] as $label => $field){
 			if(is_empty($field)){ continue; }

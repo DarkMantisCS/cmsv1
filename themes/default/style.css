@@ -219,3 +219,15 @@ div.messages .icon{ width:54px;  height:54px; }
 div.warning .icon{ background-image: url(images/alert.png); }
 div.error .icon{ background-image: url(images/error.png); }
 div.status .icon{ background-image: url(images/note.png); }
+
+
+.corners{
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+}
+.shadow{
+	-webkit-box-shadow: 0 7px 15px #000000;
+	-moz-box-shadow: 0 7px 15px #000000;
+	box-shadow: 0 7px 15px #000000;
+}

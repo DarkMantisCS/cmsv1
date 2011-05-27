@@ -31,7 +31,7 @@ echo $objForm->outputForm(array(
 							'Password' 			=> $objForm->inputbox('pwd', 'password', null, array('required'=>true)),
 							'Confirm Password' 	=> $objForm->inputbox('pwd2', 'password', null, array('required'=>true)),
 
-							'Email' 			=> $objForm->inputbox('pwd2', 'password', null, array('required'=>true)),
+							'Email' 			=> $objForm->inputbox('email', 'text', '', array('required'=>true)),
 
 							'Captcha'			=> '_header_',
 							'Recaptcha'			=> $objForm->loadCaptcha('captcha'),
@@ -40,32 +40,7 @@ echo $objForm->outputForm(array(
 							'Username' 			=> 'This field can be [a-zA-Z0-9-_.]',
 							'Recaptcha'			=> $objForm->loadCaptcha('desc'),
 						),
-						'error' => array(
-							'Username' 			=> 'The username field is required',
-						)
 					));
-
-echo $objForm->outputForm(array(
-						'FORM_START' => $objForm->start('register', array('method'=>'POST', 'action'=>'?')),
-						'FORM_END'	 => $objForm->finish(),
-
-						'FORM_TITLE' => 'User Registration',
-						'FORM_SUBMIT'=> $objForm->button('submit', 'Submit'),
-						'FORM_RESET' => $objForm->button('reset', 'Reset'),
-					),
-					array(
-						'field' => array(
-							'Captcha'			=> '_header_',
-							'Recaptcha'			=> $objForm->loadCaptcha('captcha'),
-						),
-						'desc' => array(
-							'Recaptcha'			=> $objForm->loadCaptcha('desc'),
-						),
-						'error' => array(
-							'Username' 			=> 'The username field is required',
-						)
-					));
-
 
 
 

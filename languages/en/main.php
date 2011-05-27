@@ -17,6 +17,11 @@ $_lang['TPL_INFO']          = 'Theme %s by %s V%s';
 $_lang['L_SITE_COPYRIGHT']  = '%s Powered By %s V%s';
 
 //debug lang vars
+$_lang['MSG_INFO']              = 'Information';
+$_lang['MSG_FAIL']              = 'Failed';
+$_lang['MSG_ERR']               = 'Error';
+$_lang['MSG_OK']                = 'Successful';
+
 
 
 
