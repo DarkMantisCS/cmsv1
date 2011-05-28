@@ -994,7 +994,7 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 	 * @version	2.0 		Updated to work with 0.8 structure
 	 * @since   0.6.0
 	 */
-	function msgDie($msg_type, $message, $line=NULL, $file=NULL, $query=NULL, $footer=true){
+	function msgDie($msg_type, $message, $line=null, $file=null, $query=null, $footer=true){
 	    global $objTPL, $objPage;
 
 	    if(!is_object($objTPL) || !is_object($objPage)){ echo $message; exit; }
@@ -1005,16 +1005,16 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 			'__msgBody'	=> 'modules/core/template/message.tpl'
 		));
 
-		$query = !is_empty($query) ? $query : NULL;
-		$line  = !is_empty($line)  ? $line  : NULL;
-		$file  = !is_empty($file)  ? $file  : NULL;
+		$query = !is_empty($query) ? $query : null;
+		$line  = !is_empty($line)  ? $line  : null;
+		$file  = !is_empty($file)  ? $file  : null;
 
 		switch(strtolower($msg_type)){
 	        case 'fail':    $img = '/'.root().'images/fail.png'; $type = 'error';    break;
 	        case 'ok':      $img = '/'.root().'images/ok.png';   $type = 'status';   break;
 	        case 'info':    $img = '/'.root().'images/info.png'; $type = 'warning';  break;
 
-	        default: $img = NULL; break;
+	        default: $img = null; break;
 	    }
 
 		$objTPL->assign_vars(array(

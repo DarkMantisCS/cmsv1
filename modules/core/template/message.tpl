@@ -1,7 +1,7 @@
 <div class="messages {TYPE} corners">
     <span class="float-left icon">&nbsp;</span>
     <div class="title corners"><h3>{L_MSG_TYPE}:</h3></div>
-    <p>
+    <p class="content corners">
     {L_MSG}<br />{QUERY}
 <!-- BEGIN extra -->
     <br />{LINE}<br />{FILE}
