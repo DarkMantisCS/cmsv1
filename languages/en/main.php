@@ -23,7 +23,7 @@ $_lang['MSG_ERR']               = 'Error';
 $_lang['MSG_OK']                = 'Successful';
 
 
-
+$_lang['L_CAPTCHA_DESC']		= 'This question is for testing whether you are a human visitor and to prevent automated spam submissions.';
 
 //Time Stuff
 $_lang['DATETIME']['Sunday'] 	= 'Sunday';

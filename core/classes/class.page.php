@@ -313,7 +313,7 @@ class page extends coreClass{
 		$header = ($simple==true ? 'simple_header.tpl' : 'header.tpl');
 
 		//set simpleTpl, so anything that needs to output layout other than these funcs know what to expect
-		$tplVar = ($simple===true ? true : false);
+		$tplVar = ($this->getVar('simpleTpl')===true ? true : ($simple===true ? true : false) );
 		$this->setVar('simpleTpl', $tplVar);
 
 		//set the page header template file

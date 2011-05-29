@@ -64,7 +64,7 @@ class user extends coreClass{
 
 		//if we have a false, in the above array, we has a problem
 		if(in_array(false, $userInfo)){
-			$this->setError('UserInfo has a false value');
+			$this->setError('$userInfo has a false value');
 			return false;
 		}
 
@@ -80,6 +80,11 @@ class user extends coreClass{
 
 		//Implement a hook before a users' registration has completed
 		$this->objPlugins->hook('CMSUser_Before_Registered', $userInfo);
+
+		if(!is_array($userInfo) || is_empty($userInfo)){
+			$this->setError('$userInfo is un-usable. Stopping registration.');
+			return false;
+		}
 
 		$insert_id = $this->objSQL->insertRow('users', $userInfo, langVar(
 			'LOG_CREATED_USER',
