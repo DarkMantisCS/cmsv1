@@ -620,6 +620,8 @@ class mysql extends coreClass implements SQLBase{
 	 * @return 	bool
 	 */
 	public function recordLog($query, $log) {
+		if(!$this->logging){ return false; }
+
 		$info['uid'] 			= (User::$IS_ONLINE ? $this->objUser->grab('id') : '0');
 		$info['username'] 		= (User::$IS_ONLINE ? $this->objUser->grab('username') : 'Guest');
 		$info['description'] 	= $log;

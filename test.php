@@ -1,6 +1,6 @@
 <?php
 define('INDEX_CHECK', true);
-define('cmsDEBUG', 1);
+define('cmsDEBUG', 0);
 define('NOMENU', 0);
 include_once('core/core.php');
 

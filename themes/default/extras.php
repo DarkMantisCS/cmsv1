@@ -25,7 +25,8 @@ if(!is_empty($_menu)){
 	}
 }
 $_more_vars = array(
-				'TPL_MENU' => $menu,
+				'L_WELCOME' 	=> langVar('L_WELCOME', $this->config('site', 'title'), $this->objUser->profile($this->objUser->grab('username'))),
+				'TPL_MENU' 		=> $menu,
 			);
 
 ?>

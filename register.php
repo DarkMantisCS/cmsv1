@@ -10,6 +10,11 @@ $objPage->setTitle(langVar('B_REGISTER'));
 //no need for them to be here
 if(User::$IS_ONLINE){ $objPage->redirect('/'.root().'index.php'); }
 
+if(!$objPage->config('site', 'allow_register')){
+    hmsgDie('INFO', 'Error: An administrator has disabled Registrations.');
+}
+
+if(!HTTP_POST){
 //add our JS in here for the register
 $objPage->addJSFile('/'.root().'scripts/register.js');
 
@@ -18,13 +23,8 @@ $objPage->addPagecrumb(array(
 	array('url' => '/'.root().'register.php',  'name' => langVar('B_REGISTER')),
 ));
 
-if(!$objPage->config('site', 'allow_register')){
-    hmsgDie('INFO', 'Error: An administrator has disabled Registrations.');
-}
-
 $objPage->showHeader();
 
-if(!HTTP_POST){
 	//set the fields to blank if they dont already have a value
 	$fields = array('username', 'password', 'password_verify', 'email');
 	foreach($fields as $e){
@@ -34,8 +34,6 @@ if(!HTTP_POST){
 		}
 	}
 
-$a = $objUser->verifyUsername($_POST['username']);
-echo dump($a);
 echo $objForm->outputForm(array(
 		'FORM_START' => $objForm->start('register', array('method'=>'POST', 'action'=>'?')),
 		'FORM_END'	 => $objForm->finish(),
@@ -62,6 +60,8 @@ echo $objForm->outputForm(array(
 		),
 		'errors' => $_SESSION['error'],
 	));
+
+$objPage->showFooter();
 }else{
 	$userInfo = array();
 
@@ -81,7 +81,7 @@ echo $objForm->outputForm(array(
 	}
 
     //validate the username conforms to site standards
-    if(!isset($_error['username']) && !$objUser->verifyUsername($_POST['username'])){
+    if(!isset($_error['username']) && !$objUser->validateUsername($_POST['username'])){
         $_error['username'] = 'You have chosen an Username with invalid characters in. Please choose another one.';
     }
 
@@ -96,8 +96,8 @@ echo $objForm->outputForm(array(
 		$_error['email'] = 'The Email address provided is invalid. Please make sure it is correct and try again.';
     }
 
-    if(!isset($_error['email']) && !$objUser->DoEmail($email)){
-		$_error['email'] = 'The Email address provided is invalid. Please make sure it is correct and try again.';
+    if(!isset($_error['email']) && !$objUser->validateEmail($email)){
+		$_error['email'] = 'The Email address provided couldn\'t be validated properly. Please make sure it is correct and try again.';
     }
 
 	//check the passwords
@@ -140,6 +140,4 @@ echo $objForm->outputForm(array(
 	$objCache->generate_statistics_cache();
 	msgDie('INFO', $msg);
 }
-
-$objPage->showFooter();
 ?>

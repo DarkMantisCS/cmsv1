@@ -344,7 +344,7 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 	/**
 	 * Adds a language file to the global language array
 	 *
-	 * @version	1.0
+	 * @version	1.2
 	 * @since   1.0.0
 	 *
 	 * @param   string 	$file
@@ -354,11 +354,16 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 	function translateFile($file){
 		global $_lang;
 
+		if(!isset($LANG_LOAD)){ $LANG_LOAD = true; }
+
+		$return = false;
 		if(is_file($file) && is_readable($file)){
 			include_once($file);
-			return true;
+			$return = true;
 		}
-		return false;
+
+		unset($LANG_LOAD);
+		return $return;
 	}
 
 	/**

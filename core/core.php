@@ -143,7 +143,7 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 	}
 	unset($classes);
 
-	$objCore->objSQL->connect(true, true, false);
+	$objCore->objSQL->connect(true, (LOCALHOST && cmsDEBUG ? true : false), false);
 	unset($config['db']);
 //
 //--Cache Vars init
@@ -196,8 +196,8 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 	unset($cache_gen, $config_db, $var);
 
 	//do a few checks on the cache, see whats what
-	if(is_empty($config['menu_blocks']) && !defined('NOMENU')){
-		 define('NOMENU', true);
+	if(is_empty($config['menu_blocks']) && !defined('NO_MENU')){
+		 define('NO_MENU', true);
 	}
 
 //
@@ -214,7 +214,7 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
     }
 
     if(is_dir($langDir.$language.'/') || is_readable($langDir.$language.'/main.php')){
-    	require_once($langDir.$language.'/main.php');
+    	translateFile($langDir.$language.'/main.php');
     }else{
         msgDie('FAIL', sprintf($errorTPL, 'Fatal Error', 'Cannot open '.($langDir.$language.'/main.php').' for include.'));
 	}
@@ -291,7 +291,7 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 		msgDie('FAIL', sprintf($errorTPL, 'Fatal Error', 'Cannot find template. Please make sure atleast default/ is uploaded correctly and try again.'));
 	}
 
-	if(file_exists(cmsROOT.'modules/core/lang.'.$language.'.php')){
+	if(is_file(cmsROOT.'modules/core/lang.'.$language.'.php')){
 		translateFile(cmsROOT.'modules/core/lang.'.$language.'.php');
 	}
 
@@ -316,9 +316,11 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 	$objBBCode->ClearSmileys();
 	$objBBCode->SetSmileyDir('/'.root().'images/smilies');
 	$file = cmsROOT.'core/bbcode_tags.php';
-	if(!is_readable($file)){
-	    msgDie('FAIL', sprintf($errorTPL, 'Fatal Error', 'BBCode"s not avalible.'));
-	}else{ require_once($file); }
+	if(is_readable($file)){
+		require_once($file);
+	}else{
+		hmsgDie('FAIL', 'Fatal Error - BBCode\'s not available.');
+	}
 
 	//
 	//--Module Setup
@@ -327,7 +329,7 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 	if(is_readable($file)){
 		require_once($file);
 	}else{
-		msgDie('FAIL', sprintf($errorTPL, 'Fatal Error', 'Modules cannot be activated.'));
+		hmsgDie('FAIL', 'Fatal Error - Modules cannot be loaded.');
 	}
 
 	//if site is closed, make it so, kill debug, no menu is needed, 'cmsCLOSED' can be used as a bypass
@@ -346,6 +348,6 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 	if(is_readable($file)){
 		require_once($file);
 	}else{
-		msgDie('FAIL', sprintf($errorTPL, 'Fatal Error', 'Cron cannot be found.'));
+		hmsgDie('FAIL', 'Fatal Error - Cron cannot be found.');
 	}
 

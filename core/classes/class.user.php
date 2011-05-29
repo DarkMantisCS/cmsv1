@@ -41,9 +41,6 @@ class user extends coreClass{
 	 * @return 		bool
 	 */
 	function is_online(){ return self::$IS_ONLINE; }
-	function isUserOnline($uid){
-		return self::$IS_ONLINE;
-	}
 
 	/**
 	 * Inserts a users info into the database.
@@ -187,6 +184,24 @@ class user extends coreClass{
 
 		//worst case, return the entire user
 		return $this->userInfo[$uid];
+	}
+
+
+	/**
+	 * Determines whether the user is online or not.
+	 *
+	 * @version 1.0
+	 * @since   1.0.0
+	 * @author	xLink
+	 *
+	 * @param	mixed $uid 	Username used to retreive the UID
+	 *
+	 * @return  bool
+	 */
+	function isUserOnline($uid){
+		$ts = $this->getUserInfo($uid, 'timestamp');
+
+		return (is_empty($ts) ? false : true);
 	}
 
 	/**
@@ -362,11 +377,48 @@ class user extends coreClass{
 	 *
 	 * @return 	bool
 	 */
-	function verifyUsername($username){
-		if(strlen($username) > 25 || strlen($username) < 2){ return false; }
-		if(preg_match('~[^a-z0-9_\-@^]~i', $username)){ return false; }
+	public function validateUsername($username, $existCheck=false){
+		if(strlen($username) > 25 || strlen($username) < 2){
+			$this->setError('Username dosen\'t fall within usable length parameters. Between 2 and 25 characters long.');
+			return false;
+		}
+		if(preg_match('~[^a-z0-9_\-@^]~i', $username)){
+			$this->setError('Username dosen\'t validate. Please ensure that you are using no special characters etc.');
+			return false;
+		}
+		if($existCheck==true && $this->getUserInfo($username, 'username')){
+			$this->setError('Username alerady exists. Please make sure your username is unique.');
+			return false;
+		}
 
 		return true;
+	}
+
+	/**
+	 * Check to see if the email is a valid one.
+	 *
+	 * @version 1.0
+	 * @since   0.8.0
+	 * @author 	xLink
+	 *
+	 * @param 	$email
+	 *
+	 * @return 	bool
+	 */
+	public function validateEmail($email) {
+		global $objBBCode;
+
+		$email = strtolower($email);
+		$email = $objBBCode->UnHTMLEncode(strip_tags($email));
+
+		if($objBBCode->IsValidEmail($email)){
+			return true;
+		}
+		return false;
+	}
+
+	public function profile() {
+		return 'Guest';
 	}
 
 

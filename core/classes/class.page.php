@@ -290,6 +290,11 @@ class page extends coreClass{
 			return false;
 		}
 
+		$langFile = cmsROOT.'themes/'.$theme.'/languages/'.$this->config('global', 'language').'/main.php';
+		if(is_file($langFile) && is_readable($langFile)){
+			translateFile($langFile);
+		}
+
 		self::$THEME = $theme;
 		self::$THEME_ROOT = cmsROOT.'themes/'.$theme.'/';
 
@@ -490,6 +495,8 @@ class page extends coreClass{
 			//some template stuff
 			'PAGE_TITLE'	=> $this->getVar('pageTitle'),
 			'_META'			=> $meta,
+
+			'L_BREADCRUMB'	=> langVar('L_BREADCRUMB'),
 			'BREADCRUMB'	=> $this->showPagecrumbs().'<span id="ajaxcrumb">&nbsp;</span>',
 
 			'_JS_FOOTER'	=> $js . $notifications,
@@ -508,9 +515,10 @@ class page extends coreClass{
 		if($menu['module'] === false){ $noMenu = true; }
 
 		//we cant do nothin without any blocks
-		if($noMenu && !isset($config['menu_blocks']) && !is_empty($config['menu_blocks'])){
+		if($noMenu==false && isset($config['menu_blocks']) && !is_empty($config['menu_blocks'])){
 			//if it got set to null, or wasnt set atall, default to the core menu
-			if($menu['module']===NULL){ $menu['module'] = 'core'; }
+			if(!isset($menu['module']) || is_empty($menu['module'])){ $menu['module'] = 'core'; }
+			if(!isset($menu['page_id']) || is_empty($menu['page_id'])){ $menu['page_id'] = 'default'; }
 
 			//then do the output
 			$menuSetup = show_menu($menu['module'], $menu['page_id']);
