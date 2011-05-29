@@ -310,10 +310,10 @@ class page extends coreClass{
 		if($this->header['completed']){ return; }
 
 		//figure out which version of the header we wanna use
-		$header = ($simple ? 'simple_header.tpl' : 'header.tpl');
+		$header = ($simple==true ? 'simple_header.tpl' : 'header.tpl');
 
 		//set simpleTpl, so anything that needs to output layout other than these funcs know what to expect
-		$tplVar = ($this->getVar('simpleTpl')===true ? true : ($simple===true ? true : false) );
+		$tplVar = ($simple===true ? true : false);
 		$this->setVar('simpleTpl', $tplVar);
 
 		//set the page header template file
@@ -502,13 +502,13 @@ class page extends coreClass{
 	//
 
 		$noMenu = false;
-		if(defined('NOMENU') && NOMENU==1){ $noMenu = true; }
+		if(defined('NO_MENU') && NO_MENU==true){ $noMenu = true; }
 
 		$menu = $this->getVar('moduleMenu');
 		if($menu['module'] === false){ $noMenu = true; }
 
 		//we cant do nothin without any blocks
-		if(!$noMenu && isset($config['menu_blocks']) && !is_empty($config['menu_blocks'])){
+		if($noMenu && !isset($config['menu_blocks']) && !is_empty($config['menu_blocks'])){
 			//if it got set to null, or wasnt set atall, default to the core menu
 			if($menu['module']===NULL){ $menu['module'] = 'core'; }
 
@@ -550,7 +550,7 @@ class page extends coreClass{
 
 		//figure out which version of the footer we wanna use
 		if($this->getVar('simpleTpl')){ $simple = true; }
-		$footer = ($simple ? 'simple_footer.tpl' : 'footer.tpl');
+		$footer = ($simple==true ? 'simple_footer.tpl' : 'footer.tpl');
 
 		//set the page footer template file
 		$this->objTPL->set_filenames(array(

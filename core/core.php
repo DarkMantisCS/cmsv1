@@ -49,7 +49,6 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 		die(sprintf($errorTPL, 'Fatal Error - 404', 'We have been unable to locate/read the configuration file.'));
 	}else{ require_once($file); }
 
-
 	//we need constants.php, same deal as above
 	$file = cmsROOT.'core/constants.php';
 	if(!is_readable($file)){
@@ -62,7 +61,6 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 	if(!is_readable($file)){
 		function dump(){} function getExecInfo(){} function memoryUsage(){}
 	}else{ $redoHandler = true; require_once($file); }
-
 
 	$file = cmsROOT.'core/baseFunctions.php';
 	if(!is_readable($file)){
@@ -188,7 +186,7 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 
 			unset(${$var.'_db'});
 		}
-#echo dump($config);
+
 	//clean the variable pool, keeping things nice and tidy
 	unset($cache_gen, $config_db, $var);
 
@@ -274,12 +272,52 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 		'url'			=> ($_SERVER['HTTPS'] ? 'https' : 'http').'://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'],
 	);
 
-	//hook the session template
+	//hook the session template, this is the place to add some more if you want
 	$objPlugins->hook('CMSCore_session_tpl', $config['global']);
 
 	$guestCheck = ($config['global']['user']['id'] == GUEST ? true : false);
 	$objUser->setIsOnline($guestCheck ? false : true);
 
+	$theme = !User::$IS_ONLINE || !$objCore->config('site', 'template_override')
+				? $objCore->config('site', 'theme')
+				: $objUser->grab('theme');
+
+	if(!$objPage->setTheme($theme)){
+		msgDie('FAIL', sprintf($errorTPL, 'Fatal Error', 'Cannot find template. Please make sure atleast default/ is uploaded correctly and try again.'));
+	}
+
+	if(file_exists(cmsROOT.'modules/core/lang.'.$language.'.php')){
+		translateFile(cmsROOT.'modules/core/lang.'.$language.'.php');
+	}
+
+	//this sets the global theme vars
+	$objPage->setThemeVars();
+
+	//set a default breadcrumb
+	$objPage->addPagecrumb(array(
+		array('url' => '/'.root(), 'name' => langVar('B_MAINSITE')),
+	));
+
+
+//
+//--Setup modules, online system and bbcode stuffz
+//
+	$file = cmsROOT.'core/classes/class.module.php';
+	if(is_readable($file)){
+		require_once($file);
+	}else{
+		msgDie('FAIL', sprintf($errorTPL, 'Fatal Error', 'Modules cannot be activated.'));
+	}
+
+	//if site is closed, make it so, kill debug, no menu is needed, 'cmsCLOSED' can be used as a bypass
+	if (($objCore->config('site', 'closed') == 1) && (!defined('cmsCLOSED'))){
+		if(!user::$IS_ADMIN){
+			$objSQL->debug = false;
+			$objPage->setMenu(false);
+			$objPage->setTitle('DISABLED');
+			hmsgDie('INFO', 'Site has been disabled. '.contentParse("\n".$objCore->config('site', 'disabledMsg')));
+		}
+	}
 //
 //--Include the CMS's internal CRON
 //

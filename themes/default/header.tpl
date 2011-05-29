@@ -8,6 +8,12 @@
 {_CSS}
 <link rel="stylesheet" href="/{THEME_ROOT}style.css" type="text/css" />
 
+<!-- BEGIN no_menu -->
+<style>
+	section#content{ margin: 15px -5px !important; }
+</style>
+<!-- END no_menu -->
+
 <!--[if lte IE 8]>
 <script src="http://localhost/cms/scripts/html5.js" type="text/javascript"></script>
 <![endif]-->

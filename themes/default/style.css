@@ -214,7 +214,7 @@ form fieldset legend {
 
 
 /** Messages **/
-div.messages{ display: block; background: #FFFFFF; }
+div.messages{ display: block; }
 div.messages .icon{ width:54px;  height:54px; }
 div.warning .icon{ background-image: url(images/alert.png); }
 div.error .icon{ background-image: url(images/error.png); }

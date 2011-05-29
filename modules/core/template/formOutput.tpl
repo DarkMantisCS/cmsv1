@@ -14,7 +14,7 @@
 			<!-- END label -->
 				{field.L_LABEL}		
 				<!-- BEGIN desc -->
-				<br /><small>{field.F_INFO}</small>
+				<br /><small class="wrap grid_3">{field.F_INFO}</small>
 				<!-- END desc -->
 			<!-- BEGIN label -->
 			</label>

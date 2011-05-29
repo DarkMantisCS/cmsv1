@@ -551,7 +551,7 @@ class template extends coreClass{
 	*/
 	private function get_cached_code($handle, $do_not_echo = false, $ret_var = '') {
 
-		$_cache_file = $this->cache_directory.(isset($this->files[$handle]) ? md5($this->files[$handle]) : md5(md5($handle)));
+		$_cache_file = $this->cache_directory.'tpl_'.(isset($this->files[$handle]) ? md5($this->files[$handle]) : md5(md5($handle)));
 
 		$create_new_cache = 1;
 		if($_cache_present = file_exists($_cache_file)) {
@@ -564,7 +564,7 @@ class template extends coreClass{
 		if($create_new_cache) {
 			if(!isset($this->loadFile[$handle])){
 				if(!$this->loadfile($handle)) {
-					msgdie('FAIL', "Template->pparse(): Couldn't load template file for handle $handle @ Line ".__line__);
+					msgdie('FAIL', "Template->parse(): Couldn't load template file for handle $handle @ Line ".__line__);
 				}
 			}
 

@@ -24,6 +24,33 @@ class cache extends coreClass{
 		$this->fileTpl = $this->cacheDir.'cache_%s.php';
 	}
 
+	public function remove($type){
+		$cacheFiles = '';
+		switch($type){
+			case 'config':
+				$cacheFiles = glob(cmsROOT.'cache/cache_*.php');
+			break;
+
+			case 'media':
+				$cacheFiles = glob(cmsROOT.'cache/media/minify_*');
+			break;
+
+			case 'template':
+				$cacheFiles = glob(cmsROOT.'cache/template/tpl_*');
+			break;
+		}
+
+		if(is_empty($cacheFiles)){ return false;}
+
+		if(is_array($cacheFiles) && !is_empty($cacheFiles)){
+			foreach($cacheFiles as $file){
+				unlink($file);
+			}
+		}
+
+		return true;
+	}
+
 	/**
 	 * Sets up a new cache file
 	 *

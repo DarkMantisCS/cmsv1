@@ -1032,7 +1032,7 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 		$objTPL->parse('__msgBody');
 
 		if($footer){
-	        $objPage->showFooter(false, false);
+	        $objPage->showFooter(false);
 		}
 	    exit;
 	}
@@ -1047,7 +1047,7 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 	    global $objPage;
 
 	    $doSimple = false;
-	    if(AJAX_CALL || isset($_GET['ajax']) ||$objPage->getVar('simpleTpl')){
+	    if(HTTP_AJAX || isset($_GET['ajax']) || $objPage->getVar('simpleTpl')){
 	    	$doSimple = true;
 		}
 

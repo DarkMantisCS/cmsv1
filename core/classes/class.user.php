@@ -73,6 +73,7 @@ class user extends coreClass{
 		$userInfo['register_date'] 	= time();
 		$userInfo['usercode'] 		= substr(md5(time()), 0, 6);
 		$userInfo['primary_group'] 	= $this->config('site', 'user_group');
+		$userInfo['theme'] 			= $this->config('site', 'theme');
 
 		//active needs to be the opposite of whatever 'register_verification' is...
 		$userInfo['active']			= !$this->config('site', 'register_verification');
