@@ -64,7 +64,7 @@ class user extends coreClass{
 
 		//if we have a false, in the above array, we has a problem
 		if(in_array(false, $userInfo)){
-			$this->setError('$userInfo has a false value');
+			$this->setError('username, password and email are all required to continue.');
 			return false;
 		}
 
@@ -82,7 +82,7 @@ class user extends coreClass{
 		$this->objPlugins->hook('CMSUser_Before_Registered', $userInfo);
 
 		if(!is_array($userInfo) || is_empty($userInfo)){
-			$this->setError('$userInfo is un-usable. Stopping registration.');
+			$this->setError('$userInfo is no longer a useable array. Check plugins attached to CMSUser_Before_Register.');
 			return false;
 		}
 
@@ -99,6 +99,9 @@ class user extends coreClass{
 			$this->setError('insert_id has a false value, SQL: '.mysql_error());
 			return false;
 		}
+
+		//register the user into the group
+		$this->objGroups->joinGroup($insert_id, $userInfo['primary_group'], 0);
 
 		$result = (is_number($insert_id) ? $insert_id : false);
 
@@ -348,6 +351,23 @@ class user extends coreClass{
 		return true;
 	}
 
+	/**
+	 * Check to see if the username is a valid one.
+	 *
+	 * @version 1.0
+	 * @since   0.8.0
+	 * @author 	xLink
+	 *
+	 * @param 	$username
+	 *
+	 * @return 	bool
+	 */
+	function verifyUsername($username){
+		if(strlen($username) > 25 || strlen($username) < 2){ return false; }
+		if(preg_match('~[^a-z0-9_\-@^]~i', $username)){ return false; }
+
+		return true;
+	}
 
 
 	public function checkPermissions() {

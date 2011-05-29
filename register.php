@@ -3,7 +3,7 @@
 ||              Cybershade CMS - Your CMS, Your Way                     ||
 \*======================================================================*/
 define('INDEX_CHECK', 1);
-define('cmsDEBUG', 1);
+define('cmsDEBUG', 0);
 include 'core/core.php';
 $objPage->setTitle(langVar('B_REGISTER'));
 
@@ -25,6 +25,17 @@ if(!$objPage->config('site', 'allow_register')){
 $objPage->showHeader();
 
 if(!HTTP_POST){
+	//set the fields to blank if they dont already have a value
+	$fields = array('username', 'password', 'password_verify', 'email');
+	foreach($fields as $e){
+		$_POST[$e] = $_SESSION['register']['form'][$e];
+		if(!isset($_SESSION['register']['form'][$e]) || is_empty($_SESSION['register']['form'][$e])){
+			$_POST[$e] = '';
+		}
+	}
+
+$a = $objUser->verifyUsername($_POST['username']);
+echo dump($a);
 echo $objForm->outputForm(array(
 		'FORM_START' => $objForm->start('register', array('method'=>'POST', 'action'=>'?')),
 		'FORM_END'	 => $objForm->finish(),
@@ -36,11 +47,11 @@ echo $objForm->outputForm(array(
 	array(
 		'field' => array(
 			'User Info'			=> '_header_',
-			'Username' 			=> $objForm->inputbox('username', 'text', '', array('extra' => 'maxlength="20" size="20"', 'required'=>true)),
-			'Password' 			=> $objForm->inputbox('pwd', 'password', null, array('required'=>true)),
-			'Confirm Password' 	=> $objForm->inputbox('pwd2', 'password', null, array('required'=>true)),
+			'Username' 			=> $objForm->inputbox('username', 'text', $_POST['username'], array('extra' => 'maxlength="20" size="20"', 'required'=>true)),
+			'Password' 			=> $objForm->inputbox('password', 'password', $_POST['password'], array('required'=>true)),
+			'Verify Password' 	=> $objForm->inputbox('password_verify', 'password', $_POST['password_verify'], array('required'=>true)),
 
-			'Email' 			=> $objForm->inputbox('email', 'text', '', array('required'=>true)),
+			'Email' 			=> $objForm->inputbox('email', 'text', $_POST['email'], array('required'=>true)),
 
 			'Captcha'			=> '_header_',
 			'Recaptcha'			=> $objForm->loadCaptcha('captcha'),
@@ -49,22 +60,86 @@ echo $objForm->outputForm(array(
 			'Username' 			=> 'This field can be [a-zA-Z0-9-_.]',
 			'Recaptcha'			=> $objForm->loadCaptcha('desc').'<br />'.langVar('L_CAPTCHA_DESC'),
 		),
+		'errors' => $_SESSION['error'],
 	));
 }else{
+	$userInfo = array();
 
 	if(is_empty($_POST)){
-		$objPage->redirect($objCore->config('global', 'fullPath'), 0, 3);
-		hmsgdie('FAIL', 'Error: Please use the form to submit your registration request');
+		$objPage->redirect($objCore->config('global', 'fullPath'), 3, 0);
+		msgdie('FAIL', 'Error: Please use the form to submit your registration request.');
 	}
 
-    //do some checks on the username
-    if(!$objUser->verifyUsername($username)){
-        $_error[] = 'You have chosen an Username with invalid characters in. Please choose another one.';
+	//run through each of the expected fields and make sure theyre are here
+	//we dont add the captcha in here purely cause the admin might hook in another captcha
+	//and we wont know what fields it outputs etc
+	$fields = array('username', 'password', 'password_verify', 'email');
+	foreach($fields as $e){
+		if(!isset($_POST[$e]) || is_empty($_POST[$e])){
+			$_error[$e] = 'Please make sure all the fields are populated ('.$e.').';
+		}
+	}
+
+    //validate the username conforms to site standards
+    if(!isset($_error['username']) && !$objUser->verifyUsername($_POST['username'])){
+        $_error['username'] = 'You have chosen an Username with invalid characters in. Please choose another one.';
     }
 
+	//make sure there isnt already a user in the db with this username
+	if(!isset($_error['username']) && $objUser->getUserInfo($_POST['username'], 'username')){
+        $_error['username'] = 'You have chosen an Username that already exists. Please choose another one.';
+	}
 
+	//validate the email
+	//email address checks
+    if(!isset($_error['email']) && $objUser->getUserInfo($_POST['username'], 'email')){
+		$_error['email'] = 'The Email address provided is invalid. Please make sure it is correct and try again.';
+    }
+
+    if(!isset($_error['email']) && !$objUser->DoEmail($email)){
+		$_error['email'] = 'The Email address provided is invalid. Please make sure it is correct and try again.';
+    }
+
+	//check the passwords
+	if(!isset($_error['passwords']) && strlen($_POST['password'])<4 || strlen($_POST['password_verify'])<4){
+        $_error['passwords'] = 'Your passwords are too small. Please make sure they are longer than 4 characters long.';
+	}
+
+	if(!isset($_error['passwords']) && md5($_POST['password'])!=md5($_POST['password_verify'])){
+        $_error['passwords'] = 'Your passwords do not match. Please verify them and try again.';
+	}
+
+	//validate the captcha
+	if($objForm->loadCaptcha('verify')===false){
+		$_error['captcha'] = 'The captcha you provided was incorrect. Please try again.';
+	}
+
+	if(count($_error)){
+        $_SESSION['error'] = $_error;
+		$_SESSION['register']['form'] = $_POST;
+		$objPage->redirect($objCore->config('global', 'fullPath'), 3, 0);
+		exit;
+	}
+	//set the input array up
+	$userInfo['username'] = $_POST['username'];
+	$userInfo['password'] = $_POST['password'];
+	$userInfo['email'] = $_POST['email'];
+
+	if(!$objUser->register($userInfo)){
+		msgDie('FAIL', $objUser->error());
+	}
+
+	if($objPage->config('site', 'emailOnRegister')){
+		sendEmail($userInfo['email'], 'register_successful');
+		$msg = langVar('L_REG_SUCCESS_EMAIL');
+	}else{
+		$msg = langVar('L_REG_SUCCESS_NO_EMAIL');
+	}
+
+	unset($_SESSION['register'], $_SESSION['error'], $query, $userInfo, $_error);
+	$objCache->generate_statistics_cache();
+	msgDie('INFO', $msg);
 }
-
 
 $objPage->showFooter();
 ?>

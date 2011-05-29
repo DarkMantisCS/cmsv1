@@ -6,11 +6,11 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 
 
 /**
+ * Sets up the templating system
  *
- *
- * @version     1.0
+ * @version     2.1
  * @since       1.0.0
- * @author      xLink
+ * @author      phpBB Team
  */
 class template extends coreClass{
 

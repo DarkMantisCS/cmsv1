@@ -3,7 +3,7 @@
 	<fieldset>	
 		<legend class="title">{FORM_TITLE}</legend>
 		<!-- BEGIN form_error -->
-		<div class="boxred">{form_error.ERROR_MSG}</div>
+		<div class="boxred padding">{form_error.ERROR_MSG}</div>
 		<div class="clear">&nbsp;</div>
 		<!-- END form_error -->
 		

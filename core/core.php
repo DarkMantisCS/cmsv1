@@ -92,13 +92,18 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 //--Classes Setup
 //
 	$classDir = cmsROOT.'core/classes/';
+	$libDir = cmsROOT.'core/lib/';
 	$classes = array();
-	//$classes[$varName] => array($classPath, [args array('var'=>'value')])
 
 	//load in outside classes
-	$classFiles = array('base.core.php', 'base.sql.php', 'class.phpass.php');
+	$classFiles = array(
+					$classDir.'base.core.php',
+					$classDir.'base.sql.php',
+					$libDir.'/phpass/class.phpass.php',
+					$libDir.'/nbbc/class.nbbc.php'
+				);
 		foreach($classFiles as $file){
-			$file = $classDir.$file;
+			$file = $file;
 			if(!is_file($file) || !is_readable($file)){
 				msgDie('FAIL', sprintf($errorTPL, 'Fatal Error - 404', 'We have been unable to locate/read the '.$file.' file.'));
 			}else{ require_once($file); }
@@ -226,7 +231,7 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 	$classes['objPage'] 		= array($classDir.'class.page.php');
 	$classes['objPlugins']		= array($classDir.'class.plugins.php');
 	$classes['objUser'] 		= array($classDir.'class.user.php');
-	$classes['objGroup'] 		= array($classDir.'class.groups.php');
+	$classes['objGroups'] 		= array($classDir.'class.groups.php');
 
 	$classes['objForm'] 		= array($classDir.'class.form.php');
 	$classes['objTime'] 		= array($classDir.'class.time.php');
@@ -302,6 +307,22 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 //
 //--Setup modules, online system and bbcode stuffz
 //
+	//
+	//--BBCode Setup
+	//
+	$objBBCode = new BBCode;
+	$objBBCode->SetDebug(true);
+	$objBBCode->SetDetectURLs(false);
+	$objBBCode->ClearSmileys();
+	$objBBCode->SetSmileyDir('/'.root().'images/smilies');
+	$file = cmsROOT.'core/bbcode_tags.php';
+	if(!is_readable($file)){
+	    msgDie('FAIL', sprintf($errorTPL, 'Fatal Error', 'BBCode"s not avalible.'));
+	}else{ require_once($file); }
+
+	//
+	//--Module Setup
+	//
 	$file = cmsROOT.'core/classes/class.module.php';
 	if(is_readable($file)){
 		require_once($file);

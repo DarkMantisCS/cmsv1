@@ -24,4 +24,9 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 	define('MOD',		2); //OR THIS...i kill you DEAD!
 	define('ADMIN',		3);
 
+//Group settings
+	define('GROUP_OPEN', 	0);
+	define('GROUP_CLOSED',	1);
+	define('GROUP_HIDDEN',	2);
+
 ?>

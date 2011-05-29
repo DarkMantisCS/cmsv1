@@ -25,6 +25,12 @@ $_lang['MSG_OK']                = 'Successful';
 
 $_lang['L_CAPTCHA_DESC']		= 'This question is for testing whether you are a human visitor and to prevent automated spam submissions.';
 
+$_lang['L_REG_SUCCESS_EMAIL'] 	= 'Your registration has been successful. The administrator has asked that you validate your email before being allowed to login. Please do this now, if you have no email in your inbox, check your junk & spam boxes. Otherwise wait a while and then contact the administrator.';
+$_lang['L_REG_SUCCESS_NO_EMAIL']= 'Your registration has been successful. You may now login with your username and password.';
+
+//log stuff
+$_lang['LOG_CREATED_USER'] 		= 'We\'ve done it! <a href="%s">%s</a>, he..he lives! Giovanni will be impressed at the power this creature weilds...';
+
 //Time Stuff
 $_lang['DATETIME']['Sunday'] 	= 'Sunday';
 $_lang['DATETIME']['Monday'] 	= 'Monday';

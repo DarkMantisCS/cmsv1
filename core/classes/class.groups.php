@@ -7,7 +7,7 @@ if(!defined('INDEX_CHECK')){die('Error: Cannot access directly.');}
 /**
  * Group Class designed to allow easier access to expand on the group system implemented
  *
- * @version     1.0
+ * @version     1.2
  * @since       1.0.0
  * @author      xLink
  */
@@ -38,7 +38,7 @@ class groups extends coreClass {
 
 		$query = $this->objSQL->prepare('SELECT id, name, moderator, single_user_group FROM `$Pgroups` WHERE id = "%s" LIMIT 1;', $gid);
         $this->group[$gid] = $this->objSQL->getLine($query);
-            if(!count($this->group[$gid])){
+            if(is_empty($this->group[$gid])){
             	$this->setError('Cannot query group');
 				return false;
 			}
@@ -76,7 +76,7 @@ class groups extends coreClass {
         $insert['uid']      = $uid;
         $insert['pending']  = $pending;
 
-        $this->objPlugins->execHook('CMSGroups_beforeJoin', $insert);
+        $this->objPlugins->hook('CMSGroups_beforeJoin', $insert);
 
         $this->objSQL->insertRow('group_subs', $insert);
             if(!mysql_affected_rows()){
@@ -84,7 +84,8 @@ class groups extends coreClass {
 				return false;
 			}
 
-        $this->objPlugins->execHook('CMSGroups_afterJoin', func_get_args());
+		$args = func_get_args();
+        $this->objPlugins->hook('CMSGroups_afterJoin', $args);
         unset($insert);
 
         return true;
@@ -115,7 +116,7 @@ class groups extends coreClass {
 				return false;
 			}
 
-        $this->objPlugins->execHook('CMSGroups_leave', func_get_args());
+        $this->objPlugins->hook('CMSGroups_leave', func_get_args());
 
         return true;
     }
@@ -144,7 +145,7 @@ class groups extends coreClass {
         //make sure old moderator is a subscriber
         $query = $this->objSQL->prepare('SELECT * FROM `$Pgroup_subs` WHERE gid = "%s" AND uid = "%s" LIMIT 1', $gid, $group['moderator']);
         $oldModerator = $this->objSQL->getLine($query);
-            if(!count($oldModerator)){
+            if(is_empty($oldModerator)){
             	$this->joinGroup($group['moderator'], $gid, 0);
 			}
 
@@ -156,7 +157,7 @@ class groups extends coreClass {
             $this->objSQL->updateRow('group_subs', $update, array('id = "%s"', $gid),
                     'User Groups: '.$this->objUser->profile($uid, RAW).' has been made group Moderator of '.$group['name']);
 
-            $this->objPlugins->execHook('CMSGroups_changeModerator', array($uid, $gid));
+            $this->objPlugins->hook('CMSGroups_changeModerator', array($uid, $gid));
         }
 
         //make the moderator a subscriber too
@@ -187,7 +188,7 @@ class groups extends coreClass {
         //grab the necesary row
         $query = $this->objSQL->prepare('SELECT uid, gid, pending FROM `$Pgroup_subs` WHERE gid = "%s" AND uid = "%s" LIMIT 1', $gid, $uid);
         $subRow = $this->objSQL->getLine($query);
-            if(!count($subRow)){
+            if(is_empty($subRow)){
             	$this->setError('User is not in group');
 				return false;
 			}
@@ -224,15 +225,15 @@ class groups extends coreClass {
         if(!is_array($query) && !is_empty($query)){ $this->setError('$query is not valid'); return false; }
 
         //get group
-        if(!count($query)){
-        $query = $this->objSQL->getTable($this->objSQL->prepare('SELECT ug.uid, g.type, g.moderator
-				                                                    FROM `$Pgroups` g, `$Pgroup_subs` ug
-				                                                    WHERE g.id = %s
-				                                                        AND g.type != %s
-				                                                        AND ug.gid = g.id',
-				                                                $gid,
-				                                                GROUP_HIDDEN));
-            if(!count($query)){
+        if(is_empty($query)){
+	        $query = $this->objSQL->getTable($this->objSQL->prepare('SELECT ug.uid, g.type, g.moderator
+					                                                    FROM `$Pgroups` g, `$Pgroup_subs` ug
+					                                                    WHERE g.id = %s
+					                                                        AND g.type != %s
+					                                                        AND ug.gid = g.id',
+					                                                $gid,
+					                                                GROUP_HIDDEN));
+            if(is_empty($query)){
             	$this->setError('No group for ID: '.$gid);
 				return false;
 			}
@@ -264,11 +265,11 @@ class groups extends coreClass {
 
         //get group
         $query = $this->objSQL->getTable($this->objSQL->prepare('SELECT ug.uid, ug.pending, g.type, g.moderator
-				                                                    FROM ``$Pgroups` g, ``$Pgroup_subs` ug
+				                                                    FROM `$Pgroups` g, `$Pgroup_subs` ug
 				                                                    WHERE g.id = %s
 				                                                        AND ug.gid = g.id',
 				                                                $gid));
-            if(!count($query)){
+            if(is_empty($query)){
             	$this->setError('No group for ID: '.$gid);
 				return false;
 			}

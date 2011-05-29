@@ -125,22 +125,26 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 	}
 
 	/**
-	 * Sends an email to the intended target
+	 * Sends an email to the target.
 	 *
-	 * @version	1.0
+	 * @version	2.0
 	 * @since   1.0.0
 	 * @author  xLink
 	 *
 	 * @param   string 	$to
-	 * @param   string 	$subject
-	 * @param   string 	$message
+	 * @param   string 	$emailVar
+	 * @param   bool 	$dontDie
 	 *
 	 * @return 	bool
 	 */
-	function sendMail($to, $subject, $message, $dontDie=false){
-		global $config;
+	function sendEMail($to, $emailVar, $dontDie=false){
+		global $objCore;
 
-		if(_mailer($to, $config['site']['admin_email'], $subject, $message)){
+		if(!strlen($objCore->config('email', $emailVar))){
+			return false;
+		}
+
+		if(_mailer($to, $objCore->config('site', 'admin_email'), $subject, $message)){
 			return true;
 		}
 
@@ -979,7 +983,7 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 			}
 
 			if($_POST['submit']=='Go Back'){
-				$objPage->redirect($redir, 0, 3);
+				$objPage->redirect($redir, 3, 0);
 				hmsgDie('INFO', 'Redirecting you back.');
 			}
 

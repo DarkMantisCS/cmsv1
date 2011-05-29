@@ -356,6 +356,15 @@ class form extends coreClass{
 		));
 
 		$this->objTPL->assign_vars($vars);
+
+		$this->objTPL->reset_block_vars('form_error');
+		if(isset($elements['errors']) && !is_empty($elements['errors'])){
+			$this->objTPL->assign_block_vars('form_error', array(
+				'ERROR_MSG' => implode('<br />', $elements['errors']),
+			));
+		}
+
+
 		$this->objTPL->reset_block_vars('field');
 		//loop thru each element
 		foreach($elements['field'] as $label => $field){

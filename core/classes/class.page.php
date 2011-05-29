@@ -219,10 +219,10 @@ class page extends coreClass{
 	 * @author  xLink
 
 	 * @param	string	$location
-	 * @param	int		$mode 		Definitions - 1=>GET['redirect'], 2=>HTTP_REFFERER, => 0=>$location
 	 * @param	int 	$time
+	 * @param	int		$mode 		Definitions - 1=>GET['redirect'], 2=>HTTP_REFFERER, => 0=>$location
 	 */
-	public function redirect($location=null, $mode=null, $time=0){
+	public function redirect($location=null, $time=0, $mode=null){
 		switch($mode) {
 			case GET:
 				$url = doArgs('redirect', $location, $_GET);
