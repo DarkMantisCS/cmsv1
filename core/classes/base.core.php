@@ -157,6 +157,13 @@ class coreClass{
     	$this->_error = (string)$msg;
 	}
 
+	/**
+	 * Throws a HTTP Error Code and a pretty CMS Page
+	 *
+	 * @version 1.0
+	 * @since 	1.0.0
+	 * @author 	xLink
+	 */
 	public function throwHTTP($err=000){
 		$msg = NULL;
 		switch($err){
