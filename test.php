@@ -8,6 +8,7 @@ $objPage->setMenu('core', 'default');
 
 $objPage->showHeader();
 
+echo dump($_SERVER);
 
 $objPage->showFooter();
 ?>
