@@ -6,7 +6,7 @@ Options -Indexes -MultiViews
 	<IfModule mod_env.c>
 		setEnv REWRITE 1
 	</IfModule>
-	
+
 ##Kill recursive redirects
 RewriteCond %{ENV:REDIRECT_STATUS} 200
 RewriteRule .* - [L]
@@ -18,8 +18,8 @@ RewriteRule (.*) http://www.cybershade.org/$1 [R=301,L]
 ##minifing techniques
 RewriteRule ^images/([^.]*)-min.css						core/lib/min/index.php?g=$1&t=css [QSA,L]
 RewriteRule ^scripts/([^.]*)-min.js						core/lib/min/index.php?g=$1&t=js [QSA,L]
-RewriteRule ^template/([^/]*)/(.*\.css)					core/lib/min/index.php?b=template/$1&f=$2 [QSA,L]
-RewriteRule ^template/([^/]*)/(.*\.js)					core/lib/min/index.php?b=template/$1&f=$2 [QSA,L]
+RewriteRule ^themes/([^/]*)/(.*\.css)					core/lib/min/index.php?b=themes/$1&f=$2 [QSA,L]
+RewriteRule ^themes/([^/]*)/(.*\.js)					core/lib/min/index.php?b=themes/$1&f=$2 [QSA,L]
 RewriteRule ^modules/([^/]*)/styles/(.*\.css)			core/lib/min/index.php?b=modules/$1/styles&f=$2 [QSA,L]
 RewriteRule ^modules/([^/]*)/scripts/(.*\.js)			core/lib/min/index.php?b=modules/$1/scripts&f=$2 [QSA,L]
 
@@ -40,7 +40,7 @@ RewriteRule ^pb($|/)([^.]*)(.*)							modules.php?__module=pastebin&__action=$2&
 RewriteRule ^wiki($|/)([^.]*)(.*)						modules.php?__module=wiki&__action=$2&__extra=$3 [QSA,L]
 RewriteRule ^forum($|/)([^.]*)(.*)						modules.php?__module=forum&__action=$2&__extra=$3 [QSA,L]
 
-RewriteRule ^test/(.*)									urls.php [QSA,L]
+RewriteRule ^(.*)(!\.[jpg|png|tiff|jpeg|gif])			controller.php [QSA,L]
 
 </IfModule>
 
