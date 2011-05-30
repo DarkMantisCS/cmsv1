@@ -2,4 +2,4 @@ About
 -----
 Cybershade CMS is a powerful open source, modular content management system.
 
-WWW: http://cybershade.org/
+WWW: http://cybersha.de
