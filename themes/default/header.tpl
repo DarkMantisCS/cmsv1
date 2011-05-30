@@ -23,7 +23,7 @@
 <div id="site-wrapper" class="container_12 clearfix">
 	<header id="banner">
 	<!--[if lte IE 7]>
-		<div id="topBar" class="align-center"><div class="boxred">ERROR: You are using an unsupported version of Internet Explorer. This version has been deemed useless. Please switch to an updated version of IE, or consider switching to something that can actually parse a webpage. Like <strong>Firefox</strong>!</div></div>
+		<div id="topBar" class="align-center"><div class="boxred">ERROR: You are using an unsupported version of Internet Explorer. This version has been deemed useless. Please switch to an updated version of IE, or consider switching to something that can actually parse a webpage. Like <a href="http://getfirefox.com"><strong>Firefox</strong></a>!</div></div>
 		<div class="clear">&nbsp;</div>
 	<![endif]-->
 	<!-- BEGIN __MSG -->

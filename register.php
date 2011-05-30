@@ -58,7 +58,7 @@ echo $objForm->outputForm(array(
 			'Username' 			=> 'This field can be [a-zA-Z0-9-_.]',
 			'Recaptcha'			=> $objForm->loadCaptcha('desc').'<br />'.langVar('L_CAPTCHA_DESC'),
 		),
-		'errors' => $_SESSION['error'],
+		'errors' => $_SESSION['register']['error'],
 	));
 
 $objPage->showFooter();
@@ -115,7 +115,7 @@ $objPage->showFooter();
 	}
 
 	if(count($_error)){
-        $_SESSION['error'] = $_error;
+        $_SESSION['register']['error'] = $_error;
 		$_SESSION['register']['form'] = $_POST;
 		$objPage->redirect($objCore->config('global', 'fullPath'), 3, 0);
 		exit;

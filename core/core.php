@@ -341,6 +341,11 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 			hmsgDie('INFO', 'Site has been disabled. '.contentParse("\n".$objCore->config('site', 'disabledMsg')));
 		}
 	}
+
+	if(!defined('NO_DB')){
+		//start the tracker, this sets out a few things so we can kill, ban etc
+		$objUser->tracker();
+	}
 //
 //--Include the CMS's internal CRON
 //

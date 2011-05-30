@@ -222,7 +222,7 @@ class page extends coreClass{
 	 * @param	int 	$time
 	 * @param	int		$mode 		Definitions - 1=>GET['redirect'], 2=>HTTP_REFFERER, => 0=>$location
 	 */
-	public function redirect($location=null, $time=0, $mode=null){
+	public function redirect($location=null, $time=0, $mode=0){
 		switch($mode) {
 			case GET:
 				$url = doArgs('redirect', $location, $_GET);
@@ -700,6 +700,74 @@ class page extends coreClass{
 		$vars = (!is_empty($_more_vars) && is_array($_more_vars) ? array_merge($vars, $_more_vars) : $vars);
 		$this->objTPL->assign_vars($vars);
 		unset($vars);
+	}
+
+
+	function loadModule($module, $languageFile=false, $mode='class'){
+		if(is_empty($class)){ $mode = 'class'; }
+		if($mode=='class'){
+			//check weather we've already used this module
+			$module_enable = isset($_SESSION['site']['modules'][$module]) ? ($_SESSION['site']['modules'][$module]==1 ? 'enabled' : 'disabled') : 'first';
+			$module_enable = 'enabled';
+			switch($module_enable){
+
+				case 'disabled': //false means the module is disabled so stop here.
+					$this->setTitle('Module Disabled');
+					hmsgDie('FAIL', 'Module: "'.$module.'" is disabled.');
+					exit;
+				break;
+
+				case 'first': //null means we havent so continue
+					$enable_check = $this->objSQL->getValue('modules', 'enabled', array('name = "%s"', $module));
+
+					switch($enable_check){
+						case NULL:
+							$this->setTitle('Module Not Installed');
+							$msg = NULL;
+							if(!is_dir(cmsROOT.'modules/'.$module.'/')){
+								error(404);
+							}
+
+							if(is_file(cmsROOT.'modules/'.$module.'/install.php') && User::$IS_ADMIN){
+								$msg = '<br />But it can be, <a href="/'.root().'modules/'.$module.'/install/">Click Here</a>';
+							}
+
+							if(User::$IS_ADMIN){
+								hmsgDie('FAIL', 'Module "'.secureMe($module).'" isnt installed.'.$msg);
+							}else{
+								error(404);
+							}
+							exit;
+						break;
+
+						case 0:
+							return false;
+						break;
+
+						default:
+							//cache it in session so we dont have to run the query everytime we use this module
+							$_SESSION['site']['modules'][$module] = $enable_check;
+						break;
+					}
+				break;
+
+			}//switch($module_enable){
+		}//if($mode=='class'){
+
+		//now with the rest of the checks
+		/*if(!is_file(cmsROOT.'modules/'.$module.'/cfg.php')){
+			hmsgDie('FAIL', 'Could not locate the configuration file for "'.$module.'". Load Failed');
+		}
+
+		if(!is_file(cmsROOT.'modules/'.$module.'/'.$mode.'.'.$module.'.php')){
+			hmsgDie('FAIL', 'Could not locate Module "'.$module.'". Load Failed');
+		}*/
+
+		include_once(cmsROOT.'modules/'.$module.'/'.$mode.'.'.$module.'.php');
+			if($languageFile){
+				translateFile(cmsROOT.'modules/'.$module.'/language/lang.'.$this->config('global', 'language').'.php');
+			}
+		return true;
 	}
 }
 ?>

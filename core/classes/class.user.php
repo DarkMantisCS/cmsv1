@@ -446,5 +446,140 @@ class user extends coreClass{
 		return $ip;
 	}
 
+	/**
+	 * Sets and Updates the user position on the website. Also allows for automated actions
+	 *
+	 * @version 2.0
+	 * @since   1.0.0
+	 * @author	xLink
+	 */
+	public function tracker(){
+		global $config;
+
+		$update = false; $rmCookie = false;
+		$action = null; $logout = false;
+
+		//if user is online
+		if(User::$IS_ONLINE){
+			//make sure they still have a key
+			$action = 'check user key, and reset if needed';
+			if(is_empty(doArgs('userkey', null, $config['global']['user']))){
+				$this->newKey(); //give em one if they havent
+			}
+
+			//force update
+			$update = true;
+		}else{
+			//check for remember me cookie
+			if(!is_empty(doArgs('login', null, $_COOKIE))){
+		 		//try and remember who they are, this sometimes is hard, but we try anyway
+				if($this->objLogin->runRememberMe()){
+					$action = 'remove remember me cookie';
+					$rmCookie = true;
+
+				//you should be logged in now, so redirect
+				}else{
+					$action = 'redirecting upon successful login';
+					$this->objPage->redirect($config['global']['fullUrl'], 0);
+					exit;
+				}
+			}
+		}
+
+		if($update == true){
+			//grab the online table data
+			$online = $this->objLogin->getVar('onlineData');
+
+			if(isset($online['mode'])){
+				switch($online['mode']){
+					default:
+					case 'active':
+						$action = 'update user location';
+
+						//make sure the user dosent have guest identification if hes logged in
+						if(User::$IS_ONLINE && $online['username'] == 'Guest'){
+	                        $objSQL->deleteRow('online', 'userkey = "'.$this->grab('userkey').'"');
+	                        $this->newOnlineUser(false);
+						}
+
+						//now thats sorted, update
+						$objUser->updateLocation();
+
+					break;
+
+					//we have been ordered to terminate >:}
+					case 'kill':
+						$action = 'kill user';
+
+						//and log em out
+						$logout = true;
+					break;
+
+					case 'ban':
+						$action = 'ban user';
+
+						//ban the user account if they are online
+						if(User::$IS_ONLINE){
+							$objUser->banUser($objUser->grab('id'));
+
+						//ban the ip if they are a guest
+						}else{
+							$objUser->banIP(User::getIP());
+						}
+
+						$logout = true;
+					break;
+
+					case 'update':
+	                    $action = 'update user info';
+	                    //so we want to grab a new set of sessions
+						if(User::$IS_ONLINE){
+	                    	$objLogin->setSessions($objUser->grab('id'));
+						}
+
+	                    //and notify the user telling them, this notification wont be persistant though
+	                    #$objUser->notify('Your information has been updated. Changes around the site reflect these changes.', 'Profile Update');
+
+	                    //update the online table so we dont have any problems
+	                    $objSQL->updateRow('online', array('mode'=>'active'), array('userkey = "%s"', $objUser->grab('userkey')));
+
+					break;
+				}
+
+			//user has no mode set...wtf?
+			}else{
+	            $action = 're-reg user info';
+
+	            //insert users info back into the online table
+	            $objUser->newOnlineUser(false);
+			}
+
+			if($logout && User::$IS_ONLINE){
+				//remove their online row
+                $objSQL->deleteRow('online', array('userkey = "%s"', $objUser->grab('userkey')));
+
+				//and log em out properly
+				$objLogin->logout($objUser->grab('usercode'));
+
+				//remove their cookie so auto login dosent kick in
+				$rmCookie = true;
+			}
+
+		}
+
+		if($rmCookie){
+			$action = 'rm remember me cookie';
+			setcookie('login', '', time()-31536000);
+			unset($_COOKIE['login']);
+		}
+
+		//unset the admin auth after 20 mins of no acp activity
+		if(IS_ADMIN && isset($_SESSION['acp']['adminTimeout'])){
+			if(time() >= $objTime->mod_time($_SESSION['acp']['adminTimeout'], 0, 20)){
+				unset($_SESSION['acp']);
+			}
+		}
+		unset($update, $rmCookie, $action, $logout);
+	}
 }
 ?>
