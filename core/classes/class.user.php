@@ -266,7 +266,7 @@ class user extends coreClass{
 		}
 
 		unset($update);
-		return false;
+		return $result;
 	}
 
 	/**
@@ -417,15 +417,6 @@ class user extends coreClass{
 		return false;
 	}
 
-	public function profile() {
-		return 'Guest';
-	}
-
-
-	public function checkPermissions() {
-		return true;
-	}
-
 	/**
 	 * Returns the IP Address of the user, it will get IP from the proxy client if needed.
 	 *
@@ -483,12 +474,22 @@ class user extends coreClass{
 					$this->objPage->redirect($config['global']['fullUrl'], 0);
 					exit;
 				}
+			}else{
+				$online = $this->objLogin->onlineData();
+
+				if(!is_array($online)){
+					$action = 'register new guest';
+					$this->newOnlineSession();
+				}else{
+					$action = 'update guest';
+					$update = true;
+				}
 			}
 		}
 
 		if($update == true){
 			//grab the online table data
-			$online = $this->objLogin->getVar('onlineData');
+			$online = $this->objLogin->onlineData();
 
 			if(isset($online['mode'])){
 				switch($online['mode']){
@@ -498,12 +499,12 @@ class user extends coreClass{
 
 						//make sure the user dosent have guest identification if hes logged in
 						if(User::$IS_ONLINE && $online['username'] == 'Guest'){
-	                        $objSQL->deleteRow('online', 'userkey = "'.$this->grab('userkey').'"');
-	                        $this->newOnlineUser(false);
+	                        $this->objSQL->deleteRow('online', 'userkey = "'.$this->grab('userkey').'"');
+	                        $this->newOnlineSession(false);
 						}
 
 						//now thats sorted, update
-						$objUser->updateLocation();
+						$this->updateLocation();
 
 					break;
 
@@ -520,11 +521,11 @@ class user extends coreClass{
 
 						//ban the user account if they are online
 						if(User::$IS_ONLINE){
-							$objUser->banUser($objUser->grab('id'));
+							$this->banUser($objUser->grab('id'));
 
 						//ban the ip if they are a guest
 						}else{
-							$objUser->banIP(User::getIP());
+							$this->banIP(User::getIP());
 						}
 
 						$logout = true;
@@ -534,14 +535,14 @@ class user extends coreClass{
 	                    $action = 'update user info';
 	                    //so we want to grab a new set of sessions
 						if(User::$IS_ONLINE){
-	                    	$objLogin->setSessions($objUser->grab('id'));
+	                    	#$this->objLogin->setSessions($objUser->grab('id'));
 						}
 
 	                    //and notify the user telling them, this notification wont be persistant though
 	                    #$objUser->notify('Your information has been updated. Changes around the site reflect these changes.', 'Profile Update');
 
 	                    //update the online table so we dont have any problems
-	                    $objSQL->updateRow('online', array('mode'=>'active'), array('userkey = "%s"', $objUser->grab('userkey')));
+	                    $this->objSQL->updateRow('online', array('mode'=>'active'), array('userkey = "%s"', $objUser->grab('userkey')));
 
 					break;
 				}
@@ -551,15 +552,15 @@ class user extends coreClass{
 	            $action = 're-reg user info';
 
 	            //insert users info back into the online table
-	            $objUser->newOnlineUser(false);
+	            $this->newOnlineSession(false);
 			}
 
 			if($logout && User::$IS_ONLINE){
 				//remove their online row
-                $objSQL->deleteRow('online', array('userkey = "%s"', $objUser->grab('userkey')));
+                $this->objSQL->deleteRow('online', array('userkey = "%s"', $objUser->grab('userkey')));
 
 				//and log em out properly
-				$objLogin->logout($objUser->grab('usercode'));
+				#$objLogin->logout($objUser->grab('usercode'));
 
 				//remove their cookie so auto login dosent kick in
 				$rmCookie = true;
@@ -567,6 +568,7 @@ class user extends coreClass{
 
 		}
 
+		//remove the cookie if needed
 		if($rmCookie){
 			$action = 'rm remember me cookie';
 			setcookie('login', '', time()-31536000);
@@ -575,11 +577,64 @@ class user extends coreClass{
 
 		//unset the admin auth after 20 mins of no acp activity
 		if(IS_ADMIN && isset($_SESSION['acp']['adminTimeout'])){
-			if(time() >= $objTime->mod_time($_SESSION['acp']['adminTimeout'], 0, 20)){
+			if(time() >= $this->objTime->mod_time($_SESSION['acp']['adminTimeout'], 0, 20)){
 				unset($_SESSION['acp']);
 			}
 		}
 		unset($update, $rmCookie, $action, $logout);
 	}
+
+	/**
+	 * Sets a new key for the user
+	 *
+	 * @version 1.0
+	 * @since   1.0.0
+	 * @author	xLink
+	 */
+	function newKey(){
+		//grab the old key before we overwrite it
+		$oldKey = $_SESSION['user']['userkey'];
+
+		//set a new one and update it in the db
+		$_SESSION['user']['userkey'] = md5('userkey'.substr(0, 6, microtime(true)));
+		$this->objSQL->updateRow('online', array('userkey'=>$_SESSION['user']['userkey']), array('userkey = "%s"', $oldKey));
+	}
+
+	/**
+	 * Sets the online session for the user
+	 *
+	 * @version 1.0
+	 * @since   1.0.0
+	 * @author	xLink
+	 */
+    function newOnlineSession($log=NULL){
+		$insert['uid']           =   $this->grab('id');
+		$insert['username']      =   $this->grab('username');
+		$insert['ip_address']    =   User::getIP();
+		$insert['timestamp']     =   time();
+		$insert['location']      =   secureMe($this->config('global', 'fullPath'));
+		$insert['referer']       =   secureMe($this->config('global', 'referer'));
+		$insert['language']      =   secureMe($this->config('site', 'language'));
+		$insert['useragent']     =   secureMe($this->config('global', 'browser'));
+		$insert['userkey']       =   isset($_SESSION['user']['userkey']) ? $_SESSION['user']['userkey'] : $this->newKey();
+
+        if($this->objSQL->insertRow('online', $insert, 0, $log)){
+            $this->objCache->generate_statistics_cache();
+            return true;
+        }
+        return false;
+    }
+
+
+
+	public function profile() {
+		return 'Guest';
+	}
+
+
+	public function checkPermissions() {
+		return true;
+	}
+
 }
 ?>

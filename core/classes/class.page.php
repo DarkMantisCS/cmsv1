@@ -711,31 +711,34 @@ class page extends coreClass{
 			$module_enable = 'enabled';
 			switch($module_enable){
 
-				case 'disabled': //false means the module is disabled so stop here.
+				//the module is disabled so stop here.
+				case 'disabled':
 					$this->setTitle('Module Disabled');
 					hmsgDie('FAIL', 'Module: "'.$module.'" is disabled.');
 					exit;
 				break;
 
-				case 'first': //null means we havent so continue
+				//first means we are unsure as to the state of the module so lets check
+				case 'first':
 					$enable_check = $this->objSQL->getValue('modules', 'enabled', array('name = "%s"', $module));
 
 					switch($enable_check){
 						case NULL:
 							$this->setTitle('Module Not Installed');
 							$msg = NULL;
+							//make sure module exists
 							if(!is_dir(cmsROOT.'modules/'.$module.'/')){
-								error(404);
-							}
-
-							if(is_file(cmsROOT.'modules/'.$module.'/install.php') && User::$IS_ADMIN){
-								$msg = '<br />But it can be, <a href="/'.root().'modules/'.$module.'/install/">Click Here</a>';
+								$this->throwHTTP(404);
 							}
 
 							if(User::$IS_ADMIN){
+								if(is_file(cmsROOT.'modules/'.$module.'/install.php')){
+									$msg = '<br />But it can be, <a href="/'.root().'modules/'.$module.'/install/">Click Here</a>';
+								}
+
 								hmsgDie('FAIL', 'Module "'.secureMe($module).'" isnt installed.'.$msg);
 							}else{
-								error(404);
+								$this->throwHTTP(404);
 							}
 							exit;
 						break;

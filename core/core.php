@@ -232,6 +232,7 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 	$classes['objPlugins']		= array($classDir.'class.plugins.php');
 	$classes['objUser'] 		= array($classDir.'class.user.php');
 	$classes['objGroups'] 		= array($classDir.'class.groups.php');
+	$classes['objLogin'] 		= array($classDir.'class.login.php');
 
 	$classes['objForm'] 		= array($classDir.'class.form.php');
 	$classes['objTime'] 		= array($classDir.'class.time.php');
@@ -272,6 +273,7 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 		'browser'		=> getBrowser($_SERVER['HTTP_USER_AGENT']),
 		'language'		=> $language,
 		'secure'		=> ($_SERVER['HTTPS'] ? true : false),
+		'referer'		=> $_SERVER['HTTP_REFERER'],
 		'rootPath'		=> '/'.root(),
 		'fullPath'		=> $_SERVER['REQUEST_URI'],
 		'rootUrl'		=> ($_SERVER['HTTPS'] ? 'https' : 'http').'://'.$_SERVER['HTTP_HOST'].'/'.root(),
