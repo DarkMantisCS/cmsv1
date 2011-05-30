@@ -163,13 +163,15 @@ class coreClass{
 	 * @version 1.0
 	 * @since 	1.0.0
 	 * @author 	xLink
+	 *
+	 * @param 	int	$error
 	 */
-	public function throwHTTP($err=000){
+	public function throwHTTP($error=000){
 		$msg = NULL;
-		switch($err){
+		switch($error){
 			default:
 			case 000:
-				$msg = 'Something went wrong, we cannot determine what.';
+				$msg = 'Something went wrong, we cannot determine what. HTTP Error: '.$error;
 			break;
 
 			case 400:
