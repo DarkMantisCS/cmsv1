@@ -272,7 +272,7 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 		'browser'		=> getBrowser($_SERVER['HTTP_USER_AGENT']),
 		'language'		=> $language,
 		'secure'		=> ($_SERVER['HTTPS'] ? true : false),
-		'referer'		=> $_SERVER['HTTP_REFERER'],
+		'referer'		=> doArgs('HTTP_REFERER', null, $_SERVER),
 		'rootPath'		=> '/'.root(),
 		'fullPath'		=> $_SERVER['REQUEST_URI'],
 		'rootUrl'		=> ($_SERVER['HTTPS'] ? 'https' : 'http').'://'.$_SERVER['HTTP_HOST'].'/'.root(),

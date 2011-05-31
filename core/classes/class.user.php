@@ -597,7 +597,9 @@ class user extends coreClass{
 
 		//set a new one and update it in the db
 		$_SESSION['user']['userkey'] = md5('userkey'.substr(0, 6, microtime(true)));
-		$this->objSQL->updateRow('online', array('userkey'=>$_SESSION['user']['userkey']), array('userkey = "%s"', $oldKey));
+		$this->objSQL->updateRow('online', array('userkey' => $_SESSION['user']['userkey']), array('userkey = "%s"', $oldKey));
+
+		return $_SESSION['user']['userkey'];
 	}
 
 	/**
@@ -608,15 +610,15 @@ class user extends coreClass{
 	 * @author	xLink
 	 */
     function newOnlineSession($log=NULL){
-		$insert['uid']           =   $this->grab('id');
-		$insert['username']      =   $this->grab('username');
-		$insert['ip_address']    =   User::getIP();
-		$insert['timestamp']     =   time();
-		$insert['location']      =   secureMe($this->config('global', 'fullPath'));
-		$insert['referer']       =   secureMe($this->config('global', 'referer'));
-		$insert['language']      =   secureMe($this->config('site', 'language'));
-		$insert['useragent']     =   secureMe($this->config('global', 'browser'));
-		$insert['userkey']       =   isset($_SESSION['user']['userkey']) ? $_SESSION['user']['userkey'] : $this->newKey();
+		$insert['uid']           = $this->grab('id');
+		$insert['username']      = $this->grab('username');
+		$insert['ip_address']    = User::getIP();
+		$insert['timestamp']     = time();
+		$insert['location']      = secureMe($this->config('global', 'fullPath'));
+		$insert['referer']       = secureMe($this->config('global', 'referer'));
+		$insert['language']      = secureMe($this->config('site', 'language'));
+		$insert['useragent']     = secureMe($this->config('global', 'browser'));
+		$insert['userkey']       = isset($_SESSION['user']['userkey']) ? $_SESSION['user']['userkey'] : $this->newKey();
 
         if($this->objSQL->insertRow('online', $insert, 0, $log)){
             $this->objCache->generate_statistics_cache();

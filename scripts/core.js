@@ -21,3 +21,4 @@ var ADAPT_CONFIG = {
     '1920px = grid.fluid.css'
   ]
 };
+
