@@ -32,8 +32,11 @@ class coreClass{
 				//require the file
 				include_once($path[0]);
 
+				//explode the filename, so we dont get interference pre-filename
+				$fileName = explode('/', $path[0]);
+
 				//grab the class name from the file and make sure it exists before continuing
-				$class = inBetween('.', '.php', $path[0]);
+				$class = inBetween('.', '.php', end($fileName));
 					if(!class_exists($class)){ continue; }
 
 				//set the class to new var and continue
@@ -45,7 +48,7 @@ class coreClass{
 			}
 		}
 
-		if(!count($this->classes)){
+		if(is_empty($this->classes)){
 			$this->setError('No Classes Defined');
 			return false;
 		}

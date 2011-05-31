@@ -401,7 +401,7 @@ class page extends coreClass{
 		//grab the current notifications and if needed output them to the page
 		$notifGrab = $this->getVar('notification'); $notifications = null;
 		if(!is_empty($notifGrab)){
-	        $notifications = '<script type="text/javascript">document.observe(\'dom:loaded\', function(){ '.$notifGrab.' });</script>';
+	        $notifications = '<script type="text/javascript">$(document).ready(function(){ '.$notifGrab.' });</script>';
 		}
 
 		//load in the anything thats been passed in via addJSCode()

@@ -91,7 +91,6 @@ $objPage->showFooter();
 	}
 
 	//validate the email
-	//email address checks
     if(!isset($_error['email']) && $objUser->getUserInfo($_POST['username'], 'email')){
 		$_error['email'] = 'The Email address provided is invalid. Please make sure it is correct and try again.';
     }
