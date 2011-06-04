@@ -97,13 +97,16 @@ class user extends coreClass{
 			return false;
 		}
 
+		//add a new row into user_extras for this users settings
+		unset($insert);
+		$insert['uid'] = $insert_id;
+		$objSQL->insertRow('user_extras', $insert);
+
 		//register the user into the group
 		$this->objGroups->joinGroup($insert_id, $userInfo['primary_group'], 0);
 
-		$result = (is_number($insert_id) ? $insert_id : false);
-
 		unset($userInfo, $insert_id);
-		return $result;
+		return $insert_id;
     }
 
 	/**
@@ -163,7 +166,7 @@ class user extends coreClass{
 			}
 
 			//these are blacklisted, no point putting em out
-			unset($info['password'], $info['pin']);
+			unset($info['password'], $info['pin'], $info['uid']);
 
 			//this is so the cache will work even if they give you a username first time and uid the second
 			$this->userInfo[$info['username']] = $info;
@@ -603,11 +606,15 @@ class user extends coreClass{
 	}
 
 	/**
-	 * Sets the online session for the user
+	 * Sets the online session for the tracker
 	 *
 	 * @version 1.0
 	 * @since   1.0.0
 	 * @author	xLink
+	 *
+	 * @param 	string $log
+	 *
+	 * @return 	bool
 	 */
     function newOnlineSession($log=NULL){
 		$insert['uid']           = $this->grab('id');
@@ -627,6 +634,61 @@ class user extends coreClass{
         return false;
     }
 
+	/**
+	 * Sets the user session on login
+	 *
+	 * @version 1.0
+	 * @since   1.0.0
+	 * @author	Jesus
+	 *
+	 * @param 	mixed	$uid 		Username or UserID
+	 * @param 	string 	$autoLogin
+	 *
+	 * @return 	bool
+	 */
+	public function setSessions($uid, $autoLogin=false){
+
+		//grab the user info
+		$userInfo = $this->getUserInfo($uid);
+			if($userInfo === false || is_empty($userInfo)){ return false; }
+
+		//grab timestamp before we clear the array
+		$timestamp = doArgs('last_active', time(), $_SESSION['user']);
+
+		//reset the user part of the session
+		$_SESSION['user'] = array();
+		$_SESSION['user'] = $userInfo;
+		$_SESSION['user']['last_active'] = $timestamp;
+		$_SESSION['user']['userkey'] = $this->newKey();
+		session_regenerate_id(true);
+
+		//if we are auto logging in, then update last_active
+		if($autoLogin){
+			$update['last_active'] = time();
+			$this->objSQL->updateRow('users', $update, array('id = "%s"', $uid));
+		}
+    }
+
+	/**
+	 * Resets the users sessions
+	 * 		if current user, then just do it,
+	 * 		if not, then set flag in online table to do it
+	 *
+	 * @version 1.0
+	 * @since   1.0.0
+	 * @author	Jesus
+	 *
+	 * @param 	mixed	$uid	UserID
+	 */
+    public function reSetSessions($uid){
+        if($uid == $this->grab('id')){
+            $this->setSessions($uid);
+        }else{
+            unset($update);
+            $update['mode'] = 'update';
+            $this->ObjSQL->updateRow('online', $update, array('uid = "%s"', $uid));
+        }
+    }
 
 
 	public function profile() {
