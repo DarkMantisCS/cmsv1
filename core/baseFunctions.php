@@ -136,16 +136,27 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 	 *
 	 * @param   string 	$to
 	 * @param   string 	$emailVar
+	 * @param   array	$vars
 	 * @param   bool 	$dontDie
 	 *
 	 * @return 	bool
 	 */
-	function sendEMail($to, $emailVar, $dontDie=false){
+	function sendEMail($to, $emailVar, $vars=array(), $dontDie=false){
 		global $objCore;
 
 		$message = $objCore->config('email', $emailVar);
-		if(!strlen($message)){
-			return false;
+		if(!strlen($message)){ return false; }
+
+		//parse the email message
+		$objCore->objTPL->assign_vars($vars);
+		$objCore->objTPL->parseString('email', $message, false);
+
+		$message = $objCore->objTPL->get_html('email');
+
+		//try and grab a title
+		$subject = langVar($emailVar);
+		if(is_empty($subject)){
+			$subject = $emailVar;
 		}
 
 		if(_mailer($to, $objCore->config('site', 'admin_email'), $subject, $message)){

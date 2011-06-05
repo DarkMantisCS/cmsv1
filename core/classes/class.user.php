@@ -139,6 +139,8 @@ class user extends coreClass{
 	 * @return  mixed			Field requested or whole user information.
 	 */
 	public function getUserInfo($uid, $field='*'){
+		$backCalls = debug_backtrace();
+
 		//test for a few bad fields
 		$badFields = array('password', 'pin');
 		if(in_array($field, $badFields)){
@@ -165,14 +167,19 @@ class user extends coreClass{
 				return false;
 			}
 
+			//if wer being called from the login class, then give em the password and pin, everywhere else can stuff it
+			if($backCalls[1]['function'] == 'doLogin' && $backCalls[1]['class'] == 'login'){
+				return $info;
+			}
+
 			//these are blacklisted, no point putting em out
 			unset($info['password'], $info['pin'], $info['uid']);
 
 			//this is so the cache will work even if they give you a username first time and uid the second
 			$this->userInfo[$info['username']] = $info;
 			$this->userInfo[$info['id']] = $info;
-			unset($info);
 		}
+
 
 		//if we didnt want it all then make sure the bit they wanted is there
 		if($field != '*'){
@@ -185,6 +192,7 @@ class user extends coreClass{
 			}
 		}
 
+		unset($info);
 		//worst case, return the entire user
 		return $this->userInfo[$uid];
 	}
