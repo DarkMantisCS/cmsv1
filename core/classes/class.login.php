@@ -110,7 +110,7 @@ class login extends coreClass{
 
 
 	//login & out, & remember me
-	public function doLogin($log=false, $ajax=false){
+	public function doLogin($ajax=false){
 		//make sure we have a post
 		if(!HTTP_POST){
 			$this->setError('No POST action detected');

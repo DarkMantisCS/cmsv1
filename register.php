@@ -86,12 +86,12 @@ $objPage->showFooter();
     }
 
 	//make sure there isnt already a user in the db with this username
-	if(!isset($_error['username']) && $objUser->getUserInfo($_POST['username'], 'username')){
+	if(!isset($_error['username']) && strlen($objUser->getUserInfo($_POST['username'], 'username'))>0){
         $_error['username'] = 'You have chosen an Username that already exists. Please choose another one.';
 	}
 
 	//validate the email
-    if(!isset($_error['email']) && $objUser->getUserInfo($_POST['username'], 'email')){
+    if(!isset($_error['email']) && strlen($objUser->getUserInfo($_POST['username'], 'email'))>0){
 		$_error['email'] = 'The Email address provided is invalid. Please make sure it is correct and try again.';
     }
 

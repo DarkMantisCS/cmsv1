@@ -72,6 +72,17 @@ switch($mode){
 
 		$objTPL->parse('body', false);
 	break;
+
+	case 'check':
+        if(!HTTP_POST){
+        	$objPage->redirect('?');
+		}
+    	if(User::$IS_ONLINE && !$acpCheck && !isset($_GET['ajax'])){
+    		$objPage->redirect('/'.root().'index.php');
+		}
+
+    	$objLogin->doLogin((isset($_GET['ajax'])&&HTTP_AJAX ? true : false));
+	break;
 }
 
 $objPage->showHeader(isset($_GET['ajax']) ? true : false);
