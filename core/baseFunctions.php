@@ -15,7 +15,10 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 		$args = func_get_args();
 		$filename = explode((stristr(PHP_OS, 'WIN') ? '\\' : '/'), $args[2]);
 		if($args[0]!=8){
-			$msg = '<b>CMS Error:</b> <i>'.$args[1].'</i> in <b>'.(defined('IS_ADMIN')&&IS_ADMIN ? $args[2] : $filename[(count($filename)-1)]).'</b> on line <b>'.$args[3].'</b>';
+			$msg = '<b>CMS Error:</b> <i>'.$args[1].'</i> in <b>'.
+						(defined('IS_ADMIN') && User::$IS_ADMIN ? $args[2] : $filename[(count($filename)-1)]).
+					'</b> on line <b>'.$args[3].'</b>';
+
 			if(defined('INSTALLER')){
 				die($msg);
 			}else{
@@ -83,9 +86,9 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 	 * Run a function recursivly through an array
 	 * http://www.php.net/manual/en/function.array-walk-recursive.php#99639
 	 *
+	 * @author 	bradbeattie [at] gmail [dot] com
 	 * @version	1.0
 	 * @since  	1.0.0
-	 * @author 	bradbeattie [at] gmail [dot] com
 	 *
 	 * @param 	array 	$array
 	 * @param 	string	$function Callback
@@ -133,15 +136,27 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 	 *
 	 * @param   string 	$to
 	 * @param   string 	$emailVar
+	 * @param   array	$vars
 	 * @param   bool 	$dontDie
 	 *
 	 * @return 	bool
 	 */
-	function sendEMail($to, $emailVar, $dontDie=false){
+	function sendEMail($to, $emailVar, $vars=array(), $dontDie=false){
 		global $objCore;
 
-		if(!strlen($objCore->config('email', $emailVar))){
-			return false;
+		$message = $objCore->config('email', $emailVar);
+		if(!strlen($message)){ return false; }
+
+		//parse the email message
+		$objCore->objTPL->assign_vars($vars);
+		$objCore->objTPL->parseString('email', $message, false);
+
+		$message = $objCore->objTPL->get_html('email');
+
+		//try and grab a title
+		$subject = langVar($emailVar);
+		if(is_empty($subject)){
+			$subject = $emailVar;
 		}
 
 		if(_mailer($to, $objCore->config('site', 'admin_email'), $subject, $message)){
@@ -171,19 +186,19 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 		$server = $_SERVER['HTTP_HOST'];
 
 		//set headers for the email
-		$headers[] = 'From: NoReply <'.$from.'> ';
-		$headers[] = 'Reply-To: NoReply <'.$from.'> ';
-		$headers[] = 'Return-Path: NoReply <'.$from.'> ';
-		$headers[] = 'Date: '.date('r', time()).' ';
+		$headers[] = 'From: NoReply <'.$from.'>';
+		$headers[] = 'Reply-To: NoReply <'.$from.'>';
+		$headers[] = 'Return-Path: NoReply <'.$from.'>';
+		$headers[] = 'Date: '.date('r', time());
 		$headers[] = 'MIME-Version: 1.0';
-		$headers[] = 'Message-ID: <'.md5(uniqid(time())).'@'.$server.'> ';
-		$headers[] = 'Content-Type: text/html; charset="iso-8859-1" ';
-		$headers[] = 'X-Mailer: PHP v'.phpversion().' ';
-		$headers[] = 'X-Priority: 3 ';
-		$headers[] = 'X-MSMail-Priority: Normal ';
-		$headers[] = 'X-MimeOLE: Produced By CybershadeCMS '.cmsVERSION.' ';
+		$headers[] = 'Message-ID: <'.md5(uniqid(time())).'@'.$server.'>';
+		$headers[] = 'Content-Type: text/html; charset="iso-8859-1"';
+		$headers[] = 'X-Mailer: PHP v'.phpversion();
+		$headers[] = 'X-Priority: 3';
+		$headers[] = 'X-MSMail-Priority: Normal';
+		$headers[] = 'X-MimeOLE: Produced By CybershadeCMS '.cmsVERSION;
 
-		if(@mail($to, $subject, $message, implode("\n", $headers))){
+		if(@mail($to, $subject, $message, implode(" \n", $headers))){
 			return true;
 		}
 
@@ -711,6 +726,7 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 			break;
 
 			case 'sql':
+			case 'mres':
 				$string = mysql_real_escape_string($string);
 			break;
 

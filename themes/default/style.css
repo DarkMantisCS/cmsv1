@@ -3,7 +3,7 @@ body { margin: 0px; color: #333333; background: url('images/bg.jpg') repeat #EDE
 #breadcrumbs a:active, #breadcrumbs a:visited, #breadcrumbs a:link, 
 a:active, a:visited, a:link { text-decoration: none; color: #3C78A7; }
 .grid_1, .grid_2, .grid_3, .grid_4, .grid_5, .grid_6, .grid_7, .grid_8, .grid_9, .grid_10, .grid_11, .grid_12{
-	margin: 0 5px !important;
+	margin: 0 5px;
 }
 
 #site-wrapper{
@@ -53,6 +53,7 @@ nav#breadcrumbs{
     background-color: #FFFFFF;
     border: 1px solid #DDDDDD;
 	padding: 5px;
+	margin-bottom: 15px;
 }
 
 #banner nav{
@@ -138,16 +139,17 @@ nav#breadcrumbs{
 	}
 
 section#content{
-	display: inline-block;
 	clear: both;
 	margin: 15px 0 !important;	
 }
 section #pageContent{
+	display: table-cell;
 	float: left;
 	margin: 0 0 0 15px !important
 }
 section aside#sidebar {
 	float: left;
+	display: table-cell;
 	margin-right: 10px;
 }
 	aside#sidebar.grid_3 {
@@ -204,14 +206,19 @@ footer{
 }
 
 /** Forms **/
+form div { display: block; }
+form div span.field input, form div span.field select, form div span.field textarea {
+	float: right;
+	width: 52%;
+}
 form label { font-weight: bold; margin: 5px 0; }
+form label small{ float: left; }
 form fieldset{ border: 1px solid #000000; }
 form fieldset legend {
-		-webkit-border-radius: 5px;
-		-moz-border-radius: 5px;
-		border-radius: 5px;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
 }
-
 
 /** Messages **/
 div.messages{ display: block; }

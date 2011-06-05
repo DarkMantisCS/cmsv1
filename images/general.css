@@ -12,6 +12,7 @@ body {
 /* ** ** Common Addative Classes ** ** */
 .left, .float-left  { float:left	} img.float-left { margin:5px 10px 10px 0; }
 .right, .float-right { float:right	} img.float-right { margin:5px 0 10px 10px; }
+.center { margin: 0 auto !important; }
 .clear-left { clear:left; } .clear-right { clear:right; }
 .hidden { display:none	} .block {display:block !important;} .inline {display:inline !important;} .iblock{display: inline-block !important; }
 

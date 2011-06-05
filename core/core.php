@@ -24,7 +24,7 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 	/**
 	 * cmsROOT - Internal way of getting to the project root
 	 * @note for internal use, use cmsROOT, for external use, eg js and html paths, use root();
-	 */
+	 */ #echo var_dump($cmsROOT);
 	define('cmsROOT', (isset($cmsROOT) && !empty($cmsROOT) ? $cmsROOT : null)); unset($cmsROOT);
 
 	//so we can turn errors off if we are not running locally
@@ -273,7 +273,7 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 		'browser'		=> getBrowser($_SERVER['HTTP_USER_AGENT']),
 		'language'		=> $language,
 		'secure'		=> ($_SERVER['HTTPS'] ? true : false),
-		'referer'		=> $_SERVER['HTTP_REFERER'],
+		'referer'		=> doArgs('HTTP_REFERER', null, $_SERVER),
 		'rootPath'		=> '/'.root(),
 		'fullPath'		=> $_SERVER['REQUEST_URI'],
 		'rootUrl'		=> ($_SERVER['HTTPS'] ? 'https' : 'http').'://'.$_SERVER['HTTP_HOST'].'/'.root(),

@@ -40,7 +40,7 @@ class user extends coreClass{
 	 *
 	 * @return 		bool
 	 */
-	function is_online(){ return self::$IS_ONLINE; }
+	public function is_online(){ return self::$IS_ONLINE; }
 
 	/**
 	 * Inserts a users info into the database.
@@ -97,13 +97,16 @@ class user extends coreClass{
 			return false;
 		}
 
+		//add a new row into user_extras for this users settings
+		unset($insert);
+		$insert['uid'] = $insert_id;
+		$objSQL->insertRow('user_extras', $insert);
+
 		//register the user into the group
 		$this->objGroups->joinGroup($insert_id, $userInfo['primary_group'], 0);
 
-		$result = (is_number($insert_id) ? $insert_id : false);
-
 		unset($userInfo, $insert_id);
-		return $result;
+		return $insert_id;
     }
 
 	/**
@@ -136,6 +139,8 @@ class user extends coreClass{
 	 * @return  mixed			Field requested or whole user information.
 	 */
 	public function getUserInfo($uid, $field='*'){
+		$backCalls = debug_backtrace();
+
 		//test for a few bad fields
 		$badFields = array('password', 'pin');
 		if(in_array($field, $badFields)){
@@ -162,14 +167,19 @@ class user extends coreClass{
 				return false;
 			}
 
+			//if wer being called from the login class, then give em the password and pin, everywhere else can stuff it
+			if($backCalls[1]['function'] == 'doLogin' && $backCalls[1]['class'] == 'login'){
+				return $info;
+			}
+
 			//these are blacklisted, no point putting em out
-			unset($info['password'], $info['pin']);
+			unset($info['password'], $info['pin'], $info['uid']);
 
 			//this is so the cache will work even if they give you a username first time and uid the second
 			$this->userInfo[$info['username']] = $info;
 			$this->userInfo[$info['id']] = $info;
-			unset($info);
 		}
+
 
 		//if we didnt want it all then make sure the bit they wanted is there
 		if($field != '*'){
@@ -182,6 +192,7 @@ class user extends coreClass{
 			}
 		}
 
+		unset($info);
 		//worst case, return the entire user
 		return $this->userInfo[$uid];
 	}
@@ -198,7 +209,7 @@ class user extends coreClass{
 	 *
 	 * @return  bool
 	 */
-	function isUserOnline($uid){
+	public function isUserOnline($uid){
 		$ts = $this->getUserInfo($uid, 'timestamp');
 
 		return (is_empty($ts) ? false : true);
@@ -249,7 +260,7 @@ class user extends coreClass{
 	 *
 	 * @return  bool	True on Successful Update
 	 */
-	function updateLocation() {
+	public function updateLocation(){
 		// generate the array for the db update
 		$update['timestamp'] 	= time();
 		$update['location'] 	= secureMe(doArgs('REQUEST_URI', null, $_SERVER));
@@ -276,19 +287,43 @@ class user extends coreClass{
 	 * @since   1.0.0
 	 * @author	Jesus
 	 *
-	 * @param   string $string
-	 * @param   string $salt
+	 * @param   string $password
+	 * @param   string $hash
 	 *
 	 * @return  string                Password Hashed Input
 	 */
-	function mkPasswd($string, $salt=null) {
+	public function mkPasswd($string, $salt=null){
 		// Use the new portable password hashing framework
-		$objPass = new phpass(8, false);
+		$objPass = new phpass(8, true);
 
 		// Hash the password
 		$hashed = $objPass->HashPassword($salt.$string);
 
-		unset($objPass, $string, $salt);
+		unset($objPass, $password, $hash);
+		return $hashed;
+	}
+
+	/**
+	 * Verifies the password
+	 *
+	 * @version 1.0
+	 * @since   1.0.0
+	 * @author	Jesus
+	 *
+	 * @param   string $password
+	 * @param   string $hash
+	 *
+	 * @return  bool
+	 */
+	public function checkPasswd($password, $hash){
+		//use the new portable password hashing framework
+		$objPass = new phpass(8, true);
+
+		//verify the password
+		$hashed = $objPass->CheckPassword($password, $hash);
+
+		//and return
+		unset($objPass, $password, $hash);
 		return $hashed;
 	}
 
@@ -304,7 +339,7 @@ class user extends coreClass{
 	 *
 	 * @return  bool 					True if settings were fully updated, False if they wasnt.
 	 */
-	function updateUserSettings($uid, array $setting){
+	public function updateUserSettings($uid, array $setting, $log=false){
 		unset($setting['id'], $setting['uid'], $setting['password'], $setting['pin']);
 
 		if(!count($setting)){
@@ -362,6 +397,11 @@ class user extends coreClass{
 				}
 		}
 
+		if($log!==false){
+			$this->objSQL->recordLog('', $log);
+		}
+
+
 		unset($return, $user, $userUpdate, $extraUpdate, $userColumns, $extraColumns);
 		return true;
 	}
@@ -398,7 +438,7 @@ class user extends coreClass{
 	 * Check to see if the email is a valid one.
 	 *
 	 * @version 1.0
-	 * @since   0.8.0
+	 * @since   1.0.0
 	 * @author 	xLink
 	 *
 	 * @param 	$email
@@ -429,10 +469,10 @@ class user extends coreClass{
 	 * @return  mixed 			IP address of user.
 	 */
 	public static function getIP(){
-		if 		(getenv('HTTP_X_FORWARDED_FOR')){ $ip = getenv('HTTP_X_FORWARDED_FOR'); }
-		else if (getenv('HTTP_X_FORWARDED'))	{ $ip = getenv('HTTP_X_FORWARDED'); }
-		else if (getenv('HTTP_FORWARDED_FOR'))	{ $ip = getenv('HTTP_FORWARDED_FOR'); }
-		else									{ $ip = $_SERVER['REMOTE_ADDR']; }
+		if 		($_SERVER['HTTP_X_FORWARDED_FOR']){ $ip = $_SERVER['HTTP_X_FORWARDED_FOR']; }
+		else if ($_SERVER['HTTP_X_FORWARDED']){ 	$ip = $_SERVER['HTTP_X_FORWARDED']; }
+		else if ($_SERVER['HTTP_FORWARDED_FOR']){ 	$ip = $_SERVER['HTTP_FORWARDED_FOR']; }
+		else{										$ip = $_SERVER['REMOTE_ADDR']; }
 
 		return $ip;
 	}
@@ -591,32 +631,38 @@ class user extends coreClass{
 	 * @since   1.0.0
 	 * @author	xLink
 	 */
-	function newKey(){
+	public function newKey(){
 		//grab the old key before we overwrite it
 		$oldKey = $_SESSION['user']['userkey'];
 
 		//set a new one and update it in the db
 		$_SESSION['user']['userkey'] = md5('userkey'.substr(0, 6, microtime(true)));
-		$this->objSQL->updateRow('online', array('userkey'=>$_SESSION['user']['userkey']), array('userkey = "%s"', $oldKey));
+		$this->objSQL->updateRow('online', array('userkey' => $_SESSION['user']['userkey']), array('userkey = "%s"', $oldKey));
+
+		return $_SESSION['user']['userkey'];
 	}
 
 	/**
-	 * Sets the online session for the user
+	 * Sets the online session for the tracker
 	 *
 	 * @version 1.0
 	 * @since   1.0.0
 	 * @author	xLink
+	 *
+	 * @param 	string $log
+	 *
+	 * @return 	bool
 	 */
-    function newOnlineSession($log=NULL){
-		$insert['uid']           =   $this->grab('id');
-		$insert['username']      =   $this->grab('username');
-		$insert['ip_address']    =   User::getIP();
-		$insert['timestamp']     =   time();
-		$insert['location']      =   secureMe($this->config('global', 'fullPath'));
-		$insert['referer']       =   secureMe($this->config('global', 'referer'));
-		$insert['language']      =   secureMe($this->config('site', 'language'));
-		$insert['useragent']     =   secureMe($this->config('global', 'browser'));
-		$insert['userkey']       =   isset($_SESSION['user']['userkey']) ? $_SESSION['user']['userkey'] : $this->newKey();
+    public function newOnlineSession($log=NULL){
+		$insert['uid']           = $this->grab('id');
+		$insert['username']      = $this->grab('username');
+		$insert['ip_address']    = User::getIP();
+		$insert['timestamp']     = time();
+		$insert['location']      = secureMe($this->config('global', 'fullPath'));
+		$insert['referer']       = secureMe($this->config('global', 'referer'));
+		$insert['language']      = secureMe($this->config('site', 'language'));
+		$insert['useragent']     = secureMe($this->config('global', 'browser'));
+		$insert['userkey']       = isset($_SESSION['user']['userkey']) ? $_SESSION['user']['userkey'] : $this->newKey();
 
         if($this->objSQL->insertRow('online', $insert, 0, $log)){
             $this->objCache->generate_statistics_cache();
@@ -625,6 +671,61 @@ class user extends coreClass{
         return false;
     }
 
+	/**
+	 * Sets the user session on login
+	 *
+	 * @version 1.0
+	 * @since   1.0.0
+	 * @author	Jesus
+	 *
+	 * @param 	mixed	$uid 		Username or UserID
+	 * @param 	string 	$autoLogin
+	 *
+	 * @return 	bool
+	 */
+	public function setSessions($uid, $autoLogin=false){
+
+		//grab the user info
+		$userInfo = $this->getUserInfo($uid);
+			if($userInfo === false || is_empty($userInfo)){ return false; }
+
+		//grab timestamp before we clear the array
+		$timestamp = doArgs('last_active', time(), $_SESSION['user']);
+
+		//reset the user part of the session
+		$_SESSION['user'] = array();
+		$_SESSION['user'] = $userInfo;
+		$_SESSION['user']['last_active'] = $timestamp;
+		$_SESSION['user']['userkey'] = $this->newKey();
+		session_regenerate_id(true);
+
+		//if we are auto logging in, then update last_active
+		if($autoLogin){
+			$update['last_active'] = time();
+			$this->objSQL->updateRow('users', $update, array('id = "%s"', $uid));
+		}
+    }
+
+	/**
+	 * Resets the users sessions
+	 * 		if current user, then just do it,
+	 * 		if not, then set flag in online table to do it
+	 *
+	 * @version 1.0
+	 * @since   1.0.0
+	 * @author	Jesus
+	 *
+	 * @param 	mixed	$uid	UserID
+	 */
+    public function reSetSessions($uid){
+        if($uid == $this->grab('id')){
+            $this->setSessions($uid);
+        }else{
+            unset($update);
+            $update['mode'] = 'update';
+            $this->ObjSQL->updateRow('online', $update, array('uid = "%s"', $uid));
+        }
+    }
 
 
 	public function profile() {

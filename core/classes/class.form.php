@@ -140,6 +140,7 @@ class form extends coreClass{
 			'br'        => doArgs('br', false, $args),
 			'extra'     => doArgs('extra', null, $args),
 			'xssFilter' => doArgs('xssFilter', true, $args),
+			'placeholder'   => doArgs('placeholder', 	null, 	$args),
 		);
 
 		return '<textarea '.
@@ -147,6 +148,7 @@ class form extends coreClass{
 					'class="'.($args['class']).'" '.
 					'cols="'.(is_number($args['cols']) 	? $args['cols'] 			: 45).'" '.
 					'rows="'.(is_number($args['rows']) 	? $args['rows'] 			: 5).'"'.
+					(!is_empty($args['placeholder'])	? 'placeholder="'.$args['placeholder'].'" ' : null).
 					(!is_empty($args['extra'])  		? $args['extra']            : null).
 					($args['disabled']===true   		? 'disabled="disabled" '    : null).
 				'>'.($args['xssFilter']===true  		? htmlspecialchars($value)  : $value).'</textarea>'.

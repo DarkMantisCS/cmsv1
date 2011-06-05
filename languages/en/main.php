@@ -18,8 +18,8 @@ $_lang['L_LOGOUT'] 			= 'Logout';
 
 //footer lang vars
 $_lang['L_PAGE_GEN']        = '[ Queries: <b>%s</b> | SQL Time: <b>%s</b> | Page Generation Time: <b>%s</b> | Memory Usage: <b>%s</b> | Next Cron Update: <b>%s</b> ]';
-$_lang['TPL_INFO']          = 'Theme %s by %s V%s';
 $_lang['L_SITE_COPYRIGHT']  = '%s Powered By %s V%s';
+$_lang['TPL_INFO']          = 'Theme %s by %s V%s';
 
 //debug lang vars
 $_lang['MSG_INFO']              = 'Information';
@@ -32,6 +32,13 @@ $_lang['L_CAPTCHA_DESC']		= 'This question is for testing whether you are a huma
 
 $_lang['L_REG_SUCCESS_EMAIL'] 	= 'Your registration has been successful. The administrator has asked that you validate your email before being allowed to login. Please do this now, if you have no email in your inbox, check your junk & spam boxes. Otherwise wait a while and then contact the administrator.';
 $_lang['L_REG_SUCCESS_NO_EMAIL']= 'Your registration has been successful. You may now login with your username and password.';
+
+//forms
+$_lang['L_USERNAME']			= 'Username';
+$_lang['L_PIN']					= 'PIN';
+$_lang['L_PIN_DESC']			= 'This is the PIN you ser yoursef in the user control panel. If you havent set a PIN as yet, please do so.';
+$_lang['L_PASSWORD']			= 'Password';
+$_lang['L_REMBER_ME']			= 'Remember Me';
 
 //log stuff
 $_lang['LOG_CREATED_USER'] 		= 'We\'ve done it! <a href="%s">%s</a>, he..he lives! Giovanni will be impressed at the power this creature weilds...';

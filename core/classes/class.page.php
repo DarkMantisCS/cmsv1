@@ -401,7 +401,7 @@ class page extends coreClass{
 		//grab the current notifications and if needed output them to the page
 		$notifGrab = $this->getVar('notification'); $notifications = null;
 		if(!is_empty($notifGrab)){
-	        $notifications = '<script type="text/javascript">document.observe(\'dom:loaded\', function(){ '.$notifGrab.' });</script>';
+	        $notifications = '<script type="text/javascript">$(document).ready(function(){ '.$notifGrab.' });</script>';
 		}
 
 		//load in the anything thats been passed in via addJSCode()
@@ -702,75 +702,5 @@ class page extends coreClass{
 		unset($vars);
 	}
 
-
-	function loadModule($module, $languageFile=false, $mode='class'){
-		if(is_empty($class)){ $mode = 'class'; }
-		if($mode=='class'){
-			//check weather we've already used this module
-			$module_enable = isset($_SESSION['site']['modules'][$module]) ? ($_SESSION['site']['modules'][$module]==1 ? 'enabled' : 'disabled') : 'first';
-			$module_enable = 'enabled';
-			switch($module_enable){
-
-				//the module is disabled so stop here.
-				case 'disabled':
-					$this->setTitle('Module Disabled');
-					hmsgDie('FAIL', 'Module: "'.$module.'" is disabled.');
-					exit;
-				break;
-
-				//first means we are unsure as to the state of the module so lets check
-				case 'first':
-					$enable_check = $this->objSQL->getValue('modules', 'enabled', array('name = "%s"', $module));
-
-					switch($enable_check){
-						case NULL:
-							$this->setTitle('Module Not Installed');
-							$msg = NULL;
-							//make sure module exists
-							if(!is_dir(cmsROOT.'modules/'.$module.'/')){
-								$this->throwHTTP(404);
-							}
-
-							if(User::$IS_ADMIN){
-								if(is_file(cmsROOT.'modules/'.$module.'/install.php')){
-									$msg = '<br />But it can be, <a href="/'.root().'modules/'.$module.'/install/">Click Here</a>';
-								}
-
-								hmsgDie('FAIL', 'Module "'.secureMe($module).'" isnt installed.'.$msg);
-							}else{
-								$this->throwHTTP(404);
-							}
-							exit;
-						break;
-
-						case 0:
-							return false;
-						break;
-
-						default:
-							//cache it in session so we dont have to run the query everytime we use this module
-							$_SESSION['site']['modules'][$module] = $enable_check;
-						break;
-					}
-				break;
-
-			}//switch($module_enable){
-		}//if($mode=='class'){
-
-		//now with the rest of the checks
-		/*if(!is_file(cmsROOT.'modules/'.$module.'/cfg.php')){
-			hmsgDie('FAIL', 'Could not locate the configuration file for "'.$module.'". Load Failed');
-		}
-
-		if(!is_file(cmsROOT.'modules/'.$module.'/'.$mode.'.'.$module.'.php')){
-			hmsgDie('FAIL', 'Could not locate Module "'.$module.'". Load Failed');
-		}*/
-
-		include_once(cmsROOT.'modules/'.$module.'/'.$mode.'.'.$module.'.php');
-			if($languageFile){
-				translateFile(cmsROOT.'modules/'.$module.'/language/lang.'.$this->config('global', 'language').'.php');
-			}
-		return true;
-	}
 }
 ?>

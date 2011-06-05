@@ -512,7 +512,7 @@ class mysql extends coreClass implements SQLBase{
 	 *
 	 * @param 	string 	$query
 	 * @param 	array 	$array
-	 * @param 	string 	clause
+	 * @param 	string 	$clause
 	 * @param 	string 	$log
 	 *
 	 * @return 	int
@@ -546,7 +546,7 @@ class mysql extends coreClass implements SQLBase{
 	 * @author  xLink
 	 *
 	 * @param 	string 	$query
-	 * @param 	string 	clause
+	 * @param 	string 	$clause
 	 * @param 	string 	$log
 	 *
 	 * @return 	array

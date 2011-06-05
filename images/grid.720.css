@@ -42,7 +42,6 @@ body {
 .grid_11,
 .grid_12 {
   display: inline;
-  float: left;
   margin-left: 10px;
   margin-right: 10px;
 }
