@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @author Daniel Noel-Davies
+ * @author Jesus
  * @copyright 2011
  */
 
@@ -86,7 +86,7 @@ class urls extends coreClass {
 	 *
 	 * @version	1.0
 	 * @since   1.0.0
-	 * @author  Daniel Noel-Davies
+	 * @author  Jesus
 	 *
 	 * @param 	string 	$url
 	 *
