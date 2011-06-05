@@ -7,9 +7,9 @@ if(!defined('INDEX_CHECK')){die('Error: Cannot access directly.');}
 /**
  * Handles logging in and out for the user, and admin control panel
  *
- * @version 	2.0
- * @since 		1.0.0
- * @author 		xLink
+ * @version 2.0
+ * @since 	1.0.0
+ * @author 	Jesus
  */
 class login extends coreClass{
 
@@ -346,5 +346,84 @@ class login extends coreClass{
 		$this->objUser->newOnlineUser('Online System: AutoLogin Sequence Activated for '.$this->userData['username']);
 		return true;
 	}
+
+	function doError($errCode, $ajax = false){
+        $acpCheck = isset($_SESSION['acp']['doAdminCheck']) ? true : false;
+
+		// Resolve the error code
+		if(strlen($errCode) > 1 && substr($errCode, -1)){
+			$errCode = (int) substr($errCode, -1);
+		}else{
+			$L_ERROR = 0;
+		}
+
+		switch($errCode){
+			case 0:
+				$L_ERROR = 'I Can\'t seem to find the issue, Please contact a system administrator or <a href="mailto:'. $this->config('site', 'admin_email') .'">Email The Site Admin</a>';
+			break;
+
+			case 1:
+				$L_ERROR = 'There was a problem with the form submittion. Please try again.';
+				$this->updateLoginAttempts();
+			break;
+
+			case 2:
+				$L_ERROR = 'Your Username or Password combination was incorrect. Please try again.';
+				($acpCheck ? $this->updateACPAttempts() : $this->updateLoginAttempts());
+			break;
+
+			case 3:
+				$L_ERROR = 'You have attempted to login too many times with incorrect credentials. Therefore you have been locked out.';
+			break;
+
+			case 4:
+				$L_ERROR = 'The whitelist check on your account failed. We were unable to log you in.';
+				$this->updateLoginAttempts();
+			break;
+
+			case 5:
+				$L_ERROR = 'Your account is not activated. Please check your emails for the activation Email or Contact an Administrator to get this problem resolved.';
+			break;
+
+			case 6:
+				$L_ERROR = 'Your account is banned. We were unable to log you in.';
+				$this->updateLoginAttempts();
+			break;
+
+			case 7:
+				$L_ERROR = 'Your Username or Password combination was incorrect. Please try again.';
+				($acpCheck ? $this->updateACPAttempts() : $this->updateLoginAttempts());
+			break;
+
+			case 8:
+				$L_ERROR = 'Your account is now active. If your encounter any problems please notify a member of staff.';
+			break;
+
+			case 9:
+				$L_ERROR = 'Sorry we arnt able to verify your PIN at this time.';
+				($acpCheck ? $this->updateACPAttempts() : $this->updateLoginAttempts());
+            break;
+
+			case 10:
+				$L_ERROR = 'You need to set your PIN before your able to login to the admin control panel.';
+			break;
+
+			default:
+				$L_ERROR = 'fail';
+			break;
+		}
+
+		$good = array('8');
+
+		$_SESSION['login']['class'] = (in_array($errCode, $good) ? 'boxgreen' : 'boxred');
+
+		if($ajax){
+			die($L_ERROR);
+		}else{
+			$_SESSION['login']['error'] = $L_ERROR;
+			$objPage->redirect('/'.root().'login.php');
+		}
+	}
+
 }
 ?>
