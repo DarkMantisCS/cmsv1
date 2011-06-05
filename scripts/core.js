@@ -22,3 +22,7 @@ var ADAPT_CONFIG = {
   ]
 };
 
+
+$(document).ready(function(){
+	$("select").selectBox();
+});
