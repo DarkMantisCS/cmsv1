@@ -100,7 +100,7 @@ class user extends coreClass{
 		//add a new row into user_extras for this users settings
 		unset($insert);
 		$insert['uid'] = $insert_id;
-		$objSQL->insertRow('user_extras', $insert);
+		$this->objSQL->insertRow('user_extras', $insert);
 
 		//register the user into the group
 		$this->objGroups->joinGroup($insert_id, $userInfo['primary_group'], 0);
@@ -451,10 +451,10 @@ class user extends coreClass{
 		$email = strtolower($email);
 		$email = $objBBCode->UnHTMLEncode(strip_tags($email));
 
-		if($objBBCode->IsValidEmail($email)){
-			return true;
+		if(!$objBBCode->IsValidEmail($email)){
+			return false;
 		}
-		return false;
+		return true;
 	}
 
 	/**

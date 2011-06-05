@@ -4,7 +4,7 @@
 \*======================================================================*/
 define('INDEX_CHECK', 1);
 define('cmsDEBUG', 0);
-include 'core/core.php';
+include_once('core/core.php');
 $objPage->setTitle(langVar('B_REGISTER'));
 
 //no need for them to be here
@@ -15,53 +15,53 @@ if(!$objPage->config('site', 'allow_register')){
 }
 
 if(!HTTP_POST){
-//add our JS in here for the register
-$objPage->addJSFile('/'.root().'scripts/register.js');
+	//add our JS in here for the register
+	$objPage->addJSFile('/'.root().'scripts/register.js');
 
-//setup breadcrumbs
-$objPage->addPagecrumb(array(
-	array('url' => '/'.root().'register.php',  'name' => langVar('B_REGISTER')),
-));
-
-$objPage->showHeader();
-
-	//set the fields to blank if they dont already have a value
-	$fields = array('username', 'password', 'password_verify', 'email');
-	foreach($fields as $e){
-		$_POST[$e] = $_SESSION['register']['form'][$e];
-		if(!isset($_SESSION['register']['form'][$e]) || is_empty($_SESSION['register']['form'][$e])){
-			$_POST[$e] = '';
-		}
-	}
-
-echo $objForm->outputForm(array(
-		'FORM_START' => $objForm->start('register', array('method'=>'POST', 'action'=>'?')),
-		'FORM_END'	 => $objForm->finish(),
-
-		'FORM_TITLE' => 'User Registration',
-		'FORM_SUBMIT'=> $objForm->button('submit', 'Submit'),
-		'FORM_RESET' => $objForm->button('reset', 'Reset'),
-	),
-	array(
-		'field' => array(
-			'User Info'			=> '_header_',
-			'Username' 			=> $objForm->inputbox('username', 'text', $_POST['username'], array('extra' => 'maxlength="20" size="20"', 'required'=>true)),
-			'Password' 			=> $objForm->inputbox('password', 'password', $_POST['password'], array('required'=>true)),
-			'Verify Password' 	=> $objForm->inputbox('password_verify', 'password', $_POST['password_verify'], array('required'=>true)),
-
-			'Email' 			=> $objForm->inputbox('email', 'text', $_POST['email'], array('required'=>true)),
-
-			'Captcha'			=> '_header_',
-			'Recaptcha'			=> $objForm->loadCaptcha('captcha'),
-		),
-		'desc' => array(
-			'Username' 			=> 'This field can be [a-zA-Z0-9-_.]',
-			'Recaptcha'			=> $objForm->loadCaptcha('desc').'<br />'.langVar('L_CAPTCHA_DESC'),
-		),
-		'errors' => $_SESSION['register']['error'],
+	//setup breadcrumbs
+	$objPage->addPagecrumb(array(
+		array('url' => '/'.root().'register.php',  'name' => langVar('B_REGISTER')),
 	));
 
-$objPage->showFooter();
+	$objPage->showHeader();
+
+		//set the fields to blank if they dont already have a value
+		$fields = array('username', 'password', 'password_verify', 'email');
+		foreach($fields as $e){
+			$_POST[$e] = $_SESSION['register']['form'][$e];
+			if(!isset($_SESSION['register']['form'][$e]) || is_empty($_SESSION['register']['form'][$e])){
+				$_POST[$e] = '';
+			}
+		}
+
+	echo $objForm->outputForm(array(
+			'FORM_START' => $objForm->start('register', array('method'=>'POST', 'action'=>'?')),
+			'FORM_END'	 => $objForm->finish(),
+
+			'FORM_TITLE' => 'User Registration',
+			'FORM_SUBMIT'=> $objForm->button('submit', 'Submit'),
+			'FORM_RESET' => $objForm->button('reset', 'Reset'),
+		),
+		array(
+			'field' => array(
+				'User Info'			=> '_header_',
+				'Username' 			=> $objForm->inputbox('username', 'text', $_POST['username'], array('extra' => 'maxlength="20" size="20"', 'required'=>true)),
+				'Password' 			=> $objForm->inputbox('password', 'password', $_POST['password'], array('required'=>true)),
+				'Verify Password' 	=> $objForm->inputbox('password_verify', 'password', $_POST['password_verify'], array('required'=>true)),
+
+				'Email' 			=> $objForm->inputbox('email', 'text', $_POST['email'], array('required'=>true)),
+
+				'Captcha'			=> '_header_',
+				'Recaptcha'			=> $objForm->loadCaptcha('captcha'),
+			),
+			'desc' => array(
+				'Username' 			=> 'This field can be [a-zA-Z0-9-_.]',
+				'Recaptcha'			=> $objForm->loadCaptcha('desc').'<br />'.langVar('L_CAPTCHA_DESC'),
+			),
+			'errors' => $_SESSION['register']['error'],
+		));
+
+	$objPage->showFooter();
 }else{
 	$userInfo = array();
 
@@ -95,7 +95,7 @@ $objPage->showFooter();
 		$_error['email'] = 'The Email address provided is invalid. Please make sure it is correct and try again.';
     }
 
-    if(!isset($_error['email']) && !$objUser->validateEmail($email)){
+    if(!isset($_error['email']) && !$objUser->validateEmail($_POST['email'])){
 		$_error['email'] = 'The Email address provided couldn\'t be validated properly. Please make sure it is correct and try again.';
     }
 
