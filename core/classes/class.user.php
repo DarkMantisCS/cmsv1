@@ -40,7 +40,7 @@ class user extends coreClass{
 	 *
 	 * @return 		bool
 	 */
-	function is_online(){ return self::$IS_ONLINE; }
+	public function is_online(){ return self::$IS_ONLINE; }
 
 	/**
 	 * Inserts a users info into the database.
@@ -209,7 +209,7 @@ class user extends coreClass{
 	 *
 	 * @return  bool
 	 */
-	function isUserOnline($uid){
+	public function isUserOnline($uid){
 		$ts = $this->getUserInfo($uid, 'timestamp');
 
 		return (is_empty($ts) ? false : true);
@@ -260,7 +260,7 @@ class user extends coreClass{
 	 *
 	 * @return  bool	True on Successful Update
 	 */
-	function updateLocation() {
+	public function updateLocation(){
 		// generate the array for the db update
 		$update['timestamp'] 	= time();
 		$update['location'] 	= secureMe(doArgs('REQUEST_URI', null, $_SERVER));
@@ -287,19 +287,43 @@ class user extends coreClass{
 	 * @since   1.0.0
 	 * @author	Jesus
 	 *
-	 * @param   string $string
-	 * @param   string $salt
+	 * @param   string $password
+	 * @param   string $hash
 	 *
 	 * @return  string                Password Hashed Input
 	 */
-	function mkPasswd($string, $salt=null) {
+	public function mkPasswd($string, $salt=null){
 		// Use the new portable password hashing framework
-		$objPass = new phpass(8, false);
+		$objPass = new phpass(8, true);
 
 		// Hash the password
 		$hashed = $objPass->HashPassword($salt.$string);
 
-		unset($objPass, $string, $salt);
+		unset($objPass, $password, $hash);
+		return $hashed;
+	}
+
+	/**
+	 * Verifies the password
+	 *
+	 * @version 1.0
+	 * @since   1.0.0
+	 * @author	Jesus
+	 *
+	 * @param   string $password
+	 * @param   string $hash
+	 *
+	 * @return  bool
+	 */
+	public function checkPasswd($password, $hash){
+		//use the new portable password hashing framework
+		$objPass = new phpass(8, true);
+
+		//verify the password
+		$hashed = $objPass->CheckPassword($password, $hash);
+
+		//and return
+		unset($objPass, $password, $hash);
 		return $hashed;
 	}
 
@@ -315,7 +339,7 @@ class user extends coreClass{
 	 *
 	 * @return  bool 					True if settings were fully updated, False if they wasnt.
 	 */
-	function updateUserSettings($uid, array $setting){
+	public function updateUserSettings($uid, array $setting, $log=false){
 		unset($setting['id'], $setting['uid'], $setting['password'], $setting['pin']);
 
 		if(!count($setting)){
@@ -373,6 +397,11 @@ class user extends coreClass{
 				}
 		}
 
+		if($log!==false){
+			$this->objSQL->recordLog('', $log);
+		}
+
+
 		unset($return, $user, $userUpdate, $extraUpdate, $userColumns, $extraColumns);
 		return true;
 	}
@@ -409,7 +438,7 @@ class user extends coreClass{
 	 * Check to see if the email is a valid one.
 	 *
 	 * @version 1.0
-	 * @since   0.8.0
+	 * @since   1.0.0
 	 * @author 	xLink
 	 *
 	 * @param 	$email
@@ -440,10 +469,10 @@ class user extends coreClass{
 	 * @return  mixed 			IP address of user.
 	 */
 	public static function getIP(){
-		if 		(getenv('HTTP_X_FORWARDED_FOR')){ $ip = getenv('HTTP_X_FORWARDED_FOR'); }
-		else if (getenv('HTTP_X_FORWARDED'))	{ $ip = getenv('HTTP_X_FORWARDED'); }
-		else if (getenv('HTTP_FORWARDED_FOR'))	{ $ip = getenv('HTTP_FORWARDED_FOR'); }
-		else									{ $ip = $_SERVER['REMOTE_ADDR']; }
+		if 		($_SERVER['HTTP_X_FORWARDED_FOR']){ $ip = $_SERVER['HTTP_X_FORWARDED_FOR']; }
+		else if ($_SERVER['HTTP_X_FORWARDED']){ 	$ip = $_SERVER['HTTP_X_FORWARDED']; }
+		else if ($_SERVER['HTTP_FORWARDED_FOR']){ 	$ip = $_SERVER['HTTP_FORWARDED_FOR']; }
+		else{										$ip = $_SERVER['REMOTE_ADDR']; }
 
 		return $ip;
 	}
@@ -602,7 +631,7 @@ class user extends coreClass{
 	 * @since   1.0.0
 	 * @author	xLink
 	 */
-	function newKey(){
+	public function newKey(){
 		//grab the old key before we overwrite it
 		$oldKey = $_SESSION['user']['userkey'];
 
@@ -624,7 +653,7 @@ class user extends coreClass{
 	 *
 	 * @return 	bool
 	 */
-    function newOnlineSession($log=NULL){
+    public function newOnlineSession($log=NULL){
 		$insert['uid']           = $this->grab('id');
 		$insert['username']      = $this->grab('username');
 		$insert['ip_address']    = User::getIP();

@@ -27,14 +27,14 @@ $action = isset($_GET['__action']) && !empty($_GET['__action']) ? $_GET['__actio
 $extra  = isset($_GET['__extra'])                               ? $_GET['__extra']  : '';
 
 if(!preg_match('#install($|/)#i', $action)){
-    if(!empty($module) && $objPage->loadModule($module, true)){
+    if(!empty($module) && $objCore->loadModule($module, true)){
         $objModule = new $module($objPage, $objSQL, $objTPL, $objUser, $objTime, $objForm, $objComments, $objPlugins);
         $objModule->doAction($action);
     }else{
         $objCore->throwHTTP(404);
     }
 }else{
-    $objPage->autoLoadModule('core', $objModule);
+    $objCore->autoLoadModule('core', $objModule);
     $objModule->installModule($module);
 }
 

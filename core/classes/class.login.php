@@ -25,7 +25,7 @@ class login extends coreClass{
 
 
 	//setup checks for various data
-	function attemptsCheck($dontUpdate=false){
+	public function attemptsCheck($dontUpdate=false){
 		if($this->onlineData['login_time'] >= time()){
 			return false;
 
@@ -55,8 +55,58 @@ class login extends coreClass{
 		return true;
 	}
 
+	public function activeCheck(){
+		return (bool)$this->userData['active'];
+	}
+
+	public function banCheck(){
+		return (bool)$this->userData['banned'];
+	}
+
+	public function verifyPin(){
+		return (isset($_POST['pin']) && md5($_POST['pin'].$this->config('db', 'ckeauth')) == $this->userData['pin'] ? true : false);
+	}
 
 	//whitelist data
+
+
+	function updateLoginAttempts(){
+		if(!is_empty($this->userData)){
+			$this->objUser->updateUserSettings($this->userData['id'], array('login_attempts' => $this->userData['login_attempts']+1));
+		}
+
+		$query = $this->objSQL->prepare('UPDATE `$Ponline` SET login_attempts = (login_attempts + 1) WHERE userkey = "%s"', $_SESSION['user']['userkey']);
+		$this->objSQL->query($query, 'Online System: '.USER::getIP().' failed to login to '.$this->userData['username'].'\'s account.');
+	}
+
+	function updateACPAttempts(){
+		global $objSQL, $objTime;
+
+        if(!is_empty($this->userData)){
+			$this->objSQL->updateRow('users', array('pin_attempts' => $this->userData['pin_attempts']+1), "id = '".$this->userData['id']."'", 0,
+            'Online System: '.$this->userData['username'].' attemped to authenticate as administrator.');
+        }
+
+        if(($this->userData['pin_attempts']+1) == 4){
+            unset($update);
+            $update['active'] = '0';
+            $update['banned'] = '1';
+            $update['pin_attempts'] = '0';
+
+			$this->objSQL->updateRow('users', $update, "id = '".$this->userData['id']."'", 0,
+                'Online System: Logged '.$this->userData['username'].' out as a security measure. 3 Wrong Authentication attempts for ACP.');
+
+            $this->objSQL->updateRow('online', array(
+                'login_time' 		=> $objTime->mod_time(time(), 0, 15),
+                'login_attempts'	=> '0'
+            ), 'userkey = "'.$_SESSION['user']['userkey'].'"');
+
+            $this->logout($this->userData['usercode']);
+        }
+
+        return ($this->userData['pin_attempts']+1);
+	}
+
 
 
 	//login & out, & remember me
@@ -82,6 +132,11 @@ class login extends coreClass{
 
 		//grab user info
 		$this->userData = $this->objUser->getUserInfo($username);
+			if(!$this->userData){
+				$this->setError('User dosent exist');
+				return false;
+			}
+
 		$this->postData = array(
 			'username' => $username,
 			'password' => $password,
@@ -89,14 +144,16 @@ class login extends coreClass{
 
 		//no need to run these if we are in acp mode
         if($acpCheck === FALSE){
-        	if(!$this->checkUserInfo()){   $this->error('0x02', $ajax); }
-        	if(!$this->whiteListCheck()){  $this->error('0x04', $ajax); }
-        	if(!$this->activeCheck()){     $this->error('0x05', $ajax); }
-        	if(!$this->banCheck()){        $this->error('0x06', $ajax); }
+        	if(!$this->whiteListCheck()){	$this->error('0x04', $ajax); }
+        	if(!$this->activeCheck()){		$this->error('0x05', $ajax); }
+        	if(!$this->banCheck()){			$this->error('0x06', $ajax); }
         }
 
-		if(!$this->attemptsCheck()){   	$this->error('0x03', $ajax); }
-		if(!$this->passwdCheck($ajax)){ $this->error('0x07', $ajax); }
+		if(!$this->attemptsCheck()){   		$this->error('0x03', $ajax); }
+
+		if(!$this->objUser->checkPasswd($password, $this->userData['password'])){
+			$this->error('0x07', $ajax);
+		}
 
 		//if this is aan acp check
 		if($acpCheck){
@@ -121,7 +178,7 @@ class login extends coreClass{
 
 			//redirect em straight to the acp panel if not ajax'd else get JS to do it
 			if(!$ajax){
-				$objPage->redirect('/'.root().'admin/', 0);
+				$this->objPage->redirect('/'.root().'admin/', 0);
 			}else{
 				die('dcne');
 			}
@@ -132,19 +189,19 @@ class login extends coreClass{
 
 		// Add Hooks for Login Data
 		$this->userData['password_plaintext'] = $this->postData['password'];
-		$this->objPlugins->execHook('CMSLogin_onSuccess', $this->userData);
+		$this->objPlugins->hook('CMSLogin_onSuccess', $this->userData);
 
 		$this->objSQL->updateRow('online',
-									array('uid' => $this->userData['id'], 'username' => $this->userData['username']),
-									array('userkey = "%s"', $_SESSION['user']['userkey']),
-									'Online System: '.$this->userData['username'].' Logged in'
-								);
+			array('uid' => $this->userData['id'], 'username' => $this->userData['username']),
+			array('userkey = "%s"', $_SESSION['user']['userkey']),
+			'Online System: '.$this->userData['username'].' Logged in'
+		);
 
 		$this->objUser->setSessions($this->userData['id']);
 		$this->objUser->updateLocation();
 
 		//make sure we want em to be able to auto login first
-		if($this->config('site', 'auto_login')){
+		if($this->config('login', 'remember_me')){
 			if(doArgs('remember', false, $_POST)){
 				$this->objUser->updateUserSettings($this->userData['id'], array('autologin'=>1));
 
@@ -165,7 +222,7 @@ class login extends coreClass{
 
 		//redirect em straight to the index if not ajax'd else get JS to do it
     	if(!$ajax){
-	    	$objPage->redirect(doArgs('HTTP_REFERER', '/'.root().'index.php', $_SERVER), 0);
+	    	$this->objPage->redirect(doArgs('HTTP_REFERER', '/'.root().'index.php', $_SERVER), 0);
     	}else{
     		die('done');
     	}
@@ -180,7 +237,12 @@ class login extends coreClass{
 	 *
 	 * @return  bool
 	 */
-	public function checkRememberMeCookie(){
+	public function runRememberMe(){
+
+		if(!$this->config('login', 'remember_me')){
+			$this->setError('Remember Me is disabled site wide');
+			return false;
+		}
 
 		//make sure we have a cookie to begin with
 		if(is_empty(doArgs('login', null, $_COOKIE))){

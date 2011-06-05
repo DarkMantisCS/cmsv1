@@ -206,5 +206,118 @@ class coreClass{
 		hmsgDie('FAIL', $msg);
 	}
 
+
+
+    /**
+	 * Loads a module and its languagefile with the name from the parameter $module
+     *
+	 * @version	2.0
+	 * @since   0.8.0
+	 * @author 	xLink
+	 *
+     * @param 	string 	$module         The name of the module to be loaded
+     * @param   bool 	$languageFile   Defines weather the language file accociated with the module should be loaded.
+     *
+     * @return 	bool
+     */
+    function loadModule($module, $languageFile=false, $mode='class'){
+        if($mode===NULL){ $mode = 'class'; }
+		if($mode=='class'){
+    		//check weather we've already used this module
+    		$module_enable = isset($_SESSION['site']['modules'][$module]) ? ($_SESSION['site']['modules'][$module]==1 ? 'enabled' : 'disabled') : 'first';
+    		$module_enable = 'first';
+            switch($module_enable){
+                case 'disabled': //false means the module is disabled so stop here.
+                    $this->setTitle('Module Disabled');
+                    hmsgDie('FAIL', 'Module: "'.$module.'" is disabled.');
+                    exit;
+                break;
+
+                case 'first': //null means we havent so continue
+        		    $enable_check = $this->objSQL->getValue('modules', 'enabled', 'name = \''.$module.'\'');
+        		    switch($enable_check){
+                        case NULL:
+                            $this->setTitle('Module Not Installed');
+                            $msg = NULL;
+                            if(!is_dir(cmsROOT.'modules/'.$module.'/')){ $this->throwHTTP(404); }
+
+                            if(file_exists(cmsROOT.'modules/'.$module.'/install.php') && User::$IS_ADMIN){
+                                $msg = '<br />But it can be, <a href="/'.root().'modules/'.$module.'/install/">Click Here</a>';
+                            }
+
+                            if(User::$IS_ADMIN){
+                            	hmsgDie('FAIL', 'Module "'.secureMe($module).'" isnt installed.'.$msg);
+                            }else{
+								$this->throwHTTP(404);
+                            }
+                            exit;
+                        break;
+
+                        case 0:
+                            return false;
+                        break;
+
+                        default:
+                        //cache it in session so we dont have to run the query everytime we use this module
+                        $_SESSION['site']['modules'][$module] = $enable_check;
+                    }
+                break;
+            }
+        }
+
+        /*/now with the rest of the checks
+		if(!is_file(cmsROOT.'modules/'.$module.'/cfg.php')){
+            hmsgDie('FAIL', 'Could not locate the configuration file for "'.$module.'". Load Failed');
+        }
+
+        if(!is_file(cmsROOT.'modules/'.$module.'/'.$mode.'.'.$module.'.php')){
+            hmsgDie('FAIL', 'Could not locate Module "'.$module.'". Load Failed');
+        }*/
+
+            include_once(cmsROOT.'modules/'.$module.'/'.$mode.'.'.$module.'.php');
+            if($languageFile){
+                translateFile(cmsROOT.'modules/'.$module.'/language/lang.'.$this->getSetting('global', 'language').'.php');
+            }
+        return true;
+    }
+
+    /**
+     * Loads in a instance of the requested module
+     *
+	 * @version	2.0
+	 * @since   0.8.0
+	 * @author 	xLink
+	 *
+	 * @param 	string 	$module		Module name
+	 * @param	var		$returnVar 	Variable you want the module to be loaded into
+	 * @param	string 	$mode		class, admin, mod, user
+     */
+    function autoLoadModule($module, &$returnVar, $mode='class'){
+        $objModule = new Module($this->objCore);
+        if(!$objModule->isModule($module)){
+            $returnVar = msg('FAIL', 'Error loading module file "'.$module.'"', 'return');
+            return;
+        }
+
+        $file = cmsROOT.'modules/'.$module.'/'.$mode.'.'.$module.'.php';
+        if(!is_readable($file)){
+            $returnVar = hmsgDie('FAIL', 'Error loading module file "'.$module.'"');
+            return;
+        }
+
+        $fileData = file_get_contents($file);
+        $newModule = $module.'_'.substr(0, 6, md5(time()));
+        $fileData = preg_replace("/(class[\s])$module([\s]extends[\s]module{)/i", '\\1'.$newModule.'\\2', $fileData);
+        $success = eval('?>'.$fileData.'<?php ');
+        	if ($success === false){
+                $returnVar = msg('FAIL', 'Error loading module file "'.$module.'"', 'return');
+                return;
+            }
+
+        $returnVar = new $newModule($this->objCore);
+    }
+
+
+
 }
 ?>
