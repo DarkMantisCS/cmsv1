@@ -99,8 +99,8 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 	$classFiles = array(
 					$classDir.'base.core.php',
 					$classDir.'base.sql.php',
-					$libDir.'/phpass/class.phpass.php',
-					$libDir.'/nbbc/class.nbbc.php'
+					$libDir.'phpass/class.phpass.php',
+					$libDir.'nbbc/class.nbbc.php'
 				);
 		foreach($classFiles as $file){
 			$file = $file;
@@ -313,31 +313,31 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 	//
 	//--BBCode Setup
 	//
-	$objBBCode = new BBCode;
-	$objBBCode->SetDebug(true);
-	$objBBCode->SetDetectURLs(false);
-	$objBBCode->ClearSmileys();
-	$objBBCode->SetSmileyDir('/'.root().'images/smilies');
-	$file = cmsROOT.'core/bbcode_tags.php';
-	if(is_readable($file)){
-		require_once($file);
-	}else{
-		hmsgDie('FAIL', 'Fatal Error - BBCode\'s not available.');
-	}
+		$objBBCode = new BBCode;
+		$objBBCode->SetDebug(true);
+		$objBBCode->SetDetectURLs(false);
+		$objBBCode->ClearSmileys();
+		$objBBCode->SetSmileyDir('/'.root().'images/smilies/');
+		$file = cmsROOT.'core/bbcode_tags.php';
+		if(is_readable($file)){
+			require_once($file);
+		}else{
+			hmsgDie('FAIL', 'Fatal Error - BBCode\'s not available.');
+		}
 
 	//
 	//--Module Setup
 	//
-	$file = cmsROOT.'core/classes/class.module.php';
-	if(is_readable($file)){
-		require_once($file);
-	}else{
-		hmsgDie('FAIL', 'Fatal Error - Modules cannot be loaded.');
-	}
+		$file = cmsROOT.'core/classes/class.module.php';
+		if(is_readable($file)){
+			require_once($file);
+		}else{
+			hmsgDie('FAIL', 'Fatal Error - Modules cannot be loaded.');
+		}
 
 	//if site is closed, make it so, kill debug, no menu is needed, 'cmsCLOSED' can be used as a bypass
 	if (($objCore->config('site', 'closed') == 1) && (!defined('cmsCLOSED'))){
-		if(!user::$IS_ADMIN){
+		if(!User::$IS_ADMIN){
 			$objSQL->debug = false;
 			$objPage->setMenu(false);
 			$objPage->setTitle('DISABLED');

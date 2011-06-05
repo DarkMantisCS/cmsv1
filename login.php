@@ -72,6 +72,39 @@ switch($mode){
 
 		$objTPL->parse('body', false);
 	break;
+
+	case 'check':
+        if(!HTTP_POST){
+        	$objPage->redirect('?');
+		}
+    	if(User::$IS_ONLINE && !$acpCheck && !isset($_GET['ajax'])){
+    		$objPage->redirect('/'.root().'index.php');
+		}
+
+    	$objLogin->doLogin((isset($_GET['ajax'])&&HTTP_AJAX ? true : false));
+	break;
+
+	case 'active':
+		if(!isset($_GET['un']) || !isset($_GET['check'])){
+			hmsgDie('FAIL', 'Cannot activate your account, Please use all the url sent to you in the email');
+		}else{
+            if($objUser->getUserInfo($_GET['un'], 'active')==1){
+                hmsgDie('Info', 'You account is already active.');
+            }
+
+            if($objLogin->activateAccount($_GET['un'], $_GET['check'])){
+				$objLogin->doError('0x08');
+			}else{
+				// Make this into a form
+				hmsgDie('FAIL', contentParse('Cannot activate your account.
+				Please email the site administrator at [email]'.$objCore->config('site', 'admin_email').'[/email]'));
+			}
+		}
+	break;
+
+	case 'logout':
+		$objLogin->logout($_GET['check']);
+	break;
 }
 
 $objPage->showHeader(isset($_GET['ajax']) ? true : false);
