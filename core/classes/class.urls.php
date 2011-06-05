@@ -109,13 +109,21 @@ class urls extends coreClass {
 			if( !is_array( $result ) )
 			{
 				// Check if this isn't a generic URL
-				if( !strpos( $url, '/' ) ) continue;
+				if( !strpos( $url, '/' ) ) return false;
 				$action = substr( $url, strrpos($url, '/') ) . $action;
 			}
 			else
 			{
 				$found = true;
 			}
+		}
+		if( $found === true )
+		{
+			$modules = $this->objSQL->getTable( $this->objSQL->prepare('SELECT * FROM `$P`modules') );
+			echo dump( $action, 'action' );
+			echo dump( $url, 'url' );
+			echo dump( $result, 'result' );
+			echo dump( $modules, 'Modules' );
 		}
 	}
 }

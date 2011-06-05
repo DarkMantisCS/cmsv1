@@ -17,8 +17,8 @@ class Module extends coreClass{
 
 	}
 
-
-
+	function moduleExists() { }
+	function moduleInstalled() { }
 }
 
 ?>
