@@ -54,8 +54,8 @@ body {
 .bold {font-weight:600;}
 .italic {font-style:italic;}
 
-a {	color:#525252;	}
-a:hover, a:focus { text-decoration:underline;}
+a { }
+a:hover, a:focus { }
 a:active, a:visited { }
 
 blockquote {

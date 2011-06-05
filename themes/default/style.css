@@ -1,6 +1,6 @@
 body { margin: 0px; color: #333333; background: url('images/bg.jpg') repeat #EDEDED; }
-#breadcrumbs a:hover, a:hover { text-decoration: underline; color: #3C78A7; }
-#breadcrumbs a:active, #breadcrumbs a:visited, #breadcrumbs a:link, 
+nav#breadcrumbs a:hover, a:hover { text-decoration: underline; color: #3C78A7; }
+nav#breadcrumbs a:active, nav#breadcrumbs a:visited, nav#breadcrumbs a:link, 
 a:active, a:visited, a:link { text-decoration: none; color: #3C78A7; }
 .grid_1, .grid_2, .grid_3, .grid_4, .grid_5, .grid_6, .grid_7, .grid_8, .grid_9, .grid_10, .grid_11, .grid_12{
 	margin: 0 5px;
@@ -207,9 +207,11 @@ footer{
 
 /** Forms **/
 form div { display: block; }
-form div span.field input, form div span.field select, form div span.field textarea {
+form div span.field input, 
+form div span.field select, 
+form div span.field textarea, 
+form div span.field a {
 	float: right;
-	width: 52%;
 }
 form label { font-weight: bold; margin: 5px 0; }
 form label small{ float: left; }
@@ -227,6 +229,10 @@ div.warning .icon{ background-image: url(images/alert.png); }
 div.error .icon{ background-image: url(images/error.png); }
 div.status .icon{ background-image: url(images/note.png); }
 
+
+a.selectBox:hover{
+	text-decoration: none;
+}
 
 .corners{
 	-webkit-border-radius: 5px;
