@@ -43,12 +43,9 @@ class Module extends coreClass {
 			$this->modConf['path'] = '/' . root() . substr($mod_dir, 2);
 		}
 
-<<<<<<< HEAD
-		if(preg_match('/images\/(.*?)/i', $this->action)){
-=======
+
 		//specify some deafult actions
 		if(preg_match('/images\/(.*?)/i', $this->action)) {
->>>>>>> efc6742f55911f24460b3a01fe66d94aab0b420c
 			$imagesTypes = array('jpg', 'gif', 'png', 'jpeg', 'jfif', 'jpe', 'bmp', 'ico', 'tif', 'tiff');
 			if(in_array($this->ext, $imagesTypes) && is_readable(cmsROOT . 'modules/' . $this->module . '/images/' . $this->filename)) {
 				header('Content-Type: image/' . $this->ext);
@@ -58,13 +55,8 @@ class Module extends coreClass {
 				$this->throwHTTP('404');
 			}
 		}
-<<<<<<< HEAD
-		if(preg_match('/scripts\/(.*?)/i', $this->action)){
-			if(file_exists(cmsROOT.'modules/'.$this->module.'/'.$this->action.$this->extra)){
-=======
 		if(preg_match('/scripts\/(.*?)/i', $this->action)) {
 			if(file_exists(cmsROOT . 'modules/' . $this->module . '/' . $this->action . $this->extra)) {
->>>>>>> efc6742f55911f24460b3a01fe66d94aab0b420c
 				header('Content-Type: application/x-javascript');
 				include (cmsROOT . 'modules/' . $this->module . '/' . $this->action . $this->extra);
 				exit;
@@ -72,13 +64,8 @@ class Module extends coreClass {
 				$this->throwHTTP('404');
 			}
 		}
-<<<<<<< HEAD
-		if(preg_match('/styles\/(.*?)/i', $this->action)){
-			if(file_exists(cmsROOT.'modules/'.$this->module.'/'.$this->action.$this->extra)){
-=======
 		if(preg_match('/styles\/(.*?)/i', $this->action)) {
 			if(file_exists(cmsROOT . 'modules/' . $this->module . '/' . $this->action . $this->extra)) {
->>>>>>> efc6742f55911f24460b3a01fe66d94aab0b420c
 				header('Content-Type: text/css');
 				include (cmsROOT . 'modules/' . $this->module . '/' . $this->action . $this->extra);
 				exit;
@@ -99,18 +86,6 @@ class Module extends coreClass {
 	 *
 	 * @return 	bool
 	 */
-<<<<<<< HEAD
-	public function moduleExists( $moduleName )
-	{
-		if( is_empty($moduleName) || !is_dir( cmsROOT.'modules/'.$moduleName ) )
-		{
-			return false;
-		}
-
-		$files = getFiles( cmsROOT.'modules/'.$moduleName );
-		if( is_empty( $files ) )
-		{
-=======
 	public function moduleExists($moduleName) {
 		if(is_empty($moduleName) || !is_dir(cmsROOT . 'modules/' . $moduleName)) {
 			return false;
@@ -118,7 +93,6 @@ class Module extends coreClass {
 
 		$files = getFiles(cmsROOT . 'modules/' . $moduleName);
 		if(is_empty($files)) {
->>>>>>> efc6742f55911f24460b3a01fe66d94aab0b420c
 			return false;
 		}
 		return true;
@@ -136,41 +110,13 @@ class Module extends coreClass {
 	 *
 	 * @return 	bool
 	 */
-<<<<<<< HEAD
-	private function getModuleListCache( $moduleName )
-	{
-		// Check the argument is valid
-		if( is_empty( $moduleName ) )
-		{
-=======
 	private function getModuleListCache($moduleName){
 		// Check the argument is valid
 		if(is_empty($moduleName)){
->>>>>>> efc6742f55911f24460b3a01fe66d94aab0b420c
 			return false;
 		}
 
 		// If the result already exists, then gogo fetch.
-<<<<<<< HEAD
-		if( array_key_exists($moduleName, $this->cached) )
-		{
-			return true;
-		}
-		else
-		{
-			// Else query the database and find it
-			$modules = $this->objSQL->getTable( $this->objSQL->prepare(
-				'SELECT * FROM `$Pmodules`'
-			));
-
-			if( is_empty( $modules ) )
-			{
-				return false;
-			}
-
-			foreach($modules as $module)
-			{
-=======
 		if(!isset($this->modules[$moduleName])){
 			return true;
 		} else {
@@ -179,7 +125,6 @@ class Module extends coreClass {
 				if(!$modules){ return false; }
 
 			foreach($modules as $module){
->>>>>>> efc6742f55911f24460b3a01fe66d94aab0b420c
 				$this->modules[$module['name']] = $module;
 			}
 
@@ -198,20 +143,6 @@ class Module extends coreClass {
 	 *
 	 * @return 	bool
 	 */
-<<<<<<< HEAD
-	public function moduleInstalled( $moduleName )
-	{
-		$this->getModuleListCache( $moduleName );
-
-		// Check the module exists in cache
-		if( !array_key_exists( $moduleName, $this->modules ) )
-		{
-			return false;
-		}
-
-		if( $this->modules[$moduleName]['enabled'] == '1' )
-		{
-=======
 	public function moduleInstalled($moduleName){
 		$this->getModuleListCache($moduleName);
 
@@ -221,55 +152,11 @@ class Module extends coreClass {
 		}
 
 		if($this->modules[$moduleName]['enabled'] == '1'){
->>>>>>> efc6742f55911f24460b3a01fe66d94aab0b420c
 			return true;
 		}
 
 		return false;
 	}
-<<<<<<< HEAD
-
-	/**
-	 * Gets relevent data from a module
-	 *
-	 * @version	1.0
-	 * @since   1.0.0
-	 * @author  Jesus
-	 *
-	 * @param 	array
-	 *
-	 * @return 	bool
-	 */
-	function getModuleData( $moduleName )
-	{
-		$this->getModuleListCache( $moduleName );
-
-		// Check the module exists in cache
-		if( !array_key_exists( $moduleName, $this->modules ) )
-		{
-			return false;
-		}
-
-		return $this->modules[$moduleName];
-	}
-
-	/**
-	 * Gets relevent data from a module using its
-	 * 	module hash as a reference
-	 *
-	 * @version	1.0
-	 * @since   1.0.0
-	 * @author  Jesus
-	 *
-	 * @param 	array
-	 *
-	 * @return 	bool
-	 */
-	function getModuleDataByHash( $moduleHash ) { }
-}
-=======
-
->>>>>>> efc6742f55911f24460b3a01fe66d94aab0b420c
 
 	/**
 	 * Gets relevent data from a module
