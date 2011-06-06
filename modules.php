@@ -28,7 +28,7 @@ $extra  = isset($_GET['__extra'])                               ? $_GET['__extra
 
 if(!preg_match('#install($|/)#i', $action)){
     if(!empty($module) && $objCore->loadModule($module, true)){
-        $objModule = new $module($objPage, $objSQL, $objTPL, $objUser, $objTime, $objForm, $objComments, $objPlugins);
+        $objModule = new $module($objCore);
         $objModule->doAction($action);
     }else{
         $objCore->throwHTTP(404);

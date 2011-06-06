@@ -568,12 +568,12 @@ class page extends coreClass{
 	//
 	//--Output the Footer
 	//
-		$queries = 0; $_timer = 0; $crons = null; $debug = $this->objSQL->debugtext;
+		$queries = 0; $sqlTimer = 0; $crons = null; $debug = $this->objSQL->debugtext;
 		if(!is_empty($debug)){
 			foreach($debug as $row){
 				if($row['time']!= '---------'){ $queries++; }
 				if($row['status']  == 'error'){ $queries++; }
-				$_timer += $row['time'];
+				$sqlTimer += $row['time'];
 			}
 		}
 
@@ -621,15 +621,21 @@ class page extends coreClass{
             Current Time:       '.$this->objTime->mk_time(time());
 		}
 
+		$footerVars = array();
+		$this->timer = isset($START_CMS_LOAD) ? $START_CMS_LOAD : microtime(true);
+		$footerVars['sqlQueries'] = $queries;
+		$footerVars['sqlTimer'] = $sqlTimer;
+		$footerVars['pageGen'] = round(microtime(true)-$this->timer, 5);
+		$footerVars['nextCron'] = $this->objTime->mk_time($this->config('statistics', 'hourly_cron') + $this->config('cron', 'hourly_time'));
+		$footerVars['ramUsage'] = formatBytes(memory_get_usage()-$START_RAM_USE);
+
+		$this->objPlugins->hook('CMSPage_footer', $footerVars);
+
 		$page_gen = NULL;
 		if(User::$IS_ADMIN){
-			$this->timer = isset($START_CMS_LOAD) ? $START_CMS_LOAD : microtime(true);
-			$generation = round(microtime(true)-$this->timer, 5);
-			$nextCron = $this->objTime->mk_time($this->config('statistics', 'hourly_cron') + $this->config('cron', 'hourly_time'));
-			$ramUse = formatBytes(memory_get_usage()-$START_RAM_USE);
-
-			$page_gen = langVar('L_PAGE_GEN', $queries, $_timer, $generation, $ramUse, $nextCron);
+			$page_gen = langVar('L_PAGE_GEN', $footerVars['sqlQueries'], $footerVars['sqlTimer'], $footerVars['pageGen'], $footerVars['ramUsage'], $footerVars['nextCron']);
 		}
+
 		$footer = array();
 		if(is_readable(page::$THEME_ROOT.'cfg.php')){
 			include(page::$THEME_ROOT.'cfg.php');
@@ -641,6 +647,7 @@ class page extends coreClass{
 			'L_PAGE_GEN'		=> $page_gen,
 			'L_SITE_COPYRIGHT'	=> langVar('L_SITE_COPYRIGHT', $this->config('site', 'title'), $this->config('cms', 'name'), cmsVERSION),
 		);
+
 
 		$this->objTPL->assign_vars($footer);
 		$this->objTPL->parse('tpl_footer');

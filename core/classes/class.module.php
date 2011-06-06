@@ -18,7 +18,12 @@ class Module extends coreClass {
 	private $modules = array();
 	public $modConf = array();
 
-	function __construct(Core $objCore) {
+	function __construct(coreClass $objCore) {
+
+		$this->modConf['mode']   = doArgs('__mode', null, $_GET);
+		$this->modConf['module'] = doArgs('__module', null, $_GET);
+		$this->modConf['action'] = doArgs('__action', null, $_GET);
+		$this->modConf['extra']  = doArgs('__extra', null, $_GET);
 
 		//global the classes for this module
 		$this->objPage 		= $objCore->objPage;
@@ -35,42 +40,48 @@ class Module extends coreClass {
 		}
 
 		// Retrieve info from config
-		if(is_readable(cmsROOT . 'modules/' . $this->module . '/cfg.php')) {
-			require cmsROOT . 'modules/' . $this->module . '/cfg.php';
+		if(is_readable(cmsROOT . 'modules/' . $this->modConf['module'] . '/cfg.php')) {
+			require cmsROOT . 'modules/' . $this->modConf['module'] . '/cfg.php';
 
 			$this->modConf['path'] = '/' . root() . substr($mod_dir, 2);
 		}
 
+		$exAction   = explode('/', $this->modConf['action']);
+		$this->modConf['filename'] = ($_GET['__action']!='' && $_GET['__extra']!='' ? $this->objSQL->escape($exAction[count($exAction)-1].$this->modConf['extra']) : '');
+		$this->modConf['ext'] = ((substr_count($this->modConf['filename'], '.') > 0) ? (substr($this->modConf['filename'], strrpos($this->modConf['filename'], '.') + 1)) : NULL);
+
+
 		//specify some deafult actions
-		if(preg_match('/images\/(.*?)/i', $this->action)) {
+		if(preg_match('/images\/(.*?)/i', $this->modConf['action'])) {
 			$imagesTypes = array('jpg', 'gif', 'png', 'jpeg', 'jfif', 'jpe', 'bmp', 'ico', 'tif', 'tiff');
-			if(in_array($this->ext, $imagesTypes) && is_readable(cmsROOT . 'modules/' . $this->module . '/images/' . $this->filename)) {
-				header('Content-Type: image/' . $this->ext);
-				include (cmsROOT . 'modules/' . $this->module . '/images/' . $this->filename);
+			if(in_array($this->modConf['ext'], $imagesTypes) && is_readable(cmsROOT . 'modules/' . $this->modConf['module'] . '/images/' . $this->modConf['filename'])) {
+				header('Content-Type: image/' . $this->modConf['ext']);
+				include (cmsROOT . 'modules/' . $this->modConf['module'] . '/images/' . $this->modConf['filename']);
 				exit;
 			} else {
 				$this->throwHTTP('404');
 			}
 		}
-		if(preg_match('/scripts\/(.*?)/i', $this->action)) {
-			if(file_exists(cmsROOT . 'modules/' . $this->module . '/' . $this->action . $this->extra)) {
+		if(preg_match('/scripts\/(.*?)/i', $this->modConf['action'])) {
+			if(file_exists(cmsROOT . 'modules/' . $this->modConf['module'] . '/' . $this->modConf['action'] . $this->modConf['extra'])) {
 				header('Content-Type: application/x-javascript');
-				include (cmsROOT . 'modules/' . $this->module . '/' . $this->action . $this->extra);
+				include (cmsROOT . 'modules/' . $this->modConf['module'] . '/' . $this->modConf['action'] . $this->modConf['extra']);
 				exit;
 			} else {
 				$this->throwHTTP('404');
 			}
 		}
-		if(preg_match('/styles\/(.*?)/i', $this->action)) {
-			if(file_exists(cmsROOT . 'modules/' . $this->module . '/' . $this->action . $this->extra)) {
+		if(preg_match('/styles\/(.*?)/i', $this->modConf['action'])) {
+			if(file_exists(cmsROOT . 'modules/' . $this->modConf['module'] . '/' . $this->modConf['action'] . $this->modConf['extra'])) {
 				header('Content-Type: text/css');
-				include (cmsROOT . 'modules/' . $this->module . '/' . $this->action . $this->extra);
+				include (cmsROOT . 'modules/' . $this->modConf['module'] . '/' . $this->modConf['action'] . $this->modConf['extra']);
 				exit;
 			} else {
 				$this->throwHTTP('404');
 			}
 		}
 	}
+
 
 	/**
 	 * Check if a module exists in the file structure
@@ -119,9 +130,10 @@ class Module extends coreClass {
 		} else {
 			// Else query the database and find it
 			$modules = $this->objSQL->getTable($this->objSQL->prepare('SELECT * FROM `$Pmodules`'));
-				if(!$modules){ return false; }
+				if(!$modules){ return false;
+				}
 
-			foreach($modules as $module){
+			foreach($modules as $module) {
 				$this->modules[$module['name']] = $module;
 			}
 
@@ -143,8 +155,8 @@ class Module extends coreClass {
 	public function moduleInstalled($moduleName){
 		$this->getModuleListCache($moduleName);
 
-		// Check the module exists in cache
-		if(!isset($this->modules[$moduleName])){
+		// Cissete$this->modules[xists in ca]
+		if(!array_key_exists($moduleName, $this->modules)){
 			return false;
 		}
 
@@ -170,8 +182,8 @@ class Module extends coreClass {
 	function getModuleData($moduleName){
 		$this->getModuleListCache($moduleName);
 
-		// Check the module exists in cache
-		if(!isset($this->modules[$moduleName])){
+		// Cisset($this->modules[xists in ca] )
+		if(!array_key_exists($moduleName, $this->modules)){
 			return false;
 		}
 

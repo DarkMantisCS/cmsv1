@@ -82,6 +82,8 @@ class mysql extends coreClass implements SQLBase{
 			$this->recordMessage('CMS is not using a persistant connection with the database.', 'WARNING');
 		}
 
+		$this->query('SET GLOBAL innodb_flush_log_at_trx_commit = 2;');
+
 		unset($this->db['password']);
 		return true;
 	}
@@ -479,7 +481,7 @@ class mysql extends coreClass implements SQLBase{
 	 *
 	 * @return 	int
 	 */
-	function insertRow($table, $array, $log=false){
+	public function insertRow($table, $array, $log=false){
 		if(is_empty($array)){ return false; }
 
 		$comma = null;
@@ -517,7 +519,7 @@ class mysql extends coreClass implements SQLBase{
 	 *
 	 * @return 	int
 	 */
-	function updateRow($table, $array, $clause, $log=false){
+	public function updateRow($table, $array, $clause, $log=false){
 		if(is_empty($array)){ return false; }
 
 		$query = 'UPDATE `$P%s` SET ';

@@ -225,10 +225,10 @@ class coreClass{
 		if($mode=='class'){
     		//check weather we've already used this module
     		$module_enable = isset($_SESSION['site']['modules'][$module]) ? ($_SESSION['site']['modules'][$module]==1 ? 'enabled' : 'disabled') : 'first';
-    		$module_enable = 'first';
+    		$module_enable = 'enabled';
             switch($module_enable){
                 case 'disabled': //false means the module is disabled so stop here.
-                    $this->setTitle('Module Disabled');
+                    $this->objPage->setTitle('Module Disabled');
                     hmsgDie('FAIL', 'Module: "'.$module.'" is disabled.');
                     exit;
                 break;
@@ -237,7 +237,7 @@ class coreClass{
         		    $enable_check = $this->objSQL->getValue('modules', 'enabled', 'name = \''.$module.'\'');
         		    switch($enable_check){
                         case NULL:
-                            $this->setTitle('Module Not Installed');
+                            $this->objPage->setTitle('Module Not Installed');
                             $msg = NULL;
                             if(!is_dir(cmsROOT.'modules/'.$module.'/')){ $this->throwHTTP(404); }
 
@@ -276,7 +276,7 @@ class coreClass{
 
             include_once(cmsROOT.'modules/'.$module.'/'.$mode.'.'.$module.'.php');
             if($languageFile){
-                translateFile(cmsROOT.'modules/'.$module.'/language/lang.'.$this->getSetting('global', 'language').'.php');
+                translateFile(cmsROOT.'modules/'.$module.'/language/lang.'.$this->config('global', 'language').'.php');
             }
         return true;
     }

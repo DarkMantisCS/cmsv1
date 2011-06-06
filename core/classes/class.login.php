@@ -18,7 +18,9 @@ class login extends coreClass{
 			return $this->onlineData;
 		}
 
-		$query = $this->objSQL->prepare('SELECT * FROM `$Ponline` WHERE userkey="%s"', $_SESSION['user']['userkey']);
+		$query = $this->objSQL->prepare('SELECT `id`, `uid`, `username`, `ip_address`, `timestamp`, `location`, `referer`, `language`,
+												`useragent`, `login_attempts`, `login_time`, `userkey`, `mode`
+										FROM `$Ponline` WHERE userkey="%s"', $_SESSION['user']['userkey']);
 		return $this->onlineData = $this->objSQL->getLine($query);
 	}
 

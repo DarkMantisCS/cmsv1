@@ -273,7 +273,7 @@ class user extends coreClass{
 
 		if(isset($_SESSION['user']['userkey'])) {
 			$this->objSQL->updateRow('online', $update, array('`userkey` = "%s"', $_SESSION['user']['userkey']));
-			$result = (is_number(mysql_affected_rows()) ? true : false);
+			$result = (mysql_affected_rows() ? true : false);
 		}
 
 		unset($update);
