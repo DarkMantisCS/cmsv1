@@ -715,7 +715,7 @@ class user extends coreClass{
 	 * @since   1.0.0
 	 * @author	Jesus
 	 *
-	 * @param 	mixed	$uid	UserID
+	 * @param 	int 	$uid 	UserID
 	 */
     public function reSetSessions($uid){
         if($uid == $this->grab('id')){
@@ -727,6 +727,109 @@ class user extends coreClass{
         }
     }
 
+	/**
+	 * Toggles the active flag on the user account
+	 *
+	 * @version 1.0
+	 * @since   1.0.0
+	 * @author	xLink
+	 *
+	 * @param 	int 	$uid 	UserID
+	 * @param 	bool	$state	true to activate the user,
+	 * 							false to deactivate the user,
+	 * 							null to toggle it
+	 *
+	 * @return 	bool
+	 */
+	public function toggleActivation($uid, $state=null){
+		//if nothing was given, grab the current state
+		if(is_null($state)){
+			$state = $this->getUserInfo($uid, 'active');
+		}
+
+		//switch these around, if true we want to activate
+		if($state===true || $state == 1){ $state = 0; }
+		//false should deactivate
+		if($state===false || $state == 0){ $state = 1; }
+
+		switch($state){
+			// deactivate the account
+			case 1:
+				$active = array('active' => '0');
+				sendEMail($this->userData['email'], 'E_LOGIN_ATTEMPTS', array(
+					'username' => $this->userData['username'],
+					'url' => $this->config('global', 'rootUrl').'login.php?action=active&un='.$this->userData['id'].'&check='.$this->userData['usercode']
+				));
+			break;
+
+			// activate the account
+			case 0:
+				$active = array('active' => '1');
+			break;
+
+			default:
+				return false;
+			break;
+		}
+
+		//update the user row
+		$this->objUser->updateUserSettings($uid, $active);
+
+		//and hook here
+		$this->objPlugins->hook('CMSUser_active', $active);
+
+		return true;
+	}
+
+	/**
+	 * Toggles the ban flag on the user account
+	 *
+	 * @version 1.0
+	 * @since   1.0.0
+	 * @author	xLink
+	 *
+	 * @param 	int 	$uid 	UserID
+	 * @param 	bool	$state	true to ban the user,
+	 * 							false to unban the user,
+	 * 							null to toggle it
+	 *
+	 * @return 	bool
+	 */
+	public function toggleBan($uid, $state=null){
+		//if nothing was given, grab the current state
+		if(is_null($state)){
+			$state = $this->getUserInfo($uid, 'ban');
+		}
+
+		//switch these around, if true we want to ban em
+		if($state===true || $state == 1){ $state = 0; }
+		//false should deactivate
+		if($state===false || $state == 0){ $state = 1; }
+
+		switch($state){
+			// unban the account
+			case 1:
+				$ban = array('ban' => '0');
+			break;
+
+			// ban the account
+			case 0:
+				$ban = array('ban' => '1');
+			break;
+
+			default:
+				return false;
+			break;
+		}
+
+		//update the user row
+		$this->objUser->updateUserSettings($uid, $ban);
+
+		//and hook here
+		$this->objPlugins->hook('CMSUser_ban', $ban);
+
+		return true;
+	}
 
 	public function profile() {
 		return 'Guest';

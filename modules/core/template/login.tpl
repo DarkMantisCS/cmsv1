@@ -2,7 +2,7 @@
 <fieldset class="block grid_6 center">
 
 	<!-- BEGIN form_error -->
-	<div class="boxred padding">{L_ERROR}</div>
+	<div class="{form_error.CLASS} padding">{form_error.ERROR}</div>
 	<div class="clear">&nbsp;</div>
 	<!-- END form_error -->
 

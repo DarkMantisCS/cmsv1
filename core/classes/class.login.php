@@ -13,10 +13,14 @@ if(!defined('INDEX_CHECK')){die('Error: Cannot access directly.');}
  */
 class login extends coreClass{
 
+	public function setError($error){
+		$_SESSION['login']['error'] = $error;
+		$this->objPage->redirect('/'.root().'login.php', 0);
+	}
+
+
 	public function onlineData(){
-		if(isset($this->onlineData)){
-			return $this->onlineData;
-		}
+		if(isset($this->onlineData)){ return $this->onlineData; }
 
 		$query = $this->objSQL->prepare('SELECT `id`, `uid`, `username`, `ip_address`, `timestamp`, `location`, `referer`, `language`,
 												`useragent`, `login_attempts`, `login_time`, `userkey`, `mode`
@@ -24,14 +28,11 @@ class login extends coreClass{
 		return $this->onlineData = $this->objSQL->getLine($query);
 	}
 
-
-
-	//setup checks for various data
 	public function attemptsCheck($dontUpdate=false){
 		if($this->onlineData['login_time'] >= time()){
 			return false;
 
-		}elseif($this->onlineData['login_attempts'] > $this->config('site', 'max_login_tries')){
+		}elseif($this->onlineData['login_attempts'] > $this->config('login', 'max_login_tries')){
 			if($this->onlineData['login_time'] == '0'){
 				$this->objSQL->updateRow('online', array(
 					'login_time' 		=> $this->objTime->mod_time(time(), 0, 15),
@@ -43,13 +44,10 @@ class login extends coreClass{
 
 		if($dontUpdate){ return true; }
 
-		if($this->userData['login_attempts'] >= $this->config('site', 'max_login_tries')){
-			if($this->userData['login_attempts'] == $this->config('site', 'max_login_tries')){
-				$this->objUser->updateUserSettings($this->userData['id'], array('active' => '0'));
-				sendEMail($this->userData['email'], 'E_LOGIN_ATTEMPTS', array(
-					'username' => $this->userData['username'],
-					'url' => $this->config('global', 'rootUrl').'login.php?action=active&un='.$this->userData['id'].'&check='.$this->userData['usercode']
-				));
+		if($this->userData['login_attempts'] >= $this->config('login', 'max_login_tries')){
+			if($this->userData['login_attempts'] == $this->config('login', 'max_login_tries')){
+				//deactivate the users account
+				$this->objUser->toggleActivation($this->userData['id'], false);
 			}
 			return false;
 		}
@@ -123,19 +121,19 @@ class login extends coreClass{
 		$username = doArgs('username', null, $_POST);
 		$password = doArgs('password', null, $_POST);
 		if(is_empty($username) || is_empty($password)){
-			$this->setError('Username or password is empty');
+			$this->doError('0x02', $ajax);
 			return false;
 		}
 
 		//check login attempts
 		if(!$this->attemptsCheck(true)){
-			$this->error('0x03', $ajax);
+			$this->doError('0x03', $ajax);
 		}
 
 		//grab user info
 		$this->userData = $this->objUser->getUserInfo($username);
 			if(!$this->userData){
-				$this->setError('User dosent exist');
+				$this->doError('0x02', $ajax);
 				return false;
 			}
 
@@ -146,22 +144,23 @@ class login extends coreClass{
 
 		//no need to run these if we are in acp mode
         if($acpCheck === FALSE){
-        	if(!$this->whiteListCheck()){	$this->error('0x04', $ajax); }
-        	if(!$this->activeCheck()){		$this->error('0x05', $ajax); }
-        	if(!$this->banCheck()){			$this->error('0x06', $ajax); }
+        	if(!$this->whiteListCheck()){	$this->doError('0x04', $ajax); }
+        	if(!$this->activeCheck()){		$this->doError('0x05', $ajax); }
+        	if(!$this->banCheck()){			$this->doError('0x06', $ajax); }
         }
 
-		if(!$this->attemptsCheck()){   		$this->error('0x03', $ajax); }
+		if(!$this->attemptsCheck()){   		$this->doError('0x03', $ajax); }
 
+		//make sure the password is valid
 		if(!$this->objUser->checkPasswd($password, $this->userData['password'])){
-			$this->error('0x07', $ajax);
+			$this->doError('0x07', $ajax);
 		}
 
 		//if this is aan acp check
 		if($acpCheck){
 			//verify the pin
 			if(is_empty($this->userData['pin']) || !$this->verifyPin()){
-				$this->error('0x10', $ajax);
+				$this->doError('0x10', $ajax);
 			}
 
 			//update attempts to 0
@@ -179,11 +178,8 @@ class login extends coreClass{
 			$_SESSION['acp']['adminTimeout'] = time();
 
 			//redirect em straight to the acp panel if not ajax'd else get JS to do it
-			if(!$ajax){
-				$this->objPage->redirect('/'.root().'admin/', 0);
-			}else{
-				die('dcne');
-			}
+			if($ajax){ die('dcne'); }
+			$this->objPage->redirect('/'.root().'admin/', 0);
 			return;
 		}
 
@@ -194,7 +190,10 @@ class login extends coreClass{
 		$this->objPlugins->hook('CMSLogin_onSuccess', $this->userData);
 
 		$this->objSQL->updateRow('online',
-			array('uid' => $this->userData['id'], 'username' => $this->userData['username']),
+			array(
+				'uid' => $this->userData['id'],
+				'username' => $this->userData['username']
+			),
 			array('userkey = "%s"', $_SESSION['user']['userkey']),
 			'Online System: '.$this->userData['username'].' Logged in'
 		);
@@ -223,11 +222,8 @@ class login extends coreClass{
 		}
 
 		//redirect em straight to the index if not ajax'd else get JS to do it
-    	if(!$ajax){
-	    	$this->objPage->redirect(doArgs('HTTP_REFERER', '/'.root().'index.php', $_SERVER), 0);
-    	}else{
-    		die('done');
-    	}
+    	if($ajax){ die('done'); }
+		$this->objPage->redirect(doArgs('referer', '/'.root().'index.php', $_SESSION['login']), 0);
 	}
 
 	/**
@@ -423,7 +419,31 @@ class login extends coreClass{
 			die($L_ERROR);
 		}else{
 			$_SESSION['login']['error'] = $L_ERROR;
-			$objPage->redirect('/'.root().'login.php');
+			$this->objPage->redirect('/'.root().'login.php', 0);
+		}
+	}
+
+	public function logout($check){
+		if(!is_empty($check) && $check == $this->objUser->grab('usercode')){
+
+			$this->objUser->updateUserSettings($this->objUser->grab('id'), array('autologin'=>'0'));
+			$this->objSQL->deleteRow('online', 'userkey = "'.$_SESSION['user']['userkey'].'"');
+			unset($_SESSION['user']);
+
+			if(isset($_COOKIE['login'])){
+				setCookie('login', '', $this->objTime->mod_time(time(), 0, 0, ((24*365*10)*1000)*1000, 'MINUS'));
+				unset($_COOKIE['login']);
+			}
+
+			session_destroy();
+			if(isset($_COOKIE[session_name()])){
+				setCookie(session_name(), '', time()-42000);
+			}
+
+			$this->objPage->redirect(doArgs('HTTP_REFERER', '/'.root().'index.php', $_SERVER), 0);
+		}else{
+			$this->objPage->redirect('/'.root().'index.php', 0, '5');
+			msgDie('FAIL', 'You\'ve Unsuccessfully attempted to logout.<br />Please use the correct procedures.');
 		}
 	}
 

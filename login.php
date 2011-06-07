@@ -21,15 +21,15 @@ switch($mode){
 			$objPage->redirect('/'.root().'index.php');
 		}
 
+		$_SESSION['login']['referer'] = $_SERVER['HTTP_REFERER'];
+
 	    $objTPL->set_filenames(array(
 	    	'body' => 'modules/core/template/login.tpl'
 	    ));
 
 	    if(!empty($_SESSION['login']['error'])){
-	    	$L_ERROR = $_SESSION['login']['error'];
+			$objTPL->assign_block_vars('form_error', array('ERROR'=>$_SESSION['login']['error']));
 	    	$_SESSION['login']['error'] = '';
-
-			$objTPL->assign_block_vars('form_error', array());
 	    }
 
 	    //we do want let them auto login? acpCheck auto disables it
@@ -43,7 +43,6 @@ switch($mode){
 		$hash = md5(time().'userkey');
     	$_SESSION['login']['cs_hash'] = $hash;
 
-    	$good = array('0x08');
 	    $userValue = ($acpCheck ? $objUser->grab('username') : '');
         $submit = ($acpCheck ? '' : 'loginChecker();return false;');
 
@@ -52,10 +51,10 @@ switch($mode){
 			'FORM_END'			=> $objForm->inputbox('hash', 'hidden', $hash) . $objForm->finish(),
 
 			'L_USERNAME' 		=> langVar('L_USERNAME'),
-			'F_USERNAME'		=> $objForm->inputbox('username', 'text', $userValue, array('class'=>'username', 'br'=>true, 'disabled'=>$acpCheck)),
+			'F_USERNAME'		=> $objForm->inputbox('username', 'text', $userValue, array('class'=>'username', 'br'=>true, 'disabled'=>$acpCheck, 'required'=>(!$acpCheck))),
 
 			'L_PASSWORD' 		=> langVar('L_PASSWORD'),
-			'F_PASSWORD'		=> $objForm->inputbox('password', 'password', '', array('class'=>'password', 'br'=>true)),
+			'F_PASSWORD'		=> $objForm->inputbox('password', 'password', '', array('class'=>'password', 'br'=>true, 'required'=>(!$acpCheck))),
 
 			'L_PIN'				=> langVar('L_PIN'),
 			'L_PIN_DESC'		=> langVar('L_PIN_DESC'),
@@ -64,8 +63,6 @@ switch($mode){
 
 			'L_REMBER_ME'		=> langVar('L_REMBER_ME'),
 			'F_REMBER_ME'		=> $objForm->select('remember', array('0'=>'No Thanks', '1'=>'Forever'), array('selected'=>0)),
-
-	        'L_ERROR'           => $L_ERROR,
 
 	  		'F_SUBMIT'			=> $objForm->button('submit', 'Login'),
 		));

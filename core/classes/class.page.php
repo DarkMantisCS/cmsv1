@@ -224,12 +224,12 @@ class page extends coreClass{
 	 */
 	public function redirect($location=null, $time=0, $mode=0){
 		switch($mode) {
-			case GET:
+			case 1:
 				$url = doArgs('redirect', $location, $_GET);
 			break;
 
-			case REFFERER:
-				$url = doArgs('HTTP_REFERER', $location, $_SERVER);
+			case 2:
+				$url = $this->config('global', 'referer');
 			break;
 
 			case 0:
