@@ -360,6 +360,12 @@ class page extends coreClass{
 	//
 	//--Load JS
 	//
+		//load in the root vars, we do this first so we can use em in the JS files etc
+		$js .=
+			'<script>'.
+			'var cmsROOT = "'.root().'"; var THEME_ROOT = "'.root().page::$THEME_ROOT.'";'.
+			'</script>'.$nl;
+
 		//files first
 		$jsFiles[] = '/'.root().'scripts/framework-min.js';
 		$jsFiles[] = '/'.root().'scripts/extras-min.js';
@@ -368,7 +374,7 @@ class page extends coreClass{
 
 		//if the template has an extras.js add it
 		if(file_exists(page::$THEME_ROOT . 'extras.js')){
-			$jsFiles[] = '/'.root().'themes/'. page::$THEME .'/extras.js';
+			$jsFiles[] = '/'.root().'themes/'. Page::$THEME .'/extras.js';
 		}
 
         //only add the user js file if theyre logged in

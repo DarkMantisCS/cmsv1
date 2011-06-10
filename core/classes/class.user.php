@@ -15,7 +15,7 @@ class user extends coreClass{
 
 	//some static vars, these save function calls
 	static $IS_ONLINE = false;
-	static $IS_ADMIN = true, $IS_MOD = false, $IS_USER = false;
+	static $IS_ADMIN = false, $IS_MOD = false, $IS_USER = false;
 
 	/**
 	 * Sets the current user to online
@@ -485,7 +485,6 @@ class user extends coreClass{
 	 * @author	xLink
 	 */
 	public function tracker(){
-		global $config;
 
 		$update = false; $rmCookie = false;
 		$action = null; $logout = false;
@@ -494,7 +493,7 @@ class user extends coreClass{
 		if(User::$IS_ONLINE){
 			//make sure they still have a key
 			$action = 'check user key, and reset if needed';
-			if(is_empty(doArgs('userkey', null, $config['global']['user']))){
+			if(is_empty(doArgs('userkey', null, $this->config('global', 'user')))){
 				$this->newKey(); //give em one if they havent
 			}
 
@@ -511,7 +510,7 @@ class user extends coreClass{
 				//you should be logged in now, so redirect
 				}else{
 					$action = 'redirecting upon successful login';
-					$this->objPage->redirect($config['global']['fullUrl'], 0);
+					$this->objPage->redirect($this->config('global', 'fullUrl'), 0);
 					exit;
 				}
 			}else{
@@ -539,13 +538,12 @@ class user extends coreClass{
 
 						//make sure the user dosent have guest identification if hes logged in
 						if(User::$IS_ONLINE && $online['username'] == 'Guest'){
-	                        $this->objSQL->deleteRow('online', 'userkey = "'.$this->grab('userkey').'"');
+	                        $this->objSQL->deleteRow('online', array('userkey = "%s"', $this->grab('userkey')));
 	                        $this->newOnlineSession(false);
 						}
 
 						//now thats sorted, update
 						$this->updateLocation();
-
 					break;
 
 					//we have been ordered to terminate >:}
@@ -575,7 +573,7 @@ class user extends coreClass{
 	                    $action = 'update user info';
 	                    //so we want to grab a new set of sessions
 						if(User::$IS_ONLINE){
-	                    	#$this->objLogin->setSessions($objUser->grab('id'));
+	                    	$this->setSessions($objUser->grab('id'));
 						}
 
 	                    //and notify the user telling them, this notification wont be persistant though
@@ -600,7 +598,7 @@ class user extends coreClass{
                 $this->objSQL->deleteRow('online', array('userkey = "%s"', $objUser->grab('userkey')));
 
 				//and log em out properly
-				#$objLogin->logout($objUser->grab('usercode'));
+				$this->objLogin->logout($objUser->grab('usercode'));
 
 				//remove their cookie so auto login dosent kick in
 				$rmCookie = true;
@@ -616,7 +614,7 @@ class user extends coreClass{
 		}
 
 		//unset the admin auth after 20 mins of no acp activity
-		if(IS_ADMIN && isset($_SESSION['acp']['adminTimeout'])){
+		if(User::$IS_ADMIN && isset($_SESSION['acp']['adminTimeout'])){
 			if(time() >= $this->objTime->mod_time($_SESSION['acp']['adminTimeout'], 0, 20)){
 				unset($_SESSION['acp']);
 			}

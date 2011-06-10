@@ -47,8 +47,12 @@ class Module extends coreClass {
 		}
 
 		$exAction   = explode('/', $this->modConf['action']);
-		$this->modConf['filename'] = ($_GET['__action']!='' && $_GET['__extra']!='' ? $this->objSQL->escape($exAction[count($exAction)-1].$this->modConf['extra']) : '');
-		$this->modConf['ext'] = ((substr_count($this->modConf['filename'], '.') > 0) ? (substr($this->modConf['filename'], strrpos($this->modConf['filename'], '.') + 1)) : NULL);
+		$this->modConf['filename'] = (!is_empty($this->modConf['action']) && !is_empty($this->modConf['extra'])
+											? $this->objSQL->escape($exAction[count($exAction)-1].$this->modConf['extra'])
+											: '');
+		$this->modConf['ext'] = ((substr_count($this->modConf['filename'], '.') > 0)
+									? (substr($this->modConf['filename'], strrpos($this->modConf['filename'], '.') + 1))
+									: NULL);
 
 
 		//specify some deafult actions

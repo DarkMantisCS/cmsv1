@@ -67,8 +67,6 @@ class login extends coreClass{
 		return (isset($_POST['pin']) && md5($_POST['pin'].$this->config('db', 'ckeauth')) == $this->userData['pin'] ? true : false);
 	}
 
-	//whitelist data
-
 
 	function updateLoginAttempts(){
 		if(!is_empty($this->userData)){

@@ -1,7 +1,7 @@
 // Setup the dynamic Grid Sys
 var ADAPT_CONFIG = {
   // Where is your CSS?
-  path: 'http://localhost/cms/images/',
+  path: '/'+cmsROOT+'images/',
 
   /* false = Only run once, when page first loads.
    * true = Change on window resize and page tilt.
