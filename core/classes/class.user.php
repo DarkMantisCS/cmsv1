@@ -42,6 +42,31 @@ class user extends coreClass{
 	 */
 	public function is_online(){ return self::$IS_ONLINE; }
 
+
+	/**
+	 * Defines global CMS permissions
+	 *
+	 * @version	1.0
+	 * @since   1.0.0
+	 * @author 	xLink
+	 */
+	public function initPerms(){
+		self::$IS_USER = self::$IS_ONLINE;
+
+		$userLevel = $this->getUserInfo($this->grab('id'), 'userLevel');
+		switch($userLevel){
+			case ADMIN:
+				if(doArgs('adminAuth', false, $_SESSION['acp'])){
+					self::$IS_ADMIN = true;
+				}
+			case MOD:
+				self::$IS_MOD = true;
+			break;
+
+			default: break;
+		}
+	}
+
 	/**
 	 * Inserts a users info into the database.
 	 *
@@ -835,7 +860,51 @@ class user extends coreClass{
 
 
 	public function checkPermissions() {
-		return true;
+		//make sure we have a group to check against
+		if(is_empty($group) || $group == 0 || $group == GUEST){
+			return true;
+		}
+
+        //check to see whether we have a user id to check against..
+        if(is_empty($uid)){
+			return false;
+        }
+
+		//grab the
+		$userlevel = GUEST;
+		if(User::$IS_ONLINE){
+            $userlevel = $this->getUserInfo($uid, 'userlevel');
+		}
+
+        //see which group we are checking for
+        switch((int)$group){
+			case GUEST:
+				if(!User::$IS_ONLINE){ return true; }
+			break;
+
+			case USER:
+				if(User::$IS_ONLINE){ return true; }
+			break;
+
+			case MOD:
+				if($userlevel == MOD){ return true; }
+			break;
+
+			case ADMIN:
+				if($userlevel == ADMIN && doArgs('adminAuth', false, $_SESSION['acp'])){ return true; }
+			break;
+
+			//no idea what they tried to check for, so we'll return something unexpected too
+			default: return -1; break;
+        }
+
+		//well yano, admin is an admin, all knowing, seeing admin :D
+		if($userlevel == ADMIN){
+			return true;
+		}
+
+		//apparently the checks didnt return true, so we'll go for false
+		return false;
 	}
 
 }

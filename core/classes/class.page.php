@@ -14,7 +14,7 @@ if(!defined('INDEX_CHECK')){die('Error: Cannot access directly.');}
 class page extends coreClass{
 
 	static $THEME = '', $THEME_ROOT = '';
-	private $jsFiles = array(), $cssFiles = array(), $jsCode  = array(), $cssCode = array();
+	private $jsFiles = array(), $cssFiles = array(), $jsCode = array(), $cssCode = array();
 	private $tplVars = array(), $pageCrumbs = array();
 
 	/**

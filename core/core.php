@@ -284,6 +284,7 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 
 	$guestCheck = ($config['global']['user']['id'] == GUEST ? true : false);
 	$objUser->setIsOnline($guestCheck ? false : true);
+	$objUser->initPerms();
 
 	$theme = !User::$IS_ONLINE || !$objCore->config('site', 'template_override')
 				? $objCore->config('site', 'theme')
