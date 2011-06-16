@@ -13,12 +13,30 @@ if(!defined('INDEX_CHECK')){die('Error: Cannot access directly.');}
  */
 class login extends coreClass{
 
+	/**
+	 * Set an error and redirect back to the login page
+	 *
+	 * @version	1.0
+	 * @since 	1.0.0
+	 * @author 	xLink
+	 *
+	 * @param 	string $error
+	 */
 	public function setError($error){
 		$_SESSION['login']['error'] = $error;
 		$this->objPage->redirect('/'.root().'login.php', 0);
 	}
 
 
+	/**
+	 * Returns the online row for the current user logged in or not.
+	 *
+	 * @version	1.0
+	 * @since 	1.0.0
+	 * @author 	Jesus
+	 *
+	 * @return 	array
+	 */
 	public function onlineData(){
 		if(isset($this->onlineData)){ return $this->onlineData; }
 
@@ -28,6 +46,17 @@ class login extends coreClass{
 		return $this->onlineData = $this->objSQL->getLine($query);
 	}
 
+	/**
+	 * Checks whether the user has exceeded the login quota
+	 *
+	 * @version	1.0
+	 * @since 	1.0.0
+	 * @author 	Jesus
+	 *
+	 * @param 	bool	$dontUpdate
+	 *
+	 * @return 	bool
+	 */
 	public function attemptsCheck($dontUpdate=false){
 		if($this->onlineData['login_time'] >= time()){
 			return false;
@@ -55,20 +84,53 @@ class login extends coreClass{
 		return true;
 	}
 
+	/**
+	 * Returns the active flag of the account
+	 *
+	 * @version	1.0
+	 * @since 	1.0.0
+	 * @author 	Jesus
+	 *
+	 * @return 	bool
+	 */
 	public function activeCheck(){
 		return (bool)$this->userData['active'];
 	}
 
+	/**
+	 * Returns the ban flag of the account
+	 *
+	 * @version	1.0
+	 * @since 	1.0.0
+	 * @author 	Jesus
+	 *
+	 * @return 	bool
+	 */
 	public function banCheck(){
 		return (bool)$this->userData['banned'];
 	}
 
+	/**
+	 * Verifies the PIN with what’s in the user row
+	 *
+	 * @version	1.0
+	 * @since 	1.0.0
+	 * @author 	Jesus
+	 *
+	 * @return 	bool
+	 */
 	public function verifyPin(){
 		return (isset($_POST['pin']) && md5($_POST['pin'].$this->config('db', 'ckeauth')) == $this->userData['pin'] ? true : false);
 	}
 
-
-	function updateLoginAttempts(){
+	/**
+	 * Updates the login attempts for the user
+	 *
+	 * @version	1.0
+	 * @since 	1.0.0
+	 * @author 	Jesus
+	 */
+	public function updateLoginAttempts(){
 		if(!is_empty($this->userData)){
 			$this->objUser->updateUserSettings($this->userData['id'], array('login_attempts' => $this->userData['login_attempts']+1));
 		}
@@ -77,9 +139,16 @@ class login extends coreClass{
 		$this->objSQL->query($query, 'Online System: '.USER::getIP().' failed to login to '.$this->userData['username'].'\'s account.');
 	}
 
-	function updateACPAttempts(){
-		global $objSQL, $objTime;
-
+	/**
+	 * Updates the login attempts for Admin panel
+	 *
+	 * @version	1.0
+	 * @since 	1.0.0
+	 * @author 	Jesus
+	 *
+	 * @return 	int
+	 */
+	public function updateACPAttempts(){
         if(!is_empty($this->userData)){
 			$this->objSQL->updateRow('users', array('pin_attempts' => $this->userData['pin_attempts']+1), "id = '".$this->userData['id']."'", 0,
             'Online System: '.$this->userData['username'].' attemped to authenticate as administrator.');
@@ -95,7 +164,7 @@ class login extends coreClass{
                 'Online System: Logged '.$this->userData['username'].' out as a security measure. 3 Wrong Authentication attempts for ACP.');
 
             $this->objSQL->updateRow('online', array(
-                'login_time' 		=> $objTime->mod_time(time(), 0, 15),
+                'login_time' 		=> $this->objTime->mod_time(time(), 0, 15),
                 'login_attempts'	=> '0'
             ), 'userkey = "'.$_SESSION['user']['userkey'].'"');
 
@@ -105,9 +174,17 @@ class login extends coreClass{
         return ($this->userData['pin_attempts']+1);
 	}
 
-
-
-	//login & out, & remember me
+	/**
+	 * Makes sure all information is valid and logs the user in if needed
+	 *
+	 * @version	1.5
+	 * @since 	1.0.0
+	 * @author 	xLink
+	 *
+	 * @param 	bool $ajax
+	 *
+	 * @return 	bool
+	 */
 	public function doLogin($ajax=false){
 		//make sure we have a post
 		if(!HTTP_POST){
@@ -123,7 +200,7 @@ class login extends coreClass{
 			return false;
 		}
 
-		//check login attempts
+		//make sure the user hasnt already exceeded their login attempt quota
 		if(!$this->attemptsCheck(true)){
 			$this->doError('0x03', $ajax);
 		}
@@ -147,6 +224,7 @@ class login extends coreClass{
         	if(!$this->banCheck()){			$this->doError('0x06', $ajax); }
         }
 
+		//update their quota
 		if(!$this->attemptsCheck()){   		$this->doError('0x03', $ajax); }
 
 		//make sure the password is valid
@@ -343,6 +421,13 @@ class login extends coreClass{
 		return true;
 	}
 
+	/**
+	 * Turns error codes in to human readable errors
+	 *
+	 * @version	1.0
+	 * @since 	1.0.0
+	 * @author 	Jesus
+	 */
 	function doError($errCode, $ajax = false){
         $acpCheck = isset($_SESSION['acp']['doAdminCheck']) ? true : false;
 
@@ -421,6 +506,15 @@ class login extends coreClass{
 		}
 	}
 
+	/**
+	 * Logs the user out
+	 *
+	 * @version	1.0
+	 * @since 	1.0.0
+	 * @author 	Jesus
+	 *
+	 * @param 	string $check	The user code to verify
+	 */
 	public function logout($check){
 		if(!is_empty($check) && $check == $this->objUser->grab('usercode')){
 
