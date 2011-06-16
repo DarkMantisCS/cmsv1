@@ -53,7 +53,7 @@
 	</header>
 
 	<nav id="breadcrumbs">
-		<span><strong>{L_BREADCRUMB}</strong>: </span><span class="path">{BREADCRUMB}</span>
+		<span><strong>{L_BREADCRUMB}</strong> </span><span class="path">{BREADCRUMB}</span>
 	</nav>
 
 	<section id="content" class="grid_12">

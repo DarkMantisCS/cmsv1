@@ -51,9 +51,9 @@ class user extends coreClass{
 	 * @author 	xLink
 	 */
 	public function initPerms(){
-		self::$IS_USER = $this->checkPermissions($this->grab('id'), USER);
-		self::$IS_ADMIN = $this->checkPermissions($this->grab('id'), ADMIN);
-		self::$IS_MOD = $this->checkPermissions($this->grab('id'), MOD);
+		self::$IS_USER 		= $this->checkPermissions($this->grab('id'), USER);
+		self::$IS_ADMIN 	= $this->checkPermissions($this->grab('id'), ADMIN);
+		self::$IS_MOD 		= $this->checkPermissions($this->grab('id'), MOD);
 	}
 
 	/**
@@ -65,7 +65,7 @@ class user extends coreClass{
 	 *
 	 * @param	array $userInfo   Array of the users details.
 	 *
-	 * @return  int               ID of the user that was inserted.
+	 * @return  bool
 	 */
 	public function register(array $userInfo){
 		//Check all the args are good and valid
@@ -120,7 +120,7 @@ class user extends coreClass{
 		$this->objGroups->joinGroup($insert_id, $userInfo['primary_group'], 0);
 
 		unset($userInfo, $insert_id);
-		return $insert_id;
+		return true;
     }
 
 	/**
@@ -176,8 +176,8 @@ class user extends coreClass{
 											'WHERE '.$user.' '.
 											'LIMIT 1;', $uid);
 			$info = $this->objSQL->getLine($query);
-			if(!$info){
-				$this->setError('User query failed. SQL: '. mysql_error()."\n".$query);
+			if(!count($info)){
+				$this->setError('User query failed. SQL: '.mysql_error()."\n<br />".$query);
 				return false;
 			}
 
@@ -201,7 +201,7 @@ class user extends coreClass{
 				return $this->userInfo[$uid][$field];
 			}else{
 				//if what they wanted isnt there, no point returning the whole thing, might confuse a few people
-				$this->setError('Requested field dosen\'t exist.');
+				$this->setError('Requested field dosen\'t exist. ('.$field.')');
 				return false;
 			}
 		}

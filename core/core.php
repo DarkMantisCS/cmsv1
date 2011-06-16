@@ -143,7 +143,7 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 	}
 	unset($classes);
 
-	$objCore->objSQL->connect(true, (LOCALHOST && cmsDEBUG ? true : false), false);
+	$objCore->objSQL->connect(true, (LOCALHOST && cmsDEBUG ? true : false), is_file(cmsROOT.'cache/ALLOW_LOGGING'));
 	unset($config['db']);
 //
 //--Cache Vars init
@@ -359,3 +359,4 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 		hmsgDie('FAIL', 'Fatal Error - Cron cannot be found.');
 	}
 
+#echo dump($_SESSION['acp']);

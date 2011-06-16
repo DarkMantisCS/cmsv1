@@ -7,24 +7,24 @@ define('cmsDEBUG', 1);
 include_once('core/core.php');
 
 /**
- * grab the 'request_string' from the url itself
- * at this point php wont auto parse the _GET vars
- * cause of the rewrite actions..in the url, so we
- * have to do it :D
+ * Essentially with the rewrite action, _GET variables are ignored
+ * this reverses that, so anything passed to the page via _GET is
+ * usable as normal
  */
-
-//explode the url
 $url = explode('?', $_SERVER['REQUEST_URI']);
 if(isset($url[1])){
+    //backup the _GET array parse_str overwrites the $_GET array
+    $GET = $_GET;
     //parse the _GET vars from the url
-    parse_str($url[1], $_nGET);
-    //and merge the new GET with the old one :D
-    $_GET = array_merge($_nGET, $_GET);
+    parse_str($url[1], $_GET);
+    //and merge away :D
+    $_GET = array_merge($GET, $_GET);
 }
 
-$module = isset($_GET['__module'])                              ? $_GET['__module'] : '';
-$action = isset($_GET['__action']) && !empty($_GET['__action']) ? $_GET['__action'] : '';
-$extra  = isset($_GET['__extra'])                               ? $_GET['__extra']  : '';
+$mode   = doArgs('__mode', 	 null, $_GET);
+$module = doArgs('__module', null, $_GET);
+$action = doArgs('__action', null, $_GET);
+$extra  = doArgs('__extra', null, $_GET);
 
 if(!preg_match('#install($|/)#i', $action)){
     if(!empty($module) && $objCore->loadModule($module, true)){

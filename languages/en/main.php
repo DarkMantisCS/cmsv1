@@ -5,12 +5,12 @@
 if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 if(!isset($LANG_LOAD)){ die('Error: Cannot access directly.'); }
 
-//breadcumbs
+//breadcrumbs
 $_lang['B_MAINSITE']		= 'Site Home';
 $_lang['B_REGISTER']		= 'Register';
 
 //header lang vars
-$_lang['L_MAINTENANCE'] 	= 'This website is in maintainence mode.';
+$_lang['L_MAINTENANCE'] 	= 'This website is in maintenance mode.';
 $_lang['L_BREADCRUMB']  	= 'You are here:';
 
 $_lang['L_LOGIN'] 			= 'Login';
@@ -29,7 +29,7 @@ $_lang['MSG_FAIL']              = 'Failed';
 $_lang['MSG_ERR']               = 'Error';
 $_lang['MSG_OK']                = 'Successful';
 
-
+$_lang['MSG_NO_PIN']			= 'Your PIN is not set. You cannot login to the admin control panel at this time.<br />Please make sure you set one in your User Control Panel.';
 $_lang['L_CAPTCHA_DESC']		= 'This question is for testing whether you are a human visitor and to prevent automated spam submissions.';
 
 $_lang['L_REG_SUCCESS_EMAIL'] 	= 'Your registration has been successful. The administrator has asked that you validate your email before being allowed to login. Please do this now, if you have no email in your inbox, check your junk & spam boxes. Otherwise wait a while and then contact the administrator.';
@@ -38,12 +38,12 @@ $_lang['L_REG_SUCCESS_NO_EMAIL']= 'Your registration has been successful. You ma
 //forms
 $_lang['L_USERNAME']			= 'Username';
 $_lang['L_PIN']					= 'PIN';
-$_lang['L_PIN_DESC']			= 'This is the PIN you ser yoursef in the user control panel. If you havent set a PIN as yet, please do so.';
+$_lang['L_PIN_DESC']			= 'This is the PIN you set yourself in the user control panel. If you haven\'t set a PIN as yet, please do so.';
 $_lang['L_PASSWORD']			= 'Password';
 $_lang['L_REMBER_ME']			= 'Remember Me';
 
 //log stuff
-$_lang['LOG_CREATED_USER'] 		= 'We\'ve done it! <a href="%s">%s</a>, he..he lives! Giovanni will be impressed at the power this creature weilds...';
+$_lang['LOG_CREATED_USER'] 		= 'We\'ve done it! <a href="%s">%s</a>, he..he lives! Giovanni will be impressed at the power this creature wields...';
 
 //Time Stuff
 $_lang['DATETIME']['Sunday'] 	= 'Sunday';
@@ -87,7 +87,7 @@ $_lang['DATETIME']['Dec'] 		= 'Dec';
 $_lang['DATETIME']['am'] 		= 'am';
 $_lang['DATETIME']['pm'] 		= 'pm';
 
-// Time Class Langauge Vars
+// Time Class Language Vars
 $_lang['TIMEAGO_SUFFIXAGO'] 	= ' ago';
 $_lang['TIMEAGO_SUFFIXFROMNOW'] = 'from now';
 $_lang['TIMEAGO_SECONDS'] 		= 'less than a minute';
@@ -103,5 +103,3 @@ $_lang['TIMEAGO_MONTH'] 		= 'about a month';
 $_lang['TIMEAGO_MONTHS'] 		= '%d months';
 $_lang['TIMEAGO_YEAR'] 			= 'about a year';
 $_lang['TIMEAGO_YEARS'] 		= '%d years';
-
-?>

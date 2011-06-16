@@ -14,14 +14,15 @@ if(!$objPage->config('site', 'allow_register')){
     hmsgDie('INFO', 'Error: An administrator has disabled Registrations.');
 }
 
+//setup breadcrumbs
+$objPage->addPagecrumb(array(
+	array('url' => '/'.root().'register.php',  'name' => langVar('B_REGISTER')),
+));
+
 if(!HTTP_POST){
 	//add our JS in here for the register
 	$objPage->addJSFile('/'.root().'scripts/register.js');
 
-	//setup breadcrumbs
-	$objPage->addPagecrumb(array(
-		array('url' => '/'.root().'register.php',  'name' => langVar('B_REGISTER')),
-	));
 
 	$objPage->showHeader();
 
@@ -35,12 +36,12 @@ if(!HTTP_POST){
 		}
 
 	echo $objForm->outputForm(array(
-			'FORM_START' => $objForm->start('register', array('method'=>'POST', 'action'=>'?')),
-			'FORM_END'	 => $objForm->finish(),
+			'FORM_START' 	=> $objForm->start('register', array('method'=>'POST', 'action'=>'?')),
+			'FORM_END'	 	=> $objForm->finish(),
 
-			'FORM_TITLE' => 'User Registration',
-			'FORM_SUBMIT'=> $objForm->button('submit', 'Submit'),
-			'FORM_RESET' => $objForm->button('reset', 'Reset'),
+			'FORM_TITLE' 	=> 'User Registration',
+			'FORM_SUBMIT'	=> $objForm->button('submit', 'Submit'),
+			'FORM_RESET' 	=> $objForm->button('reset', 'Reset'),
 		),
 		array(
 			'field' => array(
@@ -128,7 +129,7 @@ if(!HTTP_POST){
 		msgDie('FAIL', $objUser->error());
 	}
 
-	if($objPage->config('site', 'emailOnRegister')){
+	if($objPage->config('site', 'register_verification')){
 		sendEmail($userInfo['email'], 'register_successful');
 		$msg = langVar('L_REG_SUCCESS_EMAIL');
 	}else{
@@ -137,6 +138,6 @@ if(!HTTP_POST){
 
 	unset($_SESSION['register'], $_SESSION['error'], $query, $userInfo, $_error);
 	$objCache->generate_statistics_cache();
-	msgDie('INFO', $msg);
+	hmsgDie('INFO', $msg);
 }
 ?>

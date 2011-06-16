@@ -10,7 +10,7 @@ include_once('core/core.php');
 
 //set some vars
 $mode = doArgs('action', 'index', $_GET);
-$acpCheck = isset($_SESSION['acp']['doAdminCheck']) ? true : false;
+$acpCheck = doArgs('doAdminCheck', false, $_SESSION['acp']);
 
 $objPage->setTitle('Login');
 
@@ -21,14 +21,24 @@ switch($mode){
 			$objPage->redirect('/'.root().'index.php');
 		}
 
+		//grab the referer so we can redirect them later
 		$_SESSION['login']['referer'] = $_SERVER['HTTP_REFERER'];
 
 	    $objTPL->set_filenames(array(
 	    	'body' => 'modules/core/template/login.tpl'
 	    ));
 
+		//if we are going to the acp
+		if($acpCheck){
+			//make sure they have a PIN set first...
+			if(is_empty($objUser->grab('pin'))){
+				$_SESSION['login']['error'] = langVar('MSG_NO_PIN');
+			}
+
+		}
+
 	    if(!empty($_SESSION['login']['error'])){
-			$objTPL->assign_block_vars('form_error', array('ERROR'=>$_SESSION['login']['error']));
+			$objTPL->assign_block_vars('form_error', array('ERROR'=>$_SESSION['login']['error'], 'CLASS'=>doArgs('class', 'boxred', $_SESSION['login'])));
 	    	$_SESSION['login']['error'] = '';
 	    }
 

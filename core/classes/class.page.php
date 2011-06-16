@@ -694,7 +694,7 @@ class page extends coreClass{
 		//this needs to show up if we have admin perms and dont have the acp auth atm
 		if($this->objUser->grab('userlevel') == ADMIN){
 			$vars += array(
-				'ACP_LINK' => '- <a href="/'.root().'admin/">'.langVar('L_ACP').'</a>',
+				'ACP_LINK' 	=> '- <a href="/'.root().'admin/">'.langVar('L_ACP').'</a>',
 			);
 		}
 
