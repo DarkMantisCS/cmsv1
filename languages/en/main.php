@@ -15,6 +15,8 @@ $_lang['L_BREADCRUMB']  	= 'You are here:';
 
 $_lang['L_LOGIN'] 			= 'Login';
 $_lang['L_LOGOUT'] 			= 'Logout';
+$_lang['L_UCP'] 			= 'User Control Panel';
+$_lang['L_ACP'] 			= 'Admin Control Panel';
 
 //footer lang vars
 $_lang['L_PAGE_GEN']        = '[ Queries: <b>%s</b> | SQL Time: <b>%s</b> | Page Generation Time: <b>%s</b> | Memory Usage: <b>%s</b> | Next Cron Update: <b>%s</b> ]';

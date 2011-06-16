@@ -23,10 +23,8 @@ class page extends coreClass{
 	 * @version	1.0
 	 * @since   1.0.0
 	 * @author  xLink
-	 *
-	 * @param   array  $args
 	 */
-	public function __construct($args=array()){
+	public function __construct(){
 		$this->setVars(array(
 			'simpleTpl' => false,
 			'pageTitle'	=> '',
@@ -674,21 +672,31 @@ class page extends coreClass{
 
 		//define array of vars that we want
 		$vars = array(
-			'ROOT'				=> root(),
-			'THEME_ROOT'		=> root(). self::$THEME_ROOT,
+			'ROOT'			=> root(),
+			'THEME_ROOT'	=> root(). self::$THEME_ROOT,
 
-			'SITE_NAME'			=> $this->config('site', 'site_name'),
+			'SITE_NAME'		=> $this->config('site', 'site_name'),
 
-			'ROW_COLOR1'		=> $vars['row_color1'],
-			'ROW_COLOR2'		=> $vars['row_color2'],
+			'ROW_COLOR1'	=> $vars['row_color1'],
+			'ROW_COLOR2'	=> $vars['row_color2'],
 
-			'USERNAME'			=> $this->objUser->grab('username'),
+			'USERNAME'		=> $this->objUser->grab('username'),
 
-			'U_LOGIN'			=> '/'.root().'login.php',
-			'U_LOGOUT'			=> '/'.root().'login.php?action=logout&check='.$this->objUser->grab('usercode'),
-			'L_LOGIN'			=> langVar('L_LOGIN'),
-			'L_LOGOUT'			=> langVar('L_LOGOUT'),
+			'U_UCP'			=> '/'.root().'user/',
+			'U_LOGIN'		=> '/'.root().'login.php',
+			'U_LOGOUT'		=> '/'.root().'login.php?action=logout&check='.$this->objUser->grab('usercode'),
+
+			'L_UCP'			=> langVar('L_UCP'),
+			'L_LOGIN'		=> langVar('L_LOGIN'),
+			'L_LOGOUT'		=> langVar('L_LOGOUT'),
 		);
+
+		//this needs to show up if we have admin perms and dont have the acp auth atm
+		if($this->objUser->grab('userlevel') == ADMIN){
+			$vars += array(
+				'ACP_LINK' => '- <a href="/'.root().'admin/">'.langVar('L_ACP').'</a>',
+			);
+		}
 
 		//hook onto the array to allow others to add to this list
 		$this->objPlugins->hook('CMSCore_global_tplvars', $vars);
@@ -705,7 +713,7 @@ class page extends coreClass{
 		}
 
 		//if user is logged in, and is admin
-		if(User::$IS_ONLINE && $this->objUser->checkPermissions($this->objUser->grab('id'), ADMIN)){
+		if(User::$IS_ONLINE && User::$IS_ADMIN){
 			$this->objTPL->assign_block_vars('IS_ADMIN', array());
 		}
 

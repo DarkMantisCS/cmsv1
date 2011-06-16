@@ -35,9 +35,7 @@
 				<!-- BEGIN IS_ONLINE -->
 				 - <a href="{U_UCP}">{L_UCP}</a>
 				<!-- END IS_ONLINE -->
-				<!-- BEGIN IS_ADMIN -->
-				 - <a href="{U_ACP}">{L_ACP}</a>
-				<!-- END IS_ADMIN -->
+				{ACP_LINK}
 			</div>
 			<div class="float-right">
 				<!-- BEGIN IS_ONLINE -->
