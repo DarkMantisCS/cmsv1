@@ -162,8 +162,11 @@ class user extends coreClass{
 			return false;
 		}
 
+		//if we are being called from the login class, then give em the password and pin, everywhere else can stuff it
+		$bypassCheck = ($backCalls[1]['function'] == 'doLogin' && $backCalls[1]['class'] == 'login');
+
 		//we need to populate the query
-		if(!isset($this->userInfo[$uid])){
+		if(!isset($this->userInfo[$uid]) || $bypassCheck){
 			//figure out if they gave us a username or a user id
 			$user = (is_number($uid) ? 'u.id = "%s" ' : 'u.username = "%s" ');
 
@@ -181,10 +184,8 @@ class user extends coreClass{
 				return false;
 			}
 
-			//if wer being called from the login class, then give em the password and pin, everywhere else can stuff it
-			if($backCalls[1]['function'] == 'doLogin' && $backCalls[1]['class'] == 'login'){
-				return $info;
-			}
+
+			if($bypassCheck){ return $info; }
 
 			//these are blacklisted, no point putting em out
 			unset($info['password'], $info['pin'], $info['uid']);
@@ -192,6 +193,7 @@ class user extends coreClass{
 			//this is so the cache will work even if they give you a username first time and uid the second
 			$this->userInfo[$info['username']] = $info;
 			$this->userInfo[$info['id']] = $info;
+
 		}
 
 
@@ -587,14 +589,14 @@ class user extends coreClass{
 	                    $action = 'update user info';
 	                    //so we want to grab a new set of sessions
 						if(User::$IS_ONLINE){
-	                    	$this->setSessions($objUser->grab('id'));
+	                    	$this->setSessions($this->grab('id'));
 						}
 
 	                    //and notify the user telling them, this notification wont be persistant though
 	                    #$objUser->notify('Your information has been updated. Changes around the site reflect these changes.', 'Profile Update');
 
 	                    //update the online table so we dont have any problems
-	                    $this->objSQL->updateRow('online', array('mode'=>'active'), array('userkey = "%s"', $objUser->grab('userkey')));
+	                    $this->objSQL->updateRow('online', array('mode'=>'active'), array('userkey = "%s"', $this->grab('userkey')));
 
 					break;
 				}
@@ -609,10 +611,10 @@ class user extends coreClass{
 
 			if($logout && User::$IS_ONLINE){
 				//remove their online row
-                $this->objSQL->deleteRow('online', array('userkey = "%s"', $objUser->grab('userkey')));
+                $this->objSQL->deleteRow('online', array('userkey = "%s"', $this->grab('userkey')));
 
 				//and log em out properly
-				$this->objLogin->logout($objUser->grab('usercode'));
+				$this->objLogin->logout($this->grab('usercode'));
 
 				//remove their cookie so auto login dosent kick in
 				$rmCookie = true;

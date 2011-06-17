@@ -186,6 +186,8 @@ class login extends coreClass{
 	 * @return 	bool
 	 */
 	public function doLogin($ajax=false){
+        $acpCheck = isset($_SESSION['acp']['doAdminCheck']) ? true : false;
+
 		//make sure we have a post
 		if(!HTTP_POST){
 			$this->setError('No POST action detected');
@@ -501,8 +503,7 @@ class login extends coreClass{
 		if($ajax){
 			die($L_ERROR);
 		}else{
-			$_SESSION['login']['error'] = $L_ERROR;
-			$this->objPage->redirect('/'.root().'login.php', 0);
+			$this->setError($L_ERROR);
 		}
 	}
 
@@ -537,6 +538,34 @@ class login extends coreClass{
 			$this->objPage->redirect('/'.root().'index.php', 0, '5');
 			msgDie('FAIL', 'You\'ve Unsuccessfully attempted to logout.<br />Please use the correct procedures.');
 		}
+	}
+
+
+	/**
+	 * Checks the whitelist associated with an account
+	 *
+	 * @version	1.0
+	 * @since 	1.0.0
+	 * @author 	Jesus
+	 *
+	 * @return 	bool
+	 */
+	public function whiteListCheck(){
+		if(!$this->userData['whitelist'] || is_empty($this->userData['whitelisted_ips'])){
+			return true;
+		}
+
+		$whitelist 	= unserialize($this->userData['whitelisted_ips']);
+		$wrong 		= 0;
+		$ip 		= USER::getIP();
+
+		foreach($whitelist as $range){
+			if(checkIPRange($range, $ip)){
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 }

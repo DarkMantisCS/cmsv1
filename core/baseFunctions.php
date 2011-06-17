@@ -271,6 +271,7 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 		if(strpos($useragent, 'Nitro') !== false){ 			return 'Nintendo DS'; }
 		if(strpos($useragent, 'Opera') !== false){ 			return 'Opera'; }
 		if(strpos($useragent, 'iPhone') !== false){ 		return 'iPhone'; }
+		if(strpos($useragent, 'Android') !== false){ 		return 'Android'; }
 		if(strpos($useragent, 'Chrome') !== false){ 		return 'Chrome'; }
 		if(strpos($useragent, 'Netscape') !== false){ 		return 'Netscape'; }
 		if(strpos($useragent, 'OmniWeb') !== false){ 		return 'OmniWeb'; }
@@ -661,7 +662,7 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
      * Borrowed function from phpbb3 to get contents of a file on remote server
      *
      * @version 1.0
-     * @since 1.0.0
+     * @since 	1.0.0
      */
     function get_remote_file($host, $directory, $filename, &$errstr, &$errno, $port=80, $timeout=10) {
 		if($fsock = @fsockopen($host, $port, $errno, $errstr, $timeout)) {
@@ -698,6 +699,68 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 		}
 
 		return $file_info;
+	}
+
+
+    /**
+     * Verifies an IP against a IPv4 range.
+     * 		127.0.0.1 would verify against 127.0.0.* but not *.*.*.2
+     *
+     * @version 1.0
+     * @since 	1.0.0
+     * @author	Jesus
+     *
+     * @param 	string 	$range	Range to check the IP against
+     * @param	string	$ip		IP to check
+     *
+     * @return	bool
+     */
+	function checkIPRange($range, $ip){
+		$range = explode('.', $range);
+		$ip = explode('.', $ip);
+
+		// Make sure the IP is valid under IPv4
+		if(count($range) > 4 || count($ip) > 4){
+			return false;
+		}
+
+		if($range[0] == '*' || $ip[0] == '*'){
+			return false;
+		}
+
+		for($i=0;$i<4;$i++){
+			// Make sure the SubMask is valid under IPv4
+			if(strlen($range[$i]) > 3 || strlen($ip[$i]) > 3){
+				return false;
+			}
+
+			// Make sure the SubMask is valid
+			if(!is_number($range[$i]) && $range[$i] != '*'){
+				return false;
+			}
+
+			// Make sure the SubMask is valid
+			if(!is_number($ip[$i]) && $ip[$i] != '*'){
+				return false;
+			}
+
+			// Make sure the SubMask is valid
+			if(is_number($range[$i]) && strlen($range[$i]) > 255){
+				return false;
+			}
+
+			// Make sure the SubMask is valid
+			if(is_number($ip[$i]) && strlen($ip[$i]) > 255){
+				return false;
+			}
+
+			// Final Check
+			if($range[$i] != $ip[$i] && $range[$i] != '*'){
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 //

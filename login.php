@@ -13,10 +13,10 @@ $mode = doArgs('action', 'index', $_GET);
 $acpCheck = doArgs('doAdminCheck', false, $_SESSION['acp']);
 
 $objPage->setTitle('Login');
-
 switch($mode){
     default:
     case 'index':
+	    $hidden = null;
 		if(User::$IS_ONLINE && !$acpCheck){
 			$objPage->redirect('/'.root().'index.php');
 		}
@@ -31,10 +31,9 @@ switch($mode){
 		//if we are going to the acp
 		if($acpCheck){
 			//make sure they have a PIN set first...
-			if(is_empty($objUser->grab('pin'))){
+			if(is_empty($objSQL->getValue('users', 'pin', array('id = "%s"', $objUser->grab('id'))))){
 				$_SESSION['login']['error'] = langVar('MSG_NO_PIN');
 			}
-
 		}
 
 	    if(!empty($_SESSION['login']['error'])){
@@ -56,9 +55,13 @@ switch($mode){
 	    $userValue = ($acpCheck ? $objUser->grab('username') : '');
         $submit = ($acpCheck ? '' : 'loginChecker();return false;');
 
+		if($acpCheck){
+			$hidden .= $objForm->inputbox('username', 'hidden', $userValue);
+		}
+
     	$objTPL->assign_vars(array(
 			'FORM_START' 		=> $objForm->start('login', array('method' => 'POST', 'action' => '/'.root().'login.php?action=check')),
-			'FORM_END'			=> $objForm->inputbox('hash', 'hidden', $hash) . $objForm->finish(),
+			'FORM_END'			=> $hidden . $objForm->inputbox('hash', 'hidden', $hash) . $objForm->finish(),
 
 			'L_USERNAME' 		=> langVar('L_USERNAME'),
 			'F_USERNAME'		=> $objForm->inputbox('username', 'text', $userValue, array('class'=>'username', 'br'=>true, 'disabled'=>$acpCheck, 'required'=>(!$acpCheck))),
