@@ -56,18 +56,18 @@ class mysql extends coreClass implements SQLBase{
 		$this->logging = $logging;
 		$this->persistent = $persistent;
 
-		if($this->persistent == true) {
+		if($this->persistent === true) {
 			$this->link_id = @mysql_pconnect($this->db['host'], $this->db['username'], $this->db['password']);
 			if($this->link_id == false) {
 				$this->persistent = false;
 			}
 		}
 
-		if($this->persistent == false) {
-			$this->link_id = @mysql_connect($this->db['host'], $this->db['username'], $this->db['password']);
+		if($this->persistent === false) {
+			$this->link_id = mysql_connect($this->db['host'], $this->db['username'], $this->db['password']);
 		}
 
-		if($this->failed){
+		if(!$this->link_id){
 			$this->errorMsg = 'Cannot connect to the database - verify username and password.';
 			return false;
 		}

@@ -218,7 +218,14 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 			return 0;
 		}
 
-		printf('debug ['.($info === null ? null : $info).']<strong>%s</strong>> [ <strong>%d-%d</strong> ] Exec: <strong>%.4f</strong> Memory: <strong>%s</strong>'.$nl, $file, $start_code_line, $code_line, (time() + microtime() - $start_time), formatBytes(memory_get_usage()));
+		printf('debug [%s]<strong>%s</strong>> [ <strong>%d-%d</strong> ] Exec: <strong>%.4f</strong> Memory: <strong>%s</strong>'.$nl,
+			($info === null ? null : $info),
+			$file,
+			$start_code_line,
+			$code_line,
+			(time() + microtime() - $start_time),
+			formatBytes(memory_get_usage())
+		);
 		$start_time = time() + microtime();
 		$start_code_line = $code_line;
 	}
@@ -228,6 +235,8 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
  * when this file is included and functional
  */
 	function error_handler($errno, $errstr, $errfile, $errline) {
+		if(!(error_reporting() & $errno)){ return; }
+
 		if($errno == 8){ return; }
 		$exception = new error_Exception($errstr, $errno, $errfile, $errline);
 		exception_handler($exception);

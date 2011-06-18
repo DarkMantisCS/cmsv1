@@ -28,7 +28,7 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 	define('cmsROOT', (isset($cmsROOT) && !empty($cmsROOT) ? $cmsROOT : null)); unset($cmsROOT);
 
 	//so we can turn errors off if we are not running locally
-	define('LOCALHOST', (isset($_SERVER['HTTP_HOST']) && $_SERVER['HTTP_HOST']=='localhost') ? true : false);
+	define('LOCALHOST', (isset($_SERVER['HTTP_HOST']) && ($_SERVER['HTTP_HOST']=='localhost' || $_SERVER['HTTP_HOST']=='127.0.0.1')) ? true : false);
 
 	//define the error reporting level, dont want PHP errors on the live version now do we :)
 	error_reporting(LOCALHOST ? E_ALL & ~E_NOTICE | E_STRICT : 0);
@@ -141,15 +141,20 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 		msgDie('FAIL', sprintf($errorTPL, 'Fatal Error',
 			'Cannot load CMS Classes, make sure file structure is intact and $cmsROOT is defined properly if applicable.'));
 	}
-	unset($classes);
+	unset($classes, $doneSetup);
 
-	$objCore->objSQL->connect(true, (LOCALHOST && cmsDEBUG ? true : false), is_file(cmsROOT.'cache/ALLOW_LOGGING'));
-	unset($config['db']);
+	//connect to mysql
+	$connectTest = $objCore->objSQL->connect(true, (LOCALHOST && cmsDEBUG ? true : false), is_file(cmsROOT.'cache/ALLOW_LOGGING'));
+	if(!$connectTest){
+        msgDie('FAIL', sprintf($errorTPL, 'Fatal Error', 'Connecting to mySQL failed. '.$objSQL->errorMsg.
+            (cmsDEBUG ? '<br />'.mysql_error() : NULL)));
+	}
+	unset($config['db'], $connectTest);
 //
 //--Cache Vars init
 //
 	//if it didnt, check to see which of the files didnt get added and try to get them manually
-	if(!isset($config_db)){ 			newCache('config', $config_db); }
+	if(!isset($config_db)){ newCache('config', $config_db); }
 
 	//We have no configuration DB, and the one generated was NULL...
 	if(!isset($config_db) || $config_db===NULL || empty($config_db)){
@@ -216,7 +221,8 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
     if(is_dir($langDir.$language.'/') || is_readable($langDir.$language.'/main.php')){
     	translateFile($langDir.$language.'/main.php');
     }else{
-        msgDie('FAIL', sprintf($errorTPL, 'Fatal Error', 'Cannot open '.($langDir.$language.'/main.php').' for include.'));
+        msgDie('FAIL', sprintf($errorTPL, 'Fatal Error',
+			'Cannot open '.($langDir.$language.'/main.php').' for include.'));
 	}
 
 //
