@@ -62,7 +62,7 @@ if(defined('NO_DB')){ return; }
             $errstr = NULL; $errno = 0; $showNew = true;
             $updateAvalible = false;
 
-            $info = @get_remote_file('www.cybershade.org', '/', 'checkxml.php?action=cmsVersion', $errstr, $errno);
+            $info = get_remote_file('www.cybershade.org', '/', 'checkxml.php?action=cmsVersion', $errstr, $errno, 80, 5);
             if(is_empty($info)){ $showNew = false; }
             if($showNew){
                 //try and parse the xml back from the server

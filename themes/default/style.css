@@ -234,11 +234,6 @@ a.selectBox:hover{
 	text-decoration: none;
 }
 
-.corners{
-	-webkit-border-radius: 5px;
-	-moz-border-radius: 5px;
-	border-radius: 5px;
-}
 .shadow{
 	-webkit-box-shadow: 0 7px 15px #000000;
 	-moz-box-shadow: 0 7px 15px #000000;

@@ -665,7 +665,13 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
      * @since 	1.0.0
      */
     function get_remote_file($host, $directory, $filename, &$errstr, &$errno, $port=80, $timeout=10) {
-		if($fsock = @fsockopen($host, $port, $errno, $errstr, $timeout)) {
+    	global $objCore;
+    	if($objCore->config('site', 'internetCalls') == 0){
+    		return false;
+    	}
+
+		$fsock = fsockopen($host, $port, $errno, $errstr, $timeout);
+		if($fsock) {
 			@fputs($fsock, 'GET '.$directory.'/'.$filename.' HTTP/1.1'."\r\n");
 			@fputs($fsock, 'HOST: '.$host."\r\n");
 			@fputs($fsock, 'Connection: close'."\r\n\r\n");
@@ -673,11 +679,11 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 			$file_info = '';
 			$get_info = false;
 
-			while(!@feof($fsock)) {
+			while(!feof($fsock)) {
 				if($get_info) {
-					$file_info .= @fread($fsock, 1024);
+					$file_info .= fread($fsock, 1024);
 				} else {
-					$line = @fgets($fsock, 1024);
+					$line = fgets($fsock, 1024);
 					if($line == "\r\n") {
 						$get_info = true;
 					} else {
@@ -688,7 +694,7 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 					}
 				}
 			}
-			@fclose($fsock);
+			fclose($fsock);
 		} else {
 			if($errstr) {
 				return false;

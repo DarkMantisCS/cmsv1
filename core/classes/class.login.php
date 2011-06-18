@@ -236,9 +236,13 @@ class login extends coreClass{
 
 		//if this is aan acp check
 		if($acpCheck){
-			//verify the pin
-			if(is_empty($this->userData['pin']) || !$this->verifyPin()){
+			//verify the pin exists
+			if(is_empty($this->userData['pin'])){
 				$this->doError('0x10', $ajax);
+			}
+			//now check its valid
+			if(!$this->verifyPin()){
+				$this->doError('0x11', $ajax);
 			}
 
 			//update attempts to 0
@@ -433,66 +437,62 @@ class login extends coreClass{
 	function doError($errCode, $ajax = false){
         $acpCheck = isset($_SESSION['acp']['doAdminCheck']) ? true : false;
 
-		// Resolve the error code
-		if(strlen($errCode) > 1 && substr($errCode, -1)){
-			$errCode = (int) substr($errCode, -1);
-		}else{
-			$L_ERROR = 0;
-		}
-
 		switch($errCode){
-			case 0:
-				$L_ERROR = 'I Can\'t seem to find the issue, Please contact a system administrator or <a href="mailto:'. $this->config('site', 'admin_email') .'">Email The Site Admin</a>';
+			default:
+			case '0x0':
+				$L_ERROR = '('.$errCode.') I Can\'t seem to find the issue, Please contact a system administrator or <a href="mailto:'. $this->config('site', 'admin_email') .'">Email The Site Admin</a>';
 			break;
 
-			case 1:
+			case '0x1':
 				$L_ERROR = 'There was a problem with the form submittion. Please try again.';
 				$this->updateLoginAttempts();
 			break;
 
-			case 2:
+			case '0x2':
 				$L_ERROR = 'Your Username or Password combination was incorrect. Please try again.';
 				($acpCheck ? $this->updateACPAttempts() : $this->updateLoginAttempts());
 			break;
 
-			case 3:
+			case '0x3':
 				$L_ERROR = 'You have attempted to login too many times with incorrect credentials. Therefore you have been locked out.';
 			break;
 
-			case 4:
+			case '0x4':
 				$L_ERROR = 'The whitelist check on your account failed. We were unable to log you in.';
 				$this->updateLoginAttempts();
 			break;
 
-			case 5:
+			case '0x5':
 				$L_ERROR = 'Your account is not activated. Please check your emails for the activation Email or Contact an Administrator to get this problem resolved.';
 			break;
 
-			case 6:
+			case '0x6':
 				$L_ERROR = 'Your account is banned. We were unable to log you in.';
 				$this->updateLoginAttempts();
 			break;
 
-			case 7:
+			case '0x7':
 				$L_ERROR = 'Your Username or Password combination was incorrect. Please try again.';
 				($acpCheck ? $this->updateACPAttempts() : $this->updateLoginAttempts());
 			break;
 
-			case 8:
+			case '0x8':
 				$L_ERROR = 'Your account is now active. If your encounter any problems please notify a member of staff.';
 			break;
 
-			case 9:
-				$L_ERROR = 'Sorry we arnt able to verify your PIN at this time.';
+			case '0x9':
+				$L_ERROR = 'Sorry we cannot verify your PIN at this time.';
 				($acpCheck ? $this->updateACPAttempts() : $this->updateLoginAttempts());
             break;
 
-			case 10:
+			case '0x10':
 				$L_ERROR = 'You need to set your PIN before your able to login to the admin control panel.';
+				($acpCheck ? $this->updateACPAttempts() : $this->updateLoginAttempts());
 			break;
 
-			default:
-				$L_ERROR = 'fail';
+			case '0x11':
+				$L_ERROR = 'The PIN you provided was invalid.';
+				($acpCheck ? $this->updateACPAttempts() : $this->updateLoginAttempts());
 			break;
 		}
 

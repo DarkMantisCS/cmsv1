@@ -63,13 +63,13 @@
 			<!-- BEGIN left_menu -->
 			<div class="sideMenu">
 				<header class="title"><h3>{left_menu.TITLE}</h3></header>
-				<section class="content">{left_menu.CONTENT}</section>
+				<section class="content corners-br">{left_menu.CONTENT}</section>
 			</div>
 			<!-- END left_menu -->
 			<!-- BEGIN right_menu -->
 			<div class="sideMenu">
 				<header class="title"><h3>{right_menu.TITLE}</h3></header>
-				<section class="content">{right_menu.CONTENT}</section>
+				<section class="content corners-br">{right_menu.CONTENT}</section>
 			</div>
 			<!-- END right_menu -->
 	<!-- BEGIN menu -->
