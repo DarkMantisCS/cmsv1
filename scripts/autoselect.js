@@ -18,9 +18,9 @@
 (function($) {
 $.fn.autoselect = function($o) {
 	var _o = $.extend({
-		default: '',
-		clearUnmatched: true,
-		staticList: true
+		'autoSelect': '',
+		'clearUnmatched': true,
+		'staticList': true
 	}, $o);
 
 	return this.each(function() {
@@ -39,25 +39,17 @@ $.fn.autoselect = function($o) {
 		})
 		.bind('autocompleteopen focus keypress', function($e) {
 			switch ($e.type) {
-				case !$(this).autocomplete('widget').is(':visible') &&
-					  _o.staticList &&
-				'focus':
-					$(this).val(_o.default)
-						   .autocomplete('search', _o.default);
+				case !$(this).autocomplete('widget').is(':visible') && _o.staticList && 'focus':
+					$(this).val(_o.autoSelect).autocomplete('search', _o.autoSelect);
 					_o.staticList = false;
 					break;
 
 				case 'autocompleteopen':
 					var _menu = $(this).data('autocomplete').menu;
-					_menu.activate(
-						$.Event({ type: 'mouseenter' }),
-						_menu.element.children().first()
-					);
+					_menu.activate($.Event({ type: 'mouseenter' }), _menu.element.children().first());
 					break;
 
-				case !$(this).autocomplete('widget').is(':visible') &&
-					  $e.which === 13 &&
-				'keypress':
+				case !$(this).autocomplete('widget').is(':visible') && $e.which === 13 && 'keypress':
 					if (_o.clearUnmatched) {
 						$(this).val('');
 					}
