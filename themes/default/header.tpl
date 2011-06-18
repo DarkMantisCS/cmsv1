@@ -15,7 +15,7 @@
 <!-- END no_menu -->
 
 <!--[if lte IE 8]>
-<script src="http://localhost/cms/scripts/html5.js" type="text/javascript"></script>
+<script src="/{ROOT}scripts/html5.js" type="text/javascript"></script>
 <![endif]-->
 </head>
 
@@ -44,7 +44,7 @@
 				<!-- BEGIN NOT_LOGGED_IN -->
 				<a href="{U_LOGIN}">{L_LOGIN}</a> || 
 				<!-- END NOT_LOGGED_IN -->
-				<div id="clock" class="iblock">{TIME}</div>
+				<span id="clock">{TIME}</span>
 			</div>
 		</div>
 		<div id="logo">&nbsp;</div>

@@ -16,6 +16,7 @@ class page extends coreClass{
 	static $THEME = '', $THEME_ROOT = '';
 	private $jsFiles = array(), $cssFiles = array(), $jsCode = array(), $cssCode = array();
 	private $tplVars = array(), $pageCrumbs = array();
+	private $acpThemeROOT = 'core/coreThemes/acp/';
 
 	/**
 	 * Init page class, and set some
@@ -312,8 +313,13 @@ class page extends coreClass{
 
 		if($this->header['completed']){ return; }
 
+		$themeRoot = self::$THEME_ROOT;
+		if($this->getVar('acpMode')==1){
+			$themeRoot = $this->acpThemeROOT;
+		}
+
 		//figure out which version of the header we wanna use
-		$header = ($simple==true ? 'simple_header.tpl' : 'header.tpl');
+		$header =  $themeRoot . ($simple==true ? 'simple_header.tpl' : 'header.tpl');
 
 		//set simpleTpl, so anything that needs to output layout other than these funcs know what to expect
 		$tplVar = ($this->getVar('simpleTpl')===true ? true : ($simple===true ? true : false) );
@@ -321,7 +327,7 @@ class page extends coreClass{
 
 		//set the page header template file
 		$this->objTPL->set_filenames(array(
-			'tpl_header' => self::$THEME_ROOT . $header
+			'tpl_header' => $header
 		));
 
 		//set some vars we need later on
@@ -367,6 +373,11 @@ class page extends coreClass{
 		//files first
 		$jsFiles[] = '/'.root().'scripts/framework-min.js';
 		$jsFiles[] = '/'.root().'scripts/extras-min.js';
+
+		if($this->getVar('acpMode')==1){
+			$jsFiles[] = '/'.root().'scripts/acp-min.js';
+		}
+
 		//load in the anything thats been passed in via addJSFiles()
 		$jsFiles = array_merge($jsFiles, $this->jsFiles);
 
@@ -376,7 +387,7 @@ class page extends coreClass{
 		}
 
         //only add the user js file if theyre logged in
-        if(user::$IS_ONLINE){
+        if(User::$IS_ONLINE){
             $jsFiles[] = '/'.root().'user.php';
         }
 
@@ -560,13 +571,19 @@ class page extends coreClass{
 			echo '<div id="notificationGrabber" style="display:none;"></div>';
 		}
 
+		//find which root we want
+		$themeRoot = self::$THEME_ROOT;
+		if($this->getVar('acpMode')==1){
+			$themeRoot = $this->acpThemeROOT;
+		}
+
 		//figure out which version of the footer we wanna use
 		if($this->getVar('simpleTpl')){ $simple = true; }
-		$footer = ($simple==true ? 'simple_footer.tpl' : 'footer.tpl');
+		$footer = $themeRoot . ($simple==true ? 'simple_footer.tpl' : 'footer.tpl');
 
 		//set the page footer template file
 		$this->objTPL->set_filenames(array(
-			'tpl_footer' => self::$THEME_ROOT . $footer
+			'tpl_footer' => $footer
 		));
 
 	//
@@ -673,7 +690,8 @@ class page extends coreClass{
 		//define array of vars that we want
 		$vars = array(
 			'ROOT'			=> root(),
-			'THEME_ROOT'	=> root(). self::$THEME_ROOT,
+			'THEME_ROOT'	=> root(). Page::$THEME_ROOT,
+			'ACP_TROOT'		=> root(). $this->acpThemeROOT,
 
 			'SITE_NAME'		=> $this->config('site', 'site_name'),
 
@@ -681,6 +699,8 @@ class page extends coreClass{
 			'ROW_COLOR2'	=> $vars['row_color2'],
 
 			'USERNAME'		=> $this->objUser->grab('username'),
+			'TIME'			=> $this->objTime->mk_time(time(), 'l jS F H:i:s a'),
+
 
 			'U_UCP'			=> '/'.root().'user/',
 			'U_LOGIN'		=> '/'.root().'login.php',

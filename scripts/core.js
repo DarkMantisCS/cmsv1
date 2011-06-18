@@ -22,7 +22,14 @@ var ADAPT_CONFIG = {
   ]
 };
 
+function updateClock(){
+    $('#clock').html(date('l jS F H:i:s a', time()));
+	setTimeout(function (){ updateClock(); }, 1000);
+}
+
 
 $(document).ready(function(){
 	$("select").selectBox();
+
+	if($('#clock')){ updateClock(); }
 });
