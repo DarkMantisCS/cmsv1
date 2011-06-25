@@ -293,8 +293,8 @@ class coreClass{
 	 * @param	string 	$mode		class, admin, mod, user
      */
     function autoLoadModule($module, &$returnVar, $mode='class'){
-        $objModule = new Module($this->objCore);
-        if(!$objModule->isModule($module)){
+        $objModule = new Module($this);
+        if(!$objModule->moduleExists($module)){
             $returnVar = msg('FAIL', 'Error loading module file "'.$module.'"', 'return');
             return;
         }

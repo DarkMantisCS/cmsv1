@@ -134,8 +134,7 @@ class Module extends coreClass {
 		} else {
 			// Else query the database and find it
 			$modules = $this->objSQL->getTable($this->objSQL->prepare('SELECT * FROM `$Pmodules`'));
-				if(!$modules){ return false;
-				}
+				if(!$modules){ return false; }
 
 			foreach($modules as $module) {
 				$this->modules[$module['name']] = $module;
@@ -159,7 +158,6 @@ class Module extends coreClass {
 	public function moduleInstalled($moduleName){
 		$this->getModuleListCache($moduleName);
 
-		// Cissete$this->modules[xists in ca]
 		if(!array_key_exists($moduleName, $this->modules)){
 			return false;
 		}
@@ -183,10 +181,9 @@ class Module extends coreClass {
 	 *
 	 * @return 	bool
 	 */
-	function getModuleData($moduleName){
+	public function getModuleData($moduleName){
 		$this->getModuleListCache($moduleName);
 
-		// Cisset($this->modules[xists in ca] )
 		if(!array_key_exists($moduleName, $this->modules)){
 			return false;
 		}

@@ -972,6 +972,27 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 		return $text.$etc;
     }
 
+	/**
+	 * Generates a random code
+	 *
+	 * @version 2.0
+	 * @since 	0.6.0
+	 *
+	 * @param 	int $maxLength
+	 *
+	 * @return 	string
+	 */
+	function randCode($maxLength=6){
+		$password = NULL;
+		$possible = 'bcdfghjkmnrstvwxyz123456789';
+		$i = 0;
+		while(($i < $maxLength) && (strlen($possible) > 0)){ $i++;
+			$character = substr($possible, mt_rand(0, strlen($possible)-1), 1);
+			$password .= $character;
+		}
+		return $password;
+	}
+
 //
 //-- MSG Functions
 //

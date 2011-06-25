@@ -126,6 +126,9 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 		$classes['objSQL']		= array($file, $config['db']);
 	}
 
+//
+//-- We will load the classes in 2 stages..SQL, Cache, Login and User classes first
+//
 	//if its still unset, default back to mysql
 	if(!isset($classes['objSQL'])){
 		$classes['objSQL']		= array($classDir.'driver.mysql.php', $config['db']);
@@ -134,6 +137,8 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 									'useCache' 	=> $cacheWritable,
 									'cacheDir' 	=> $cachePath
 								));
+	$classes['objLogin'] 		= array($classDir.'class.login.php');
+	$classes['objUser'] 		= array($classDir.'class.user.php');
 
 	//init the sql and cache classes, we need these before we can go any further
 	$doneSetup = $objCore->setup($classes);
@@ -149,7 +154,7 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
         msgDie('FAIL', sprintf($errorTPL, 'Fatal Error', 'Connecting to mySQL failed. '.$objSQL->errorMsg.
             (cmsDEBUG ? '<br />'.mysql_error() : NULL)));
 	}
-	unset($config['db'], $connectTest);
+	unset($config['db']['password'], $connectTest);
 //
 //--Cache Vars init
 //
@@ -226,7 +231,7 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 	}
 
 //
-//--More Classes Setup
+//-- and now load the rest of the classes
 //
 	$classes['objTPL']			= array($classDir.'class.template.php', array(
 									'root' 		=> '.',
@@ -236,10 +241,7 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 
 	$classes['objPage'] 		= array($classDir.'class.page.php');
 	$classes['objPlugins']		= array($classDir.'class.plugins.php');
-	$classes['objUser'] 		= array($classDir.'class.user.php');
 	$classes['objGroups'] 		= array($classDir.'class.groups.php');
-	$classes['objLogin'] 		= array($classDir.'class.login.php');
-
 	$classes['objForm'] 		= array($classDir.'class.form.php');
 	$classes['objTime'] 		= array($classDir.'class.time.php');
 
@@ -288,9 +290,13 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 	//hook the session template, this is the place to add some more if you want
 	$objPlugins->hook('CMSCore_session_tpl', $config['global']);
 
-	$guestCheck = ($config['global']['user']['id'] == GUEST ? true : false);
-	$objUser->setIsOnline($guestCheck ? false : true);
+	$objUser->setIsOnline(!($config['global']['user']['id'] == 0 ? true : false));
 	$objUser->initPerms();
+
+	if(!defined('NO_DB')){
+		//start the tracker, this sets out a few things so we can kill, ban etc
+		$objCore->objUser->tracker();
+	}
 
 	$theme = !User::$IS_ONLINE || !$objCore->config('site', 'template_override')
 				? $objCore->config('site', 'theme')
@@ -350,11 +356,6 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 			hmsgDie('INFO', 'Site has been disabled. '.contentParse("\n".$objCore->config('site', 'disabledMsg')));
 		}
 	}
-
-	if(!defined('NO_DB')){
-		//start the tracker, this sets out a few things so we can kill, ban etc
-		$objUser->tracker();
-	}
 //
 //--Include the CMS's internal CRON
 //
@@ -365,4 +366,3 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 		hmsgDie('FAIL', 'Fatal Error - Cron cannot be found.');
 	}
 
-#echo dump($_SESSION['acp']);

@@ -1,9 +1,8 @@
 <?php
 
-class test extends module{
+class test extends Module{
 
 	function doAction($action){
-	
 	
 	}
 }

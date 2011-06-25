@@ -337,6 +337,7 @@ class mysql extends coreClass implements SQLBase{
 
 		if($log){ $this->recordLog($query, $log); }
 
+		$this->query = $query;
 		$this->results = mysql_query($query, $this->link_id) or $this->recordMessage(mysql_error(), 'WARNING');
 
 		if($this->debug){
@@ -572,7 +573,8 @@ class mysql extends coreClass implements SQLBase{
 	 */
 	public function recordMessage($message, $mode=false) {
 		$this->failed = true;
-		if(!$this->debug) { return; }
+
+
 
 		$a = debug_backtrace();
 		$file = $a[1];
@@ -582,6 +584,9 @@ class mysql extends coreClass implements SQLBase{
 			}
 		}
 
+		if($mode != 'INFO'){ $this->recordError($message, $file['file'].':'.$file['line']); }
+
+		if(!$this->debug) { return; }
 		$message = secureMe($message);
 		$pinpoint = '<br /><div class="content padding"><strong>'.realpath($file['file']).'</strong> @ <strong>'.$file['line'].
 						'</strong> // Affected '.mysql_affected_rows().' rows.. <br /> '.$file['function'].'(<strong>\''.
@@ -633,6 +638,38 @@ class mysql extends coreClass implements SQLBase{
 		$info['ip_address'] 	= User::getIP();
 
 		return $this->insertRow('logs', $info, false);
+	}
+
+
+	/**
+	 * Records a sql error in the database for review
+	 *
+	 * @version	1.0
+	 * @since   1.0.0
+	 * @author  xLink
+	 *
+	 * @param 	string 	$message
+	 * @param 	string 	$fileInfo
+	 *
+	 * @return 	bool
+	 */
+	public function recordError($message, $fileInfo) {
+		if(is_empty($this->query)){ return false; }
+
+		$error = mysql_error();
+		if(is_empty($error)){ return false; }
+
+		$info['uid'] 			= (User::$IS_ONLINE ? $this->objUser->grab('id') : '0');
+		$info['date'] 			= time();
+		$info['query'] 			= $this->query;
+		$info['page'] 			= $this->config('global', 'fullPath');
+
+		$vars = array('get' => $_GET, 'post' => $_POST);
+		$info['vars'] 			= serialize($vars);
+
+		$info['error'] 			= secureMe($error);
+		$info['lineInfo'] 		= secureMe($fileInfo);
+		return $this->insertRow('sqlerrors', $info, false);
 	}
 }
 

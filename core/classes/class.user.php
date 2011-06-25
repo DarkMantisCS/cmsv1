@@ -279,15 +279,15 @@ class user extends coreClass{
 	public function updateLocation(){
 		// generate the array for the db update
 		$update['timestamp'] 	= time();
-		$update['location'] 	= secureMe(doArgs('REQUEST_URI', null, $_SERVER));
-		$update['referer'] 		= secureMe(doArgs('HTTP_REFERER', null, $_SERVER));
+		$update['location'] 	= secureMe(doArgs('REQUEST_URI', 'null', $_SERVER));
+		$update['referer'] 		= secureMe(doArgs('HTTP_REFERER', 'null', $_SERVER));
 
 		//force the location system to ignore js and css files, these like to be the entry in the database which isnt useful
 		if(preg_match('/(scripts|styles|js|css|xml)/sm', $update['location'])) {
-			unset($update['location']);
+			unset($update['location'], $update['referer']);
 		}
 
-		if(isset($_SESSION['user']['userkey'])) {
+		if(doArgs('userkey', false, $_SESSION['user'])) {
 			$this->objSQL->updateRow('online', $update, array('`userkey` = "%s"', $_SESSION['user']['userkey']));
 			$result = (mysql_affected_rows() ? true : false);
 		}
@@ -506,7 +506,7 @@ class user extends coreClass{
 		$action = null; $logout = false;
 
 		//if user is online
-		if(User::$IS_ONLINE){
+		if(self::$IS_ONLINE){
 			//make sure they still have a key
 			$action = 'check user key, and reset if needed';
 			if(is_empty(doArgs('userkey', null, $this->config('global', 'user')))){
@@ -519,15 +519,15 @@ class user extends coreClass{
 			//check for remember me cookie
 			if(!is_empty(doArgs('login', null, $_COOKIE))){
 		 		//try and remember who they are, this sometimes is hard, but we try anyway
-				if($this->objLogin->runRememberMe()){
+				if(!$this->objLogin->runRememberMe()){
 					$action = 'remove remember me cookie';
 					$rmCookie = true;
 
 				//you should be logged in now, so redirect
 				}else{
-					$action = 'redirecting upon successful login';
-					$this->objPage->redirect($this->config('global', 'fullUrl'), 0);
-					exit;
+					$action = 'remember me worked';
+					//force update
+					$update = true;
 				}
 			}else{
 				$online = $this->objLogin->onlineData();
@@ -543,8 +543,11 @@ class user extends coreClass{
 		}
 
 		if($update == true){
-			//grab the online table data
-			$online = $this->objLogin->onlineData();
+
+			if(!isset($online)){
+				//grab the online table data
+				$online = $this->objLogin->onlineData();
+			}
 
 			if(isset($online['mode'])){
 				switch($online['mode']){
@@ -553,7 +556,7 @@ class user extends coreClass{
 						$action = 'update user location';
 
 						//make sure the user dosent have guest identification if hes logged in
-						if(User::$IS_ONLINE && $online['username'] == 'Guest'){
+						if(self::$IS_ONLINE && $online['username'] == 'Guest'){
 	                        $this->objSQL->deleteRow('online', array('userkey = "%s"', $this->grab('userkey')));
 	                        $this->newOnlineSession(false);
 						}
@@ -574,12 +577,12 @@ class user extends coreClass{
 						$action = 'ban user';
 
 						//ban the user account if they are online
-						if(User::$IS_ONLINE){
+						if(self::$IS_ONLINE){
 							$this->banUser($objUser->grab('id'));
 
 						//ban the ip if they are a guest
 						}else{
-							$this->banIP(User::getIP());
+							$this->banIP(self::getIP());
 						}
 
 						$logout = true;
@@ -588,7 +591,7 @@ class user extends coreClass{
 					case 'update':
 	                    $action = 'update user info';
 	                    //so we want to grab a new set of sessions
-						if(User::$IS_ONLINE){
+						if(self::$IS_ONLINE){
 	                    	$this->setSessions($this->grab('id'));
 						}
 
@@ -597,7 +600,6 @@ class user extends coreClass{
 
 	                    //update the online table so we dont have any problems
 	                    $this->objSQL->updateRow('online', array('mode'=>'active'), array('userkey = "%s"', $this->grab('userkey')));
-
 					break;
 				}
 
@@ -609,7 +611,7 @@ class user extends coreClass{
 	            $this->newOnlineSession(false);
 			}
 
-			if($logout && User::$IS_ONLINE){
+			if($logout && self::$IS_ONLINE){
 				//remove their online row
                 $this->objSQL->deleteRow('online', array('userkey = "%s"', $this->grab('userkey')));
 
@@ -625,12 +627,12 @@ class user extends coreClass{
 		//remove the cookie if needed
 		if($rmCookie){
 			$action = 'rm remember me cookie';
-			setcookie('login', '', time()-31536000);
+			set_cookie('login', '', time()-31536000);
 			unset($_COOKIE['login']);
 		}
 
 		//unset the admin auth after 20 mins of no acp activity
-		if(User::$IS_ADMIN && isset($_SESSION['acp']['adminTimeout'])){
+		if(self::$IS_ADMIN && isset($_SESSION['acp']['adminTimeout'])){
 			if(time() >= $this->objTime->mod_time($_SESSION['acp']['adminTimeout'], 0, 20)){
 				unset($_SESSION['acp']);
 			}
@@ -650,7 +652,7 @@ class user extends coreClass{
 		$oldKey = $_SESSION['user']['userkey'];
 
 		//set a new one and update it in the db
-		$_SESSION['user']['userkey'] = md5('userkey'.substr(0, 6, microtime(true)));
+		$_SESSION['user']['userkey'] = md5('userkey'.microtime(true));
 		$this->objSQL->updateRow('online', array('userkey' => $_SESSION['user']['userkey']), array('userkey = "%s"', $oldKey));
 
 		return $_SESSION['user']['userkey'];
@@ -672,9 +674,9 @@ class user extends coreClass{
 		$insert['username']      = $this->grab('username');
 		$insert['ip_address']    = User::getIP();
 		$insert['timestamp']     = time();
-		$insert['location']      = secureMe($this->config('global', 'fullPath'));
-		$insert['referer']       = secureMe($this->config('global', 'referer'));
-		$insert['language']      = secureMe($this->config('site', 'language'));
+		$insert['location']      = secureMe($this->config('global', 'fullPath', 'null'));
+		$insert['referer']       = secureMe($this->config('global', 'referer', 'null'));
+		$insert['language']      = secureMe($this->config('site', 'language', 'en'));
 		$insert['useragent']     = secureMe($this->config('global', 'browser'));
 		$insert['userkey']       = isset($_SESSION['user']['userkey']) ? $_SESSION['user']['userkey'] : $this->newKey();
 
@@ -849,7 +851,6 @@ class user extends coreClass{
 		return 'Guest';
 	}
 
-
 	/**
 	 * Returns permission state for given user and group
 	 *
@@ -877,20 +878,20 @@ class user extends coreClass{
 
 		//grab the user level if possible
 		$userlevel = GUEST;
-		if(User::$IS_ONLINE){
+		if(self::$IS_ONLINE){
 			$userlevel = $this->getUserInfo($uid, 'userlevel');
 		}
 
 		//see which group we are checking for
 		switch($group){
 			case GUEST:
-				if(!User::$IS_ONLINE){
+				if(!self::$IS_ONLINE){
 					return true;
 				}
 			break;
 
 			case USER:
-				if(User::$IS_ONLINE){
+				if(self::$IS_ONLINE){
 					return true;
 				}
 			break;

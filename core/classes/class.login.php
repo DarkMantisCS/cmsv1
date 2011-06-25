@@ -14,21 +14,6 @@ if(!defined('INDEX_CHECK')){die('Error: Cannot access directly.');}
 class login extends coreClass{
 
 	/**
-	 * Set an error and redirect back to the login page
-	 *
-	 * @version	1.0
-	 * @since 	1.0.0
-	 * @author 	xLink
-	 *
-	 * @param 	string $error
-	 */
-	public function setError($error){
-		$_SESSION['login']['error'] = $error;
-		$this->objPage->redirect('/'.root().'login.php', 0);
-	}
-
-
-	/**
 	 * Returns the online row for the current user logged in or not.
 	 *
 	 * @version	1.0
@@ -107,7 +92,7 @@ class login extends coreClass{
 	 * @return 	bool
 	 */
 	public function banCheck(){
-		return (bool)$this->userData['banned'];
+		return !(bool)$this->userData['banned'];
 	}
 
 	/**
@@ -150,7 +135,7 @@ class login extends coreClass{
 	 */
 	public function updateACPAttempts(){
         if(!is_empty($this->userData)){
-			$this->objSQL->updateRow('users', array('pin_attempts' => $this->userData['pin_attempts']+1), "id = '".$this->userData['id']."'", 0,
+			$this->objSQL->updateRow('users', array('pin_attempts' => $this->userData['pin_attempts']+1), "id = '".$this->userData['id']."'",
             'Online System: '.$this->userData['username'].' attemped to authenticate as administrator.');
         }
 
@@ -160,7 +145,7 @@ class login extends coreClass{
             $update['banned'] = '1';
             $update['pin_attempts'] = '0';
 
-			$this->objSQL->updateRow('users', $update, "id = '".$this->userData['id']."'", 0,
+			$this->objSQL->updateRow('users', $update, "id = '".$this->userData['id']."'",
                 'Online System: Logged '.$this->userData['username'].' out as a security measure. 3 Wrong Authentication attempts for ACP.');
 
             $this->objSQL->updateRow('online', array(
@@ -190,7 +175,7 @@ class login extends coreClass{
 
 		//make sure we have a post
 		if(!HTTP_POST){
-			$this->setError('No POST action detected');
+			$this->doError('No POST action detected');
 			return false;
 		}
 
@@ -296,7 +281,8 @@ class login extends coreClass{
 
 				set_cookie('login', serialize($cookieArray), $this->objTime->mod_time(time(), 0, 0, 24*365*10));
 				$cookieArray['uData'] .= ':'.$this->userData['id']; //add the uid into the db
-				$this->objSQL->insertRow('userkeys', $cookieArray, 0,
+
+				$this->objSQL->insertRow('userkeys', $cookieArray,
 					'Online System: RememberMe cookie set for '.$this->userData['username'].'.');
 
 				unset($cookieArray);
@@ -307,6 +293,7 @@ class login extends coreClass{
     	if($ajax){ die('done'); }
 		$this->objPage->redirect(doArgs('referer', '/'.root().'index.php', $_SESSION['login']), 0);
 	}
+
 
 	/**
 	 * Makes sure the cookie is valid
@@ -320,20 +307,20 @@ class login extends coreClass{
 	public function runRememberMe(){
 
 		if(!$this->config('login', 'remember_me')){
-			$this->setError('Remember Me is disabled site wide');
+			$this->setError('Remember Me Failed. Remember Me is disabled site wide');
 			return false;
 		}
 
 		//make sure we have a cookie to begin with
 		if(is_empty(doArgs('login', null, $_COOKIE))){
-			$this->setError('Cookie not found');
+			$this->setError('Remember Me Failed. Cookie not found.');
 			return false;
 		}
 
 		//this should return something not empty...
 		$cookie = unserialize($_COOKIE['login']);
 			if(is_empty($cookie)){
-				$this->setError('Cookie didn\'t contain expected information.');
+				$this->setError('Remember Me Failed. Cookie contained unexpected information.');
 				return false;
 			}
 
@@ -341,61 +328,62 @@ class login extends coreClass{
 		$values = array('uData', 'uIP', 'uAgent');
 		foreach($values as $e){
 			if(!isset($cookie[$e]) && !is_empty($cookie[$e])){
-				$this->setError('Cookie didn\'t contain expected information.');
+				$this->setError('Remember Me Failed. Cookie contained unexpected information.');
 				return false;
 			}
 		}
 
 		//uData should be 5 chars in length
 		if(strlen($cookie['uData']) != 5){
-			$this->setError('Cookie didn\'t contain expected information.');
+			$this->setError('Remember Me Failed. Cookie contained unexpected information.');
 			return false;
 		}
 
 		//make sure the IP has the right IP of the client
-		if($this->config('login', 'ip_lock') && $cookie['user_ip'] !== User::getIP()){
-			$this->setError('Cookie didn\'t contain expected information.');
+		if($this->config('login', 'ip_lock', false) && $cookie['uIP'] !== User::getIP()){
+			$this->setError('Remember Me Failed. Cookie contained unexpected information.');
 			return false;
 		}
 
 		//and make sure the useragent matches the client
 		if($cookie['uAgent'] != md5($_SERVER['HTTP_USER_AGENT'].$this->config('db', 'ckeauth'))){
-			$this->setError('Cookie didn\'t contain expected information.');
+			$this->setError('Remember Me Failed. Cookie contained unexpected information.');
 			return false;
 		}
 
 		//setup the query
 		unset($query);
-		$query[] = 'SELECT uid FROM `$Puserkeys`';
-		$query[] = 		'WHERE uid LIKE "%'.secureMe($cookie['uData'], 'MRES').':%';
-		$query[] = 			'AND user_agent = "'.secureMe($cookie['uAgent'], 'MRES').'"';
+		$query[] = 'SELECT uData FROM `$Puserkeys` ';
+		$query[] = 		'WHERE uData LIKE "%'.secureMe($cookie['uData'], 'MRES').':%" ';
+		$query[] = 			'AND uAgent = "'.secureMe($cookie['uAgent'], 'MRES').'" ';
 
 		if($this->config('login', 'ip_lock')){
-			$query[] = 		'AND user_ip = "'.secureMe($cookie['uIP'], 'MRES').'"';
+			$query[] = 		'AND uIP = "'.secureMe($cookie['uIP'], 'MRES').'" ';
 		}
 
 		$query[] = 'LIMIT 1;';
 
 		//prepare and exec
 		$query = $this->objSQL->prepare(implode(' ', $query));
+
 		$query = $this->objSQL->getLine($query);
 
-		if(!$query || is_empty($query)){
+		if(!count($query)){
 			$this->setError('Could not query for userkey');
 			return false;
 		}
 
 		//untangle the user id from the query
-        $query['uid'] = explode(':', $query['uid']);
+        $query['uData'] = explode(':', $query['uData']);
 
-		if(!isset($query['uid'][1]) || is_empty($query['uid'][1])){
+		if(!isset($query['uData'][1]) || is_empty($query['uData'][1])){
 			$this->setError('No ID Exists');
 			return false;
 		}
 
 		//now try and grab the user's info
-		$this->userData = $this->objUser->getUserInfo($query['uid'][1]);
-			if(!is_empty($this->userData)){
+		$this->userData = $this->objUser->getUserInfo($query['uData'][1]);
+			if(is_empty($this->userData)){
 				$this->setError('No user exists with that ID');
 				return false;
 			}
@@ -423,7 +411,7 @@ class login extends coreClass{
 
 		//everything seems fine, log them in
 		$this->objUser->setSessions($this->userData['id'], true);
-		$this->objUser->newOnlineUser('Online System: AutoLogin Sequence Activated for '.$this->userData['username']);
+		$this->objUser->newOnlineSession('Online System: AutoLogin Sequence Activated for '.$this->userData['username']);
 		return true;
 	}
 
@@ -433,12 +421,18 @@ class login extends coreClass{
 	 * @version	1.0
 	 * @since 	1.0.0
 	 * @author 	Jesus
+	 *
+	 * @param 	mixed 	$errCode
+	 * @param 	bool 	$ajax
 	 */
-	function doError($errCode, $ajax = false){
+	function doError($errCode, $ajax=false){
         $acpCheck = isset($_SESSION['acp']['doAdminCheck']) ? true : false;
 
 		switch($errCode){
 			default:
+				$L_ERROR = $errCode;
+			break;
+
 			case '0x0':
 				$L_ERROR = '('.$errCode.') I Can\'t seem to find the issue, Please contact a system administrator or <a href="mailto:'. $this->config('site', 'admin_email') .'">Email The Site Admin</a>';
 			break;
@@ -496,14 +490,15 @@ class login extends coreClass{
 			break;
 		}
 
-		$good = array('8');
+		$good = array('0x8');
 
+		$_SESSION['login']['error'] = $L_ERROR;
 		$_SESSION['login']['class'] = (in_array($errCode, $good) ? 'boxgreen' : 'boxred');
 
 		if($ajax){
 			die($L_ERROR);
 		}else{
-			$this->setError($L_ERROR);
+			$this->objPage->redirect('/'.root().'login.php', 0);
 		}
 	}
 

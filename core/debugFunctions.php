@@ -17,9 +17,7 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 	 * @return  string
 	 */
 	function dump(&$var, $info = false) {
-		if (file_exists('debug')) {
-			return;
-		}
+		if (file_exists('debug')) { return; }
 		$scope = false;
 		$prefix = 'unique';
 		$suffix = 'value';
@@ -36,13 +34,20 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 		}
 		$var = $old;
 
+		$debug = debug_backtrace();
+		$call_info = array_shift($debug);
+		$code_line = $call_info['line'];
+		$file = explode((stristr(PHP_OS, 'WIN') ? '\\' : '/'), $call_info['file']);
+		$file = array_pop($file);
+
 		$return = '';
 
-		$return .= '<pre style="overflow: auto; margin: 0px 0px 10px 0px; background: white; color: black; font-family: Verdana; border: 1px solid #cccccc; padding: 5px; font-size: 10px; line-height: 13px;" class="debug">';
+		$return .= '<pre style="overflow: auto; margin: 0px 0px 10px 0px; background: white; color: black; font-family: Verdana; border: 1px solid #cccccc; padding: 5px; font-size: 10px; line-height: 13px;" class="debug"><b>('.$file.' : '.$code_line.')</b>';
+
 		if ($info != false) {
-			$return .= '<b style="color: red;">'.$info.':</b><br />';
+			$return .= ' | <b style="color: red;">'.$info.':</b>';
 		}
-		$return .= doDump($var, '$'.$vname);
+		$return .= '<br />'.doDump($var, '$'.$vname);
 		$return .= '</pre>';
 		return $return;
 	}

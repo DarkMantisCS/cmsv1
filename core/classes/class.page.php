@@ -16,7 +16,7 @@ class page extends coreClass{
 	static $THEME = '', $THEME_ROOT = '';
 	private $jsFiles = array(), $cssFiles = array(), $jsCode = array(), $cssCode = array();
 	private $tplVars = array(), $pageCrumbs = array();
-	private $acpThemeROOT = 'core/coreThemes/acp/';
+	public $acpThemeROOT = 'core/coreThemes/acp/', $acpMode = false;
 
 	/**
 	 * Init page class, and set some
@@ -309,17 +309,16 @@ class page extends coreClass{
 	 * @param 	bool $simple
 	 */
 	public function showHeader($simple=false){
-		global $config;
-
 		if($this->header['completed']){ return; }
 
 		$themeRoot = self::$THEME_ROOT;
-		if($this->getVar('acpMode')==1){
+		if($this->getVar('acpMode') === true){
 			$themeRoot = $this->acpThemeROOT;
+			$simple = false;
 		}
 
 		//figure out which version of the header we wanna use
-		$header =  $themeRoot . ($simple==true ? 'simple_header.tpl' : 'header.tpl');
+		$header = $themeRoot . ($simple==true ? 'simple_header.tpl' : 'header.tpl');
 
 		//set simpleTpl, so anything that needs to output layout other than these funcs know what to expect
 		$tplVar = ($this->getVar('simpleTpl')===true ? true : ($simple===true ? true : false) );
@@ -374,7 +373,7 @@ class page extends coreClass{
 		$jsFiles[] = '/'.root().'scripts/framework-min.js';
 		$jsFiles[] = '/'.root().'scripts/extras-min.js';
 
-		if($this->getVar('acpMode')==1){
+		if($this->getVar('acpMode') === true){
 			$jsFiles[] = '/'.root().'scripts/acp-min.js';
 		}
 
@@ -382,7 +381,7 @@ class page extends coreClass{
 		$jsFiles = array_merge($jsFiles, $this->jsFiles);
 
 		//if the template has an extras.js add it
-		if(file_exists(page::$THEME_ROOT . 'extras.js')){
+		if(file_exists($themeRoot . 'extras.js')){
 			$jsFiles[] = '/'.root().'themes/'. Page::$THEME .'/extras.js';
 		}
 
@@ -487,8 +486,8 @@ class page extends coreClass{
 	//
 	//--Header Vars
 	//
-		if(file_exists(self::$THEME_ROOT.'images/favicon.ico')){
-			$meta .= '<link rel="shortcut icon" href="/'.root().self::$THEME_ROOT.'images/favicon.ico" />';
+		if(file_exists($themeRoot.'images/favicon.ico')){
+			$meta .= '<link rel="shortcut icon" href="/'.root().$themeRoot.'images/favicon.ico" />';
 		}
 
 		//if the site is closed, the only way they can get this far is if the user has privs so
@@ -573,8 +572,9 @@ class page extends coreClass{
 
 		//find which root we want
 		$themeRoot = self::$THEME_ROOT;
-		if($this->getVar('acpMode')==1){
+		if($this->getVar('acpMode') === true){
 			$themeRoot = $this->acpThemeROOT;
+			$simple = false;
 		}
 
 		//figure out which version of the footer we wanna use
@@ -599,7 +599,7 @@ class page extends coreClass{
 		}
 
     	//check for admin privs and file(debug) existing in the root
-		if(User::$IS_ADMIN && !file_exists('debug')){
+		if(true || User::$IS_ADMIN && !file_exists('debug')){
 			//if the debug happened..
 			if($this->objSQL->debug){
 				$string = null;
@@ -622,7 +622,7 @@ class page extends coreClass{
 				));
 
 				//grab the logs and output em if needed
-				$logs = $this->objSQL->getTable('SELECT * FROM `$Plogs` ORDER BY id DESC LIMIT 10');
+				$logs = $this->objSQL->getTable($this->objSQL->prepare('SELECT * FROM `$Plogs` ORDER BY id DESC LIMIT 10'));
 				if(!is_empty($logs)){
 					foreach($logs as $log){
 						$this->objTPL->assign_block_vars('debug.log', array(
@@ -658,8 +658,8 @@ class page extends coreClass{
 		}
 
 		$footer = array();
-		if(is_readable(page::$THEME_ROOT.'cfg.php')){
-			include(page::$THEME_ROOT.'cfg.php');
+		if(is_readable($themeRoot.'cfg.php')){
+			include($themeRoot.'cfg.php');
 			$footer += array(
 				'L_TPL_INFO' =>  langVar('TPL_INFO', '<a href="'.$mod_url.'">'.$mod_name.'</a>', $mod_author, $mod_version).' | '.langVar('L_LANG_PACK'),
 			);
@@ -699,7 +699,7 @@ class page extends coreClass{
 			'ROW_COLOR2'	=> $vars['row_color2'],
 
 			'USERNAME'		=> $this->objUser->grab('username'),
-			'TIME'			=> $this->objTime->mk_time(time(), 'l jS F H:i:s a'),
+			'TIME'			=> $this->objTime->mk_time(time(), 'l H:i:s a'),
 
 
 			'U_UCP'			=> '/'.root().'user/',

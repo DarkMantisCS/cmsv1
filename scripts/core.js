@@ -23,10 +23,23 @@ var ADAPT_CONFIG = {
 };
 
 function updateClock(){
-    $('#clock').html(date('l jS F H:i:s a', time()));
-	setTimeout(function (){ updateClock(); }, 1000);
+	if(!$('#clock').length){ return; }
+	$('#clock').html(date('l H:i:s a', time())).attr('title', date('jS F Y', time()));
+	setTimeout(updateClock, 1000);
 }
 
+function inBetween($begin, $end, $contents) {
+	$pos1 = strpos($contents, $begin);
+	if($pos1 !== false){
+		$pos1 += strlen($begin);
+		$pos2 = strpos($contents, $end, $pos1);
+		if($pos2 !== false){
+			$substr = substr($contents, $pos1, $pos2 - $pos1);
+			return $substr;
+		}
+	}
+	return false;
+}
 
 $(document).ready(function(){
 	$("select").selectBox();
