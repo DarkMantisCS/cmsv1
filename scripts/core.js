@@ -46,3 +46,30 @@ $(document).ready(function(){
 
 	if($('#clock')){ updateClock(); }
 });
+
+
+
+
+
+
+
+
+if(jQuery) {
+	jQuery(document).ready(function() {
+		jQuery.fn.listAttributes = function(prefix) {
+			var list = [];
+			$(this).each(function() {
+				console.info(this.attributes);
+				var attributes = [];
+				for(var key in this.attributes) {
+					if(!isNaN(key)){ continue; }
+					if(!prefix || this.attributes[key].name.substr(0, prefix.length) == prefix) {
+						attributes.push(this.attributes[key].name);
+					}
+				}
+				list.push(attributes);
+			});
+			return (list.length > 1 ? list : list[0]);
+		}
+	});
+}

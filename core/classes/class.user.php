@@ -526,8 +526,9 @@ class user extends coreClass{
 				//you should be logged in now, so redirect
 				}else{
 					$action = 'remember me worked';
-					//force update
-					$update = true;
+
+					$this->objPage->redirect('', 1);
+					exit;
 				}
 			}else{
 				$online = $this->objLogin->onlineData();

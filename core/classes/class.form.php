@@ -27,7 +27,7 @@ class form extends coreClass{
 	 */
 	public function start($name, $args=array()){
 		$args = array(
-			'method'        => doArgs('method', 	null, 	$args),
+			'method'        => doArgs('method', 	'get', 	$args),
 			'action'        => doArgs('action', 	null, 	$args),
 			'onsubmit'      => doArgs('onsubmit', 	false, 	$args),
 			'extra'      	=> doArgs('extra', 		null, 	$args),
@@ -77,6 +77,7 @@ class form extends coreClass{
 			'checked'       => doArgs('checked', 		false, 	$args),
 			'disabled'      => doArgs('disabled', 		false, 	$args),
 			'br'            => doArgs('br', 			false, 	$args),
+			'style'         => doArgs('style', 			null, 	$args),
 			'extra'         => doArgs('extra', 			null, 	$args),
 			'xssFilter'     => doArgs('xssFilter', 		true, 	$args),
 
@@ -111,6 +112,7 @@ class form extends coreClass{
 					($args['checked']===true			? 'checked="checked" '						: null).
 					($args['disabled']===true			? 'disabled="disabled" '					: null).
 					($args['autocomplete']===false		? 'autocomplete="off" '						: null).
+					(!is_empty($args['style'])  		? 'style="'.$args['style'].'" ' 			: null).
 					(!is_empty($args['extra'])			? $args['extra']							: null).
 				'/>'.
 					($args['br']===true					? '<br />'."\n"								: '');
@@ -138,6 +140,7 @@ class form extends coreClass{
 			'class'     => doArgs('class', null, $args),
 			'disabled'  => doArgs('disabled', false, $args),
 			'br'        => doArgs('br', false, $args),
+			'style'		=> doArgs('style', null, $args),
 			'extra'     => doArgs('extra', null, $args),
 			'xssFilter' => doArgs('xssFilter', true, $args),
 			'placeholder'   => doArgs('placeholder', 	null, 	$args),
@@ -149,6 +152,7 @@ class form extends coreClass{
 					'cols="'.(is_number($args['cols']) 	? $args['cols'] 			: 45).'" '.
 					'rows="'.(is_number($args['rows']) 	? $args['rows'] 			: 5).'"'.
 					(!is_empty($args['placeholder'])	? 'placeholder="'.$args['placeholder'].'" ' : null).
+					(!is_empty($args['style'])  		? 'style="'.$args['style'].'" ' : null).
 					(!is_empty($args['extra'])  		? $args['extra']            : null).
 					($args['disabled']===true   		? 'disabled="disabled" '    : null).
 				'>'.($args['xssFilter']===true  		? htmlspecialchars($value)  : $value).'</textarea>'.
@@ -206,6 +210,7 @@ class form extends coreClass{
 			$return .= ($args['showLabels']===true ? '<label>' : '').
 							'<input type="radio"'.
 								'name="'.$name.'" id="'.$args['id'].'" '.
+								(!is_empty($args['style'])  			? 'style="'.$args['style'].'" ' : null).
 								($args['xssFilter']===true    			? 'value="'.htmlspecialchars($key).'" ' : 'value="'.$key.'" ').
 								($defaultSetting==$key                  ? 'checked="checked" '      			: null).
 							'/>'.($args['showValue']===true             ? ' '.$value                			: null).
@@ -259,6 +264,7 @@ class form extends coreClass{
 
 			'class'     => doArgs('class', 		null, $args),
 			'disabled'  => doArgs('disabled', 	false, $args),
+			'style'		=> doArgs('style', 		null, $args),
 			'extra'     => doArgs('extra', 		null, $args),
 			'xssFilter' => doArgs('xssFilter', 	true, $args),
 		);
@@ -274,12 +280,13 @@ class form extends coreClass{
 		$noKeys = $args['noKeys'];
 
 		$option = '<option value="%1$s"%2$s>%3$s</option>'."\n";
-		$val = sprintf('<select name="%1$s" id="%2$s"%3$s%4$s%5$s>',
+		$val = sprintf('<select name="%1$s" id="%2$s"%3$s%4$s%5$s%6$s>',
 					$name,
 					$args['id'],
 					(!is_empty($args['class']) 	? ' class="'.$args['class'].'"' : null),
 					($args['disabled']===true 	? ' disabled="disabled"' 		: null),
-					(!is_empty($args['extra'])  ? ' '.$args['extra'] 			: null)
+					(!is_empty($args['extra'])  ? ' '.$args['extra'] 			: null),
+					(!is_empty($args['style'])  ? ' style="'.$args['style'].'"' : null)
 				)."\n";
 
 
@@ -342,7 +349,8 @@ class form extends coreClass{
 	}
 
 
-	public function outputForm($vars, $elements){
+	public function outputForm($vars, $elements, $options=array()){
+#echo dump($options);
 		//make sure we have something to use before continuing
 		if(is_empty($elements)){ $this->setError('Nothing to output'); return false; }
 
@@ -356,6 +364,14 @@ class form extends coreClass{
 		$this->objTPL->set_filenames(array(
 			'form_body_'.$randID => 'modules/core/template/formOutput.tpl',
 		));
+
+		if(!doArgs('border', true, $options)){
+			$vars['EXTRA'] = ' class="noBorder"';
+		}
+
+		if(doArgs('id', false, $options)){
+			$vars['SECTION_ID'] = doArgs('id', null, $options);
+		}
 
 		$this->objTPL->assign_vars($vars);
 
@@ -382,7 +398,7 @@ class form extends coreClass{
 
 			//if its a header, set it as one with a hr under
 			if($field == '_header_'){
-				$label = '<h3>'.$label.'</h3><hr />';
+				$label = sprintf(doArgs('header', '<h3>%s</h3><hr />', $options), $label);
 			}
 
 			//assign some vars to the template

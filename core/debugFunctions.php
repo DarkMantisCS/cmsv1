@@ -42,7 +42,7 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 
 		$return = '';
 
-		$return .= '<pre style="overflow: auto; margin: 0px 0px 10px 0px; background: white; color: black; font-family: Verdana; border: 1px solid #cccccc; padding: 5px; font-size: 10px; line-height: 13px;" class="debug"><b>('.$file.' : '.$code_line.')</b>';
+		$return .= '<pre class="debug"><b>('.$file.' : '.$code_line.')</b>';
 
 		if ($info != false) {
 			$return .= ' | <b style="color: red;">'.$info.':</b>';
