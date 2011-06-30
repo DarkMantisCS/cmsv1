@@ -376,6 +376,7 @@ class page extends coreClass{
 		if($this->getVar('acpMode') === true){
 			$jsFiles[] = '/'.root().'scripts/acp-min.js';
 		}
+		$jsFiles[] = '/'.root().'scripts/user.js.php';
 
 		//load in the anything thats been passed in via addJSFiles()
 		$jsFiles = array_merge($jsFiles, $this->jsFiles);

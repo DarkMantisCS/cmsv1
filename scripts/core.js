@@ -22,6 +22,24 @@ var ADAPT_CONFIG = {
   ]
 };
 
+window.viewport = {
+    height: function() {
+        return $(window).height();
+    },
+
+    width: function() {
+        return $(window).width();
+    },
+
+    scrollTop: function() {
+        return $(window).scrollTop();
+    },
+
+    scrollLeft: function() {
+        return $(window).scrollLeft();
+    }
+};
+
 function updateClock(){
 	if(!$('#clock').length){ return; }
 	$('#clock').html(date('l H:i:s a', time())).attr('title', date('jS F Y', time()));
@@ -42,19 +60,6 @@ function inBetween($begin, $end, $contents) {
 }
 
 
-function showNotification(id, message, header, sticky){
-	$.gritter.add({
-		id		: id,
-		title	: header || "",
-		text	: message,
-		sticky	: Boolean(sticky),
-		before_open: function(){
-			console.log(this);
-			$(this).attr('id', 'notify-'+id);
-		}
-	});
-}
-
 function notify(message, header, sticky){
     $.gritter.add({
 		title	: header || "",
@@ -62,7 +67,6 @@ function notify(message, header, sticky){
 		sticky	: Boolean(sticky)
 	});
 }
-
 
 $(document).ready(function(){
 	$("select").selectBox();

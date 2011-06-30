@@ -20,16 +20,16 @@ class notify extends coreClass{
 	 * @since 	1.0.0
 	 * @author 	xLink
 	 *
-	 * @param 	int		$id 		ID of the notification
+	 * @param 	int 	$id  		ID of the notification
 	 * @param	string	$message	Message to output in the notification
 	 * @param	string	$title		Title of the notification
 	 * @param	bool	$sticky		Whether to dissapear or stay on screen
 	 */
 	public function outputNotification($id, $msg, $title, $sticky=false){
-        $msg = addslashes($msg);
-        $msg = str_replace(array("\t"),
-                           array(''),
-                           html_entity_decode($msg));
+		$msg = addslashes($msg);
+		$msg = str_replace(array("\t"),
+							array(''),
+							html_entity_decode($msg));
 
 		$this->objPage->addJSCode('showNotification("'.$id.'", "'.$msg.'", "'.$title.'", '.$sticky.');');
 	}
@@ -41,9 +41,9 @@ class notify extends coreClass{
 	 * @since 	1.0.0
 	 * @author 	xLink
 	 *
-	 * @param 	int		$notifID 	ID of the notification or 0
+	 * @param 	int 	$notifID 	ID of the notification or 0
 	 * @param	bool	$module		Message to output in the notification
-	 * @param	int		$uid		0 for current user, or UID of user
+	 * @param	int 	$uid		0 for current user, or UID of user
 	 *
 	 * @return 	bool
 	 */
@@ -79,10 +79,10 @@ class notify extends coreClass{
 	 * @since 	1.0.0
 	 * @author 	xLink
 	 *
-	 * @param 	bool	$read	true to return read notifications
+	 * @param 	bool 	$read	true to return read notifications
 	 * 							false to return unread
 	 * 							and null to return all notifications
-	 * @param	int		$uid	0 for current user, or UID of user
+	 * @param	int 	$uid	0 for current user, or UID of user
 	 */
 	public function getNotifications($read=null, $uid=0){
 		if($read===true){ 			$read = ' and `read`="1"'; }

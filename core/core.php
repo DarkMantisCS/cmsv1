@@ -329,7 +329,6 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 		array('url' => '/'.root(), 'name' => langVar('B_MAINSITE')),
 	));
 
-
 //
 //--Setup modules, online system and bbcode stuffz
 //
