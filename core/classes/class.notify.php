@@ -19,8 +19,13 @@ class notify extends coreClass{
 	 * @version 1.0
 	 * @since 	1.0.0
 	 * @author 	xLink
+	 *
+	 * @param 	int		$id 		ID of the notification
+	 * @param	string	$message	Message to output in the notification
+	 * @param	string	$title		Title of the notification
+	 * @param	bool	$sticky		Whether to dissapear or stay on screen
 	 */
-	public function outputNotifications($id, $msg, $title, $sticky=false){
+	public function outputNotification($id, $msg, $title, $sticky=false){
         $msg = addslashes($msg);
         $msg = str_replace(array("\t"),
                            array(''),
@@ -35,6 +40,12 @@ class notify extends coreClass{
 	 * @version 1.0
 	 * @since 	1.0.0
 	 * @author 	xLink
+	 *
+	 * @param 	int		$notifID 	ID of the notification or 0
+	 * @param	bool	$module		Message to output in the notification
+	 * @param	int		$uid		0 for current user, or UID of user
+	 *
+	 * @return 	bool
 	 */
 	public function clearNotifications($notifID=0, $module=false, $uid=0){
 		$user = ($uid==0 ? $this->objUser->grab('id') : $this->objUser->getUserInfo($uid));
@@ -67,6 +78,11 @@ class notify extends coreClass{
 	 * @version 1.0
 	 * @since 	1.0.0
 	 * @author 	xLink
+	 *
+	 * @param 	bool	$read	true to return read notifications
+	 * 							false to return unread
+	 * 							and null to return all notifications
+	 * @param	int		$uid	0 for current user, or UID of user
 	 */
 	public function getNotifications($read=null, $uid=0){
 		if($read===true){ 			$read = ' and `read`="1"'; }
@@ -93,6 +109,12 @@ class notify extends coreClass{
 	 * @version 1.0
 	 * @since 	1.0.0
 	 * @author 	xLink
+	 *
+	 * @param	int		$uid		0 for current user, or UID of user
+	 * @param	string	$message	Message to output in the notification
+	 * @param	int		$moduleID	ID that corresponds with the content peice for that module
+	 *
+	 * @return 	bool
 	 */
 	public function notifyUser($uid, $message, $moduleId=0){
 		global $objModule;
@@ -104,7 +126,7 @@ class notify extends coreClass{
 		}
 
 		$insert['uid'] 			= $user['uid'];
-		$insert['type'] 		= $notificationType;
+		$insert['type'] 		= 0; //not implemented yet
 		$insert['body'] 		= secureMe($message);
 		$insert['timestamp'] 	= time();
 		$insert['title'] 		= !is_empty($title) ? $title : null;
@@ -126,9 +148,13 @@ class notify extends coreClass{
 	 * @version 1.0
 	 * @since 	1.0.0
 	 * @author 	xLink
+	 *
+	 * @param	int		$uid		0 for current user, or UID of user
+	 * @param	string	$message	Message to output in the notification
+	 * @param	int		$moduleID	ID that corresponds with the content peice for that module
 	 */
-	public function sendNotify($msg, $title, $sticky=false){
-		$this->objPage->addJSCode('notify("'.addslashes($msg).'", "'.$title.'", '.($sticky===true ? 'true' : 'false').');'."\n");
+	public function sendNotify($message, $title, $sticky=false){
+		$this->objPage->addJSCode('notify("'.addslashes($message).'", "'.$title.'", '.(!$sticky ? 'false' : 'true').');'."\n");
 	}
 
 }

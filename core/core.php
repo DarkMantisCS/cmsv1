@@ -140,6 +140,10 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 	$classes['objLogin'] 		= array($classDir.'class.login.php');
 	$classes['objUser'] 		= array($classDir.'class.user.php');
 
+	//plugins have been moved here so we can hook into the init of stage 2 classes
+	//and possibly load some custom ones such as reCaptcha etc ;)
+	$classes['objPlugins']		= array($classDir.'class.plugins.php');
+
 	//init the sql and cache classes, we need these before we can go any further
 	$doneSetup = $objCore->setup($classes);
 	if(!$doneSetup){
@@ -210,6 +214,9 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 		 define('NO_MENU', true);
 	}
 
+	//start plugins setups
+	$objCore->objPlugins->loadHooks($config['plugins']);
+
 //
 //--Language Setup
 //
@@ -240,11 +247,17 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 								));
 
 	$classes['objPage'] 		= array($classDir.'class.page.php');
-	$classes['objPlugins']		= array($classDir.'class.plugins.php');
 	$classes['objGroups'] 		= array($classDir.'class.groups.php');
 	$classes['objForm'] 		= array($classDir.'class.form.php');
 	$classes['objTime'] 		= array($classDir.'class.time.php');
 	$classes['objNotify'] 		= array($classDir.'class.notify.php');
+
+	/**
+	 * this should allow for some custom classes to be init'd
+	 * keep in mind you can't use any of the classes that get init'd here
+	 * untill after they actually get init'd
+	 */
+	$objCore->objPlugins->hook('CMSCore_classes_init', $classes);
 
 	//init these classes
 	$doneSetup = $objCore->setup($classes);
@@ -256,9 +269,6 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 	//globalise the class names
 	foreach($objCore->classes as $objName => $args){ $$objName =& $objCore->$objName; }
 	unset($classes, $objCore->classes);
-
-	//start class setups
-	$objPlugins->loadHooks($config['plugins']);
 
 	$objPage->setVar('language', $language);
 

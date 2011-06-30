@@ -32,7 +32,7 @@ function inBetween($begin, $end, $contents) {
 	$pos1 = strpos($contents, $begin);
 	if($pos1 !== false){
 		$pos1 += strlen($begin);
-		$pos2 = strpos($contents, $end, $pos1);
+		$pos2 = strpos($cotents, $end, $pos1);
 		if($pos2 !== false){
 			$substr = substr($contents, $pos1, $pos2 - $pos1);
 			return $substr;
@@ -41,27 +41,17 @@ function inBetween($begin, $end, $contents) {
 	return false;
 }
 
-//Notification Functionality
-    $return .= "\n".
-    'function notification(id, message, header, sticky){'.
-        'growler.growl(message, {header: header || "", sticky: Boolean(sticky), '.
-            'destroyed: function(){'.
-                'new Ajax.Request("/"+ajax_root+"ajax.php?action=notificationRead", {'.
-                    'method: "post", '.
-                    'parameters: {id: id} '.
-                '});'.
-            '}'.
-        '});'.
-        '$$("div.Growler-notice([id=\"\"])").reject(function(el){ return (strlen(el.id) > 0); }).each(function(n){'.
-            'n.writeAttribute("id", "note_"+id); '.
-        '});'.
-    '}';
 
 function showNotification(id, message, header, sticky){
 	$.gritter.add({
+		id		: id,
 		title	: header || "",
 		text	: message,
-		sticky	: Boolean(sticky)
+		sticky	: Boolean(sticky),
+		before_open: function(){
+			console.log(this);
+			$(this).attr('id', 'notify-'+id);
+		}
 	});
 }
 

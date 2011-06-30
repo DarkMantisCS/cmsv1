@@ -385,11 +385,6 @@ class page extends coreClass{
 			$jsFiles[] = '/'.root().'themes/'. Page::$THEME .'/extras.js';
 		}
 
-        //only add the user js file if theyre logged in
-        if(User::$IS_ONLINE){
-            $jsFiles[] = '/'.root().'scripts/user.js.php';
-        }
-
 		//hook here too
         $this->objPlugins->hook('CMSPage_jsFiles', $jsFiles);
 
