@@ -133,17 +133,17 @@ class form extends coreClass{
 	 */
 	public function textarea($name='textarea', $value=null, $args=array()){
 		$args = array(
-			'cols'      => doArgs('cols', 45, $args),
-			'rows'      => doArgs('rows', 5, $args),
+			'cols'      	=> doArgs('cols', 45, $args),
+			'rows'      	=> doArgs('rows', 5, $args),
 
-			'id'		=> doArgs('id', $name, $args),
-			'class'     => doArgs('class', null, $args),
-			'disabled'  => doArgs('disabled', false, $args),
-			'br'        => doArgs('br', false, $args),
-			'style'		=> doArgs('style', null, $args),
-			'extra'     => doArgs('extra', null, $args),
-			'xssFilter' => doArgs('xssFilter', true, $args),
-			'placeholder'   => doArgs('placeholder', 	null, 	$args),
+			'id'			=> doArgs('id', $name, $args),
+			'class'     	=> doArgs('class', null, $args),
+			'disabled'  	=> doArgs('disabled', false, $args),
+			'br'        	=> doArgs('br', false, $args),
+			'style'			=> doArgs('style', null, $args),
+			'extra'     	=> doArgs('extra', null, $args),
+			'xssFilter' 	=> doArgs('xssFilter', true, $args),
+			'placeholder'   => doArgs('placeholder', null, $args),
 		);
 
 		return '<textarea '.
@@ -350,7 +350,6 @@ class form extends coreClass{
 
 
 	public function outputForm($vars, $elements, $options=array()){
-#echo dump($options);
 		//make sure we have something to use before continuing
 		if(is_empty($elements)){ $this->setError('Nothing to output'); return false; }
 

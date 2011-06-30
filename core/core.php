@@ -244,6 +244,7 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 	$classes['objGroups'] 		= array($classDir.'class.groups.php');
 	$classes['objForm'] 		= array($classDir.'class.form.php');
 	$classes['objTime'] 		= array($classDir.'class.time.php');
+	$classes['objNotify'] 		= array($classDir.'class.notify.php');
 
 	//init these classes
 	$doneSetup = $objCore->setup($classes);

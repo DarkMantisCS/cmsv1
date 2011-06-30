@@ -19,7 +19,7 @@ class page extends coreClass{
 	public $acpThemeROOT = 'core/coreThemes/acp/', $acpMode = false;
 
 	/**
-	 * Init page class, and set some
+	 * Init class, and set some options
 	 *
 	 * @version	1.0
 	 * @since   1.0.0
