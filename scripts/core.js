@@ -42,10 +42,32 @@ function inBetween($begin, $end, $contents) {
 }
 
 //Notification Functionality
+    $return .= "\n".
+    'function notification(id, message, header, sticky){'.
+        'growler.growl(message, {header: header || "", sticky: Boolean(sticky), '.
+            'destroyed: function(){'.
+                'new Ajax.Request("/"+ajax_root+"ajax.php?action=notificationRead", {'.
+                    'method: "post", '.
+                    'parameters: {id: id} '.
+                '});'.
+            '}'.
+        '});'.
+        '$$("div.Growler-notice([id=\"\"])").reject(function(el){ return (strlen(el.id) > 0); }).each(function(n){'.
+            'n.writeAttribute("id", "note_"+id); '.
+        '});'.
+    '}';
 
-function growl(message, header, sticky){
+function showNotification(id, message, header, sticky){
+	$.gritter.add({
+		title	: header || "",
+		text	: message,
+		sticky	: Boolean(sticky)
+	});
+}
+
+function notify(message, header, sticky){
     $.gritter.add({
-		title	: header,
+		title	: header || "",
 		text	: message,
 		sticky	: Boolean(sticky)
 	});

@@ -387,7 +387,7 @@ class page extends coreClass{
 
         //only add the user js file if theyre logged in
         if(User::$IS_ONLINE){
-            $jsFiles[] = '/'.root().'user.php';
+            $jsFiles[] = '/'.root().'scripts/user.js.php';
         }
 
 		//hook here too
