@@ -330,7 +330,7 @@ class mysql extends coreClass implements SQLBase{
 	 *
 	 * @return 	resource
 	 */
-	public function query($query, $log = false) {
+	public function query($query, $log=false) {
 		$this->freeResult();
 
 		$this->query_time = microtime(true);
@@ -503,6 +503,7 @@ class mysql extends coreClass implements SQLBase{
 		$query = 'INSERT HIGH_PRIORITY INTO `$P%1$s` (%2$s) VALUES (%3$s)';
 		$query = $this->prepare($query, $table, $listOfElements, $listOfValues);
 		$this->query($query, $log);
+
 		return mysql_insert_id($this->link_id);
 	}
 
@@ -533,7 +534,7 @@ class mysql extends coreClass implements SQLBase{
 			}
 		}
 
-		$query = substr($query, 0, -2).' WHERE '.$this->autoPrepare($clause).' LIMIT 1';
+		$query = substr($query, 0, -2).' WHERE '.$this->autoPrepare($clause);
 
 		$query = $this->prepare($query, $table);
 		$this->query($query, $log);

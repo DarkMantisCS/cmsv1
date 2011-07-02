@@ -17,6 +17,12 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 	define('MED', 	2);
 	define('HIGH', 	3);
 
+//Profile() Settings
+    define('LINK', 0);
+    define('NO_LINK', 1);
+    define('RAW', 2);
+    define('RETURN_USER', 3);
+
 //User levels
 	define('BANNED',	-1);
 	define('GUEST',		0);
@@ -28,5 +34,23 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 	define('GROUP_OPEN', 	0);
 	define('GROUP_CLOSED',	1);
 	define('GROUP_HIDDEN',	2);
+
+//ACL settings
+	define('AUTH_LIST_ALL', 0);
+	define('AUTH_ALL', 0);
+
+	define('AUTH_REG', 1);
+	define('AUTH_ACL', 2);
+	define('AUTH_MOD', 3);
+	define('AUTH_ADMIN', 5);
+
+	define('AUTH_VIEW', 1);
+	define('AUTH_READ', 2);
+	define('AUTH_POST', 3);
+	define('AUTH_REPLY', 4);
+	define('AUTH_EDIT', 5);
+	define('AUTH_DELETE', 6);
+	define('AUTH_MOVE', 7);
+	define('AUTH_SPECIAL', 8);
 
 ?>

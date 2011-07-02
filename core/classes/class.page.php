@@ -312,7 +312,7 @@ class page extends coreClass{
 		if($this->header['completed']){ return; }
 
 		$themeRoot = self::$THEME_ROOT;
-		if($this->getVar('acpMode') === true){
+		if($this->getVar('acpMode') === true && is_dir($this->acpThemeROOT)){
 			$themeRoot = $this->acpThemeROOT;
 			$simple = false;
 		}
@@ -568,7 +568,7 @@ class page extends coreClass{
 
 		//find which root we want
 		$themeRoot = self::$THEME_ROOT;
-		if($this->getVar('acpMode') === true){
+		if($this->getVar('acpMode') === true && is_dir($this->acpThemeROOT)){
 			$themeRoot = $this->acpThemeROOT;
 			$simple = false;
 		}

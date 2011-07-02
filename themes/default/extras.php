@@ -24,8 +24,9 @@ if(!is_empty($_menu)){
 					'</a></li>'."\n";
 	}
 }
+
 $_more_vars = array(
-				'L_WELCOME' 	=> langVar('L_WELCOME', $this->config('site', 'title'), $this->objUser->profile($this->objUser->grab('username'))),
+				'L_WELCOME' 	=> langVar('L_WELCOME', $this->config('site', 'title'), $this->objUser->profile($this->objUser->grab('id'))),
 				'TPL_MENU' 		=> $menu,
 			);
 

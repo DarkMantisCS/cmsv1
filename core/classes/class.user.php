@@ -848,8 +848,149 @@ class user extends coreClass{
 		return true;
 	}
 
-	public function profile() {
-		return 'Guest';
+	/**
+	 * Returns a username color coded by group
+	 *
+	 * @version 1.0
+	 * @since   1.0.0
+	 * @author	xLink
+	 *
+	 * @param 	int 	$uid 	UserID
+	 * @param 	int		$mode	LINK, RAW, NO_LINK, RETURN_USER
+	 *
+	 * @return 	bool	True/False on successful check, -1 on unknown group
+	 */
+	public function profile($uid, $mode=LINK) {
+
+		//check if the user has a UID of 0
+		if($uid == GUEST){
+			$user = 'Guest';
+			return $this->_profile_processor($user);
+		}
+
+		//grab this users info
+		$user = $this->getUserInfo($uid);
+			if(!$user){
+				$user = 'Guest';
+				return $this->_profile_processor($user);
+			}
+
+		//see if the group we want is in the cache
+		$group = $this->config('groups', $user['primary_group'], false);
+
+		//if not then we'll query for it
+		if(!$group){
+            $groups = $this->objSQL->getTable($this->objSQL->prepare('
+                SELECT g.* FROM `$Pgroup_subs` ug
+                    JOIN `$Pusers` u
+                        ON u.id = ug.uid
+                    JOIN `$Pgroups` g
+                        ON ug.gid = g.id
+
+                WHERE ug.uid = "%s" AND ug.pending = 0
+                ORDER BY g.`order` ASC
+            ', $uid));
+
+            //no groups wer received so we'll jump to the output stage
+            if(!$groups){
+				$group = null;
+            }else{
+
+				//we are looking for a specific group here
+				if($user['primary_group']!=0){
+					foreach($groups as $g){
+						if($g['id'] == $user['primary_group']){
+							$group = $g;
+						}
+					}
+
+				//the CMS has been asked to figure out which group is needed
+	            }else{
+					$curr = 300;
+					foreach($groups as $g){
+						//if this group has a higher number its color wins
+						if($g['order'] < $curr){
+							$curr = $g['order'];
+							$group = $g;
+						}
+					}
+	            }
+ 			}
+		}
+
+		return $this->_profile_processor($user, $group);
+	}
+
+	/**
+	 * Processes the arguments into a HTML markup
+	 *
+	 * @version 1.0
+	 * @since   1.0.0
+	 * @author	xLink
+	 *
+	 * @param 	array 	$user 	An array containing all the user information
+	 * @param 	array	$group	An array with the group information
+	 *
+	 * @return 	string
+	 */
+	protected function _profile_processor($user, $group=null){
+		$user = (is_array($user) ? $user['username'] : $user);
+		$color = (!is_empty($group['color']) ? ' style="color: '.$group['color'].';"' : null);
+		$title = (!is_empty($group['description']) ? ' title="'.$group['description'].'"' : null);
+
+		//set a generic tag up for the user
+		$font = '<font class="username"%s%s>%s</font>';
+
+		$raw = $user;
+		$banned = sprintf($font, ' style="text-decoration: line-through;" ', $title, $user);
+        $user_link = '<a href="/'.root().'modules/profile/view/'.$user.'" rel="nofollow">'.sprintf($font, $color, $title, $user).'</a>';
+        $user_no_link = sprintf($font, $color, $title, $user);
+
+		if($is_banned){$mode = 3;}
+
+		switch($mode){
+            case -1:    $return = $banned;      break;
+
+		    default:
+            case 0:     $return = $user_link;   break;
+            case 3:
+            case 1:     $return = $user_nlink;  break;
+            case 2:     $return = $user_raw;    break;
+            case 4:     $return = $uid;         break;
+        }
+
+		return $return;
+	}
+
+	/**
+	 * Returns permission state for given user and group
+	 *
+	 * @version 1.0
+	 * @since   1.0.0
+	 * @author	xLink
+	 *
+	 * @param 	int 	$uid 	UserID
+	 * @param 	int		$group	GUEST, USER, MOD, or ADMIN
+	 *
+	 * @return 	bool	True/False on successful check, -1 on unknown group
+	 */
+	function checkUserAuth($type, $key, $u_access, $is_admin){
+		$auth_user = 0;
+
+		if(count($u_access)){
+			for($j = 0; $j < count($u_access); $j++){
+				$result = 0;
+				switch($type){
+					case AUTH_ACL:   $result = $u_access[$j][$key]; break;
+					case AUTH_MOD:   $result = $result || $u_access[$j]['auth_mod']; break;
+					case AUTH_ADMIN: $result = $result || $is_admin; break;
+				}
+				$auth_user = $auth_user || $result;
+			}
+		}else{
+			$auth_user = $is_admin;
+		}
+		return $auth_user;
 	}
 
 	/**
