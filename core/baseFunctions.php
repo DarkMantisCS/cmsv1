@@ -707,6 +707,26 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 		return $file_info;
 	}
 
+    /**
+     * Search for a value within a multi-dimensional array
+     *
+     * @version 1.0
+     * @since 	1.0.0
+     */
+    function array_searchRecursive($needle, $haystack, $strict=false, $path=array()){
+        if(!is_array($haystack)){ return false; }
+
+        foreach($haystack as $key => $val){
+            if(is_array($val) && $subPath = array_searchRecursive($needle, $val, $strict, $path)){
+                $path = array_merge($path, array($key), $subPath);
+                return $path;
+            }elseif((!$strict && $key == $needle) || ($strict && $key === $needle)){
+                $path[] = $key;
+                return $path;
+            }
+        }
+        return false;
+    }
 
     /**
      * Verifies an IP against a IPv4 range.
@@ -772,6 +792,40 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 //
 //-- String Functions
 //
+
+	/**
+	 * Parses content for viewing in browser.
+	 *
+	 * @version 1.0
+	 * @since 	1.0.0
+	 *
+	 * @param 	string 	$content
+	 * @param 	bool	$echoContent
+	 * @param 	bool	$showSmilies
+	 *
+	 * @return 	string
+	 */
+    function contentParse($content, $echoContent=false, $showSmilies=true){
+    	global $objCore;
+
+        //load a new instance up
+        $objBBCode = new BBCode;
+
+        //load in the smilies
+        $objBBCode->SetSmileyDir('/'.root().'images/smilies');
+
+        //load in the bbcode_tags
+        $file = cmsROOT.'core/bbcode_tags.php';
+        	if(is_readable($file)){ include($file); }
+
+        //set smilies on or off
+        $objBBCode->SetEnableSmileys($showSmilies);
+
+        //output the $content
+        if($echoContent===false){ return $objBBCode->parse(secureMe($content)); }
+        echo $objBBCode->parse(secureMe($content));
+    }
+
 	/**
 	 * Handles securing input/output
 	 *
@@ -1169,6 +1223,39 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 	    $objPage->showHeader($doSimple);
 	    msgDie($type, $msg, '', '', '', !$doSimple);
 	}
+
+//
+//--Effect Functions
+//
+
+	/**
+	 * An effect function for highlighting a table row.
+	 *
+	 * @version 1.0
+	 * @since 0.8.0
+	 *
+	 * @param 	string	$rowId
+	 * @param	string 	$color
+	 */
+	function effHighlightRow($rowId, $color=NULL){
+		global $objPage;
+
+		if(is_empty($color)){
+			$vars = $objPage->getVar('tplVars');
+		}else{
+			$vars['row_highlight'] = $color;
+		}
+
+		$color = $vars['row_highlight'];
+$str = <<<JS
+	$('#{$rowId}').mouseover(function() {
+		$(this).effect("highlight", {color: "{$color}"}, 3000);
+	});
+JS;
+
+		$objPage->addJSCode($str);
+    }
+
 
 
 ?>

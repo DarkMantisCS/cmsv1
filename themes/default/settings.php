@@ -2,16 +2,14 @@
 /*======================================================================*\
 ||              Cybershade CMS - Your CMS, Your Way                     ||
 \*======================================================================*/
-if(!defined('INDEX_CHECK')){die('Error: Cannot access directly.');}
+if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 
 //Highlight and Row Stuff
 //row_color1 and 2 should be the same in the css files
-$tpl['row_color1']          = '#ECECEC';
-$tpl['row_color2']          = '#D7DEE3';
 $tpl['row_highlight']       = '#bebebe';
 
 
-$i = '/'.root().TPL_ROOT.'buttons/';
+$i = '/'.root().Page::$THEME_ROOT.'buttons/';
 $img = '/'.root().'images/bbcode/';
 
 $tpl['IMG_locked']          = $i.'locked_old.png';

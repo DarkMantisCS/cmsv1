@@ -22,6 +22,10 @@ var User = {
 
 };
 
+var Page = {
+	highlight_color: "<?php echo $var['highlight_color']; ?>"
+}
+
 function showNotification(id, message, header, sticky){
 	$.gritter.add({
 		id : id,

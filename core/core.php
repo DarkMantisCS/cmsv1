@@ -321,6 +321,9 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 		translateFile(cmsROOT.'modules/core/lang.'.$language.'.php');
 	}
 
+    //include the templates settings, these will assign them to an array in the page class
+    if(is_readable(Page::$THEME_ROOT.'settings.php')){ include(Page::$THEME_ROOT.'settings.php'); }
+
 	//this sets the global theme vars
 	$objPage->setThemeVars();
 

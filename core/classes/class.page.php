@@ -15,7 +15,7 @@ class page extends coreClass{
 
 	static $THEME = '', $THEME_ROOT = '';
 	private $jsFiles = array(), $cssFiles = array(), $jsCode = array(), $cssCode = array();
-	private $tplVars = array(), $pageCrumbs = array();
+	protected $tplVars = array(), $pageCrumbs = array();
 	public $acpThemeROOT = 'core/coreThemes/acp/', $acpMode = false;
 
 	/**
@@ -54,7 +54,7 @@ class page extends coreClass{
 	 *
 	 * @param   string  $value
 	 */
-	public function updateTplVars(array $values){
+	public function updateTplVars($values){
 		$this->tplVars = array_merge($this->tplVars, $values);
 	}
 
