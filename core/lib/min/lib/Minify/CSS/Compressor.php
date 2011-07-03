@@ -85,7 +85,7 @@ class Minify_CSS_Compressor {
 
         // remove ws around { } and last semicolon in declaration block
         $css = preg_replace('/\\s*{\\s*/', '{', $css);
-        $css = preg_replace('/;?\\s*}\\s*/', '}', $css);
+        $css = preg_replace('/;?\\s*}\\s*/', ';}', $css);
         
         // remove ws surrounding semicolons
         $css = preg_replace('/\\s*;\\s*/', ';', $css);

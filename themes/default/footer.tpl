@@ -4,7 +4,7 @@
 		{L_PAGE_GEN}<br />{L_SITE_COPYRIGHT}<br />{L_TPL_INFO}
 	</footer>
 	<!-- BEGIN debug -->
-	<div id="pageContent" class="grid_12 content">
+	<div id="pageContent" class="grid_12">
 		<!-- BEGIN graphs -->
 		
 		<div style="display:table; float:left; margin: 20px;">
@@ -22,21 +22,23 @@
 			{debug.graphs.ramUsage}
 		</div>
 		
-		<br />
+		<div class="clear"></div>
 		<!-- END graphs -->
 		
-		<table width="100%" border="0" cellspacing="1" cellpadding="4">
-		  <tr class="thead padding">
-			<td width="8%">Q Time</td>
-			<td>Query</td>
-		  </tr>
-			{debug.CONTENT}
+		<table width="100%" border="0">
+			<tr class="thead padding">
+				<td width="5%">Q Time</td>
+				<td>Query</td>
+			</tr>
+		<!-- BEGIN info -->
+			<tr class="{debug.info.CLASS}">
+				<td align="center" valign="middle">{debug.info.TIME}</td>
+				<td class="padding">{debug.info.QUERY}</td>
+			</tr>
+		<!-- END info -->
 		</table>
 
-		<table width="100%" border="0" cellspacing="1" cellpadding="4">
-			<tr><td>{debug.LOG}</td></tr>
-			<tr><td>{debug.DEBUG}</td></tr>
-		</table>
+		{debug.DEBUG}
 	</div>    
 <!-- END debug -->
 </div>

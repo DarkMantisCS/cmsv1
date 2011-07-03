@@ -31,6 +31,10 @@ if(false){
 	echo dump($mode) . dump($module) . dump($action) . dump($extra);
 }
 
+//user isnt even logged in lets 404 them
+if(!User::$IS_ONLINE){
+	$objCore->throwHTTP(404);
+}
 
 //make sure they are getting at the right panel
 $checkMode = array('admin', 'mod', 'user');

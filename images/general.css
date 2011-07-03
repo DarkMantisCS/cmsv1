@@ -10,6 +10,14 @@ body {
 
 
 /* ** ** Common Addative Classes ** ** */
+.abs {
+	position: absolute;
+	top: auto;
+	left: auto;
+	right: auto;
+	bottom: auto;
+}
+
 .left, .float-left  { float:left	} img.float-left { margin:5px 10px 10px 0; }
 .right, .float-right { float:right	} img.float-right { margin:5px 0 10px 10px; }
 .center { margin: 0 auto !important; }

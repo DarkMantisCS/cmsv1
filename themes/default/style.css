@@ -192,7 +192,7 @@ footer{
 	font-weight: bold;
 }
 	.title, .menuTitle h3 {
-		margin: 0 -5px 0 -3px;
+		margin: 0 /*0 -5px 0 -3px*/;
 	}
 	.title h3 {
 		margin: 0;
@@ -201,7 +201,7 @@ footer{
 .content{
 	background-color: #FFFFFF;
 	display: block;
-	padding: 5px 2px 5px 5px;
+	/*padding: 5px 2px 5px 5px;*/
 	border: 1px solid #DDDDDD;
 }
 
@@ -335,12 +335,50 @@ form fieldset legend {
 	border-radius: 5px;
 }
 
+/** Table Stuff **/
+.tborder{
+	color: #626262;
+	border: 1px solid #DDDDDD;
+}
+.tcat{
+	background: #CCCCCC;
+	color: #000000;
+	height: 25px;
+	line-height: 25px;
+	padding: 2px;
+}
+.thead{
+	color: #000000;
+	font-weight: bold;
+    background-color: #a7adb2;
+    font-weight: bold;
+}
+.tcell{
+	background: #ececec;
+	color: #000000;
+}
+.tfoot{
+	background: #FEFEFE;
+	color: #000000;
+}
+.wiki-content table{ width: 100%; }
+
+/* Sortable tables */
+table.sortable thead {
+    background-color:#616161;
+    color:#fff;
+}
+
 /** Messages **/
 div.messages{ display: block; }
 div.messages .icon{ width:54px;  height:54px; }
 div.warning .icon{ background-image: url(images/alert.png); }
 div.error .icon{ background-image: url(images/error.png); }
 div.status .icon{ background-image: url(images/note.png); }
+
+/* Alternate Rows */
+.row_color1{background-color: #ECECEC;}
+.row_color2{background-color: #D7DEE3;}
 
 a.selectBox:hover{
 	text-decoration: none;

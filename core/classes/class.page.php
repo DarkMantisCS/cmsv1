@@ -598,24 +598,27 @@ class page extends coreClass{
 		if(true || User::$IS_ADMIN && !file_exists('debug')){
 			//if the debug happened..
 			if($this->objSQL->debug){
-				$string = null;
-				if(!is_empty($debug)){
-					foreach($debug as $row){
-						$string .= '<tr class="'.($counter++%2==0 ? 'row_color1' : 'row_color2').'">'.
-									'<td align="center">'.$row['time'].'</td><td>'.$row['query'].'</td></tr>';
-					}
-				}
-
 				//output some debug vars
 				if(!is_array($this->debugVars)){
 					$this->debugVars[] = dump($_POST);
 					$this->debugVars[] = dump($_SESSION);
 					$this->debugVars[] = dump($config);
 				}
+
 				$this->objTPL->assign_block_vars('debug', array(
-					'CONTENT'  => $string,
 					'DEBUG'    => implode("\n", $this->debugVars),
 				));
+
+				$string = null;
+				if(!is_empty($debug)){
+					foreach($debug as $row){
+						$this->objTPL->assign_block_vars('debug.info', array(
+							'CLASS'		=> ($counter++%2==0 ? 'row_color1' : 'row_color2'),
+							'TIME'		=> $row['time'],
+							'QUERY'		=> $row['query']
+						));
+					}
+				}
 
 				//grab the logs and output em if needed
 				$logs = $this->objSQL->getTable($this->objSQL->prepare('SELECT * FROM `$Plogs` ORDER BY id DESC LIMIT 10'));
