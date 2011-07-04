@@ -517,6 +517,7 @@ class page extends coreClass{
 	//
 	//--Menu Setup
 	//
+		global $config;
 
 		$noMenu = false;
 		if(defined('NO_MENU') && NO_MENU==true){ $noMenu = true; }
@@ -525,7 +526,7 @@ class page extends coreClass{
 		if($menu['module'] === false){ $noMenu = true; }
 
 		//we cant do nothin without any blocks
-		if($noMenu==false && isset($config['menu_blocks']) && !is_empty($config['menu_blocks'])){
+		if(!$noMenu && !is_empty($config['menu_blocks'])){
 			//if it got set to null, or wasnt set atall, default to the core menu
 			if(!isset($menu['module']) || is_empty($menu['module'])){ $menu['module'] = 'core'; }
 			if(!isset($menu['page_id']) || is_empty($menu['page_id'])){ $menu['page_id'] = 'default'; }

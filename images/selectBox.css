@@ -1,6 +1,8 @@
 /* Dropdown control */
 .selectBox-dropdown {
-	width: 210px; /* width = (desired width) - padding-right */
+	min-width: 95px;
+	width: 100%;
+	max-width: 210px;
 	padding: 4px 40px 0 3px;
 	position: relative;
 	border: solid 1px #BBB;

@@ -158,21 +158,23 @@ section aside#sidebar {
 	aside#sidebar .sideMenu{
 		margin: 0 0 15px 3px;
 	}
-		aside#sidebar .sideMenu h3{
+		aside#sidebar .sideMenu h4{
 			display: block;
-			font-size: 20px;
 			padding: 5px;
 		}
-	aside#sidebar .title{
+	aside#sidebar header.title{
 		-webkit-border-top-right-radius: 5px;
 		-webkit-border-bottom-right-radius: 5px;
 		-moz-border-radius-topright: 5px;
 		-moz-border-radius-bottomright: 5px;
 		border-top-right-radius: 5px;
 		border-bottom-right-radius: 5px;
+		
+		margin: 0 -5px 0 -3px;
 	}
 	aside#sidebar .sideMenu section{
 		margin: 0 0 0 -3px;
+		padding: 5px;
 	}
 	#pageContent header.title{
 		-webkit-border-radius: 5px;
@@ -191,10 +193,7 @@ footer{
 	color: #FFFFFF;
 	font-weight: bold;
 }
-	.title, .menuTitle h3 {
-		margin: 0 /*0 -5px 0 -3px*/;
-	}
-	.title h3 {
+	.title h4 {
 		margin: 0;
 		padding: 5px;
 	}
@@ -388,4 +387,9 @@ a.selectBox:hover{
 	-webkit-box-shadow: 0 7px 15px #000000;
 	-moz-box-shadow: 0 7px 15px #000000;
 	box-shadow: 0 7px 15px #000000;
+}
+
+
+div#loginBox{
+	margin: 0 0 0 20px;
 }

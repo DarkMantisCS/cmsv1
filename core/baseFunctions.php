@@ -75,7 +75,14 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 
 		//if we have a callback then exec
 		if($callback !== false){
-			$extra = (is_callable($callback) ? call_user_func($callback, $args[$key]) : false);
+			if(is_callable($callback)){
+				//this will allow anonymous functions to be used
+				if(is_object($callback)){
+					return $callback($args[$key]);
+				}
+
+				$extra = call_user_func($callback, $args[$key]);
+			}
 		}
 
 		//test and return a value
@@ -337,9 +344,7 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 
 		//get how many arguments the function received
 		$args = func_get_args();
-		$var = $args[0]; //the lang var should be the first argument anyways
-
-		$var = doArgs($var, null, $_lang); //get the corresponding lang var
+		$var = doArgs($args[0], null, $_lang); //get the corresponding lang var
 
 		//quick test to make sure the lang var exists
 		if(is_empty($var)){ return false; }
@@ -505,13 +510,13 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 		$objTPL = $objCore->objTPL;
 
 		//if we havent got what we need, attempt to grab it
-		if(!isset($config['menu_setups']) || $config['menu_setups']===NULL){
+		if(!doArgs('menu_setups', false, $config)){
 			$query = 'SELECT * FROM $Pmenu_setups WHERE module = "%s" AND page_id = "%s" ORDER BY `order` ASC';
 			$config['menu_setups'] = $objSQL->getTable($objSQL->prepare($query, $module, $page_id));
 		}
 
         //make sure we have something to play with
-        if(is_empty($config['menu_setups'])){ return false; }
+        if(!doArgs('menu_setups', false, $config)){ return false; }
 
         //sort out where the menus are supposed to go
         $menu = array();
@@ -562,20 +567,23 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
                     $params = (is_empty($row['params']) ? array() : parseMenuParams($row['params']));
 
                     //set various things up accordingly
-                    $title = doArgs('menu_title', $params['menu_title'], $params);
-					$content = langVar('INVALID_FUNCTION', $menu['function'].'()');
+                    $params['menu_title'] = doArgs('menu_title', $params['menu_title'], $params, function($var){
+                    	$title = langVar(strtoupper($var));
+                    	return (is_empty($title) ? $var : $title);
+                    });
+					$content = langVar('L_INVALID_FUNCTION', $menu['function'].'()');
 
 					//can we call the function or do we have to generate from get_menu()?
-					if(is_callable($menu['function']) && $objUser->checkPermissions($objUser->grab('id'), $menu['perms'])){
+					if(is_callable('menu_'.$menu['function'])){
 						//we wanna add in some custom params
 						$params += array(
-							'uniqueId' 	=> $menu['uniqueId'],
+							'uniqueId' 	=> substr(md5($i), 0, 9),
 							'block' 	=> $k.'_menu',
-							'title' 	=> $title
+							'title' 	=> $params['menu_title']
 						);
 
 						//call the function
-						$content = call_user_func($menu['function'], $params);
+						$content = call_user_func('menu_'.$menu['function'], $params);
 
 					}else if(is_empty($menu['function']) || $menu['function']=='NULL'){
 						//switch so we get the right menu
@@ -596,7 +604,7 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 				}
 				//output it on the template
     			$objTPL->assign_block_vars($k.'_menu', array(
-    				'TITLE'            => $title,
+    				'TITLE'            => $params['menu_title'],
     				'CONTENT'          => $content,
     			));
 			}

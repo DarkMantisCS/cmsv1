@@ -37,8 +37,8 @@ switch($mode){
 		}
 
 	    if(!empty($_SESSION['login']['error'])){
-			$objTPL->assign_block_vars('form_error', array('ERROR'=>$_SESSION['login']['error'], 'CLASS'=>doArgs('class', 'boxred', $_SESSION['login'])));
-	    	$_SESSION['login']['error'] = '';
+			$objTPL->assign_block_vars('form_error', array('ERROR' => $_SESSION['login']['error'], 'CLASS' => doArgs('class', 'boxred', $_SESSION['login'])));
+            unset($_SESSION['login']['error']);
 	    }
 
 	    //we do want let them auto login? acpCheck auto disables it

@@ -45,6 +45,29 @@ $_lang['L_REMBER_ME']			= 'Remember Me';
 //log stuff
 $_lang['LOG_CREATED_USER'] 		= 'We\'ve done it! <a href="%s">%s</a>, he..he lives! Giovanni will be impressed at the power this creature wields...';
 
+//menu titles
+$_lang['M_MAIN_MENU']			= 'Main Menu';
+$_lang['M_LOGIN']				= 'Login';
+$_lang['M_USER_MENU']			= 'User Menu';
+$_lang['M_WIO']					= 'Who Is Online';
+$_lang['M_ANNOUNCEMENT']		= 'Announcement';
+$_lang['M_STATS']				= 'CMS Statistics';
+$_lang['M_AFFILIATES']			= 'Affiliates';
+$_lang['M_UMOD']				= 'User Moderation';
+
+//menu blocks
+$_lang['L_INVALID_FUNCTION']    = '<b>Fatal Error</b>: Function <i>%s</i> was not found.';
+
+//who is online block
+$_lang['L_KEY']					= 'User Key:';
+$_lang['L_USERS_ONLINE']		= 'Users Online:';
+$_lang['L_NO_ONLINE_USERS']		= 'There are currently no users online.';
+
+//logon block
+$_lang['L_LAST_VISIT']          = 'Last Visit: %s';
+$_lang['L_REMME']               = 'Remember Me';
+
+
 //Time Stuff
 $_lang['DATETIME']['Sunday'] 	= 'Sunday';
 $_lang['DATETIME']['Monday'] 	= 'Monday';

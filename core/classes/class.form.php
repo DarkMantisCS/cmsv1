@@ -175,6 +175,7 @@ class form extends coreClass{
 	public function button($name=null, $value, $args=array()){
 		$type = ($name=='submit' ? 'submit' : ($name=='reset' ? 'reset' : doArgs('type', 'button', $args)));
 		$name = doArgs('name', $name, $args);
+		$args['class'] = 'button';
 
 		return $this->inputbox($name, $type, $value, $args);
 	}

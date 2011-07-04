@@ -1,0 +1,16 @@
+
+.title .catIcon{
+	margin: 8px 0 0 11px;
+}
+.title .catName{
+	margin: 6px 0 -5px 14px;
+}
+
+.catClear .title {
+	margin: 0 0 -4px 0;
+	width:100%;
+}
+.catClear.content{
+	margin: 0 0 10px;
+}
+

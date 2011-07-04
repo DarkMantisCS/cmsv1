@@ -265,14 +265,14 @@ class coreClass{
             }
         }
 
-        /*/now with the rest of the checks
+        //now with the rest of the checks
 		if(!is_file(cmsROOT.'modules/'.$module.'/cfg.php')){
             hmsgDie('FAIL', 'Could not locate the configuration file for "'.$module.'". Load Failed');
         }
 
         if(!is_file(cmsROOT.'modules/'.$module.'/'.$mode.'.'.$module.'.php')){
             hmsgDie('FAIL', 'Could not locate Module "'.$module.'". Load Failed');
-        }*/
+        }
 
             include_once(cmsROOT.'modules/'.$module.'/'.$mode.'.'.$module.'.php');
             if($languageFile){
