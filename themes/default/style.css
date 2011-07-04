@@ -201,7 +201,8 @@ footer{
 	background-color: #FFFFFF;
 	display: block;
 	/*padding: 5px 2px 5px 5px;*/
-	border: 1px solid #DDDDDD;
+	border: 1px solid #000000;
+	border-bottom: 2px solid #000000;
 }
 
 /** ControlPanel Menu **/

@@ -294,7 +294,7 @@ class forum extends Module{
 					$last_post   = '/'.root().USERTPL.'buttons/goto_reply.gif';
 
         			$this->objTPL->assign_block_vars('forum.row', array(
-                        'ROWSPAN'       =>  !empty($grandChildren) ? 2 : 1,
+                        'ROWSPAN'       =>  !is_empty($grandChildren) ? 2 : 1,
 
                         'ID'            =>  $child['id'],
         				'CAT_ICO'		=>	$vars[$ico],
@@ -311,16 +311,16 @@ class forum extends Module{
                         'LP_AUTHOR'		=> 	$last_author,
                         'LP_URL'	    =>	!is_empty($last_title)
                                                 ? '/'.root().'modules/forum/thread/'.seo($lastThread['thread_name']).'-'.$lastThread['last_post'].'.html'
-                                                : NULL,
-                        'LP_TITLE'      =>  !is_empty($last_title) ? secureMe($last_title) : NULL,
-                        'LP_TIME'       =>  !is_empty($last_title) ? $this->objTime->mk_time($lastThread['post_time']) : NULL,
+                                                : null,
+                        'LP_TITLE'      =>  !is_empty($last_title) ? secureMe($last_title) : null,
+                        'LP_TIME'       =>  !is_empty($last_title) ? $this->objTime->mk_time($lastThread['post_time']) : null,
                         'LP_REPLY_URL'	=>	!is_empty($last_title)
                                                 ? '/'.root().'modules/forum/thread/'.seo($lastThread['thread_name']).'-'.$lastThread['last_post'].'.html?mode=last_page'
-                                                : NULL,
-                        'LP_REPLY_IMG'  =>  !is_empty($last_title) ? '<img src="'.$last_post.'" alt="" />' : NULL,
+                                                : null,
+                        'LP_REPLY_IMG'  =>  !is_empty($last_title) ? '<img src="'.$last_post.'" alt="" />' : null,
 
-                        'L_MODS'        =>  is_array($forum_moderators[$child['id']]) ? langVar('MODS') : NULL,
-        				'C_MODS'        =>  is_array($forum_moderators[$child['id']]) ? implode(', ', $forum_moderators[$child['id']]) : NULL,
+                        'L_MODS'        =>  is_array($forum_moderators[$child['id']]) ? langVar('MODS') : null,
+        				'C_MODS'        =>  is_array($forum_moderators[$child['id']]) ? implode(', ', $forum_moderators[$child['id']]) : null,
         			));
 
                     if(!is_empty($grandChildren)){
@@ -356,9 +356,88 @@ class forum extends Module{
            }
         }
 
+	//
+	//-- Stats
+	//
+		//figure out which users have been active in the last 24 hours
+		$user24 = $this->objSQL->getTable($this->objSQL->prepare(
+			'SELECT * FROM `$Pusers`
+				WHERE timestamp >= %d
+				AND active = 1
+				ORDER BY timestamp DESC',
+			$this->objTime->mod_time(time(), 0, 0, 24, 'MINUS')
+		));
 
+        if(!is_empty($user24)){
+            $users24 = array();
+            foreach($user24 as $u){ $users24[] = $this->objUser->profile($u['id']); }
+        }else{
+            $users24 = array(langVar('M_NOONE24'));
+        }
 
+        global $config;
 
+        //grab the groups and output em into a key
+		$key = '';
+		if($config['groups']){
+
+			$groups = array();
+			foreach($config['groups'] as $group){
+				if($group['type'] == GROUP_HIDDEN){ continue; }
+				if($group['single_user_group']){ continue; }
+
+				$groups[] = $group;
+			}
+
+			$add = ' | '; $group_count = count($groups); $counter = 1;
+	  		foreach($groups as $group){
+				if($group_count == ($counter)){ $add = ''; }
+				$key .= '<font style="color: '.$group['color'].'" class="username '.strtolower($group['name']).'" title="'.$group['description'].'">'.$group['name'].'</font>'.$add;
+
+				$counter++;
+			}
+		}
+
+		//grab the currently online users
+        $userO = $this->objSQL->getTable($this->objSQL->prepare(
+			'SELECT * FROM `$Ponline` WHERE timestamp >= %s',
+			$this->objTime->mod_time(time(), 0, 20, 0, 'MINUS')
+		));
+
+        $usersO = 0; $guestsO = 0;
+        if(count($userO)){
+            foreach($userO as $u){
+                if($u['uid']==0){   $guestsO++; continue;   }
+                if($u['uid']!=0){   $usersO++;  continue;   }
+            }
+        }
+
+		$boarddays = (time() - $this->config('statistics', 'site_opened')) / 86400;
+        $total_topics   = $this->objSQL->getInfo('forum_threads', false);
+        $total_posts    = $this->objSQL->getInfo('forum_posts', false) + $total_topics;
+        $total_users    = $this->objSQL->getInfo('users', false);
+        $last_user      = $this->objSQL->getLine('SELECT id FROM '.$this->objSQL->prefix().'users WHERE active = 1 ORDER BY id DESC');
+
+		$this->objTPL->assign_block_vars('stats', array(
+			'L_STATS'			=> langVar('L_STATS'),
+
+			'L_THREADS'			=> langVar('L_THREADS'),
+			'C_THREADS'			=> $total_topics,
+
+			'L_POSTS'			=> langVar('L_POSTS'),
+			'C_POSTS'			=> $total_posts,
+
+			'L_USERS'			=> langVar('L_TMEMBERS'),
+			'C_USERS'			=> $total_users,
+
+			'L_NEWUSER'			=> langVar('L_NEW_MEMBER'),
+			'C_NEWUSER'			=> $this->objUser->profile($last_user['id']),
+
+			'TOTAL_USERS'		=> langVar('M_TUSERS', $usersO, $guestsO),
+			'USER24'			=> langVar('M_USERSONLINE24', count($users24), implode($users24, ', ')),
+
+			'LEGEND'			=> langVar('F_LEGEND', $key),
+        ));
 
 		$this->objTPL->parse('body', false);
     }
@@ -495,7 +574,7 @@ class forum extends Module{
     	// has the type set to ALL, if yes they are good to go, if not then they
     	// are denied access
     	$u_access = array();
-    	if(IS_ONLINE){
+    	if(user::$IS_ONLINE){
             if(!isset($this->authQuery2[$type][$forum_id])){
                 if(!isset($this->authQuery3)){
             		$this->authQuery3 = $query = $this->objSQL->getTable($this->objSQL->prepare(

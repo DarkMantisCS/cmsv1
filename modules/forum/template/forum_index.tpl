@@ -8,7 +8,7 @@
         </div>
       <!-- END expand -->
     	<div class="float-left catName">
-        	<h3>{forum.CAT}</h3>
+        	<h4>{forum.CAT}</h4>
         </div>
     </div>
 	<div id="f_{forum.ID}" style="{forum.DISPLAY}">
@@ -49,3 +49,38 @@
 </div>
 <!-- END forum -->
 </div>
+
+<!-- BEGIN stats -->
+<br />
+<div class="content corners">
+    <div class="title padding corners-top"><h4 style="margin: 0;">{stats.L_STATS}</h4></div>
+    <table width="100%" border="0" cellspacing="0" cellpadding="0" class="padding">
+      <tr>
+        <td>
+        {stats.TOTAL_USERS}
+        <hr size="1" style="color: rgb(10, 10, 10);" />
+        {stats.USER24}<br />
+        {stats.LEGEND}
+        <hr size="1" style="color: rgb(10, 10, 10);" />
+        <strong>{stats.L_THREADS}</strong>: {stats.C_THREADS} | 
+		<strong>{stats.L_POSTS}</strong>: {stats.C_POSTS} | 
+		<strong>{stats.L_USERS}</strong>: {stats.C_USERS} | 
+		<strong>{stats.L_NEWUSER}</strong>: {stats.C_NEWUSER}
+        </td>
+      </tr>
+    </table>
+	<div class="clear"></div>
+</div>
+<!-- END stats -->
+<br />
+<table border="0" cellspacing="1" cellpadding="1" align="right" class="content" style="width: 45%;">
+  <tr>
+    <td class="row_color1" align="center"><img src="{I_NO_POSTS}" /></td>
+    <td class="row_color1">{L_NO_POSTS}</td>
+    <td class="row_color2" align="center"><img src="{I_NEW_POSTS}" /></td>
+    <td class="row_color2">{L_NEW_POSTS}</td>
+    <td class="row_color1" align="center"><img src="{I_LOCKED}" /></td>
+    <td class="row_color1">{L_LOCKED}</td>
+  </tr>
+</table>
+<div class="clear"></div>
