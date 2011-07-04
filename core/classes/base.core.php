@@ -161,6 +161,19 @@ class coreClass{
 	}
 
 	/**
+	 * Returns the name of the class this var an instance of
+	 *
+	 * @version	1.0
+	 * @since 	1.0.0
+	 * @author 	xLink
+	 *
+	 * @return 	string
+	 */
+	public function name(){
+        return get_class($this);
+    }
+
+	/**
 	 * Throws a HTTP Error Code and a pretty CMS Page
 	 *
 	 * @version 1.0

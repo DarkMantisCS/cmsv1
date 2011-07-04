@@ -97,8 +97,13 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 
 	//load in outside classes
 	$classFiles = array(
-					$classDir.'base.core.php',
-					$classDir.'base.sql.php',
+					$classDir.'base.core.php', #all CMS classes extend this one
+					$classDir.'base.sql.php', #this is the SQL template
+
+					$classDir.'class.pagination.php', #include pagination functionality
+					//$classDir.'class.comments.php', #includes comments functionality
+					//$classDir.'class.rating.php', # this one includes a rating system
+
 					$libDir.'phpass/class.phpass.php',
 					$libDir.'nbbc/class.nbbc.php'
 				);

@@ -10,6 +10,18 @@ class forum extends Module{
         $this->objPage->setMenu('forum');
         $this->objPage->addJSFile('/'.root().'modules/forum/scripts/forum.js');
         $this->objPage->addCSSFile('/'.root().'modules/forum/styles/forum.css');
+        $vars = $this->objPage->getVar('tplVars');
+
+		$this->objTPL->assign_vars(array(
+			'I_NO_POSTS'		=> $vars['IMG_posts_old'],         'L_NO_POSTS'		    => langVar('I_NO_POSTS'),
+			'I_NEW_POSTS'		=> $vars['IMG_posts_new'],         'L_NEW_POSTS'		=> langVar('I_NEW_POSTS'),
+			'I_LOCKED'			=> $vars['IMG_locked'],   	       'L_LOCKED'			=> langVar('I_LOCKED'),
+			'I_ANNOUNCEMENT'	=> $vars['IMG_announcement_old'],  'L_ANNOUNCEMENT'	    => langVar('I_ANNOUNCEMENT'),
+			'I_STICKY'			=> $vars['IMG_sticky_old'],   	   'L_STICKY'			=> langVar('I_STICKY'),
+		));
+
+
+
         //reset the forum tracker
         if(User::$IS_ONLINE){
             //$this->forumTrackerInit();
@@ -266,22 +278,26 @@ class forum extends Module{
 					$grandChildren = $this->getForumInfo($child['id'], true);
 
 					$row_color = $row_count%2==1 ? 'row_color1' : 'row_color2';
-					$ico = 'IMG_posts_old';
+			    	$icon_status = '_old';
 					if(User::$IS_ONLINE){
 						$tracking_topics = array(); $tracker = doArgs('forum_tracker', false, $_SESSION['user']);
-						if(!is_empty($tracker)){
-							$tracking_topics = unserialize($tracker);
-						}
+						if(!is_empty($tracker)){ $tracking_threads = unserialize($tracker); }
 
-						if($tracking_topics!==NULL && !empty($tracking_topics)){
-							foreach($tracking_topics as $topic){
-								if($topic['cat_id'] == $child['id'] && $topic['read']===false){
-									$ico = 'IMG_posts_new';
+						if(!is_empty($tracking_threads)){
+							foreach($tracking_threads as $t){
+								if($t['cat_id'] == $child['id'] && $t['read']===false){
+					        	   $icon_status = '_new';
 								}
 							}
 						}
 					}
-					if($topic['locked']==1){ $ico = 'IMG_locked'; }
+					if($thread['locked']==1){ $ico = 'IMG_locked'; }
+
+					switch($post['mode']){
+						case 1: 	$ico = 'IMG_announcement'.$icon_status; break;
+						case 2: 	$ico = 'IMG_sticky'.$icon_status; 		break;
+						default: 	$ico = 'IMG_posts'.$icon_status; 		break;
+					}
 
 					//sort though the last post stuff :D
 					$lastThread = $this->modCat($child, 'last_post');
@@ -291,7 +307,7 @@ class forum extends Module{
 					});
 
 					$last_author = !is_empty($lastThread['last_author']) ? 'by '.$this->objUser->profile($lastThread['last_author']) : langVar('L_NO_POST');
-					$last_post   = '/'.root().USERTPL.'buttons/goto_reply.gif';
+					$last_post   = '/'.root().Page::$THEME_ROOT.'buttons/goto_reply.gif';
 
         			$this->objTPL->assign_block_vars('forum.row', array(
                         'ROWSPAN'       =>  !is_empty($grandChildren) ? 2 : 1,
@@ -333,10 +349,10 @@ class forum extends Module{
                         foreach($grandChildren as $child){
                 			if(!$this->auth[$child['id']]['auth_view']){ continue; }
     						$ico = 'IMG_subForum_old';
-                            if(User::$IS_ONLINE && $tracking_topics){
-                				if($tracking_topics!==NULL && !empty($tracking_topics)){
-                					foreach($tracking_topics as $topic){
-                						if($topic['cat_id'] == $child['id'] && $topic['read']===false){
+                            if(User::$IS_ONLINE && $tracking_threads){
+                				if(!is_empty($tracking_threads)){
+                					foreach($tracking_threads as $thread){
+                						if($thread['cat_id'] == $child['id'] && $thread['read']===false){
                 							$ico = 'IMG_subForum_new';
                 						}
                 					}
@@ -361,10 +377,9 @@ class forum extends Module{
 	//
 		//figure out which users have been active in the last 24 hours
 		$user24 = $this->objSQL->getTable($this->objSQL->prepare(
-			'SELECT * FROM `$Pusers`
-				WHERE timestamp >= %d
-				AND active = 1
-				ORDER BY timestamp DESC',
+			'SELECT id, last_active FROM `$Pusers`
+				WHERE last_active >= %d
+				ORDER BY last_active DESC',
 			$this->objTime->mod_time(time(), 0, 0, 24, 'MINUS')
 		));
 
@@ -421,26 +436,30 @@ class forum extends Module{
 		$this->objTPL->assign_block_vars('stats', array(
 			'L_STATS'			=> langVar('L_STATS'),
 
-			'L_THREADS'			=> langVar('L_THREADS'),
+			'L_THREADS'			=> langVar('L_TOT_THREADS'),
 			'C_THREADS'			=> $total_topics,
 
-			'L_POSTS'			=> langVar('L_POSTS'),
+			'L_POSTS'			=> langVar('L_TOT_POSTS'),
 			'C_POSTS'			=> $total_posts,
 
-			'L_USERS'			=> langVar('L_TMEMBERS'),
+			'L_USERS'			=> langVar('L_TOT_MEMBERS'),
 			'C_USERS'			=> $total_users,
 
 			'L_NEWUSER'			=> langVar('L_NEW_MEMBER'),
 			'C_NEWUSER'			=> $this->objUser->profile($last_user['id']),
 
-			'TOTAL_USERS'		=> langVar('M_TUSERS', $usersO, $guestsO),
-			'USER24'			=> langVar('M_USERSONLINE24', count($users24), implode($users24, ', ')),
+			'L_TOTAL_USERS'		=> langVar('L_USERSONOFF', $usersO, $guestsO),
+			'USER24'			=> langVar('L_USERSONLINE24', count($users24), implode(', ', $users24)),
 
-			'LEGEND'			=> langVar('F_LEGEND', $key),
+			'LEGEND'			=> langVar('L_LEGEND', $key),
         ));
 
 		$this->objTPL->parse('body', false);
     }
+
+	public function viewCat($category){
+
+	}
 
 
     private function modCat($cat, $mode){

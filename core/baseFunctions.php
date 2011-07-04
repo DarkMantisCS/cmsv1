@@ -70,21 +70,23 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 	 *
 	 * @return 	string
 	 */
-	function doArgs($key, $defaultValue, $args, $callback=false){
+	function doArgs($key, $defaultValue, $args, $callback=null){
 		$extra = true; //set this to true so the end result will work
 
 		//if we have a callback then exec
-		if($callback !== false){
-			if(is_callable($callback)){
-				//this will allow anonymous functions to be used
-				if(is_object($callback)){
-					return $callback($args[$key]);
-				}
-
-				$extra = call_user_func($callback, $args[$key]);
-			}
+		if(is_empty($callback)){
+			//test and return a value
+			return (isset($args[$key]) ? $args[$key] : $defaultValue);
 		}
 
+		if(is_callable($callback)){
+			//this will allow anonymous functions to be used
+			if(is_object($callback)){
+				return $callback($args[$key]);
+			}
+
+			$extra = call_user_func($callback, $args[$key]);
+		}
 		//test and return a value
 		return (isset($args[$key]) && $extra ? $args[$key] : $defaultValue);
 	}
@@ -815,7 +817,6 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 	 */
     function contentParse($content, $echoContent=false, $showSmilies=true){
     	global $objCore;
-
         //load a new instance up
         $objBBCode = new BBCode;
 
@@ -830,8 +831,8 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
         $objBBCode->SetEnableSmileys($showSmilies);
 
         //output the $content
-        if($echoContent===false){ return $objBBCode->parse(secureMe($content)); }
-        echo $objBBCode->parse(secureMe($content));
+        if(!$echoContent){ return $objBBCode->parse(htmlspecialchars_decode($content)); }
+        echo $objBBCode->parse(htmlspecialchars_decode($content));
     }
 
 	/**
@@ -849,6 +850,7 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 	function secureMe($string, $mode='html') {
 		switch(strtolower($mode)) {
 			case 'html':
+				$string = htmlspecialchars_decode($string);
 				$string = htmlspecialchars($string);
 			break;
 
