@@ -2,9 +2,6 @@
 .title .catIcon{
 	margin: 8px 0 0 11px;
 }
-/*.title .catName{
-	margin: 6px 0 -5px 14px;
-}*/
 
 .catClear .title {
 	margin: 0 0 -4px 0;
@@ -14,3 +11,10 @@
 	margin: 0 0 10px;
 }
 
+
+
+.title .button{
+	border-radius: 0; 
+	margin: 2px 3px 0 0; 
+	float: right;
+}

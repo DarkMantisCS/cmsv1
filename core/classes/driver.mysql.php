@@ -376,7 +376,7 @@ class mysql extends coreClass implements SQLBase{
 	 * @return 	int
 	 */
 	public function getInfo($table, $clause=null, $log=false){
-		$statement = 'SELECT COUNT(*) FROM `$P%s`';
+		$statement = 'SELECT COUNT(*) as count FROM `$P%s`';
 		if(!is_empty($clause)){
 			$statement .= ' WHERE '.$this->autoPrepare($clause);
 		}
@@ -384,7 +384,7 @@ class mysql extends coreClass implements SQLBase{
 		$statement = $this->prepare($statement, $table);
 		$line = $this->getLine($statement, $log);
 
-		return $line['COUNT(*)'];
+		return $line['count'];
 	}
 
 	/**

@@ -27,6 +27,13 @@ class forum extends Module{
             //$this->forumTrackerInit();
         }
 
+            //view category
+            if(preg_match('_^([a-z0-9-]*)-([0-9]*)/page([0-9]*)_i', $action, $boardId) ||
+                preg_match('_^([a-z0-9-]*)-([0-9]*)_i', $action, $boardId)){
+                    $action = 'cat';
+                    $this->rowstart = isset($boardId[3]) ? $boardId[3] : 0;
+            }
+
 		if($action=='index' || is_empty($action)){
 			$action = 'index';
 		}
@@ -50,6 +57,10 @@ class forum extends Module{
 				$this->showIndex();
 			break;
 
+            case 'cat':
+                $this->viewCat($boardId[2]);
+            break;
+
 			default:
 			case 404:
 				$this->throwHTTP(404);
@@ -69,99 +80,88 @@ class forum extends Module{
 	 * @return 	array
 	 */
 	public function getForumInfo($id=0, $subs=false){
+
 		//see if we have the cache in place
-		if(!is_empty($this->forum)){
-			//are we wanting the sub categories only?
-			if($subs){
-				//check if we have sub cats..
-				$subs = array();
-				foreach($this->forum as $cat){
-					if($this->auth[$cat['id']]['auth_view'] && $cat['parent_id'] == $id){
-						$subs[$cat['id']] = $cat;
-					}
-				}
-				return $subs;
+		if(is_empty($this->forum)){
+			$this->forum = array();
 
-			//return specific category or all of em
-			}else{
-				//if they gave us a number for a ID give them the specific forum ID back
-				if(is_number($id) && isset($this->forum[$id])){
-					return $this->forum[$id];
-				}
+			//grab the categories and some extra details
+			$cats = $this->objSQL->getTable($this->objSQL->prepare('
+				SELECT f.*, u.id as uid,
+					t.id as tid, t.subject as thread_name, t.timestamp as thread_posted, p.author as last_author, p.timestamp as last_posted
+				FROM `$Pforum_cats` as f
+				LEFT JOIN `$Pforum_posts` as p
+					ON p.id = f.last_post_id
+				LEFT JOIN `$Pforum_threads` as t
+					ON p.thread_id = t.id
+				LEFT JOIN `$Pusers` as u
+					ON u.id = p.author
+				ORDER BY f.order ASC
+			'));
+		        if(!$cats){ hmsgDie('FAIL', 'Error: No forum information avalible at this time.'); }
+				$this->objSQL->freeResult($cats);
 
-				//if it was a asterix, give it all to em
-				if($id == '*'){ return $this->forum; }
+			//shove each forum into a cache var so we dont have to keep querying for em
+			foreach($cats as $cat){
+				$this->forum[$cat['id']] = $cat;
+			}
+
+	        //get a list of permissions for the user
+	    	$this->auth = $this->auth(AUTH_ALL, AUTH_LIST_ALL, $cats);
+
+			$counts = $this->objSQL->getTable($this->objSQL->prepare('
+				SELECT c.id, COUNT(DISTINCT t.id) AS thread_count, COUNT(DISTINCT p.id) AS post_count
+				FROM `$Pforum_cats` c
+				LEFT JOIN `$Pforum_threads` t
+					ON t.cat_id = c.id
+				LEFT JOIN `$Pforum_posts` p
+					ON t.id = p.thread_id
+
+				GROUP BY c.id
+			'));
+		        if(!$counts){ hmsgDie('FAIL', 'Error: No forum information avalible at this time.'); }
+				$this->objSQL->freeResult($counts);
+
+			//add the counts to them
+			foreach($counts as $count){
+				$this->forum[$count['id']]['thread_count'] = $count['thread_count'];
+				$this->forum[$count['id']]['post_count'] = $count['post_count'];
 			}
 		}
 
-		$this->forum = array();
 
-		//grab the categories and some extra details
-		$cats = $this->objSQL->getTable($this->objSQL->prepare('
-			SELECT f.*, u.id as uid,
-				t.id as tid, t.subject as thread_name, t.timestamp as thread_posted, p.author as last_author, p.timestamp as last_posted
-			FROM `$Pforum_cats` as f
-			LEFT JOIN `$Pforum_posts` as p
-				ON p.id = f.last_post_id
-			LEFT JOIN `$Pforum_threads` as t
-				ON p.thread_id = t.id
-			LEFT JOIN `$Pusers` as u
-				ON u.id = p.author
-			ORDER BY f.order ASC
-		'));
-	        if(!$cats){ hmsgDie('FAIL', 'Error: No forum information avalible at this time.'); }
-			$this->objSQL->freeResult($cats);
+		//are we wanting the sub categories only?
+		if($subs){
+			//check if we have sub cats..
+			$cats = array(); $forums = $this->forum;
+			foreach($forums as $cat){
+				if($this->auth[$cat['id']]['auth_view'] && $cat['parent_id'] == $id){
+					$cats[$cat['id']] = $cat;
+				}
+			}
+			return $cats;
 
-		//shove each forum into a cache var so we dont have to keep querying for em
-		foreach($cats as $cat){
-			$this->forum[$cat['id']] = $cat;
+		//return specific category or all of em
+		}else{
+			//if it was a asterix, give it all to em
+			if($id == '*'){ return $this->forum; }
+
+			//if they gave us a number for a ID give them the specific forum ID back
+			if(is_number($id) && isset($this->forum[$id])){
+				return array($this->forum[$id]);
+			}
 		}
-
-		$counts = $this->objSQL->getTable($this->objSQL->prepare('
-			SELECT c.id, COUNT(DISTINCT t.id) AS thread_count, COUNT(DISTINCT p.id) AS post_count
-			FROM `$Pforum_cats` c
-			LEFT JOIN `$Pforum_threads` t
-				ON t.cat_id = c.id
-			LEFT JOIN `$Pforum_posts` p
-				ON t.id = p.thread_id
-
-			GROUP BY c.id
-		'));
-	        if(!$counts){ hmsgDie('FAIL', 'Error: No forum information avalible at this time.'); }
-			$this->objSQL->freeResult($counts);
-
-		//add the counts to them
-		foreach($counts as $count){
-			$this->forum[$count['id']]['thread_count'] = $count['thread_count'];
-			$this->forum[$count['id']]['post_count'] = $count['post_count'];
-		}
-
-		//if they gave us a number for a ID give them the specific forum ID back
-		if(is_number($id) && isset($this->forum[$id])){
-			return $this->forum[$id];
-		}
-
-		//if it was a asterix, give it all to em
-		if($id == '*'){ return $this->forum; }
 
 		//otherwise we cant accommodate them so return false
 		return false;
 	}
 
-
-    /**
-     * Shows outputs the first level of forums with sub forums and threads
-     *
-     * @version	2.0
-     * @since   1.0.0
-     */
-    public function showIndex(){
+	public function outputCats($categories, $index=false, $title=null){
         $vars = $this->objPage->getVar('tplVars');
         $_row_color1 = $vars['row_color1']; $_row_color2 = $vars['row_color2'];  $_row_highlight = $vars['row_highlight'];
-        $this->objPage->setTitle('Forum');
 
         $this->objTPL->set_filenames(array(
-        	'body' => 'modules/forum/template/forum_index.tpl'
+        	'categories' => 'modules/forum/template/forum_categoryOutput.tpl',
         ));
 
 	//
@@ -195,47 +195,6 @@ class forum extends Module{
 	//
 	//--Moderator Setup
 	//
-		//grab the categories and some extra details
-		$mainCats = $this->getForumInfo('*');
-
-        //get a list of permissions for the user
-    	$this->auth = $this->auth(AUTH_VIEW, AUTH_LIST_ALL, $mainCats);
-
-        //and then find out which main cats the user can see
-        $categories = array();
-        foreach($mainCats as $cat){
-            if($this->auth[$cat['id']]['auth_view'] && $cat['parent_id']==0){ $categories[] = $cat; }
-        }
-
-        /* Sortable Cats */
-        $reOrder = false;
-        if(User::$IS_ONLINE && $this->config('forum', 'sortables_categories')){
-            $reOrder = (!is_empty($this->objUser->grab('forum_order')) ? unserialize($this->objUser->grab('forum_order')) : false);
-
-            //we have an active order that we can use to reorder the forum cats
-            if($reOrder){
-                $newOrder = array();
-                //$reOrder as $id => $display
-                foreach($reOrder as $k => $v){
-                    foreach($categories as $f){
-                        if($f['id']==$k){
-                            $f['_display'] = $v;
-                            $newOrder[$k] = $f; //reorder the array with the new cat order
-                            break;
-                        }
-                    }
-                }
-                //and then make sure we havent missed any
-                foreach($categories as $f){
-                    if(array_searchRecursive($f['id'], $newOrder)===false){
-                        $newOrder[] = $f;
-                    }
-                }
-                $categories = $newOrder; //assign the new order to $cats
-            }
-
-        }
-        /* Sortable Cats */
 
 		$currId = 0; //set a var for the current id
 		$row_count = 0; //setup a row counter..
@@ -253,18 +212,18 @@ class forum extends Module{
 					'ROW'			=>		$row_color,
 
 					'ID'			=>		$cat['id'],
-					'CAT'			=>		secureMe($cat['title']),
+					'CAT'			=>		(!is_empty($title) ? $title : $cat['title']),
 					'THREADS'		=>		langVar('L_THREADS'),
 					'POSTS'			=> 		langVar('L_POSTS'),
 					'LASTPOST'		=> 		langVar('L_LASTPOST'),
 
 					/* Sortable Cats */
-					'EXPAND'        =>      (User::$IS_ONLINE ? ($cat['_display']==1 ? $vars['IMG_retract'] : $vars['IMG_expand']) : '/'.root().'images/spacer.gif'),
-					'DISPLAY'       =>      (User::$IS_ONLINE ? ($cat['_display']==1 ? NULL : 'display:none;') : NULL),
-					'MODE'          =>      (User::$IS_ONLINE ? ($cat['_display']==1 ? '1' : '0') : '1'),
+					'EXPAND'        =>      (User::$IS_ONLINE && $index ? ($cat['_display']==1 ? $vars['IMG_retract'] : $vars['IMG_expand']) : '/'.root().'images/spacer.gif'),
+					'DISPLAY'       =>      (User::$IS_ONLINE && $index ? ($cat['_display']==1 ? NULL : 'display:none;') : NULL),
+					'MODE'          =>      (User::$IS_ONLINE && $index ? ($cat['_display']==1 ? '1' : '0') : '1'),
 					/* Sortable Cats */
 				));
-				if(User::$IS_ONLINE){ $this->objTPL->assign_block_vars('forum.expand', array()); }
+				if(User::$IS_ONLINE && $index){ $this->objTPL->assign_block_vars('forum.expand', array()); }
 
 				//reassign the current id so we know where we are
 				$currId = $cat['id'];
@@ -314,7 +273,7 @@ class forum extends Module{
 
                         'ID'            =>  $child['id'],
         				'CAT_ICO'		=>	$vars[$ico],
-        				'URL'			=>	'/'.root().'modules/forum/'.seo($subCat['title']).'-'.$subCat['id'].'/',
+        				'URL'			=>	'/'.root().'modules/forum/'.seo($child['title']).'-'.$child['id'].'/',
         				'ROW'			=>	$row_color,
         				'CAT'			=>	secureMe($child['title']),
         				'DESC'			=>	(isset($child['desc']) && !is_empty($child['desc'])) ? contentParse($child['desc']) : '',
@@ -371,6 +330,69 @@ class forum extends Module{
                 }
            }
         }
+
+
+		$return = $this->objTPL->get_html('categories');
+		$this->objTPL->reset_block_vars('forum');
+		return $return;
+	}
+
+
+    /**
+     * Shows outputs the first level of forums with sub forums and threads
+     *
+     * @version	2.0
+     * @since   1.0.0
+     */
+    public function showIndex(){
+        $vars = $this->objPage->getVar('tplVars');
+        $_row_color1 = $vars['row_color1']; $_row_color2 = $vars['row_color2'];  $_row_highlight = $vars['row_highlight'];
+        $this->objPage->setTitle('Forum');
+
+        $this->objTPL->set_filenames(array(
+        	'body' => 'modules/forum/template/forum_index.tpl',
+        ));
+
+		//grab the categories and some extra details
+		$mainCats = $this->getForumInfo('*');
+
+        //and then find out which main cats the user can see
+        $categories = array();
+        foreach($mainCats as $cat){
+            if($this->auth[$cat['id']]['auth_view'] && $cat['parent_id']==0){ $categories[] = $cat; }
+        }
+
+        /* Sortable Cats */
+        $reOrder = false;
+        if(User::$IS_ONLINE && $this->config('forum', 'sortables_categories')){
+            $reOrder = (!is_empty($this->objUser->grab('forum_order')) ? unserialize($this->objUser->grab('forum_order')) : false);
+
+            //we have an active order that we can use to reorder the forum cats
+            if($reOrder){
+                $newOrder = array();
+                //$reOrder as $id => $display
+                foreach($reOrder as $k => $v){
+                    foreach($categories as $f){
+                        if($f['id']==$k){
+                            $f['_display'] = $v;
+                            $newOrder[$k] = $f; //reorder the array with the new cat order
+                            break;
+                        }
+                    }
+                }
+                //and then make sure we havent missed any
+                foreach($categories as $f){
+                    if(array_searchRecursive($f['id'], $newOrder)===false){
+                        $newOrder[] = $f;
+                    }
+                }
+                $categories = $newOrder; //assign the new order to $cats
+            }
+
+        }
+        /* Sortable Cats */
+
+		$this->objTPL->assign_var('CATEGORIES', $this->outputCats($categories, true));
 
 	//
 	//-- Stats
@@ -431,7 +453,7 @@ class forum extends Module{
         $total_topics   = $this->objSQL->getInfo('forum_threads', false);
         $total_posts    = $this->objSQL->getInfo('forum_posts', false) + $total_topics;
         $total_users    = $this->objSQL->getInfo('users', false);
-        $last_user      = $this->objSQL->getLine('SELECT id FROM '.$this->objSQL->prefix().'users WHERE active = 1 ORDER BY id DESC');
+        $last_user      = $this->objSQL->getLine($this->objSQL->prepare('SELECT id FROM `$Pusers` WHERE active = 1 ORDER BY id DESC'));
 
 		$this->objTPL->assign_block_vars('stats', array(
 			'L_STATS'			=> langVar('L_STATS'),
@@ -457,8 +479,162 @@ class forum extends Module{
 		$this->objTPL->parse('body', false);
     }
 
-	public function viewCat($category){
+	public function viewCat($id){
+		//init some generally used vars
+		$vars = $this->objPage->getVar('tplVars');
+		$_row_color1 = $vars['row_color1']; $_row_color2 = $vars['row_color2'];  $_row_highlight = $vars['row_highlight'];
 
+		$this->objTPL->set_filenames(array(
+			'body' => 'modules/forum/template/forum_category.tpl'
+		));
+
+			//grab this forums info and auth
+			$cat = $this->getForumInfo($id);
+			$catAuth = $this->auth[$id];
+
+			//if forum dosent exist or user dosent have perms...BOOM!
+			if(is_empty($cat) || !$catAuth['auth_read'] || !$catAuth['auth_view']){
+	            $this->objPage->setTitle(langVar('B_FORUM').' > '.langVar('L_CAT_NF'));
+
+				//this msg depends on if they wer owned due to permissions or the forum actually dosent exist :O
+				$msg = (!$catAuth['auth_view'] ? langVar('L_NO_ID', $id) : langVar('F_PERMS', $catAuth['auth_read_type']));
+				hmsgDie('INFO', $msg);
+	            return;
+			}else{
+				//else check to see if we have sub cats, and output
+				$this->objTPL->assign_var('CATEGORY', $this->outputCats($cat, false, langVar('L_SUBCATS')));
+			}
+
+			//grab all the parents and granparents for this forum
+	        $this->getSubCrumbs($id);
+	        $this->objPage->setTitle(langVar('B_FORUM').' > '.secureMe($cat['title']));
+
+			//reset $cat so we dont get confuzzled and check to see if we arnt a root forum
+			$cat = $cat[0];
+	        if($cat['parent_id'] == 0){
+	        	//no posts are allowed in root forums
+	            $this->objTPL->parse('body', false);
+	            return;
+	        }
+		//
+		//--Begin Thread Output
+		//
+			$limit = 20;
+			//init pagination
+			$objPagination = new pagination('page', $limit, $this->objSQL->getInfo('forum_threads', array('`cat_id`=%s AND `mode`=0', $id)));
+
+			//grab the threads with the current pagination limit
+	        $threads = $this->objSQL->getTable($this->objSQL->prepare(
+				'SELECT t.*, p.timestamp as last_timestamp, count(DISTINCT p.id) as replies
+					FROM `$Pforum_threads` t
+	                LEFT JOIN `$Pforum_posts` p
+		                ON t.id = p.thread_id
+	                WHERE t.cat_id = %d
+						AND t.mode = 0
+
+	                GROUP BY t.id
+	                ORDER BY p.timestamp DESC
+	                LIMIT %s',
+	            $id,
+				$objPagination->getSqlLimit()
+			));
+
+			//grab the 'special' threads, announcements, stickies etc
+	        $special = $this->objSQL->getTable($this->objSQL->prepare(
+				'SELECT t.*, p.timestamp as last_timestamp, count(DISTINCT p.id) as replies
+					FROM `$Pforum_threads` t
+	                LEFT JOIN `$Pforum_posts` p
+		                ON t.id = p.thread_id
+	                WHERE t.cat_id = %d
+						AND t.mode <> 0
+
+	                GROUP BY t.id
+	                ORDER BY p.timestamp DESC',
+	            $id
+			));
+
+			//output the header
+	        $this->objTPL->assign_block_vars('threads', array(
+	            'CAT'				=> secureMe($cat['title']),
+	            'L_THREAD_TITLE'	=> langVar('L_THREAD_TITLE'),
+	            'L_AUTHOR'			=> langVar('L_AUTHOR'),
+	            'L_VIEWS'			=> langVar('L_VIEWS'),
+	            'L_REPLIES'			=> langVar('L_POSTS'),
+	            'L_LASTPOST'		=> langVar('L_LASTPOST'),
+	        ));
+
+	        //if user has the permission to post in here..
+	    	if($catAuth['auth_post']){
+	    		$this->objTPL->assign_block_vars('threads.post', array(
+	                'URL'     => '/'.root().'modules/forum/'.seo($cat['title']).'-'.$id.'/post/',
+	                'TEXT'    => 'New Topic',
+	                'IMG'     => $vars['FIMG_new_post'],
+	            ));
+	        }
+	        $this->objTPL->assign_var('PAGINATION', $objPagination->getPagination());
+	        if(is_array($special)){ $threads = array_merge($special, $threads); }
+
+	        if(is_empty($threads)){
+	        	$this->objTPL->assign_block_vars('threads.error', array(
+	        		'ERROR' => langVar('L_NO_THREADS'),
+	        	));
+	        }else{
+	            $count = 0;
+	            foreach($threads as $thread){
+			    	$icon_status = '_old';
+					if(User::$IS_ONLINE){
+						$tracking_topics = array(); $tracker = doArgs('forum_tracker', false, $_SESSION['user']);
+						if(!is_empty($tracker)){ $tracking_threads = unserialize($tracker); }
+
+						if(!is_empty($tracking_threads)){
+							foreach($tracking_threads as $t){
+								if($t['id'] == $thread['id'] && !$t['read']){
+					        	   $icon_status = '_new';
+								}
+							}
+						}
+					}
+
+					$title = secureMe($thread['subject']);
+					if(is_empty($title)){ $title = 'No Thread Title'; }
+					switch($thread['mode']){
+						case 1:
+							$title = langVar('L_ANNOUNCEMENT', $title);
+							$ico = 'IMG_announcement'.$icon_status;
+						break;
+						case 2:
+							$title = langVar('L_STICKY', $title);
+							$ico = 'IMG_sticky'.$icon_status;
+						break;
+						default:
+							$title = $title;
+							$ico = 'IMG_posts'.$icon_status;
+						break;
+					}
+					if($thread['locked']==1){ $ico = 'IMG_locked'; }
+
+					//output the thread info to the template
+					$this->objTPL->assign_block_vars('threads.row', array(
+						'ID'			=> 'thread_'.$thread['id'],
+						'ICON'			=> $vars[$ico],
+						'URL'			=> '/'.root().'modules/forum/thread/'.seo($thread['subject']).'-'.$thread['id'].'.html',
+						'CLASS'			=> $count%2 ? 'row_color1' : 'row_color2',
+
+						'TITLE'			=> $title,
+						'AUTHOR'		=> $this->objUser->profile($thread['author']),
+						'VIEWS'			=> $thread['views'],
+						'REPLIES'		=> $thread['replies'],
+
+						'LP_AUTHOR'		=> $thread['replies'] ? $this->objUser->profile($thread['last_post_id']) : null,
+						'LP_URL'		=> $thread['replies'] ? '/'.root().'modules/forum/thread/'.seo($thread['subject']).'-'.$thread['id'].'.html?mode=last_page' : null,
+						'LP_TIME'		=> $thread['replies'] ? $this->objTime->mk_time($thread['last_timestamp']) : langVar('L_NO_REPLYS'),
+					));
+
+			        $count++;
+	            }
+	        }
+
+		$this->objTPL->parse('body', false);
 	}
 
 
@@ -526,6 +702,47 @@ class forum extends Module{
         }
     }
 
+    /**
+     * Sets Breadcrumbs from this category to its highest grandparent.
+     *
+     * @version	1.3
+     * @since   0.8.0
+     * @author 	xLink
+     *
+     * @param 	int 	$id		ID of the category to start from
+     */
+    private function getSubCrumbs($id){
+		//set some vars
+		$count = 0; $countArray = array();
+
+		//get the current category
+		$query = $this->getForumInfo($id);
+
+		//and add it to the breadcrumb array
+		$b[$count++] 	= $query[0];
+		$countArray[] 	= $query[0]['id'];
+
+		//and then loop back through the cats till we have no parent id
+		while($query[0]['parent_id'] != 0){
+			//grab the parent cat
+			$query = $this->getForumInfo($query[0]['parent_id']);
+
+			//and add it to the array
+			$b[$count++] 	= $query[0];
+			$countArray[] 	= $query[0]['id'];
+
+			if(in_array($query['id'], $countArray)){
+				$query['parent_id'] = 0; break;
+			}
+		}
+
+		//reverse $b and add the info gained to the
+		$b = array_reverse($b); $crumbs = array();
+		foreach($b as $cat){
+			$crumbs[] = array('url' => '/'.root().'modules/forum/'.seo($cat['title']).'-'.$cat['id'].'/', 'name' => $cat['title']);
+		}
+		$this->objPage->addPagecrumb($crumbs);
+    }
 
 
 

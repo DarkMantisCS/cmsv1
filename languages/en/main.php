@@ -67,6 +67,8 @@ $_lang['L_NO_ONLINE_USERS']		= 'There are currently no users online.';
 $_lang['L_LAST_VISIT']          = 'Last Visit: %s';
 $_lang['L_REMME']               = 'Remember Me';
 
+//other stuff
+$_lang['L_PER_DAY']				= '<strong>Per Day</strong>: %d';
 
 //Time Stuff
 $_lang['DATETIME']['Sunday'] 	= 'Sunday';

@@ -20,7 +20,7 @@ class pagination extends coreClass {
 
 		//calculate some more basic vars
 		$this->total_pages = ceil($total_items / $total_per_page);
-		$this->current_page = doArgs($this->instance, 1, $_GET);
+		$this->current_page = doArgs($instance, 1, $_GET, 'is_number');
 
 		//check that the current page is not over the max pages
 		if($this->current_page > $this->total_pages){
@@ -104,7 +104,8 @@ class pagination extends coreClass {
 				            <td><a href="'.$url.$this->instance.'='.($this->current_page-1).'" class="button">&lt; Back</a></td>';
 		}
 
-		$pages .= '        <td align="center">Page '.$objForm->inputbox('inputbox', $this->current_page, $this->instance, array('class'=>'input', 'style'=>'width: 25px; text-align: center')).' of '.$this->total_pages.'</td>';
+		$pages .= '        <td align="center">Page '.$objForm->inputbox($this->instance, 'inputbox', $this->current_page,
+					array('class'=>'input', 'style'=>'width: 25px; text-align: center')).' of '.$this->total_pages.'</td>';
 
 		if($this->current_page >= $this->total_pages){
 			$pages .= '    <td class="disabled corners">Next &gt;</td> <td class="disabled corners">Last &gt;&gt;</td>';

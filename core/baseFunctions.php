@@ -1234,38 +1234,5 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 	    msgDie($type, $msg, '', '', '', !$doSimple);
 	}
 
-//
-//--Effect Functions
-//
-
-	/**
-	 * An effect function for highlighting a table row.
-	 *
-	 * @version 1.0
-	 * @since 0.8.0
-	 *
-	 * @param 	string	$rowId
-	 * @param	string 	$color
-	 */
-	function effHighlightRow($rowId, $color=NULL){
-		global $objPage;
-
-		if(is_empty($color)){
-			$vars = $objPage->getVar('tplVars');
-		}else{
-			$vars['row_highlight'] = $color;
-		}
-
-		$color = $vars['row_highlight'];
-$str = <<<JS
-	$('#{$rowId}').mouseover(function() {
-		$(this).effect("highlight", {color: "{$color}"}, 3000);
-	});
-JS;
-
-		$objPage->addJSCode($str);
-    }
-
-
 
 ?>

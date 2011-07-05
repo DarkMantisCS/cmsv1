@@ -23,7 +23,7 @@ var User = {
 };
 
 var Page = {
-	highlight_color: "<?php echo $var['highlight_color']; ?>"
+	highlight_color: "<?php echo $vars['row_highlight']; ?>"
 }
 
 function showNotification(id, message, header, sticky){
