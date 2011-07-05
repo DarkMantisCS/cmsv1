@@ -23,18 +23,9 @@
   /*
   var css = d.createElement('link');
   */
-  
-  var linkTags = document.getElementsByTagName("link");
-  $.each(linkTags, function(id, e){
-    if(e.id=='adapt'){ linkID = id; return; }
-  });
-  //if(empty(linkID)){ 
-//	var css = d.createElement('link');
-  //}else{
-	var css = linkTags[linkID];
-  //}
 
-  css.rel = 'stylesheet'; 
+  var css = $$('link#adapt')[0];
+  css.rel = 'stylesheet';
 
   // Called from within adapt().
   function change(i, width) {

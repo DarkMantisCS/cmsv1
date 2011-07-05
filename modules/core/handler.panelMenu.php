@@ -31,7 +31,7 @@ foreach($corePanels as $pTitle => $modePath){
 
 $array = array('user', 'mod', 'admin');
 if(count($config['modules']) && in_array($mode, $array)){
-    $assign = NULL;
+    $assign = NULL;     	echo dump($config['modules']);
     foreach($config['modules'] as $module){
         if($module['enabled']==false || strtolower($module['name'])=='core'){ continue; }
         if(is_dir(cmsROOT.'modules/'.$module['name'].'/') &&

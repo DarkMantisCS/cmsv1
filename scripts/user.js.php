@@ -23,7 +23,9 @@ var User = {
 };
 
 var Page = {
-	highlight_color: "<?php echo $vars['row_highlight']; ?>"
+	row_highlight: "<?php echo $vars['row_highlight']; ?>",
+	row_color1: "<?php echo $vars['row_color1']; ?>",
+	row_color2: "<?php echo $vars['row_color2']; ?>"
 }
 
 function showNotification(id, message, header, sticky){
@@ -57,12 +59,12 @@ var avatarMenu = [
 	{ name: "More User Preferences", className: "title", callback: function(){ document.location = "/"+root+"user/"; } }
 ];
 
-$(document).ready(function(){
+document.observe('dom:loaded', function(){
 	//if($("user_autocomplete")){ usernameAutocomplete($("#user_autocomplete").attr('data-input')); }
 
 
 	//context menu on the users own avatar frames
-	$.protoMenu.add({
+	new Proto.Menu({
 	    selector: "#"+User.username+"_avatar",
 	    className: "menu cms",
 	    menuItems: avatarMenu
@@ -71,7 +73,7 @@ $(document).ready(function(){
 	$("img[class=avatar]:not([avatar~="+User.username+"])").each(function (ava){
 		var user = ava.attr("data-avatar");
 
-		$.protoMenu.add({
+		new Proto.Menu({
 			selector: "#"+user+"_avatar",
 			className: "menu cms",
 			menuItems: [
@@ -82,7 +84,5 @@ $(document).ready(function(){
 			]
 		});
 	});
-
-
 
 });

@@ -1,16 +1,25 @@
-//if(User.IS_ONLINE){
-	$('tr[class*="highlight"]').mouseover(function() {
-		$(this).effect("highlight", {color: Page.highlight_color}, 1000);
+if(typeof Page != undefined){
+	$$('tr[class*="highlight"]').each(function(ele){
+	    $(ele.id).observe('mouseover', function(){
+			var trClass = $(ele.id).hasClassName('row_color1') ? Page.row_color1 : Page.row_color2;
+			new Effect.Highlight(ele.id, {
+		        startcolor: Page.row_highlight,
+		        endcolor: trClass,
+		        restorecolor: trClass,
+		        duration: 1
+			});
+	    });
 	});
-//}
+}
 
-$('td[data-url]').each(function() {
-	var url = $(this).attr('data-url');
+
+$$('td[data-url]').each(function(ele) {
+	var url = ele.readAttribute('data-url');
 
 	if(!empty(url)){
 		window.status = url;
-		$(this).attr({
-			onClick: 'document.location = "'+url+'";',
+		ele.writeAttribute({
+			onclick: 'document.location = "'+url+'";',
 			style: 'cursor: pointer'
 		});
 	}

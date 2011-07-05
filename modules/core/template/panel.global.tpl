@@ -3,17 +3,18 @@
     <td valign="top">{_CONTENT}</td>
     <!-- BEGIN _PMENU -->
     <td width="20%" valign="top" id="sideMenu">
-	<nav><ul id="menu">
+	<nav><div id="accNav" class="accordion">
     <!-- END _PMENU -->
     <!-- BEGIN _PMENUS -->
-	<li class="subitems{_PMENUS.CLASS}"><a href="#">{_PMENUS.TITLE}</a>
+	<div class="accordion-toggle">{_PMENUS.TITLE}</div>
+	<div class="accordion-content">
 		<ul style="display: block;">
 			{_PMENUS.CONTENT}
 		</ul>
-	</li>
+	</div>
     <!-- END _PMENUS -->
     <!-- BEGIN _PMENU -->
-    </ul></nav>
+    </div></nav>
     </td>
     <!-- END _PMENU -->
   </tr>

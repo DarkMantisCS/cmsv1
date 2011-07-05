@@ -24,11 +24,11 @@ var ADAPT_CONFIG = {
 
 window.viewport = {
     height: function() {
-        return $(window).height();
+        return document.viewport.getHeight();
     },
 
     width: function() {
-        return $(window).width();
+        return document.viewport.getWidth();
     },
 
     scrollTop: function() {
@@ -41,8 +41,8 @@ window.viewport = {
 };
 
 function updateClock(){
-	if(!$('#clock').length){ return; }
-	$('#clock').html(date('l H:i:s a', time())).attr('title', date('jS F Y', time()));
+	if(!$('clock')){ return; }
+	$('clock').update(date('l H:i:s a', time())).writeAttribute('title', date('jS F Y', time()));
 	setTimeout(updateClock, 1000);
 }
 
@@ -59,17 +59,34 @@ function inBetween($begin, $end, $contents) {
 	return false;
 }
 
+function inWindow(url, title, width, height){
+    var title = title || '';
+    var url = url || '';
+    var width = width || 400;
+    var height = height || window.viewport.height-200;
+
+    if(empty(url)){
+        return false;
+    }
+
+      myLightWindow.activateWindow({
+    	   href: 	url,
+    	   title: 	title,
+    	   width: 	width > window.viewport.width ?  window.viewport.width : width,
+    	   height: 	height > window.viewport.height ? window.viewport.height : height
+      });
+    return false;
+}
 
 function notify(message, header, sticky){
-    $.gritter.add({
-		title	: header || "",
-		text	: message,
-		sticky	: Boolean(sticky)
+    growler.growl(message, {
+    	header: header || "",
+		sticky: Boolean(sticky)
 	});
 }
 
-$(document).ready(function(){
-	$("select").selectBox();
+document.observe('dom:loaded', function(){
+	//$("select").selectBox();
 
-	if($('#clock')){ updateClock(); }
+	if($('clock')){ updateClock(); }
 });
