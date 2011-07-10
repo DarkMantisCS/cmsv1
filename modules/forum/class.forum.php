@@ -127,7 +127,7 @@ class forum extends Module{
 					ON p.thread_id = t.id
 				LEFT JOIN `$Pusers` as u
 					ON u.id = p.author
-				ORDER BY f.order ASC
+				ORDER BY f.id, f.order ASC
 			'));
 		        if(!$cats){ hmsgDie('FAIL', 'Error: No forum information avalible at this time.'); }
 				$this->objSQL->freeResult($cats);
@@ -863,16 +863,185 @@ class forum extends Module{
 			));
 		}
 
+		//grab posts counts
+		$authors = array();
+		foreach($posts as $post){
+			$authors[] = $post['author'];
+		}
+		$postCounts = $this->getPostCounts($authors);
+
 		//posts get output here
+		foreach($posts as $post){
+			$first_post = ($post['id']==$thread['topic_post_id'] ? true : false);
+
+			//set default so we have something to work with
+				$author['profile'] = 'Guest';
+				$author['avatar'] = '<img src="/'.root().'images/no_avatar.png" />';
+
+				$author = $this->objUser->getUserInfo($post['author'], '*');
+
+
+				$location = null;
+				//sort the contact info out
+				if(!is_empty($author['contact_info'])){
+					$author['contact_info'] = unserialize($author['contact_info']);
+
+					foreach($author['contact_info'] as $info){
+						if($info['type'] == 'url'){
+							$location = $info['val']; break;
+						}
+					}
+				}
+
+
+            //assign the info to the template
+    		$this->objTPL->assign_block_vars('thread', array(
+				'ID'			=> $post['id'],
+
+				'USERNAME'		=> strtolower($author['profile']),
+				'AUTHOR'		=> $this->objUser->profile($author['id']),
+				'AUTHOR_IO'		=> $this->objUser->onlineIndicator($author['id']),
+    			'USERTITLE'		=> secureMe(doArgs('title', null, $author)),
+
+				'L_USERLEVEL'	=> langVar('LEVEL'),
+				'USERLEVEL'		=> $author['level'],
+
+    			'AVATAR'		=> $this->objUser->parseAvatar($author['id'], 100),
+    			'SIGNATURE'		=> contentParse(doArgs('signature', '&nbsp;', $author)),
+    			'POSTCOUNT'		=> langVar('L_POST_COUNT', $postCounts[$author['id']]),
+    			'LOCATION'		=> !is_empty($location) ? langVar('L_LOCATION', $location) : null,
+
+    			'POST'			=> contentParse($post['post']),
+    			'TIME'			=> langVar('L_POSTED_ON', $this->objTime->mk_time($post['timestamp'], 'dS M y @ h:s a')),
+    			'EDITED'		=> $post['edited']>0
+                                     ? langVar('L_EDITED', $post['edited'], $this->objUser->profile($post['edited_uid']))
+                                     : null,
+                'IP'            => (User::$IS_MOD || $threadAuth['auth_mod'])
+                                     ? langVar('L_USERS_IP', $post['poster_ip'])
+                                     : null,
+
+    			'ROW'			=> $count%2==1 ? 'row_color2' : 'row_color1',
+    			'ALTROW'		=> $count%2==1 ? 'row_color1' : 'row_color2',
+            ));
+
+			//allow the user to hide the sigs if so desired
+			if(!is_empty($author['signature']) && !$this->objUser->grab('forum_show_sigs')){
+				$this->objTPL->assign_block_vars('thread.sig', array());
+			}
+
+            //delete && edit
+    		if(User::$IS_MOD || $threadAuth['auth_mod'] || ($this->objUser->grab('id') == $post['author'] && (time()-$post['timestamp'] < 1200))){
+                if($threadAuth['auth_del'] && !$first_post){
+        			$this->objTPL->assign_block_vars('thread.del', array(
+        				'URL'	=> $threadUrl.'?mode=rm&postid='.$post['id'],
+        				'IMG'	=> $vars['FIMG_post_del'],
+                        'TEXT'  => langVar('L_DELETE'),
+        			));
+                }
+                if($threadAuth['auth_edit']){
+        			$this->objTPL->assign_block_vars('thread.edit', array(
+                        /*'EIP'   => $this->objUser->ajaxSettings('forum_eip')
+                                        ? ' quickEdit="true" id="post_'.$post['id'].'" class="editBtn"'
+                                        : NULL,*/
+        				'URL'	=> $threadUrl.'?mode=edit&postid='.$post['id'],
+        				'IMG'	=> $vars['FIMG_post_edit'],
+                        'TEXT'  => langVar('L_EDIT'),
+        			));
+                }
+    		}
+            if(User::$IS_ONLINE){
+    			$this->objTPL->assign_block_vars('thread.quote', array(
+    				'URL'       => $threadUrl.'?mode=reply&q='.$post['id'],
+    				'IMG'       => '/'.root().'images/bbcode/comment.png',
+                    'TEXT'      => langVar('L_QUOTE'),
+    			));
+            }
+    	$count++;
+		}
+
+		//thread controls
+		if(User::$IS_MOD || $threadAuth['auth_mod']){
+            if($threadAuth['auth_move']){
+    			$this->objTPL->assign_block_vars('move', array(
+    				'URL'       => $threadUrl.'?mode=move',
+    				'IMG'		=> $vars['FIMG_post_move'],
+    				'AJAX'      => ' onclick="return moveThread('.$id.');"',
+                    'TEXT'      => langVar('F_MOVE'),
+    			));
+            }
+			$this->objTPL->assign_block_vars('locked', array(
+				'URL'			=>		$threadUrl.'?mode='.($thread['locked']==1 ? 'unlock' : 'lock'),
+				'IMG'			=>		isset($thread['locked'])&&$thread['locked']==1
+                                            ? $vars['FIMG_locked']
+                                            : $vars['FIMG_unlocked'],
+				'TEXT'			=>		isset($thread['locked'])&&$thread['locked']==1
+                                            ? langVar('F_UNLOCK')
+                                            : langVar('F_LOCK'),
+			));
+            if($threadAuth['auth_del']){
+    			$this->objTPL->assign_block_vars('del', array(
+    				'URL'			=>		$threadUrl.'?mode=rm',
+    				'IMG'			=>		$vars['FIMG_post_del'],
+                    'TEXT'          =>      langVar('F_DELETE'),
+    			));
+            }
+		}
+
 
 		$this->objTPL->parse('body', false);
 	}
 
+    /**
+     * Returns a formated URL for the threads
+     *
+     * @version	1.0
+     * @since   1.0.0
+     * @author 	xLink
+     *
+     * @param 	array 	$thread
+     *
+     * @return 	string
+     */
 	public function generateThreadURL($thread){
 		if(!is_array($thread) || is_empty($thread)){
 			return null;
 		}
 		return '/'.root().'modules/forum/thread/'.seo($thread['subject']).'-'.$thread['id'].'.html';
+	}
+
+    /**
+     * Returns the list of authors along with their post counts
+     *
+     * @version	1.0
+     * @since   1.0.0
+     * @author 	xLink
+     *
+     * @param 	array 	$uids
+     *
+     * @return 	int
+     */
+	public function getPostCounts($uids){
+		if(!is_array($uids)){
+			$uids = array($uids);
+		}
+		$authors = array_unique($uids);
+
+		$users = $this->objSQL->getTable($this->objSQL->prepare(
+			'SELECT u.id, COUNT( DISTINCT p.id ) AS post_count
+				FROM `$Pusers` u
+				LEFT JOIN `$Pforum_posts` p
+					ON p.author = u.id
+				WHERE u.id IN ( %s )
+				GROUP BY u.id',
+			implode(', ', $authors)
+		));
+
+		$return = array();
+		foreach($users as $user){
+			$return[$user['id']] = $user['post_count'];
+		}
+
+		return $return;
 	}
 
     /**
@@ -1196,33 +1365,28 @@ class forum extends Module{
 	 */
     public function buildJumpBoxArray($blank=array()){
         //grab a copy of the entire cat table, grabbing the data we need
-        if(!isset($this->catQuery)){
-            $cats = $this->catQuery = $this->objSQL->getTable($this->objSQL->prepare('SELECT * FROM `$Pforum_cats` ORDER BY id, `order` ASC'));
-        }
+        $cats = $this->getForumInfo('*');
 
         //rearrange the query
         $newQuery = array();
         if(is_array($blank) && count($blank)){
             $newQuery[0] = $blank;
         }
-
             //first pass for master cats
-            foreach($this->catQuery as $cat){
-                if($cat['parent_id']!=0){ continue; }
+            foreach($cats as $cat){
+                if($cat['parent_id'] != 0){ continue; }
                 $newQuery[$cat['id']] = $cat;
             }
-            if(!isset($this->catTitles)){
                 $this->catTitles = $newQuery;
-            }
 
             //second pass for the rest
-            foreach($this->catQuery as $cat){
-                if($cat['parent_id']==0){ continue; }
+            foreach($cats as $cat){
+                if($cat['parent_id'] ==0 ){ continue; }
                 $newQuery[$cat['id']] = $cat;
             }
-        $this->catQuery = $newQuery;
+		        $this->catQuery = $newQuery;
 
-        $auth = $this->auth(AUTH_VIEW, AUTH_LIST_ALL);
+        $auth = $this->auth;
         if(is_array($blank) && count($blank)){
             $auth[0]['auth_view'] = true;
         }
@@ -1231,23 +1395,22 @@ class forum extends Module{
         //for each parent cat
         foreach($cats as $cat){
             if(!$auth[$cat['id']]['auth_view']){ continue; }
-
+            if($cat['parent_id']>0 && !$auth[$cat['parent_id']]['auth_view']){ continue; }
             //this is a parent cat so just add it to the array
-            if($cat['parent_id']==0){
+            if($cat['parent_id'] == 0){
             	$a[$cat['id']] = array();
 				continue;
 			}
 
       		//this isnt a parent cat so do some upgrades...
-            if($cat['parent_id']!=0){
+            if($cat['parent_id'] != 0){
                 $id = array_searchRecursive((int)$cat['parent_id'], $a);
                 $id = $this->buildArrayPath($id, $cat['id']);
 
-                if(!$id) $id = '$a['.$cat['id'].']';
+                if(!$id){ $id = '$a['.$cat['id'].']'; }
 
                 eval("$id = array(\$cat['title']);");
       		}
-
         }
 
         return $a;

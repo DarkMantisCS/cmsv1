@@ -169,7 +169,7 @@ section aside#sidebar {
 		-moz-border-radius-bottomright: 5px;
 		border-top-right-radius: 5px;
 		border-bottom-right-radius: 5px;
-		
+
 		margin: 0 -5px 0 -3px;
 	}
 	aside#sidebar .sideMenu section{
@@ -380,10 +380,27 @@ div.status .icon{ background-image: url(images/note.png); }
 .row_color1{background-color: #ECECEC;}
 .row_color2{background-color: #D7DEE3;}
 
-a.selectBox:hover{
-	text-decoration: none;
-}
+/** BBCode Stuff **/
+span.bbcode_acronym { border-bottom: 1px dashed grey; }
+span.bbcode_acronym:hover { border-bottom: 1px dashed dark-grey; }
 
+table.bbcode_columns { border-collapse: collapse; margin-top: 1em; margin-bottom: 1em; }
+table.bbcode_columns td.bbcode_column { padding: 0 1em; vertical-align: top;}
+table.bbcode_columns td.bbcode_firstcolumn { border-left: 0; padding-left: 0; }
+
+div.bbcode_quote, div.bbcode_code { border: 2px #CCCCCC solid; margin: 0.5em 0; }
+div.bbcode_quote_head, div.bbcode_code_head{
+	background: #CCCCCC;
+	color: black;
+	font-weight: bold;
+	height: 20px;
+	line-height: 17px;
+	padding: 0.25em 0.5em;
+}
+div.bbcode_quote_body, div.bbcode_code_body { background-color: #FEFEFE; color: black; padding: 0.5em 1em; }
+
+
+/** Specific Stuff **/
 .shadow{
 	-webkit-box-shadow: 0 7px 15px #000000;
 	-moz-box-shadow: 0 7px 15px #000000;

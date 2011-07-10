@@ -1235,4 +1235,196 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 	}
 
 
+//
+//--bbcode_tags.php
+//
+
+	/**
+	 * Grab File Extension, Language and GeSHi Information
+	 *
+	 * @version	1.0
+	 * @since   1.0.0
+	 * @author 	xLink
+	 *
+	 * @param	string	$ext
+	 * @param	string 	$return
+	 *
+	 * @return 	array
+	 */
+	function grabLangInfo($ext, $return='ALL'){
+		$lang = (isset($ext) && $ext !== NULL) ? strtolower($ext) : 'text';
+		switch ($lang) {
+			case 'htaccess':			$geshi = 'apache';				$ext = 'htaccess';				$lang = 'Apache CFG File';          break;
+			case 'action script':		$geshi = 'actionscript';		$ext = 'as'; 					$lang = 'Action Script';            break;
+
+			case 'php':					$geshi = 'php';					$ext = 'php';					$lang = 'PHP';                      break;
+
+			case 'js':					$geshi = 'javascript';			$ext = 'js';					$lang = 'Javascript';               break;
+			case 'jscript':             $geshi = 'javascript';			$ext = 'js';					$lang = 'Javascript';               break;
+			case 'javascript':          $geshi = 'javascript';			$ext = 'js';					$lang = 'Javascript';               break;
+
+			case 'coldfusion':          $geshi = 'cfm';					$ext = 'cfm';					$lang = 'ColdFusion';               break;
+			case 'cfm':					$geshi = 'cfm';					$ext = 'cfm';					$lang = 'ColdFusion';               break;
+
+			case 'asp':					$geshi = 'asp';					$ext = 'asp';					$lang = 'Active Server Page(ASP)';  break;
+
+			case 'c':					$geshi = 'c';					$ext = 'c';						$lang = 'C';                        break;
+
+			case 'css':					$geshi = 'css';					$ext = 'css';					$lang = 'CSS';                      break;
+
+			case 'cpp':					$geshi = 'cpp';					$ext = 'cpp';					$lang = 'C++';                      break;
+			case 'c++':                 $geshi = 'cpp';					$ext = 'cpp';					$lang = 'C++';                      break;
+
+			case 'c#':                  $geshi = 'csharp';				$ext = 'cs';					$lang = 'C#';                       break;
+			case 'csharp':              $geshi = 'csharp';				$ext = 'cs';					$lang = 'C#';                       break;
+			case 'cs':					$geshi = 'csharp';				$ext = 'cs';					$lang = 'C#';                       break;
+
+			case 'html':				$geshi = 'html';				$ext = 'html';					$lang = 'HTML';                     break;
+
+			case 'pl':					$geshi = 'perl';				$ext = 'pl';					$lang = 'Perl';                     break;
+			case 'perl':                $geshi = 'perl';				$ext = 'pl';					$lang = 'Perl';                     break;
+
+			case 'vb':					$geshi = 'vb';					$ext = 'vb';					$lang = 'Visual Basic';             break;
+			case 'vbs':					$geshi = 'vbs';					$ext = 'vbs';					$lang = 'Visual Basic Script';      break;
+			case 'vbnet':				$geshi = 'vbnet';				$ext = 'vb';					$lang = 'Visual Basic.net';         break;
+			case 'vb.net':				$geshi = 'vbnet';				$ext = 'vb';					$lang = 'Visual Basic.net';         break;
+
+			case 'asm':					$geshi = 'asm';					$ext = 'asm';					$lang = 'ASM';                      break;
+
+			case 'rb':					$geshi = 'ruby';				$ext = 'rb';					$lang = 'Ruby';                     break;
+
+			case 'py':					$geshi = 'python';				$ext = 'py';					$lang = 'Python';                   break;
+			case 'python':              $geshi = 'python';				$ext = 'py';					$lang = 'Python';                   break;
+
+			case 'pas':					$geshi = 'pascal';				$ext = 'p';						$lang = 'Pascal';                   break;
+
+			case 'sh':					$geshi = 'bash';				$ext = 'sh';					$lang = 'Bash';                     break;
+
+			case 'dos':                 $geshi = 'dos';					$ext = 'bat';					$lang = 'Batch';                    break;
+			case 'batch':				$geshi = 'dos';					$ext = 'bat';					$lang = 'Batch';                    break;
+
+			case 'java':				$geshi = 'java';				$ext = 'java';					$lang = 'Java';                     break;
+			case 'jsp':                 $geshi = 'java';				$ext = 'java';					$lang = 'Java';                     break;
+
+			case 'mysql':				$geshi = 'mysql';				$ext = 'sql';					$lang = 'mySQL';                    break;
+
+			case 'xml':					$geshi = 'xml';					$ext = 'xml';					$lang = 'XML';                      break;
+
+			case 'mirc':				$geshi = 'mirc';				$ext = 'mirc';					$lang = 'mIRC Scripting';			break;
+
+			case 'tpl':					$geshi = 'smarty';				$ext = 'tpl';					$lang = 'SMARTY';					break;
+
+			case 'whitespace':          $geshi = 'ws';				    $ext = 'ws';                    $lang = 'Whitespace';               break;
+
+			case 'lol':                 $geshi = 'lolcode';				$ext = 'lol';                   $lang = 'LOLcode';                  break;
+			case 'lolcode':             $geshi = 'lolcode';				$ext = 'lol';                   $lang = 'LOLcode';                  break;
+
+			default:					$geshi = 'text';				$ext = 'txt';					$lang = 'Text';						break;
+		}
+		$_return = array('ext' => $ext, 'lang'	=> $lang, 'geshi' => $geshi);
+		if($return != 'ALL' && isset($_return[$return])){
+			return $_return[$return];
+		}
+		return $_return;
+	}
+
+
+//Various functions for those rulez
+function DoCode($content, $name=NULL, $lineNumbers=false, $killWS=true){
+    $lang = isset($name)&&$name!==NULL ? strtolower($name) : 'text';
+
+    $extInfo = grabLangInfo($lang);
+    $ext = doArgs('ext', null, $extInfo);
+    $lang = doArgs('lang', null, $extInfo);
+    $geshiExt = doArgs('geshi', null, $extInfo);
+
+    if(is_empty($content)){
+        $lang = isset($lang) ? '='.$params.'' : '';
+        return "[code$lang][/code]";
+    }
+
+    $content = html_entity_decode(trim($content));
+    $content = str_replace(array("<br />", "\t", '	'), array('', '	', "\t"), $content);
+
+    if($killWS){
+    	$content = preg_replace('/[\n\r]+/', "\n", $content);
+    }
+
+
+    if(!$lineNumbers){
+        if($ext!='php'){
+            $geshi = new GeSHi($content, $geshiExt);
+            $geshi->set_header_type(GESHI_HEADER_PRE);
+            $content = $geshi->parse_code();
+        }
+
+        if($ext=='php'){
+            /*if(preg_match("#<\?[^php]#", $content))
+                $content = str_replace("<?", "<?php", $content);
+
+            if(!preg_match("#<(\?php|\?)#", $content))
+                $content = "<?php".$content;
+
+            if(!preg_match("#\?>#", $content))
+                $content = $content."?>";*/
+
+        }
+    }else{
+        $geshi = new GeSHi($content, $geshiExt);
+        $geshi->set_header_type(GESHI_HEADER_PRE);
+        $geshi->enable_line_numbers(GESHI_FANCY_LINE_NUMBERS, 5);
+        $content = $geshi->parse_code();
+    }
+
+
+    return "\n<div class=\"bbcode_code\">\n<div class=\"bbcode_code_head\">".$lang." Code: </div>\n<div class=\"bbcode_code_body\">".($ext=='php' ? (!$lineNumbers ? highlight_string($content, true) : $content) : $content)."</div>\n</div>\n";
+}
+
+function user_profile($bbcode, $action, $name, $default, $params, $content){
+    global $objUser;
+
+    if ($action == BBCODE_CHECK){ return true; }
+    $link = isset($default) ? $default : 0;
+    $a = $objUser->profile($content);
+    $return = $a ? $a : 'Guest';
+    return $return;
+}
+
+function you($bbcode, $action, $name, $default, $params, $content){
+    global $objUser;
+
+    if ($action == BBCODE_CHECK){ return true; }
+
+    #if($tag['_tag']=='you'){
+        return $objUser->profile($objUser->grab('id'));
+    #}
+}
+
+function DoQuote($bbcode, $action, $name, $default, $params, $content) {
+    global $objUser;
+
+    if($action == BBCODE_CHECK){ return true; }
+    if(doArgs('name', false, $params)){
+        $title = $objUser->profile($params['name'], RETURN_USER). ' wrote';
+        if(doArgs('date', false, $params)){
+            $title .= ' on '.secureMe(trim($params['date']));
+        }
+        $title .= ':';
+        if(doArgs('url', false, $params)) {
+            $url = trim($params['url']);
+            if($bbcode->IsValidURL($url)){
+                $title = '<a href="'.secureMe($params['url']).'">'.$title.'</a>';
+            }
+        }
+    }else if(!is_string($default)){
+        $title = 'Quote:';
+    }else{
+        $title = $objUser->profile($default, RETURN_USER). ' wrote';
+    }
+
+    return "\n<div class=\"bbcode_quote\">\n<div class=\"bbcode_quote_head\">"
+    . $title . "</div>\n<div class=\"bbcode_quote_body\">"
+    . $content . "</div>\n</div>\n";
+}
+
 ?>

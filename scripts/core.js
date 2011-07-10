@@ -206,6 +206,20 @@ function makeReplyForm(formId){
     formArea.observe('click', function(){ txtArea.focus(); });
 }
 
+function updateDimensions(){
+    $$('img[class="bbcode_img"]').each(function (ele){
+        var needed = {width: 500};
+    	var curImg = $(ele).getDimensions();
+    	if(curImg.width > needed.width){
+    		var newWidth = 328;
+    		var scaleFactor = newWidth/curImg.width;
+    		var newHeight = scaleFactor*curImg.height;
+    		$(ele).writeAttribute({width: newWidth, height: newHeight});
+    		$(ele).wrap('a', {'href': $(ele).readAttribute('src'), 'class': 'lightwindow', 'title': 'Resized Image: Click to open fullscreen'});
+    	}
+    });
+}
+
 
 document.observe('dom:loaded', function(){
 	$$('textarea').each(function (txtarea){
@@ -217,7 +231,7 @@ document.observe('dom:loaded', function(){
 			txtarea.writeAttribute('onkeydown', 'return catchTab(this, event)');
 		}
     });
-
+    updateDimensions();
 
 	if($('clock')){ updateClock(); }
 });

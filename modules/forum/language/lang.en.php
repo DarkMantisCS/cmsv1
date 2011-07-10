@@ -42,27 +42,38 @@ $_lang['L_POST_REPLY']					= 'Post Reply';
 $_lang['L_QUICKREPLY']					= 'Quick Reply';
 $_lang['L_THREAD_LOCKED']				= 'Thread Locked';
 $_lang['L_LOGGED']						= 'Logged';
+
 $_lang['L_LOCK']						= 'Lock';
 $_lang['L_UNLOCK']						= 'Unlock';
 $_lang['L_DELETE']						= 'Delete';
 $_lang['L_MOVE']						= 'Move';
+$_lang['L_QUOTE']						= 'Quote this post.';
+
 $_lang['L_AUTHOR']						= 'Author';
 $_lang['L_VIEWS']						= 'Views';
 $_lang['L_LASTPOST']					= 'Latest Post';
 $_lang['L_NO_THREADS']					= 'There doesn\'t seem to be any threads here.';
 
+$_lang['L_POST_COUNT']					= '<strong>Post Count:</strong> %d';
+$_lang['L_POSTED_ON']					= '<strong>Posted On:</strong> %s';
+$_lang['L_LOCATION']              		= '<strong>Location:</strong> %s';
+$_lang['L_USERS_IP']              		= '<strong>Users IP:</strong> %s';
+$_lang['L_EDITED']						= 'Post Has Been Edited %d Times. Last Edited By %s.';
+
 $_lang['L_WATCH_THREAD']				= 'Watch Thread';
 $_lang['L_UNWATCH_THREAD']				= 'Unwatch Thread';
 
-$_lang['L_STICKY']                		= '<b>Sticky</b>: %s';
-$_lang['L_ANNOUNCEMENT']          		= '<b>Announcement</b>: %s';
-$_lang['L_POST']                  		= 'Post:';
+$_lang['L_STICKY']						= '<b>Sticky</b>: %s';
+$_lang['L_ANNOUNCEMENT']				= '<b>Announcement</b>: %s';
+$_lang['L_POST']						= 'Post:';
 
 //post page
 $_lang['L_OPTIONS']						= 'Options';
 $_lang['L_QUICK_REPLY']					= 'Quick Reply';
 $_lang['L_QR_LOCK_THREAD']				= 'Lock thread after post.';
 $_lang['L_QR_PLACEHOLDER']				= 'Post a Quick Reply...';
+
+
 //blocks
 $_lang['L_SUBCATS']						= 'Sub Categories';
 $_lang['L_TITLE']						= 'Title';

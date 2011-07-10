@@ -105,6 +105,7 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 					//$classDir.'class.rating.php', # this one includes a rating system
 
 					$libDir.'phpass/class.phpass.php',
+					$libDir.'geshi/class.geshi.php',
 					$libDir.'nbbc/class.nbbc.php'
 				);
 		foreach($classFiles as $file){

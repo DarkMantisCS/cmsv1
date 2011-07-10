@@ -54,8 +54,12 @@ input:-webkit-autofill {
 .corners-left { -moz-border-radius-topleft: 5px; -webkit-border-top-left-radius: 5px; border-top-left-radius: 5px; -moz-border-radius-bottomleft: 5px; -webkit-border-bottom-left-radius: 5px; border-bottom-left-radius: 5px; }
 .corners { -moz-border-radius: 5px; -webkit-border-radius: 5px; border-radius: 5px; }
 
+img.avatar{
+	display: block;
+	background: url('black-20.png') repeat;
+}
 
-
+/** Context Menus **/
 #contextmenu{
 	margin:0;
 	padding:0;
@@ -71,3 +75,177 @@ input:-webkit-autofill {
 #contextmenu li.hover{
     background: #ddd;
 }
+
+/** BBCode Stuff **/
+span.bbcode_acronym {}
+    span.bbcode_acronym:hover {}
+
+table.bbcode_columns {}
+    table.bbcode_columns td.bbcode_column {}
+    table.bbcode_columns td.bbcode_firstcolumn {}
+
+div.bbcode_quote {}
+    div.bbcode_quote_head {}
+    div.bbcode_quote_head a:link {}
+    div.bbcode_quote_head a:visited {}
+    div.bbcode_quote_head a:hover {}
+    div.bbcode_quote_head a:active {}
+    div.bbcode_quote_body {}
+
+    div.bbcode_code {}
+    div.bbcode_code_head {}
+    div.bbcode_code_body {
+    	white-space:normal;
+    	word-wrap: break-word;
+    	overflow:hidden;
+    }
+
+/** Growl Notifications **/
+div.Growler-notice {
+	color: 					#000;
+	width: 					253px;
+	margin-top: 			5px;
+	margin-bottom: 			5px;
+	text-align: 			left;
+	display: 				none;
+	border: 				1px solid #1e1e1e;
+	z-index:                99999999;
+	background-color: 		#000;
+	color: 					#fff;
+	-moz-border-radius: 	5px;
+	-webkit-border-radius:	5px;
+}
+
+    div.Growler-notice div.Growler-notice-head {
+    	font-weight: 			bold;
+    	font-size:				10px;
+    	padding: 				5px 10px;
+    	color:                  #FFFFFF;
+    	background-color:       #0F0F0F;
+    }
+
+    div.Growler-notice div.Growler-notice-exit {
+    	float: 					right;
+    	cursor:					pointer;
+    	margin: 				3px;
+    	color:                  #FF0000;
+    }
+    div.Growler-notice div.Growler-notice-body {
+    	border-top:             1px solid #0f0f0f;
+    	background-color:       #0f0f0f;
+    	padding:                5px 10px;
+    	color:                  #FFFFFF;
+    }
+
+/** User Auto Complete **/
+div#user_autocomplete {
+  position:absolute;
+  margin:0;
+  padding:0;
+  overflow: scroll;
+  max-height:200px;
+  overflow:auto;
+}
+    div#user_autocomplete ul {
+      list-style-type:none;
+      margin:0;
+      padding:0;
+    }
+    div#user_autocomplete ul li {
+      list-style-type:none;
+      display:block;
+      margin:0;
+      padding:2px;
+      height:16px;
+      cursor:pointer;
+    }
+
+/** Pagination **/
+.pagination {}
+    .pagination a {
+    	padding: 2px 5px 2px 5px;
+    	margin: 2px;
+    	text-decoration: none;
+    }
+    .pagination a:hover, .pagination a:active {}
+    .pagination .current {
+    	padding: 2px 5px 2px 5px;
+    	margin: 2px;
+    	font-weight: bold;
+    }
+    .pagination .disabled {
+    	padding: 2px 5px 2px 5px;
+    	margin: 2px;
+    }
+
+
+/** Reply Boxes **/
+#replybox{
+    margin-top: 15px;
+    padding: 0 10px;
+    cursor: text;
+}
+    #replybox #submit{
+        position: relative;
+        top: 3px;
+        left: 11px;
+        float: right;
+    }
+    #replybox strong{
+        margin: 10px 7px;
+    }
+    #replybox textarea{
+        background: none;
+        border: 0 none;
+        outline: 0 none;
+        height: 20px;
+    }
+
+/** Table Stuff **/
+.tborder{ }
+.tcat{ }
+.thead{ font-weight: bold; }
+.tfoot{ }
+
+/* Sortable tables */
+table.sortable thead {
+    font-weight: bold;
+    cursor: hand; cursor: pointer;
+}
+
+/** Message Boxes **/
+div.messages{
+	border: 1px solid #ddd; clear: both; margin: 0 0 15px 0;
+}
+    .messages .inner{ padding-left: 10px; }
+    .messages .icon{ width:48px; height:48px; }
+    .warning .icon{ background-image: url(info.png); }
+    .error 	 .icon{ background-image: url(fail.png); }
+    .status  .icon{ background-image: url(ok.png); }
+
+/** Images **/
+img{ border: 0px; }
+    img.right{ margin: 5px 0px 10px 10px; }
+    img.left{ margin: 5px 10px 10px 0px; }
+
+/** Tabs **/
+ul.tabs {
+	text-align: left;
+	margin: 1em 0 1em 0;
+	border-bottom: 1px solid #000000;
+	list-style-type: none;
+	padding: 3px 0px 3px 10px;
+	font-size: 11px;
+}
+    ul.tabs li { display: inline; }
+    ul.tabs a:hover { background: #000000; color: #FFFFFF; }
+    ul.tabs li a {
+    	padding: 3px 4px;
+    	margin-right: 2px;
+    	text-decoration: none;
+    	border-bottom: none;
+    	border: 1px solid #313131;
+    	background-color: #000000;
+    	color: #666;
+    }
+

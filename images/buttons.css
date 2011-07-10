@@ -1,22 +1,22 @@
 /* http://www.zurb.com/article/266/super-awesome-buttons-with-css3-and-rgba */
 
-.button, .button:visited, input[name*="submit"], input[name*="reset"] {
+.button, .button:visited, .button:active, input[name*="submit"], input[name*="reset"] {
 	background: #222 url(alert-overlay.png) repeat-x;
 	display: inline-block;
 	padding: 5px 10px 6px;
 	color: #fff;
 	text-decoration: none;
-	
+
 	border-radius: 5px;
 	-o-border-radius: 5px;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
-	
+
 	box-shadow: 0 1px 3px rgba(0,0,0,0.5);
 	-o-box-shadow: 0 1px 3px rgba(0,0,0,0.5);
 	-moz-box-shadow: 0 1px 3px rgba(0,0,0,0.5);
 	-webkit-box-shadow: 0 1px 3px rgba(0,0,0,0.5);
-	
+
 	text-shadow: 0 -1px 1px rgba(0,0,0,0.25);
 	border: 0;
 	border-bottom: 1px solid rgba(0,0,0,0.25);
@@ -25,6 +25,8 @@
 }
 	.button:hover, input[name*="submit"]:hover, input[name*="reset"]:hover { background-color: #111; color: #fff; }
 	.button:active { top: 1px; }
+	.pagination .button.disabled { background: none repeat scroll 0 0 transparent; border: 0; box-shadow: 0 0 3px rgba(0,0,0, 0.1); color: grey; margin: 4px 5px; }
+
 
 input[name*="submit"]	    { background-color: #91bd09;  font-size: 13px; }
 input[name*="submit"]:hover	{ background-color: #749a02;  font-size: 13px; }
@@ -34,18 +36,19 @@ input[name*="reset"]:hover	{ background-color: #872300;  font-size: 13px; }
 
 
 /* Define some sizes for the buttons */
-.small.button, .small.button:visited { font-size: 11px; }
-.medium.button, .medium.button:visited { font-size: 13px; }
+.small.button, .small.button:visited { font-size: 11px; color: #fff; }
+.medium.button, .medium.button:visited { font-size: 13px; color: #fff; }
 .large.button, .large.button:visited {
 	font-size: 14px;
 	padding: 8px 14px 9px;
+	color: #fff;
 }
 
 /* Some Colors */
 .blue.button, .blue.button:visited
-	{ background-color: #2daebf; }
+	{ background-color: #2daebf; color: #fff; }
 .blue.button:hover
-	{ background-color: #007d9a; }
+	{ background-color: #007d9a; color: #fff; }
 
 .red.button, .red.button:visited
 	{ background-color: #e33100; }
@@ -79,19 +82,19 @@ input[name*="reset"]:hover	{ background-color: #872300;  font-size: 13px; }
 
 
 .button, .button:visited,
-.medium.button, .medium.button:visited { 
-	font-size: 13px; 
-	font-weight: bold; 
-	line-height: 1; 
-	text-shadow: 0 -1px 1px rgba(0,0,0,0.25); 
+.medium.button, .medium.button:visited {
+	font-size: 13px;
+	font-weight: bold;
+	line-height: 1;
+	text-shadow: 0 -1px 1px rgba(0,0,0,0.25);
 }
 
-.small.button, .small.button:visited { 
-	font-size: 11px; 
-	padding: 0; 
+.small.button, .small.button:visited {
+	font-size: 11px;
+	padding: 0;
 }
 
-.large.button, .large.button:visited { 
-	font-size: 14px; 
-	padding: 8px 14px 9px; 
+.large.button, .large.button:visited {
+	font-size: 14px;
+	padding: 8px 14px 9px;
 }

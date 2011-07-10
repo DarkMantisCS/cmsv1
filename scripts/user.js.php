@@ -70,8 +70,8 @@ document.observe('dom:loaded', function(){
 	    menuItems: avatarMenu
 	});
 
-	$("img[class=avatar]:not([avatar~="+User.username+"])").each(function (ava){
-		var user = ava.attr("data-avatar");
+	$$("img[class*=avatar]:not([data-avatar~="+User.username+"])").each(function (ava){
+		var user = ava.readAttribute("data-avatar");
 
 		new Proto.Menu({
 			selector: "#"+user+"_avatar",

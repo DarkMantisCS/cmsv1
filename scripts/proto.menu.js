@@ -11,7 +11,7 @@ if (Object.isUndefined(Proto)) { var Proto = { } }
 Proto.Menu = Class.create({
 	initialize: function() {
 		var e = Prototype.emptyFunction;
-		this.ie = $.browser.msie;
+		this.ie = Prototype.Browser.IE;
 		this.options = Object.extend({
 			selector: '.contextmenu',
 			className: 'protoMenu',

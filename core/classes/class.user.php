@@ -170,7 +170,7 @@ class user extends coreClass{
 			//figure out if they gave us a username or a user id
 			$user = (is_number($uid) ? 'u.id = "%s" ' : 'u.username = "%s" ');
 
-			$query = $this->objSQL->prepare('SELECT u.*, e.*, u.id as id, o.timestamp '.
+			$query = $this->objSQL->prepare('SELECT u.*, e.*, u.id as id, o.timestamp, o.hidden, o.userkey '.
 											'FROM `$Pusers` u '.
 												'LEFT JOIN `$Puser_extras` e '.
 													'ON u.id = e.uid '.
@@ -193,9 +193,7 @@ class user extends coreClass{
 			//this is so the cache will work even if they give you a username first time and uid the second
 			$this->userInfo[$info['username']] = $info;
 			$this->userInfo[$info['id']] = $info;
-
 		}
-
 
 		//if we didnt want it all then make sure the bit they wanted is there
 		if($field != '*'){
@@ -861,9 +859,10 @@ class user extends coreClass{
 	 * @return 	bool	True/False on successful check, -1 on unknown group
 	 */
 	public function profile($uid, $mode=LINK) {
+		global $config;
 
 		//check if the user has a UID of 0
-		if($uid == GUEST){
+		if(is_number($uid) && $uid == GUEST){
 			$user = 'Guest';
 			return $this->_profile_processor($user);
 		}
@@ -875,8 +874,14 @@ class user extends coreClass{
 				return $this->_profile_processor($user);
 			}
 
-		//see if the group we want is in the cache
-		$group = $this->config('groups', $user['primary_group'], false);
+		if($user['primary_group']!=0){
+			//see if the group we want is in the cache
+			foreach($config['groups'] as $g){
+				if($g['id'] == $user['primary_group']){
+					$group = $g; break;
+				}
+			}
+		}
 
 		//if not then we'll query for it
 		if(!$group){
@@ -897,7 +902,7 @@ class user extends coreClass{
             }else{
 
 				//we are looking for a specific group here
-				if($user['primary_group']!=0){
+				if($user['primary_group'] != 0){
 					foreach($groups as $g){
 						if($g['id'] == $user['primary_group']){
 							$group = $g;
@@ -907,6 +912,7 @@ class user extends coreClass{
 				//the CMS has been asked to figure out which group is needed
 	            }else{
 					$curr = 300;
+
 					foreach($groups as $g){
 						//if this group has a higher number its color wins
 						if($g['order'] < $curr){
@@ -918,7 +924,7 @@ class user extends coreClass{
  			}
 		}
 
-		return $this->_profile_processor($user, $group);
+		return $this->_profile_processor($user, $group, $mode);
 	}
 
 	/**
@@ -930,10 +936,11 @@ class user extends coreClass{
 	 *
 	 * @param 	array 	$user 	An array containing all the user information
 	 * @param 	array	$group	An array with the group information
+	 * @param 	int		$mode	LINK, RAW, NO_LINK, RETURN_USER
 	 *
 	 * @return 	string
 	 */
-	protected function _profile_processor($user, $group=null){
+	protected function _profile_processor($user, $group=null, $mode){
 		$user = (is_array($user) ? $user['username'] : $user);
 		$color = (!is_empty($group['color']) ? ' style="color: '.$group['color'].';"' : null);
 		$title = (!is_empty($group['description']) ? ' title="'.$group['description'].'"' : null);
@@ -946,21 +953,95 @@ class user extends coreClass{
         $user_link = '<a href="/'.root().'modules/profile/view/'.$user.'" rel="nofollow">'.sprintf($font, $color, $title, $user).'</a>';
         $user_no_link = sprintf($font, $color, $title, $user);
 
-		if($is_banned){$mode = 3;}
-
 		switch($mode){
-            case -1:    $return = $banned;      break;
+            case -1:    $return = $banned;      	break;
 
 		    default:
-            case 0:     $return = $user_link;   break;
+            case 0:     $return = $user_link;   	break;
             case 3:
-            case 1:     $return = $user_nlink;  break;
-            case 2:     $return = $user_raw;    break;
-            case 4:     $return = $uid;         break;
+            case 1:     $return = $user_no_link;  	break;
+            case 2:     $return = $user_raw;    	break;
+            case 4:     $return = $uid;         	break;
         }
 
 		return $return;
 	}
+
+	/**
+	 * Returns an fully parsed avatar
+	 *
+	 * @version 1.0
+	 * @since   1.0.0
+	 * @author	xLink
+	 *
+	 * @param	int 	$uid
+	 * @param	int 	$size
+	 *
+	 * @return  string              HTML of the parsed avatar.
+	 */
+	public function parseAvatar($uid, $size=100){
+		$defaultAvatar = '/'.root().'images/no_avatar.png';
+
+		$avatar = $this->getUserInfo($uid, 'avatar');
+			if(is_empty($avatar)){
+				$avatar = $defaultAvatar;
+				$_avatar = '<img src="%1$s" height="%2$s" width="%3$s" class="avatar corners" />';
+				return sprintf($_avatar, $avatar, $size, $size);
+			}
+
+		$avatar = secureMe(preg_replace('_^/images/_', '/'.root().'images/', $avatar));
+		$username = $this->getUserInfo($uid, 'username');
+		$username_avatar = $username.'_avatar';
+		$user = strtolower($username);
+
+        $_avatar = '<a href="%1$s" class="lightwindow" title="%4$s\'s Avatar" data-avatar="%5$s">'.
+					'<img src="%1$s" height="%2$s" width="%2$s" name="%3$s" id="%3$s" title="%4$s\'s Avatar" class="avatar corners" data-avatar="%4$s" /></a>';
+
+        return sprintf($_avatar, $avatar, $size, $username_avatar, $username, $user);;
+	}
+
+	/**
+	 * Returns an online indicator according to $timestamp.
+	 *
+	 * @version 2.0
+	 * @since   0.7.0
+	 * @author	xLink
+	 *
+	 * @param	int 	$timestamp		The timestamp of the user
+	 * @param	bool 	$hidden    		Whether or not the user should be hidden
+	 *
+	 * @return  string              	The Online, Offline or Hidden Indicator in HTML.
+	 */
+    function onlineIndicator($uid=0, $returnType='img'){
+		$vars = $this->objPage->getVar('tplVars');
+		$timestamp = $this->getUserInfo($uid, 'timestamp');
+
+		//make a default img to return, everybody by default are offline
+		$img = '<img src="'.$vars['USER_OFFLINE'].'" title="User is Offline">';
+		$raw = '0';
+
+		//timestamp is not set, return offline img
+		if(!is_number($timestamp)){
+			return (strcmp($returnType, 'raw')==0 ? $raw : $img);
+		}
+
+		if($timestamp >= $this->objTime->mod_time(time(), 0, 20, 0, 'TAKE')){ //check whether they are 'online'
+			if($uid != 0 && $this->getUserInfo($uid, 'hidden')==true){//do they want to be hidden
+				//do you have enough perms to see whether they are online or not?
+				if(User::$IS_MOD){//oh you do?
+					$img = '<img src="'.$vars['USER_HIDDEN'].'" title="User is hiding">';
+					$raw = '-1';
+				}else{//haha didnt think so..
+					$img = '<img src="'.$vars['USER_OFFLINE'].'" title="User is Offline">';
+					$raw = '0';
+				}
+			}else{//ahh not hidden then
+				$img = '<img src="'.$vars['USER_ONLINE'].'" title="User is Online">';
+				$raw = '1';
+			}
+		}
+		return (strcmp($returnType, 'raw')==0 ? $raw : $img);
+    }
 
 	/**
 	 * Returns permission state for given user and group
@@ -974,7 +1055,7 @@ class user extends coreClass{
 	 *
 	 * @return 	bool	True/False on successful check, -1 on unknown group
 	 */
-	function checkUserAuth($type, $key, $u_access, $is_admin){
+	public function checkUserAuth($type, $key, $u_access, $is_admin){
 		$auth_user = 0;
 
 		if(count($u_access)){

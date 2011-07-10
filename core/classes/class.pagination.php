@@ -95,10 +95,10 @@ class pagination extends coreClass {
 		$url = $url[0].'?'.$this->getQueryString($_SERVER['REQUEST_URI']);
 
 		$pages = $objForm->start('pagination'.rand(1, 99), array('method' => 'GET', 'action' => $url));
-		$pages .= '<table border="0" cellspacing="10" cellpadding="0" class="pagination"><tr>';
+		$pages .= '<table border="0" cellspacing="0" cellpadding="0" class="pagination"><tr>';
 
 		if($this->current_page < 2){
-			$pages .= '    <td class="disabled corners">&lt;&lt; First</td> <td class="disabled corners">&lt; Back</td>';
+			$pages .= '    <td class="button disabled corners">&lt;&lt; First</td> <td class="button disabled corners">&lt; Back</td>';
 		}else{
 			$pages .= '    <td><a href="'.$url.$this->instance.'=1" class="button">&lt;&lt; First</a></td>
 				            <td><a href="'.$url.$this->instance.'='.($this->current_page-1).'" class="button">&lt; Back</a></td>';
@@ -108,7 +108,7 @@ class pagination extends coreClass {
 					array('class'=>'input', 'style'=>'width: 25px; text-align: center')).' of '.$this->total_pages.'</td>';
 
 		if($this->current_page >= $this->total_pages){
-			$pages .= '    <td class="disabled corners">Next &gt;</td> <td class="disabled corners">Last &gt;&gt;</td>';
+			$pages .= '    <td class="button disabled corners">Next &gt;</td> <td class="button disabled corners">Last &gt;&gt;</td>';
 		}else{
 			$pages .= '    <td><a href="'.$url.$this->instance.'='.($this->current_page+1).'" class="button">Next &gt;</a></td>
 							<td><a href="'.$url.$this->instance.'='.($this->total_pages).'" class="button">Last &gt;&gt;</a></td>';
