@@ -306,7 +306,11 @@ class coreClass{
 	 * @param	string 	$mode		class, admin, mod, user
      */
     function autoLoadModule($module, &$returnVar, $mode='class'){
-        $objModule = new Module($this);
+    	global $objCore;
+
+		$objCore->objSQL->recordMessage('Loading Module: '.$module, 'INFO');
+
+        $objModule = new Module($objCore);
         if(!$objModule->moduleExists($module)){
             $returnVar = msg('FAIL', 'Error loading module file "'.$module.'"', 'return');
             return;
@@ -319,18 +323,16 @@ class coreClass{
         }
 
         $fileData = file_get_contents($file);
-        $newModule = $module.'_'.substr(0, 6, md5(time()));
+        $newModule = $module.'_'.substr(md5(time()), 0, 6);
         $fileData = preg_replace("/(class[\s])$module([\s]extends[\s]module{)/i", '\\1'.$newModule.'\\2', $fileData);
         $success = eval('?>'.$fileData.'<?php ');
         	if ($success === false){
-                $returnVar = msg('FAIL', 'Error loading module file "'.$module.'"', 'return');
+                $returnVar = msg('FAIL', 'Error: There was a syntax error in the class."'.$module.'".php file. Loading Halted.', 'return');
                 return;
             }
 
-        $returnVar = new $newModule($this->objCore);
+        $returnVar = new $newModule($objCore);
     }
-
-
 
 }
 ?>

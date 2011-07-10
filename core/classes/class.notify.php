@@ -58,7 +58,7 @@ class notify extends coreClass{
 
 		$log = 'Notification System: All notifcations for '.$this->objUser->getUserInfo($uid, 'username').' set to read.';
 		if(is_number($notifID) && $notifID > 0){
-			$updateClause[0] .= ($module===true ? ' module_id="%s"' : ' id="%s"');
+			$updateClause[0] .= ($module===true ? 'AND module_id="%s"' : 'AND id="%s"');
 			$updateClause[] = $notifID;
 			$log = null;
 		}
@@ -85,7 +85,7 @@ class notify extends coreClass{
 	 * @param	int 	$uid	0 for current user, or UID of user
 	 */
 	public function getNotifications($read=null, $uid=0){
-		if($read===true){ 			$read = ' and `read`="1"'; }
+		if($read===true){ 			$read = ' and `read`!="0"'; }
 		else if($read===false){ 	$read = ' and `read`="0"'; }
 
 		$user = ($uid==0 ? $this->objUser->grab('id') : $this->objUser->getUserInfo($uid));

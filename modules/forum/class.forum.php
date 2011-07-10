@@ -27,6 +27,32 @@ class forum extends Module{
             //$this->forumTrackerInit();
         }
 
+
+        //view thread
+        if(preg_match('_^thread/([a-zA-Z0-9-]*)\-([0-9]*)_i', $action, $threadId)){
+            $action = 'thread';
+            $this->rowstart = doArgs('page', 0, $_GET);
+            if(User::$IS_ONLINE){
+                switch($_GET['mode']){
+                    case 'lock':
+                    case 'unlock':
+                        $this->lock = $this->lockThread($threadId[2], ($_GET['mode']=='lock' ? true : false));
+                    break;
+
+                    case 'watch':
+                    case 'unwatch':
+                        $this->watchThread($threadId[2], ($_GET['mode']=='watch' ? true : false));
+                    break;
+
+                    case 'edit':        $action = 'edit';        break;
+                    case 'reply':       $action = 'reply';       break;
+                    case 'qreply':      $action = 'qreply';      break;
+                    case 'rm':          $action = 'remove';      break;
+                    case 'move':        $action = 'move';        break;
+                }
+            }
+        }
+
             //view category
             if(preg_match('_^([a-z0-9-]*)-([0-9]*)/page([0-9]*)_i', $action, $boardId) ||
                 preg_match('_^([a-z0-9-]*)-([0-9]*)_i', $action, $boardId)){
@@ -60,6 +86,11 @@ class forum extends Module{
             case 'cat':
                 $this->viewCat($boardId[2]);
             break;
+
+            case 'thread':
+                $this->viewThread($threadId[2]);
+            break;
+
 
 			default:
 			case 404:
@@ -343,6 +374,7 @@ class forum extends Module{
      *
      * @version	2.0
      * @since   1.0.0
+     * @author	xLink
      */
     public function showIndex(){
         $vars = $this->objPage->getVar('tplVars');
@@ -479,6 +511,16 @@ class forum extends Module{
 		$this->objTPL->parse('body', false);
     }
 
+
+    /**
+     * Outputs threads for a category, and sub categories if necessary
+     *
+     * @version	1.3
+     * @since   0.8.0
+     * @author 	xLink
+     *
+     * @param 	int 	$id		ID of the category to start from
+     */
 	public function viewCat($id){
 		//init some generally used vars
 		$vars = $this->objPage->getVar('tplVars');
@@ -579,8 +621,11 @@ class forum extends Module{
 	        		'ERROR' => langVar('L_NO_THREADS'),
 	        	));
 	        }else{
+	        	//loop through the threads
 	            $count = 0;
 	            foreach($threads as $thread){
+
+	            	//figure out which icon we should be showing
 			    	$icon_status = '_old';
 					if(User::$IS_ONLINE){
 						$tracking_topics = array(); $tracker = doArgs('forum_tracker', false, $_SESSION['user']);
@@ -595,6 +640,7 @@ class forum extends Module{
 						}
 					}
 
+					//title and post status
 					$title = secureMe($thread['subject']);
 					if(is_empty($title)){ $title = 'No Thread Title'; }
 					switch($thread['mode']){
@@ -617,7 +663,7 @@ class forum extends Module{
 					$this->objTPL->assign_block_vars('threads.row', array(
 						'ID'			=> 'thread_'.$thread['id'],
 						'ICON'			=> $vars[$ico],
-						'URL'			=> '/'.root().'modules/forum/thread/'.seo($thread['subject']).'-'.$thread['id'].'.html',
+						'URL'			=> $this->generateThreadURL($thread),
 						'CLASS'			=> $count%2 ? 'row_color1' : 'row_color2',
 
 						'TITLE'			=> $title,
@@ -626,7 +672,7 @@ class forum extends Module{
 						'REPLIES'		=> $thread['replies'],
 
 						'LP_AUTHOR'		=> $thread['replies'] ? $this->objUser->profile($thread['last_post_id']) : null,
-						'LP_URL'		=> $thread['replies'] ? '/'.root().'modules/forum/thread/'.seo($thread['subject']).'-'.$thread['id'].'.html?mode=last_page' : null,
+						'LP_URL'		=> $thread['replies'] ? $this->generateThreadURL($thread).'?mode=last_page' : null,
 						'LP_TIME'		=> $thread['replies'] ? $this->objTime->mk_time($thread['last_timestamp']) : langVar('L_NO_REPLYS'),
 					));
 
@@ -637,7 +683,211 @@ class forum extends Module{
 		$this->objTPL->parse('body', false);
 	}
 
+	public function viewThread($id){
+		$vars = $this->objPage->getVar('tplVars');
+		$this->objTPL->set_filenames(array(
+			'body' => 'modules/forum/template/forum_viewThread.tpl',
+		));
 
+		//grab the thread
+		$thread = $this->objSQL->getLine($this->objSQL->prepare(
+			'SELECT t.*, COUNT(DISTINCT p.id) as posts
+				FROM `$Pforum_threads` t
+				LEFT JOIN `$Pforum_posts` p
+					ON p.thread_id = t.id
+				WHERE t.id = %d',
+			$id
+		));
+			//make sure it exists
+	        if(!is_array($thread)){ $this->throwHTTP(404); return; }
+
+		//grab the cat
+		$cat = $this->getForumInfo($thread['cat_id']);
+		$cat = $cat[0];
+
+		//grab the auth and make sure they /can/ see it
+        $threadAuth = $this->auth[$thread['cat_id']];
+        if(!$threadAuth['auth_view'] || !$threadAuth['auth_read']){
+            $this->objPage->setTitle(langVar('B_FORUM'). ' > '.langVar('P_PERMISSION_DENIED'));
+            hmsgDie('INFO', langVar('L_AUTH_MSG', $threadAuth['auth_read_type']));
+        	return;
+        }
+
+        //sort out the breadcrumbs & page title
+		$threadTitle = secureMe($thread['subject']);
+		$threadUrl = $this->generateThreadURL($thread);
+
+		$page_name = array(langVar('B_FORUM'), $cat['title'], (!is_empty($threadTitle) ? $threadTitle : langVar('F_VIEWF')));
+		$this->objPage->setTitle(implode(' > ', $page_name));
+
+		$this->getSubCrumbs($thread['cat_id']);
+		$this->objPage->addPagecrumb(array(
+			array('url' => $threadUrl, 'name' => $threadTitle),
+		));
+
+        //update views
+        if(!isset($_SESSION['site']['forum']['view'][$thread['tid']])){
+            $this->objSQL->query($this->objSQL->prepare('UPDATE `$Pforum_threads` SET views = (views+1) WHERE id = %d LIMIT 1', $id));
+            $_SESSION['site']['forum']['view'][$thread['tid']] = 1;
+        }
+
+		//if the user is online
+		if(User::$IS_ONLINE){
+			//do thread tracker part of the tour
+				$tracker = doArgs('forum_tracker', false, $_SESSION['user']);
+				$tracking_threads = array();
+	            if(!is_empty($tracker)){
+	                $tracking_threads = unserialize($tracker);
+	            }
+
+				//find the thread row in the array or create a new one
+	        	if(!is_empty($tracking_threads)){
+	            	foreach($tracking_threads as $k => $v){
+	            		if($tracking_threads[$k]['id'] == $id){
+	                		$tracking_threads[$k][$id]['read'] = true;
+	                		$tracking_threads[$k][$id]['last_poster'] = time();
+	                    }
+	            	}
+	        	}else{
+	            	$tracking_threads[$id]['read'] = true;
+	            	$tracking_threads[$id]['last_poster'] = time();
+	        	}
+
+				//now update the user row
+	            unset($update);
+	            $_SESSION['user']['forum_tracker'] = $update['forum_tracker'] = serialize($tracking_threads);
+	            $this->objUser->updateUserSettings($this->objUser->grab('id'), $update);
+	            unset($update);
+
+			//update the users watch status
+	        $this->objSQL->updateRow('forum_watch', array('seen'=>1), array('user_id ="%s" AND thread_id ="%s"', $this->objUser->grab('id'), $id));
+
+			// && read notification if needed
+			$this->objNotify->clearNotifications($id, true);
+		}
+
+		//setup a new pagination obj
+        $objPagination = new pagination('page', 10, $thread['posts']);
+
+        //see if the user wants us to jump to the last page
+        if(doArgs('mode', false, $_GET) == 'last_page'){ $objPagination->goLastPage(); }
+
+        //check for guest restrictions
+        $limit = $objPagination->getSqlLimit();
+        if(!User::$IS_ONLINE && $this->config('forum', 'guest_restriction')){
+        	$this->objTPL->assign_block_vars('error', array(
+        		'ERROR' => langVar('L_VIEW_GUEST'),
+        	));
+
+            $limit = '1;';
+        }
+
+        //grab the thread posts
+        $posts = $this->objSQL->getTable($this->objSQL->prepare(
+			'SELECT * FROM `$Pforum_posts` WHERE thread_id = %d ORDER by timestamp, id ASC LIMIT %s',
+			$id, $limit
+		));
+
+        //assign some vars to the tpl
+    	$this->objTPL->assign_vars(array(
+            'THREAD_TITLE'  => $threadTitle,
+            'PAGINATION'    => $objPagination->getPagination(true),
+            'JUMPBOX'       => $this->objForm->start('jump'.randcode(2)).
+                                $this->buildJumpBox('jumpbox', $this->buildJumpBoxArray(), $thread['cat_id'], false, ' onchange="jump(\'jumpbox\');" ').
+                                $this->objForm->finish(),
+    	));
+
+		//setup the watch thread trigger
+        $watchThread = $this->objSQL->getInfo('forum_watch', array('user_id ="%s" AND thread_id ="%s"', $this->objUser->grab('id'), $id));
+        $this->objTPL->assign_var('WATCH',
+            (USER::$IS_ONLINE
+                ? '[ <a href="'.$threadUrl.'?mode='.($watchThread ? 'unwatch' : 'watch').'">'.
+						langVar(($watchThread ? 'L_UNWATCH_THREAD' : 'L_WATCH_THREAD')).'</a> ]'
+                : null)
+        );
+
+		//check if the thread is currently locked
+		if($thread['locked']==0){
+			$quick_reply = doArgs('forum_quickreply', false, $_SESSION['user']);
+
+			//test if we get to output quick reply
+			if($quick_reply && ($threadAuth['auth_reply'] || $threadAuth['auth_mod'] || User::$IS_MOD)){
+				$_SESSION['site']['forum'][$id]['id']     = $id;
+				$_SESSION['site']['forum'][$id]['sessid'] = $sessid = md5($this->objUser->grab('username').$id);
+
+				//assign the form to the tpl
+				$this->objTPL->assign_vars(array(
+					'F_START'           => $this->objForm->start('qreply', array('method' => 'POST', 'action' => $threadUrl.'?mode=qreply')),
+					'F_END'             => $this->objForm->finish(),
+					'HIDDEN'			=> $this->objForm->inputbox('sessid', 'hidden', $sessid).
+					                       $this->objForm->inputbox('id', 'hidden', $id).
+					                       $this->objForm->inputbox('quick_reply', 'hidden', 'true'),
+
+					'L_QUICK_REPLY'		=> langVar('L_QUICK_REPLY'),
+					'F_QUICK_REPLY'		=> $this->objForm->textarea('post', '', array(
+												'extra'=> ' tabindex="2"',
+												'style'=> 'width:100%;height:50px;border:0;padding:0;',
+												'placeholder'=> langVar('L_QR_PLACEHOLDER')
+											)),
+
+					'POST_OPTIONS'      => langVar('L_OPTIONS'),
+					'OPTIONS'           => $this->objForm->checkbox('autoLock', null, false).' '.langVar('L_QR_LOCK_THREAD').
+					                       (!$watchThread
+					                           ? $this->objForm->checkbox($this->objUser->grab('autowatch'), 'watch_topic').' Watch Topic.'
+					                           : NULL),
+
+					'SUBMIT'			=> $this->objForm->button('submit', 'Post', array('extra'=> ' tabindex="3"')),
+				));
+
+                $this->objTPL->assign_block_vars('qreply', array(
+                    'TEXT'  => langVar('L_QUICK_REPLY'),
+                ));
+
+				if($threadAuth['auth_mod'] || User::$IS_MOD){
+					$this->objTPL->assign_block_vars('qreply.options', array());
+				}
+			}
+			if($threadAuth['auth_reply'] || $threadAuth['auth_mod'] || User::$IS_MOD){
+				$this->objTPL->assign_block_vars('reply', array(
+					'URL'   => $threadUrl.'?mode=reply',
+					'TEXT'  => langVar('L_POST_REPLY'),
+					'IMG'   => $thread['locked']==1 ? '<img src="'.$vars['FIMG_locked'].'" />'  : '<img src="'.$vars['FIMG_reply'].'" />' ,
+				));
+			}
+
+		}else{
+			$this->objTPL->assign_block_vars('reply', array(
+				'URL'   => $threadUrl.'?mode=unlock',
+				'TEXT'  => langVar('L_THREAD_LOCKED'),
+				'IMG'	=> $thread['locked']==1 ? '<img src="'.$vars['FIMG_locked'].'" />' : NULL,
+			));
+		}
+
+		//posts get output here
+
+		$this->objTPL->parse('body', false);
+	}
+
+	public function generateThreadURL($thread){
+		if(!is_array($thread) || is_empty($thread)){
+			return null;
+		}
+		return '/'.root().'modules/forum/thread/'.seo($thread['subject']).'-'.$thread['id'].'.html';
+	}
+
+    /**
+     * Figures out Combined Posts counts for $cat and subs /
+     * 		Figured out which 'last post' to show from the sub cats
+     *
+     * @version	1.0
+     * @since   0.8.0
+     * @author 	xLink
+     *
+     * @param 	int 	$cat	ID of the parent category
+     * @param	string 	$mode
+     *
+     * @return 	int/array	int if $mode == (post || thread), array if $mode == last_post
+     */
     private function modCat($cat, $mode){
     	//make sure we have the right mode
         $mode_ary = array('post', 'thread', 'last_post');

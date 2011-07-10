@@ -24,3 +24,14 @@ $$('td[data-url]').each(function(ele) {
 		});
 	}
 });
+
+document.observe('dom:loaded', function(){
+
+
+	if($('qreply')){
+		makeReplyForm('qreply');
+		/*$$('a[href=#qreply]')[0].observe('click', function(){
+			$$('#qreply textarea')[0].focus();
+		});*/
+	}
+});

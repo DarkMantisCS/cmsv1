@@ -8,7 +8,7 @@
 		<!-- END form_error -->
 		
 		<!-- BEGIN field -->
-		<div>
+		<div class="formRow">
 			<!-- BEGIN label -->
 			<label for="{field.L_LABELFOR}">
 			<!-- END label -->

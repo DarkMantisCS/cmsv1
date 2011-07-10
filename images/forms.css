@@ -10,6 +10,7 @@ form input[type=text], form input[type=email], form input[type=url], form input[
 	margin-bottom:5px; 
 	border:1px solid #ccc; 
 	padding:4px 0 1px 5px;
+	resize: none;
 }
 form .textarea textarea {
 	-moz-border-radius: 3px; 
@@ -33,7 +34,7 @@ textarea:focus {
 }
 
 /* special form styling */
-form div {margin-bottom:6px; padding:5px 0px;}
+form div.formRow {margin-bottom:6px; padding:5px 0px;}
 form div label {float:left; width:auto;}
 form div input {width:52%; float:right;}
 form div input.invalid {border-bottom:1px solid #f00;}

@@ -5,16 +5,22 @@
 if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 if(!isset($LANG_LOAD)){ die('Error: Cannot access directly.'); }
 
+//breadcrumbs and page titles
 $_lang['B_FORUM']						= 'Forum';
+$_lang['P_PERMISSION_DENIED']			= 'Permisisons Denial';
 
+//menu titles
 $_lang['M_LATEST_POST'] 				= 'Latest Forum Posts';
 $_lang['M_TOP_USER']					= 'Top Posters';
 
+//auth info
 $_lang['L_Auth_Anonymous_Users']        = '<b>anonymous users</b>';
 $_lang['L_Auth_Registered_Users']       = '<b>registered users</b>';
 $_lang['L_Auth_Users_granted_access']   = '<b>users granted special access</b>';
 $_lang['L_Auth_Moderators']             = '<b>moderators</b>';
 $_lang['L_Auth_Administrators']         = '<b>administrators</b>';
+$_lang['L_AUTH_MSG']					= 'Sorry! You need to be a %s to view this thread.';
+$_lang['L_VIEW_GUEST']					= 'Sorry! You are not logged in. Please register or login to view the rest of the topic.';
 
 //stats
 $_lang['L_STATS']						= 'Stats and such';
@@ -45,10 +51,18 @@ $_lang['L_VIEWS']						= 'Views';
 $_lang['L_LASTPOST']					= 'Latest Post';
 $_lang['L_NO_THREADS']					= 'There doesn\'t seem to be any threads here.';
 
+$_lang['L_WATCH_THREAD']				= 'Watch Thread';
+$_lang['L_UNWATCH_THREAD']				= 'Unwatch Thread';
+
 $_lang['L_STICKY']                		= '<b>Sticky</b>: %s';
 $_lang['L_ANNOUNCEMENT']          		= '<b>Announcement</b>: %s';
 $_lang['L_POST']                  		= 'Post:';
 
+//post page
+$_lang['L_OPTIONS']						= 'Options';
+$_lang['L_QUICK_REPLY']					= 'Quick Reply';
+$_lang['L_QR_LOCK_THREAD']				= 'Lock thread after post.';
+$_lang['L_QR_PLACEHOLDER']				= 'Post a Quick Reply...';
 //blocks
 $_lang['L_SUBCATS']						= 'Sub Categories';
 $_lang['L_TITLE']						= 'Title';

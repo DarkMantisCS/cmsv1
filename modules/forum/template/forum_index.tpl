@@ -24,8 +24,9 @@
 	<div class="clear"></div>
 </div>
 <!-- END stats -->
+
 <br />
-<table border="0" cellspacing="1" cellpadding="1" align="right" class="content">
+<table border="0" cellspacing="1" cellpadding="1" align="right" class="content corners-top">
   <tr>
     <td class="row_color1 padding" align="center"><img src="{I_NO_POSTS}" /></td>
     <td class="row_color1 padding">{L_NO_POSTS}</td>

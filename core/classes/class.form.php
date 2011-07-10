@@ -144,11 +144,17 @@ class form extends coreClass{
 			'extra'     	=> doArgs('extra', null, $args),
 			'xssFilter' 	=> doArgs('xssFilter', true, $args),
 			'placeholder'   => doArgs('placeholder', null, $args),
+
+			'resize' 		=> doArgs('resize', true, $args),
+			'allowTab'   	=> doArgs('allowTab', true, $args),
 		);
 
 		return '<textarea '.
 					'name="'.$name.'" id="'.$args['id'].'" '.
-					'class="'.($args['class']).'" '.
+					'class="'.($args['class']).
+						(!$args['resize'] ? ' noResize' : null).
+						(!$args['allowTab'] ? ' noTab' : null).
+					'" '.
 					'cols="'.(is_number($args['cols']) 	? $args['cols'] 			: 45).'" '.
 					'rows="'.(is_number($args['rows']) 	? $args['rows'] 			: 5).'"'.
 					(!is_empty($args['placeholder'])	? 'placeholder="'.$args['placeholder'].'" ' : null).

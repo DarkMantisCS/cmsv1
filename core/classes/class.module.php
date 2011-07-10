@@ -34,6 +34,7 @@ class Module extends coreClass {
 		$this->objForm 		= $objCore->objForm;
 		$this->objComments 	= $objCore->objComments;
 		$this->objLogin 	= $objCore->objLogin;
+		$this->objNotify	= $objCore->objNotify;
 
 		if(isset($_GET['ajax'])) {
 			$this->objPage->setTplSimple(true);
