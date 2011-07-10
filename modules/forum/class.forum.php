@@ -362,7 +362,6 @@ class forum extends Module{
            }
         }
 
-
 		$return = $this->objTPL->get_html('categories');
 		$this->objTPL->reset_block_vars('forum');
 		return $return;
