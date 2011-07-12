@@ -13,21 +13,6 @@ if(!User::$IS_ONLINE){ die(); }
 if(is_readable('/'.Page::$THEME_ROOT.'extras.php')){ include '/'.Page::$THEME_ROOT.'extras.php'; }
 $vars = $objPage->getVar('tplVars');
 ?>
-var User = {
-	username: "<?php echo $objUser->grab('username'); ?>",
-
-	IS_ONLINE: 	<?php echo (User::$IS_ONLINE ? 'true' : 'false'); ?>,
-	IS_MOD: 	<?php echo (User::$IS_MOD ? 'true' : 'false'); ?>,
-	IS_ADMIN: 	<?php echo (User::$IS_ADMIN ? 'true' : 'false'); ?>
-
-};
-
-var Page = {
-	row_highlight: "<?php echo $vars['row_highlight']; ?>",
-	row_color1: "<?php echo $vars['row_color1']; ?>",
-	row_color2: "<?php echo $vars['row_color2']; ?>"
-}
-
 function showNotification(id, message, header, sticky){
 	$.gritter.add({
 		id : id,
@@ -70,7 +55,7 @@ document.observe('dom:loaded', function(){
 	    menuItems: avatarMenu
 	});
 
-	$$("img[class*=avatar]:not([data-avatar~="+User.username+"])").each(function (ava){
+	$$("img[class*=avatar][data-avatar]:not([data-avatar~="+User.username+"])").each(function (ava){
 		var user = ava.readAttribute("data-avatar");
 
 		new Proto.Menu({

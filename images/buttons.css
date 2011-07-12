@@ -1,6 +1,6 @@
 /* http://www.zurb.com/article/266/super-awesome-buttons-with-css3-and-rgba */
 
-.button, .button:visited, .button:active, input[name*="submit"], input[name*="reset"] {
+.button, .button:visited, input[name*="submit"], input[name*="reset"] {
 	background: #222 url(alert-overlay.png) repeat-x;
 	display: inline-block;
 	padding: 5px 10px 6px;
@@ -24,7 +24,7 @@
 	cursor: pointer;
 }
 	.button:hover, input[name*="submit"]:hover, input[name*="reset"]:hover { background-color: #111; color: #fff; }
-	.button:active { top: 1px; }
+	.button:active { top: 1px; color: #fff; }
 	.pagination .button.disabled { background: none repeat scroll 0 0 transparent; border: 0; box-shadow: 0 0 3px rgba(0,0,0, 0.1); color: grey; margin: 4px 5px; }
 
 
@@ -83,6 +83,7 @@ input[name*="reset"]:hover	{ background-color: #872300;  font-size: 13px; }
 
 .button, .button:visited,
 .medium.button, .medium.button:visited {
+	color: #fff;
 	font-size: 13px;
 	font-weight: bold;
 	line-height: 1;
@@ -90,11 +91,21 @@ input[name*="reset"]:hover	{ background-color: #872300;  font-size: 13px; }
 }
 
 .small.button, .small.button:visited {
+	color: #fff;
 	font-size: 11px;
 	padding: 0;
 }
 
 .large.button, .large.button:visited {
+	color: #fff;
 	font-size: 14px;
 	padding: 8px 14px 9px;
+}
+
+/** Pagination **/
+.mini-pagination a, .mini-pagination span {
+	color: #fff !important;
+	padding: 2px 5px 2px 5px;
+	margin: 2px;
+	font-weight: bold;
 }

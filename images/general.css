@@ -67,14 +67,14 @@ a:hover, a:focus { }
 a:active, a:visited { }
 
 blockquote {
-		font-family: Georgia,"Times New Roman", Times, serif; 
-		margin:5px; 
+		font-family: Georgia,"Times New Roman", Times, serif;
+		margin:5px;
 		padding:10px;
-		font-size:1.52em; 
-		color:#999; 
-		font-style:italic; 
-		line-height:1.3em; 
-		width:100%; 
+		font-size:1.52em;
+		color:#999;
+		font-style:italic;
+		line-height:1.3em;
+		width:100%;
 		quotes:none;
 	}
 	blockquote.left {border-right:1px dashed #ccc; width:35%;} /* float blockquote left, and set width */
@@ -82,11 +82,11 @@ blockquote {
 
 /* ** ** Header Styles ** ** */
 h1, h2, h3, h4, h5 {margin:0 0 0.5em; line-height:1.1em;}
-h1 {	font-size:2.52em;} 
-h2 {	font-size:1.952em;} 
-h3 {	font-size:1.652em;} 
-h4 {	font-size:1.452em;} 
-h5 {	font-size:1.252em;} 
+h1 {	font-size:2.52em;}
+h2 {	font-size:1.952em;}
+h3 {	font-size:1.652em;}
+h4 {	font-size:1.452em;}
+h5 {	font-size:1.252em;}
 h6 {	font-size:1.52em;}
 
 /* ** ** ul li's ** ** */
@@ -111,6 +111,7 @@ li ul,li ol{
 	background: #525252; /* Firefox */
 	color:#fff;
 }
+
 /* ** ** paragraph styling ** ** */
 p {margin:0 0 1.52em;}
 	p img.left {float:left;margin:1.52em 1.52em 1.52em 0;padding:0;}

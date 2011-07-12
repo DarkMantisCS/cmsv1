@@ -194,13 +194,13 @@ class form extends coreClass{
 	 * @author  xLink
 	 *
 	 * @param   string 	$name
-	 * @param   string 	$value
+	 * @param   array 	$values
 	 * @param   string 	$defaultSetting
 	 * @param   array 	$args
 	 *
 	 * @return  string
 	 */
-	public function radio($name='radio', $value=array(), $defaultSetting=null, $args=array()){
+	public function radio($name='radio', $values=array(), $defaultSetting=null, $args=array()){
 		$args = array(
 			'id'		=> doArgs('id', $name, $args),
 			'class'     => doArgs('class', null, $args),
@@ -212,7 +212,7 @@ class form extends coreClass{
 		);
 
 		$return = null;
-		foreach($val as $key => $value){
+		foreach($values as $key => $value){
 			$value = ($args['xssFilter']===true ? htmlspecialchars($value) : $value);
 			$return .= ($args['showLabels']===true ? '<label>' : '').
 							'<input type="radio"'.
@@ -230,7 +230,7 @@ class form extends coreClass{
 	}
 
 	/**
-	 * Created a new checkbox
+	 * Create a new checkbox
 	 *
 	 * @version	1.0
 	 * @since   1.0.0

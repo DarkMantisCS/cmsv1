@@ -49,30 +49,35 @@ class pagination extends coreClass {
 		$this->current_page = ($this->total_pages==0 ? 1 : $this->total_pages);
 	}
 
-    public function getPagination($showOne=false){
+    public function getPagination($showOne=false, $style=null, $url=null){
         global $objUser;
 
 		if($this->total_pages <= 1){
-			if(!$showOne) return '';
+			if(!$showOne){ return ''; }
 		}
 
 		if(!User::$IS_ONLINE){
-			return $this->paginationStyle1();
+			$switch = 1;
 		}else{
 			$switch = $objUser->grab('paginationStyle');
-
-			switch($switch){
-				default:
-				case '1':
-					return $this->paginationStyle1();
-				break;
-
-				case '2':
-					return $this->paginationStyle2();
-				break;
-			}
 		}
 
+		if(!is_empty($style)){ $switch = $style; }
+
+		switch($switch){
+			default:
+			case '1':
+				return $this->paginationStyle1($url);
+			break;
+
+			case '2':
+				return $this->paginationStyle2($url);
+			break;
+
+			case 'mini':
+				return $this->paginationMini($url);
+			break;
+		}
     }
 
 	private function getQueryString($url){
@@ -89,10 +94,10 @@ class pagination extends coreClass {
 	}
 
 
-    protected function paginationStyle1(){
+    protected function paginationStyle1($url=null){
 		global $objForm;
 
-		$url = $url[0].'?'.$this->getQueryString($_SERVER['REQUEST_URI']);
+		$url = $url.'?'.$this->getQueryString((is_empty($url) ? $_SERVER['REQUEST_URI'] : $url));
 
 		$pages = $objForm->start('pagination'.rand(1, 99), array('method' => 'GET', 'action' => $url));
 		$pages .= '<table border="0" cellspacing="0" cellpadding="0" class="pagination"><tr>';
@@ -120,8 +125,8 @@ class pagination extends coreClass {
 		return $pages;
 	}
 
-    protected function paginationStyle2(){
-		$url = $url[0].'?'.$this->getQueryString($_SERVER['REQUEST_URI']);
+    protected function paginationStyle2($url=null){
+		$url = $url.'?'.$this->getQueryString((is_empty($url) ? $_SERVER['REQUEST_URI'] : $url));
 
 		//defaults
 		$adjacents = 2;
@@ -206,6 +211,83 @@ class pagination extends coreClass {
                 $pagination .= '    <a href="'.$url.$this->instance.'='.($next).'" class="button">Next &gt;</a>
                                 <a href="'.$url.$this->instance.'='.($this->total_pages).'" class="button">Last &gt;&gt;</a>';
             }
+
+
+    		$pagination .= "</div>\n";
+    	}
+
+    	return $pagination;
+    }
+
+
+    protected function paginationMini($url=null){
+		$url = $url.'?'.$this->getQueryString((is_empty($url) ? $_SERVER['REQUEST_URI'] : $url));
+
+		//defaults
+		$adjacents = 2;
+		$totalitems = $this->total_pages;
+		$page = $this->current_page;
+
+		//other vars
+		$prev = $page-1;									//previous page is page - 1
+		$next = $page+1;									//next page is page + 1
+		$lastpage = $this->total_pages;				        //lastpage is = total items / items per page, rounded up.
+		$lpm1 = $lastpage-1;								//last page minus 1
+
+		$pagination = '';
+		if($lastpage > 1){
+			$pagination .= '<div class="mini-pagination">';
+    		//pages
+    		if($lastpage < 7+($adjacents * 2)){	//not enough pages to bother breaking it up
+    			for($counter = 1; $counter <= $lastpage; $counter++){
+    				if($counter == $page){
+    					$pagination .= '<span class="current button">'.$counter.'</span>';
+    				}else{
+    					$pagination .= '<a href="'.$url.$this->instance.'='.$counter.'" class="button">'.$counter.'</a>';
+                    }
+    			}
+    		}else if($lastpage >= 7+($adjacents * 2)){	//enough pages to hide some
+    			//close to beginning; only hide later pages
+    			if($page < 1 + ($adjacents * 3)){
+    				for($counter = 1; $counter < 4+($adjacents * 2); $counter++){
+        				if($counter == $page){
+        					$pagination .= '<span class="current button">'.$counter.'</span>';
+        				}else{
+        					$pagination .= '<a href="'.$url.$this->instance.'='.$counter.'" class="button">'.$counter.'</a>';
+                        }
+    				}
+    				$pagination .= '<span class="elipses">...</span>';
+    				$pagination .= '<a href="'.$url.$this->instance.'='.$lpm1.'" class="button">'.$lpm1.'</a>';
+    				$pagination .= '<a href="'.$url.$this->instance.'='.$lastpage.'" class="button">'.$lastpage.'</a>';
+    			//in middle; hide some front and some back
+    			}else if($lastpage - ($adjacents*2) > $page && $page > ($adjacents*2)){
+    				$pagination .= '<a href="'.$url.$this->instance.'=1" class="button">1</a>';
+    				$pagination .= '<a href="'.$url.$this->instance.'=2" class="button">2</a>';
+    				$pagination .= '<span class="elipses">...</span>';
+    				for ($counter = $page - $adjacents; $counter <= $page + $adjacents; $counter++){
+    					if ($counter == $page){
+    						$pagination .= '<span class="current button">'.$counter.'</span>';
+    					}else{
+    						$pagination .= '<a href="'.$url.$this->instance.'='.$counter.'" class="button">'.$counter.'</a>';
+                        }
+    				}
+    				$pagination .= "...";
+    				$pagination .= '<a href="'.$url.$this->instance.'='.$lpm1.'" class="button">'.$lpm1.'</a>';
+    				$pagination .= '<a href="'.$url.$this->instance.'='.$lastpage.'" class="button">'.$lastpage.'</a>';
+    			//close to end; only hide early pages
+    			}else{
+    				$pagination .= '<a href="'.$url.$this->instance.'=1" class="button">1</a>';
+    				$pagination .= '<a href="'.$url.$this->instance.'=2" class="button">2</a>';
+    				$pagination .= '<span class="elipses">...</span>';
+    				for($counter = $lastpage - (1 + ($adjacents * 3)); $counter <= $lastpage; $counter++){
+    					if ($counter == $page){
+    						$pagination .= '<span class="current button">'.$counter.'</span>';
+    					}else{
+    						$pagination .= '<a href="'.$url.$this->instance.'='.$counter.'" class="button">'.$counter.'</a>';
+                        }
+    				}
+    			}
+    		}
 
 
     		$pagination .= "</div>\n";

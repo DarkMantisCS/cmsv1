@@ -160,25 +160,6 @@ div#user_autocomplete {
       cursor:pointer;
     }
 
-/** Pagination **/
-.pagination {}
-    .pagination a {
-    	padding: 2px 5px 2px 5px;
-    	margin: 2px;
-    	text-decoration: none;
-    }
-    .pagination a:hover, .pagination a:active {}
-    .pagination .current {
-    	padding: 2px 5px 2px 5px;
-    	margin: 2px;
-    	font-weight: bold;
-    }
-    .pagination .disabled {
-    	padding: 2px 5px 2px 5px;
-    	margin: 2px;
-    }
-
-
 /** Reply Boxes **/
 #replybox{
     margin-top: 15px;
@@ -202,10 +183,7 @@ div#user_autocomplete {
     }
 
 /** Table Stuff **/
-.tborder{ }
-.tcat{ }
 .thead{ font-weight: bold; }
-.tfoot{ }
 
 /* Sortable tables */
 table.sortable thead {
@@ -215,7 +193,7 @@ table.sortable thead {
 
 /** Message Boxes **/
 div.messages{
-	border: 1px solid #ddd; clear: both; margin: 0 0 15px 0;
+	clear: both; margin: 0 0 15px 0;
 }
     .messages .inner{ padding-left: 10px; }
     .messages .icon{ width:48px; height:48px; }

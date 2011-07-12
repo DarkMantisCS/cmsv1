@@ -35,9 +35,12 @@ class Module extends coreClass {
 		$this->objComments 	= $objCore->objComments;
 		$this->objLogin 	= $objCore->objLogin;
 		$this->objNotify	= $objCore->objNotify;
+		$this->objPlugins	= $objCore->objPlugins;
+		$this->objCache		= $objCore->objCache;
+		$this->objGroups	= $objCore->objGroups;
 
 		if(isset($_GET['ajax'])) {
-			$this->objPage->setTplSimple(true);
+			$this->objPage->setVar('simpleTpl', true);
 		}
 
 		// Retrieve info from config

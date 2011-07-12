@@ -366,7 +366,9 @@ class page extends coreClass{
 		//load in the root vars, we do this first so we can use em in the JS files etc
 		$js .=
 			'<script>'.
-			'var cmsROOT = "'.root().'"; var THEME_ROOT = "'.root().page::$THEME_ROOT.'";'.
+			'var cmsROOT = "'.root().'"; var THEME_ROOT = "'.root().page::$THEME_ROOT.'"; '.
+			'var User = { username: "'.$this->objUser->grab('username').'", IS_ONLINE: '.(User::$IS_ONLINE ? 'true' : 'false').', IS_MOD: '.(User::$IS_MOD ? 'true' : 'false').', IS_ADMIN: '.(User::$IS_ADMIN ? 'true' : 'false').' }; '.
+			'var Page = { row_highlight: "'.$vars['row_highlight'].'", row_color1: "'.$vars['row_color1'].'", row_color2: "'.$vars['row_color2'].'" }; '.
 			'</script>'.$nl;
 
 		//files first

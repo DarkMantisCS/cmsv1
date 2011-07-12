@@ -80,8 +80,7 @@ function menu_forum_posts($args){
 			'TITLE'  	=> contentParse(truncate($thread['subject'], 25), false, false),
 
 			'L_AUTHOR' 	=> langVar('L_AUTHOR'),
-			'AUTHOR'    => $objCore->objUser->profile($thread['last_post_id']),
-
+			'AUTHOR'    => $objCore->objUser->profile($thread['last_uid']),
 
 			'POSTED'    => $objCore->objTime->timer($thread['posted'],time(),  'wd'),
 
@@ -103,10 +102,8 @@ function menu_forum_users($args){
 
 	$users = $objCore->objSQL->getTable($objCore->objSQL->prepare(
 		'SELECT u.id, COUNT(DISTINCT p.id) AS count
-		FROM `cscms_users` u
-		LEFT JOIN cscms_forum_posts p
-			ON p.author = u.id
-
+		FROM `$Pusers` u, `$Pforum_posts` p, `$Pforum_threads` t, `$Pforum_cats` c
+			WHERE p.author = u.id AND p.thread_id = t.id AND t.cat_id = c.id AND c.postcounts = 1
 		GROUP BY u.id
 		ORDER BY count DESC
 		LIMIT %d',

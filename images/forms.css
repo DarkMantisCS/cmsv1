@@ -35,16 +35,16 @@ textarea:focus {
 
 /* special form styling */
 form div.formRow {margin-bottom:6px; padding:5px 0px;}
-form div label {float:left; width:auto;}
-form div input {width:52%; float:right;}
-form div input.invalid {border-bottom:1px solid #f00;}
-form div input[type=submit], form div input[type=reset]{
+form div.formRow label {float:left; width:auto;}
+form div.formRow input {width:52%; float:right;}
+form div.formRow input.invalid {border-bottom:1px solid #f00;}
+form div.formRow input[type=submit], form div input[type=reset]{
 	width: auto; float: none;
 }
 
 /* single column form styling */
 
-form .s_column div {height:auto; margin-bottom:3px; padding:0px;}
-form .s_column div label {float:none; width:100%;}
-form .s_column div input {width:98%; float:none;}
+form .s_column div.formRow {height:auto; margin-bottom:3px; padding:0px;}
+form .s_column div.formRow label {float:none; width:100%;}
+form .s_column div.formRow input {width:98%; float:none;}
 

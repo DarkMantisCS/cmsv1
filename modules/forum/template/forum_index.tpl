@@ -5,10 +5,8 @@
 <!-- BEGIN stats -->
 <br />
 <div class="content corners">
-    <div class="title corners-top"><h4 style="margin: 0;">{stats.L_STATS}</h4></div>
-    <table width="100%" border="0" cellspacing="0" cellpadding="0" class="padding">
-      <tr>
-        <td>
+    <div class="title corners-top"><h4>{stats.L_STATS}</h4></div>
+    <div class="padding">
         {stats.L_TOTAL_USERS}
         <hr size="1" style="color: rgb(10, 10, 10);" />
         {stats.USER24}<br />
@@ -18,9 +16,7 @@
 		<strong>{stats.L_POSTS}</strong>: {stats.C_POSTS} | 
 		<strong>{stats.L_USERS}</strong>: {stats.C_USERS} | 
 		<strong>{stats.L_NEWUSER}</strong>: {stats.C_NEWUSER}
-        </td>
-      </tr>
-    </table>
+	</div>
 	<div class="clear"></div>
 </div>
 <!-- END stats -->

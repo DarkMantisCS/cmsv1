@@ -9,6 +9,7 @@
 <div class="content corners">
     <div class="title corners-top">
 		<h4 class="float-left">{threads.CAT}</h4>
+		{threads.SEARCH}
 		<!-- BEGIN post -->
 		<a href="{threads.post.URL}" class="button black"><span class="fnewpost">{threads.post.TEXT}</span></a>
 		<!-- END post -->
@@ -27,6 +28,9 @@
 		<td width="5%" align="center"><img src="{threads.row.ICON}" /></td>
 		<td width="36%" align="left" class="padding" data-url="{threads.row.URL}">
 		<a href="{threads.row.URL}">{threads.row.TITLE}</a>
+		<!-- BEGIN pagination -->
+		<br />{threads.row.pagination.SHOW}
+		<!-- END pagination -->
 		</td>
 		<td align="center">{threads.row.AUTHOR}</td>
 		<td align="center">{threads.row.VIEWS}</td>
@@ -49,7 +53,7 @@
 	
 	<!-- BEGIN error -->
 	  <tr>
-		<td colspan="6" align="center"><h4>{threads.error.ERROR}</h4></td>
+		<td colspan="6" align="center">{threads.error.ERROR}</td>
 	  </tr>
 	<!-- END error -->
 	

@@ -13,6 +13,8 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
  */
 class coreClass{
 
+	public $classes = array();
+
 	/**
 	 * Autoloads the $classes
 	 *

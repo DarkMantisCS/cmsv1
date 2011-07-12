@@ -175,6 +175,7 @@ section aside#sidebar {
 	aside#sidebar .sideMenu section{
 		margin: 0 0 0 -3px;
 		padding: 2px;
+		border-left: 0;
 	}
 	#pageContent header.title{
 		-webkit-border-radius: 5px;
@@ -398,6 +399,25 @@ div.bbcode_quote_head, div.bbcode_code_head{
 	padding: 0.25em 0.5em;
 }
 div.bbcode_quote_body, div.bbcode_code_body { background-color: #FEFEFE; color: black; padding: 0.5em 1em; }
+
+
+.button span{
+    text-indent: 23px;
+	display: block;
+    height: 16px;
+}
+
+.button span.freply{
+	background: url(buttons/reply.png) no-repeat;
+}
+
+.button span.fnewpost{
+	background: url(buttons/compose.png) no-repeat;
+}
+
+.button span.btnSubmit{
+	background: url(buttons/page_add.png) no-repeat;
+}
 
 
 /** Specific Stuff **/

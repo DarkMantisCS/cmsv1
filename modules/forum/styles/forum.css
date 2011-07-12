@@ -1,6 +1,6 @@
 
 .title .catIcon{
-	margin: 8px 0 0 11px;
+	margin: 6px 9px 0 10px;
 }
 
 .catClear .title {
@@ -18,11 +18,34 @@
 
 .title .button{
 	border-radius: 0;
-	margin: 2px 3px 0 0;
+	margin: 0 3px 0 0;
 	float: right;
 }
 
 
 table.content{
 	display: table;
+}
+
+div.cat_handle{
+	cursor: n-resize;
+}
+
+input.bbButton{
+	float: none;
+	height: 16px;
+	width: 16px;
+	border: 1px solid #B8B8B8;
+	padding: 2px;
+}
+
+input.smilie{
+	float: none;
+	height: 16px;
+	width: 16px;
+	padding: 2px;
+}
+
+td.editor-btn{
+	padding: 0 0 8px 6px;
 }

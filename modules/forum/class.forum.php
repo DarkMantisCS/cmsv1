@@ -27,7 +27,6 @@ class forum extends Module{
             //$this->forumTrackerInit();
         }
 
-
         //view thread
         if(preg_match('_^thread/([a-zA-Z0-9-]*)\-([0-9]*)_i', $action, $threadId)){
             $action = 'thread';
@@ -51,6 +50,11 @@ class forum extends Module{
                     case 'move':        $action = 'move';        break;
                 }
             }
+        }
+
+        //post thread
+        if(preg_match('_([a-zA-Z0-9-]*)-([0-9]*)/post($|/)_i', $action, $postId)){
+            $action = 'post';
         }
 
             //view category
@@ -91,6 +95,26 @@ class forum extends Module{
                 $this->viewThread($threadId[2]);
             break;
 
+            case 'post':
+                $this->postThread($postId[2]);
+            break;
+
+            case 'reply':
+                $this->postReply($threadId[2]);
+            break;
+
+            case 'qreply':
+                $this->postQuickReply($threadId[2]);
+            break;
+
+            case 'edit':
+                $this->editPost(isset($_GET['postid']) && is_number($_GET['postid']) ? $_GET['postid'] : 0);
+            break;
+
+
+            case 'previewpost':
+                $this->preview();
+            break;
 
 			default:
 			case 404:
@@ -141,7 +165,7 @@ class forum extends Module{
 	    	$this->auth = $this->auth(AUTH_ALL, AUTH_LIST_ALL, $cats);
 
 			$counts = $this->objSQL->getTable($this->objSQL->prepare('
-				SELECT c.id, COUNT(DISTINCT t.id) AS thread_count, COUNT(DISTINCT p.id) AS post_count
+				SELECT c.id, c.postcounts, COUNT(DISTINCT t.id) AS thread_count, COUNT(DISTINCT p.id) AS post_count
 				FROM `$Pforum_cats` c
 				LEFT JOIN `$Pforum_threads` t
 					ON t.cat_id = c.id
@@ -155,6 +179,7 @@ class forum extends Module{
 
 			//add the counts to them
 			foreach($counts as $count){
+				if(!$count['postcounts']){ continue; }
 				$this->forum[$count['id']]['thread_count'] = $count['thread_count'];
 				$this->forum[$count['id']]['post_count'] = $count['post_count'];
 			}
@@ -240,18 +265,19 @@ class forum extends Module{
 
 				//just the cat headers
 				$this->objTPL->assign_block_vars('forum', array(
-					'ROW'			=>		$row_color,
+					'ROW'			=> $row_color,
 
-					'ID'			=>		$cat['id'],
-					'CAT'			=>		(!is_empty($title) ? $title : $cat['title']),
-					'THREADS'		=>		langVar('L_THREADS'),
-					'POSTS'			=> 		langVar('L_POSTS'),
-					'LASTPOST'		=> 		langVar('L_LASTPOST'),
+					'ID'			=> $cat['id'],
+					'CAT'			=> (!is_empty($title) ? $title : $cat['title']),
+					'THREADS'		=> langVar('L_THREADS'),
+					'POSTS'			=> langVar('L_POSTS'),
+					'LASTPOST'		=> langVar('L_LASTPOST'),
 
 					/* Sortable Cats */
-					'EXPAND'        =>      (User::$IS_ONLINE && $index ? ($cat['_display']==1 ? $vars['IMG_retract'] : $vars['IMG_expand']) : '/'.root().'images/spacer.gif'),
-					'DISPLAY'       =>      (User::$IS_ONLINE && $index ? ($cat['_display']==1 ? NULL : 'display:none;') : NULL),
-					'MODE'          =>      (User::$IS_ONLINE && $index ? ($cat['_display']==1 ? '1' : '0') : '1'),
+					'EXPAND'        => (User::$IS_ONLINE && $index ? ($cat['_display']==1 ? $vars['IMG_retract'] : $vars['IMG_expand']) : '/'.root().'images/spacer.gif'),
+					'DISPLAY'       => (User::$IS_ONLINE && $index ? ($cat['_display']==1 ? null : 'display:none;') : null),
+					'MODE'          => (User::$IS_ONLINE && $index ? ($cat['_display']==1 ? '1' : '0') : '1'),
+					'CLASS'			=> (User::$IS_ONLINE && $index ? ' cat_handle' : ''),
 					/* Sortable Cats */
 				));
 				if(User::$IS_ONLINE && $index){ $this->objTPL->assign_block_vars('forum.expand', array()); }
@@ -328,6 +354,11 @@ class forum extends Module{
                         'L_MODS'        =>  is_array($forum_moderators[$child['id']]) ? langVar('MODS') : null,
         				'C_MODS'        =>  is_array($forum_moderators[$child['id']]) ? implode(', ', $forum_moderators[$child['id']]) : null,
         			));
+
+					if($child['postcounts']){
+                        //show the postcounts
+            			$this->objTPL->assign_block_vars('forum.row.counts', array());
+					}
 
                     if(!is_empty($grandChildren)){
                         //assign this so we can see the subs
@@ -658,11 +689,15 @@ class forum extends Module{
 					}
 					if($thread['locked']==1){ $ico = 'IMG_locked'; }
 
+					//some vars
+					$threadUrl = $this->generateThreadURL($thread);
+					$lp_icon = '/'.root().Page::$THEME_ROOT.'buttons/goto_reply.gif';
+
 					//output the thread info to the template
 					$this->objTPL->assign_block_vars('threads.row', array(
 						'ID'			=> 'thread_'.$thread['id'],
 						'ICON'			=> $vars[$ico],
-						'URL'			=> $this->generateThreadURL($thread),
+						'URL'			=> $threadUrl,
 						'CLASS'			=> $count%2 ? 'row_color1' : 'row_color2',
 
 						'TITLE'			=> $title,
@@ -670,10 +705,19 @@ class forum extends Module{
 						'VIEWS'			=> $thread['views'],
 						'REPLIES'		=> $thread['replies'],
 
-						'LP_AUTHOR'		=> $thread['replies'] ? $this->objUser->profile($thread['last_post_id']) : null,
+						'LP_AUTHOR'		=> $thread['replies'] ? $this->objUser->profile($thread['last_uid']) : null,
 						'LP_URL'		=> $thread['replies'] ? $this->generateThreadURL($thread).'?mode=last_page' : null,
 						'LP_TIME'		=> $thread['replies'] ? $this->objTime->mk_time($thread['last_timestamp']) : langVar('L_NO_REPLYS'),
+                        'LP_REPLY'		=> $thread['replies'] ? '<a href="'.$threadUrl.'?mode=last_page"><img src="'.$lp_icon.'" /></a>' : '',
 					));
+
+					if($thread['replies'] > 10){
+						//set a simple pagination up for this thread
+				        $threadPag = new pagination('page', 10, $thread['replies']);
+						$this->objTPL->assign_block_vars('threads.row.pagination', array(
+							'SHOW' => $threadPag->getPagination(false, 'mini', $threadUrl)
+						));
+					}
 
 			        $count++;
 	            }
@@ -879,9 +923,8 @@ class forum extends Module{
 
 				$author = $this->objUser->getUserInfo($post['author'], '*');
 
-
-				$location = null;
 				//sort the contact info out
+				$location = null;
 				if(!is_empty($author['contact_info'])){
 					$author['contact_info'] = unserialize($author['contact_info']);
 
@@ -891,7 +934,6 @@ class forum extends Module{
 						}
 					}
 				}
-
 
             //assign the info to the template
     		$this->objTPL->assign_block_vars('thread', array(
@@ -990,6 +1032,552 @@ class forum extends Module{
 		$this->objTPL->parse('body', false);
 	}
 
+	public function postThread($id){
+		$category = $this->getForumInfo($id);
+		$category = $category[0];
+		$catAuth = $this->auth[$category['id']];
+
+        //give em write by default
+            $writeTest = true;
+
+        //see if the user has write permissions
+        if(!$catAuth['auth_post'] && !$catAuth['auth_mod'] && !User::$IS_MOD){
+            $writeTest = false;
+        }
+
+        //apparently they havent..
+        if(!$writeTest){
+            $this->objTPL->set_filenames(array(
+            	'body' => 'modules/forum/template/forum_category.tpl'
+            ));
+    		$this->objTPL->assign_block_vars('threads', array());
+        	$this->objTPL->assign_block_vars('threads.error', array(
+        		'ERROR' => langVar('L_NO_ID', $id),
+        	));
+            $this->objTPL->parse('body', false);
+            return;
+        }
+
+        //if we get this far then they have permissions, so start the page output
+        $this->objPage->addPagecrumb(array(
+            array('url' => $this->config('global', 'url'), 'name' => langVar('B_POST_THREAD', $category['title'])),
+        ));
+
+		//okay so test to see which part of the page we should see..
+		if(!HTTP_POST && (!isset($_GET['mode']) || $_GET['mode']!='post')){
+			$this->objTPL->set_filenames(array(
+				'body' => 'modules/forum/template/forum_post.tpl'
+			));
+			$_SESSION['site']['forum'][$id]['id']     = $id;
+			$_SESSION['site']['forum'][$id]['sessid'] = $sessid = $this->objUser->mkPasswd($this->objUser->grab('username').$id);
+
+		//
+		//-- BBCode Buttons
+		//
+	        $button[] = array('text_heading_1.png', 'Heading 1', 'h1', '[h1]|[/h1]');
+	        $button[] = array('text_heading_2.png', 'Heading 2', 'h2', '[h2]|[/h2]');
+	        $button[] = array('text_heading_3.png', 'Heading 3', 'h3', '[h3]|[/h3]');
+	        $button[] = '---';
+	        $button[] = array('text_bold.png', 'Bold', 'bold', '[b]|[/b]');
+	        $button[] = array('text_italic.png', 'Italics', 'italics', '[i]|[/i]');
+	        $button[] = array('text_underline.png', 'Underlined', 'underlined', '[u]|[/u]');
+	        $button[] = array('text_strikethrough.png', 'Strikethrough', 'strikethrough', '[s]|[/s]');
+	        $button[] = $this->genSelects('color');
+	        $button[] = '---';
+	        $button[] = array('link.png', 'Link', 'links', "[url]|[/url]");
+	        $button[] = array('email.png', 'Email Link', 'email', "[email]|[/email]");
+	        $button[] = array('photo_delete.png', 'Image', 'image', "[img]|[/img]");
+	        $button[] = array('comment.png', 'Add Quote', 'quote', "[quote]\n|\n[/quote]");
+	        $button[] = '---';
+	        $button[] = array('script_code.png', 'Code Block', 'code', "[code]\n|\n[/code]");
+	        $button[] = array('php.png', 'PHP Code Block', 'phpcode', "[code=php]\n|\n[/code]");
+	        $button[] = $this->genSelects('code');
+	        $button[] = '---';
+	        $button[] = array('text_columns.png', 'Add Table Columns', 'columns', "[columns]|[/columns]");
+	        $button[] = array('text_list_bullets.png', 'Add Bullet Points', 'ul', "[list]\n[*]|[/list]");
+	        $button[] = array('text_list_numbers.png', 'Add Numbered Points', 'ol', "[list=ol]\n[*]|\n[/list]");
+	        $button[] = array('text_superscript.png', 'Add Superscript Text', 'sup', "[sup]|[/sup]");
+	        $button[] = array('text_subscript.png', 'Add Subscript Text', 'sub', "[sub]|[/sub]");
+
+			$this->objPlugins->hook('MODForum_post_buttons', $buttons);
+
+	        $buttons = NULL;
+	        foreach($button as $b){
+	        	if(!is_array($b) && strlen($b)>3){ $buttons .= $b; continue; }
+	            if(!is_array($b) && $b == '---'){ $buttons .= ' &nbsp; '; continue; }
+
+	            $buttons .= sprintf(
+	            '<input type="image" src="%s" class="bbButton" title="%s" data-code="%s" />',
+	                '/'.root().'images/icons/'.$b[0],
+	                $b[1],
+	                $b[3]
+	            );
+	        }
+
+			$postMode = null;
+			if(User::$IS_MOD || $catAuth['auth_mod']){
+				$postVals = array(
+					1 => str_replace(array(':', ' '), '', strip_tags(langVar('L_ANNOUNCEMENT', ''))),
+					2 => str_replace(array(':', ' '), '', strip_tags(langVar('L_STICKY', ''))),
+					0 => str_replace(array(':', ' '), '', strip_tags(langVar('L_POST', ''))),
+				);
+				$postMode = $this->objForm->radio('type', $postVals, 0, array('br'=>true)).'<br />';
+			}
+
+			$autoLock = null;
+			if(User::$IS_MOD || $catAuth['auth_mod']){
+				$autoLock = $this->objForm->checkbox('autolock', '', false) . langVar('L_AUTO_LOCK');
+			}
+
+
+            //yada yada, the general tpl crap..
+			$this->objTPL->assign_vars(array(
+				'F_START'       => $this->objForm->start('reply', array('method' => 'POST', 'action' => '?mode=post')),
+				'F_END'         => $this->objForm->finish(),
+
+				'SMILIES'       => $this->generateSmilies(),
+				'BUTTONS'       => $buttons,
+				'ID'            => $this->objForm->inputbox('id', 'hidden', $id).
+									$this->objForm->inputbox('sessid', 'hidden', $sessid),
+
+				'L_TITLE'		=> langVar('L_TITLE').':',
+				'F_TITLE'		=> $this->objForm->inputbox('title', 'input', '', array('extra'=> 'tabindex="1"', 'style'=> 'width:99%')),
+
+				'L_POST_BODY'	=> langVar('L_POST_BODY').':',
+				'F_POST'		=> $this->objForm->textarea('post', '', array('extra'=> 'tabindex="2" rows="3"', 'style'=> 'height:350px;width:99%;')),
+
+				'POST_MODE'     => $postMode,
+				'AUTO_LOCK'		=> $autoLock,
+				'WATCH_TOPIC'   => $this->objForm->checkbox('watch_thread', '', true). langVar('L_WATCH_THREAD'),
+
+				'SUBMIT'        => $this->objForm->button('submit', 'Submit', array('extra'=> ' tabindex="3"')),
+				'RESET'         => $this->objForm->button('preview', 'Preview', array('extra'=> ' tabindex="4" onclick="doPreview();"')),
+			));
+
+            $this->objTPL->assign_block_vars('new_post', array());
+            $this->objTPL->assign_block_vars('title', array());
+            $this->objTPL->parse('body', false);
+            return;
+		}else{
+			//check to make sure we have a cat id
+			if(!doArgs('id', false, $_POST)){
+				hmsgDie('FAIL', 'Error: I cannot remember where your posting to.');
+			}
+
+                //content checks
+                if(!doArgs('title', false, $_POST) || !doArgs('post', false, $_POST)){
+    		        unset($_SESSION['site']['forum']);
+                    hmsgDie('FAIL', 'Post Failed - Title or Post either missing or not long enough.');
+                }
+
+            if(!doArgs('id', false, $_SESSION['site']['forum'][$id]) || $_SESSION['site']['forum'][$id]['id']!=$_POST['id']){
+                hmsgdie('FAIL', 'Post Failed - I cannot remember where your posting to.');
+            }
+
+            if(!doArgs('sessid', false, $_SESSION['site']['forum'][$id]) || $_SESSION['site']['forum'][$id]['sessid']!=$_POST['sessid']){
+                hmsgdie('FAIL', 'Post Failed - Security Check failed. Please make sure your posting directly from the page.');
+            }
+        //
+        //--insert the post info into the db
+        //
+			$uid = $this->objUser->grab('id');
+
+			//generate the sql for the topics table....Part 1
+			unset($thread);
+			$thread['mode']			= doArgs('type', false, $_POST, 'is_number') && ($catAuth['auth_mod'] || User::$IS_MOD) ? $_POST['type'] : 0;
+			$thread['cat_id']		= $id;
+			$thread['author']		= $uid;
+			$thread['locked']		= doArgs('autolock', false, $_POST) && ($catAuth['auth_mod'] || User::$IS_MOD) ? 1 : 0;
+			$thread['subject']		= secureMe($_POST['title']);
+			$thread['last_uid']		= $uid;
+			$thread['timestamp']	= time();
+
+				$thread['id'] = $this->objSQL->getAI('forum_threads');
+				$log = 'Forum: New thread posted - <a href="'.$this->generateThreadURL($thread).'">'.
+							secureMe($_POST['title']).'</a> by '.$this->objUser->profile($uid, RAW);
+				unset($thread['id']);
+				$topic_insert = $this->objSQL->insertRow('forum_threads', $thread, $log);
+					if(!$topic_insert){
+						unset($_SESSION['site']['forum']);
+						hmsgDie('FAIL', 'Post Failed - Inserting the data into the db failed.(1)');
+					}
+
+            //and now to generate the sql for the actual post table ;D...part 2
+            unset($post);
+            $post['post']		= secureMe($_POST['post']);
+            $post['author']		= $uid;
+            $post['subject']	= secureMe($_POST['title']);
+            $post['timestamp']	= time();
+            $post['thread_id']	= $topic_insert;
+            $post['poster_ip']	= User::getIP();
+
+                $post_insert = $this->objSQL->insertRow('forum_posts', $post);
+                    if(!$post_insert){
+                        unset($_SESSION['site']['forum']);
+                        hmsgDie('FAIL', 'Post Failed - Inserting the data into the db failed.(2)');
+                    }
+
+			//update the parent category
+	    	unset($array);
+	    	$array['last_poster'] = $uid;
+	    	$array['last_post_id'] = $topic_insert;
+
+		    	$this->objSQL->updateRow('forum_cats', $array, array('id ="%s"', $id));
+
+            //this one is so we know which post is the original
+            unset($array);
+            $array['first_post_id'] = $post_insert;
+
+                $this->objSQL->updateRow('forum_threads', $array, array('id ="%s"', $topic_insert));
+
+			//update the forum watch table
+			if(isset($_POST['watch_topic'])){
+				unset($array);
+				$array['uid']		= $_uid;
+				$array['thread_id']	= $topic_insert;
+
+					$this->objSQL->insertRow('forum_watch', $array);
+			}
+
+			unset($_SESSION['site']);
+			$this->objPage->redirect('/'.root().'modules/forum/thread/'.seo(htmlspecialchars($_POST['title'])).'-'.$AI_topic_insert.'.html#top', 0, 3);
+			hmsgDie('INFO', 'Thread successfully posted. Redirecting you to it.');
+		}
+	}
+
+	function postReply($id){
+        //grab the required thread so we got something to work with..
+        $thread = $this->objSQL->getLine($this->objSQL->prepare('SELECT * FROM `$Pforum_threads` WHERE id ="%s" LIMIT 1;', $id));
+            if(!$thread) hmsgDie('FAIL', 'Failed to reteive thread information');
+
+		$category = $this->getForumInfo($thread['cat_id']);
+		$category = $category[0];
+		$catAuth = $this->auth[$category['id']];
+
+        //give em write by default
+            $writeTest = true;
+
+        //see if the user has write permissions
+        if(!$catAuth['auth_reply'] && !$catAuth['auth_mod'] && !User::$IS_MOD){
+            $writeTest = false;
+        }
+
+        //apparently they havent..
+        if(!$writeTest || $thread['locked']){
+            $this->objTPL->set_filenames(array(
+            	'body' => 'modules/forum/template/forum_category.tpl'
+            ));
+    		$this->objTPL->assign_block_vars('threads', array());
+        	$this->objTPL->assign_block_vars('threads.error', array(
+        		'ERROR' => $thread['locked'] ? langVar('L_LOCKED') : langVar('L_AUTH_POST', $catAuth['auth_reply_type']),
+        	));
+            $this->objTPL->parse('body', false);
+            return;
+        }
+
+        //if we get this far then they have permissions, so start the page output
+        $this->objPage->addPagecrumb(array(
+            array('url' => $this->config('global', 'url'), 'name' => langVar('B_POST_REPLY', $thread['title'])),
+        ));
+
+		//okay so test to see which part of the page we should see..
+		if(!HTTP_POST && (!isset($_GET['mode']) || $_GET['mode']!='post')){
+			$this->objTPL->set_filenames(array(
+				'body' => 'modules/forum/template/forum_post.tpl'
+			));
+			$_SESSION['site']['forum'][$id]['id']     = $id;
+			$_SESSION['site']['forum'][$id]['sessid'] = $sessid = $this->objUser->mkPasswd($this->objUser->grab('username').$id);
+
+		//
+		//-- BBCode Buttons
+		//
+	        $button[] = array('text_heading_1.png', 'Heading 1', 'h1', '[h1]|[/h1]');
+	        $button[] = array('text_heading_2.png', 'Heading 2', 'h2', '[h2]|[/h2]');
+	        $button[] = array('text_heading_3.png', 'Heading 3', 'h3', '[h3]|[/h3]');
+	        $button[] = '---';
+	        $button[] = array('text_bold.png', 'Bold', 'bold', '[b]|[/b]');
+	        $button[] = array('text_italic.png', 'Italics', 'italics', '[i]|[/i]');
+	        $button[] = array('text_underline.png', 'Underlined', 'underlined', '[u]|[/u]');
+	        $button[] = array('text_strikethrough.png', 'Strikethrough', 'strikethrough', '[s]|[/s]');
+	        $button[] = $this->genSelects('color');
+	        $button[] = '---';
+	        $button[] = array('link.png', 'Link', 'links', "[url]|[/url]");
+	        $button[] = array('email.png', 'Email Link', 'email', "[email]|[/email]");
+	        $button[] = array('photo_delete.png', 'Image', 'image', "[img]|[/img]");
+	        $button[] = array('comment.png', 'Add Quote', 'quote', "[quote]\n|\n[/quote]");
+	        $button[] = '---';
+	        $button[] = array('script_code.png', 'Code Block', 'code', "[code]\n|\n[/code]");
+	        $button[] = array('php.png', 'PHP Code Block', 'phpcode', "[code=php]\n|\n[/code]");
+	        $button[] = $this->genSelects('code');
+	        $button[] = '---';
+	        $button[] = array('text_columns.png', 'Add Table Columns', 'columns', "[columns]|[/columns]");
+	        $button[] = array('text_list_bullets.png', 'Add Bullet Points', 'ul', "[list]\n[*]|[/list]");
+	        $button[] = array('text_list_numbers.png', 'Add Numbered Points', 'ol', "[list=ol]\n[*]|\n[/list]");
+	        $button[] = array('text_superscript.png', 'Add Superscript Text', 'sup', "[sup]|[/sup]");
+	        $button[] = array('text_subscript.png', 'Add Subscript Text', 'sub', "[sub]|[/sub]");
+
+			$this->objPlugins->hook('MODForum_post_buttons', $buttons);
+
+	        $buttons = NULL;
+	        foreach($button as $b){
+	        	if(!is_array($b) && strlen($b)>3){ $buttons .= $b; continue; }
+	            if(!is_array($b) && $b == '---'){ $buttons .= ' &nbsp; '; continue; }
+
+	            $buttons .= sprintf(
+	            '<input type="image" src="%s" class="bbButton" title="%s" data-code="%s" />',
+	                '/'.root().'images/icons/'.$b[0],
+	                $b[1],
+	                $b[3]
+	            );
+	        }
+
+			$autoLock = null;
+			if(User::$IS_MOD || $catAuth['auth_mod']){
+				$autoLock = $this->objForm->checkbox('autolock', '', false) . langVar('L_AUTO_LOCK');
+			}
+
+            //enable direct quoting of posts
+            $msg = null;
+            if(doArgs('q', false, $_GET, 'is_number')){
+                $query = $this->objSQL->getLine($this->objSQL->prepare('SELECT author, post FROM `$Pforum_posts` WHERE id = '.$_GET['q'].' LIMIT 1;'));
+
+                if(is_array($query)){
+                    $msg = '[quote='.$this->objUser->getUserInfo($query['author'], 'username').']'."\n".(htmlspecialchars_decode($query['post']))."\n".'[/quote]'."\n";
+                }
+            }
+
+            $forumWatch = $this->objSQL->getInfo('forum_watch', array('user_id= "%s" AND thread_id= "%s"', $this->objUser->grab('id'), $id));
+
+            //yada yada, the general tpl crap..
+			$this->objTPL->assign_vars(array(
+				'F_START'       => $this->objForm->start('reply', array('method' => 'POST', 'action' => '?mode=post')),
+				'F_END'         => $this->objForm->finish(),
+
+				'SMILIES'       => $this->generateSmilies(),
+				'BUTTONS'       => $buttons,
+				'ID'            => $this->objForm->inputbox('id', 'hidden', $id).
+									$this->objForm->inputbox('sessid', 'hidden', $sessid),
+
+				'L_TITLE'		=> langVar('L_TITLE').':',
+				'F_TITLE'		=> $this->objForm->inputbox('title', 'input', '', array('extra'=> 'tabindex="1"', 'style'=> 'width:99%')),
+
+				'L_POST_BODY'	=> langVar('L_POST_BODY').':',
+				'F_POST'		=> $this->objForm->textarea('post', $msg, array('extra'=> 'tabindex="2" rows="3"', 'style'=> 'height:350px;width:99%;')),
+
+				'AUTO_LOCK'		=> $autoLock,
+				'WATCH_TOPIC'   => $this->objForm->checkbox('watch_thread', '', true). langVar('L_WATCH_THREAD'),
+
+				'SUBMIT'        => $this->objForm->button('submit', 'Submit', array('extra'=> ' tabindex="3"')),
+				'RESET'         => $this->objForm->button('preview', 'Preview', array('extra'=> ' tabindex="4" onclick="doPreview();"')),
+			));
+
+			if(!$forumWatch){
+				$this->objTPL->assign_block_vars('new_post', array());
+			}
+            $this->objTPL->parse('body', false);
+            return;
+		}else{
+			//check to make sure we have a cat id
+			if(!doArgs('id', false, $_POST)){
+				hmsgDie('FAIL', 'Error: I cannot remember where your posting to.');
+			}
+
+                //content checks
+                if(!doArgs('title', false, $_POST) || !doArgs('post', false, $_POST)){
+    		        unset($_SESSION['site']['forum']);
+                    hmsgDie('FAIL', 'Post Failed - Title or Post either missing or not long enough.');
+                }
+
+            if(!doArgs('id', false, $_SESSION['site']['forum'][$id]) || $_SESSION['site']['forum'][$id]['id']!=$_POST['id']){
+                hmsgdie('FAIL', 'Post Failed - I cannot remember where your posting to.');
+            }
+
+            if(!doArgs('sessid', false, $_SESSION['site']['forum'][$id]) || $_SESSION['site']['forum'][$id]['sessid']!=$_POST['sessid']){
+                hmsgdie('FAIL', 'Post Failed - Security Check failed. Please make sure your posting directly from the page.');
+            }
+        //
+        //--insert the post info into the db
+        //
+			$uid = $this->objUser->grab('id');
+
+			//generate the sql for the topics table....Part 1
+			unset($thread);
+			$thread['mode']			= doArgs('type', false, $_POST, 'is_number') && ($catAuth['auth_mod'] || User::$IS_MOD) ? $_POST['type'] : 0;
+			$thread['cat_id']		= $id;
+			$thread['author']		= $uid;
+			$thread['locked']		= doArgs('autolock', false, $_POST) && ($catAuth['auth_mod'] || User::$IS_MOD) ? 1 : 0;
+			$thread['subject']		= secureMe($_POST['title']);
+			$thread['last_uid']		= $uid;
+			$thread['timestamp']	= time();
+
+				$thread['id'] = $this->objSQL->getAI('forum_threads');
+				$log = 'Forum: New thread posted - <a href="'.$this->generateThreadURL($thread).'">'.
+							secureMe($_POST['title']).'</a> by '.$this->objUser->profile($uid, RAW);
+				unset($thread['id']);
+				$topic_insert = $this->objSQL->insertRow('forum_threads', $thread, $log);
+					if(!$topic_insert){
+						unset($_SESSION['site']['forum']);
+						hmsgDie('FAIL', 'Post Failed - Inserting the data into the db failed.(1)');
+					}
+
+            //and now to generate the sql for the actual post table ;D...part 2
+            unset($post);
+            $post['post']		= secureMe($_POST['post']);
+            $post['author']		= $uid;
+            $post['subject']	= secureMe($_POST['title']);
+            $post['timestamp']	= time();
+            $post['thread_id']	= $topic_insert;
+            $post['poster_ip']	= User::getIP();
+
+                $post_insert = $this->objSQL->insertRow('forum_posts', $post);
+                    if(!$post_insert){
+                        unset($_SESSION['site']['forum']);
+                        hmsgDie('FAIL', 'Post Failed - Inserting the data into the db failed.(2)');
+                    }
+
+			//update the parent category
+	    	unset($array);
+	    	$array['last_poster'] = $uid;
+	    	$array['last_post_id'] = $topic_insert;
+
+		    	$this->objSQL->updateRow('forum_cats', $array, array('id ="%s"', $id));
+
+            //this one is so we know which post is the original
+            unset($array);
+            $array['first_post_id'] = $post_insert;
+
+                $this->objSQL->updateRow('forum_threads', $array, array('id ="%s"', $topic_insert));
+
+			//update the forum watch table
+			if(isset($_POST['watch_topic'])){
+				unset($array);
+				$array['uid']		= $_uid;
+				$array['thread_id']	= $topic_insert;
+
+					$this->objSQL->insertRow('forum_watch', $array);
+			}
+
+			unset($_SESSION['site']);
+			$this->objPage->redirect('/'.root().'modules/forum/thread/'.seo(htmlspecialchars($_POST['title'])).'-'.$AI_topic_insert.'.html#top', 0, 3);
+			hmsgDie('INFO', 'Thread successfully posted. Redirecting you to it.');
+		}
+
+
+	}
+
+	function editPost(){}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    /**
+     *
+     *
+     * @version	1.0
+     * @since   0.8.0
+     */
+    function preview(){
+        if(!doArgs('post_val', false, $_POST)){ die(); }
+
+        $this->objTPL->set_filenames(array(
+        	'preview' => 'modules/forum/template/forum_preview.tpl'
+        ));
+
+		$this->objTPL->assign_vars(array(
+			'L_PREVIEW' => langVar('L_PREVIEW'),
+            'F_PREVIEW' => contentParse($_POST['post_val']),
+        ));
+
+        $this->objTPL->parse('preview');
+        exit;
+    }
+
+    /**
+     * Sets up some select boxes for the forums post page.
+     *
+     * @version	1.0
+     * @since   0.7.0
+     */
+    function genSelects($type){
+        $bcode='';
+
+        switch($type){
+            case 'code':
+            	$_langs = array('php', 'c', 'cpp', 'csharp', 'perl', 'vb', 'html', 'text', 'python', 'ruby', 'asm', 'pascal');
+            	sort($_langs);
+            	$return = "<select onchange=\"addText('post', '[code=\\'' + this.options[this.selectedIndex].value + '\\']', '[/code]');this.selectedIndex=0;\">\n
+            	<option value=\"text\" selected>Select a Lang</option>";
+            	foreach($_langs as $clang){$return .= "<option value=\"$clang\">".ucwords($clang)."</option>";}
+            	$return .= "</select>";
+
+            break;
+            case 'color':
+            	$colors = array('maroon', 'red', 'orange', 'brown', 'yellow', 'green',
+            	'lime', 'olive', 'cyan', 'blue', 'navy', 'purple', 'violet', 'black', 'gray', 'silver', 'white');
+            	sort($colors);
+            	$return = "<select onchange=\"addText('post', '[color=' + this.options[this.selectedIndex].value + ']', '[/color]');this.selectedIndex=0;\">\n
+            	<option value=\"text\" selected>Select a Color</option>";
+            	foreach($colors as $clang){$return .= "<option value=\"$clang\" style=\"color:$clang;\">".ucwords($clang)."</option>";}
+            	$return .= "</select>";
+            break;
+        }
+
+    	return $return;
+    }
+
+    function generateSmilies(){
+		//set some vars up
+        $smilies = array(); $added = array();
+        $pack = is_empty($this->config('site', 'smilie_pack')) ? $this->config('site', 'smilie_pack') : 'default';
+		$smilieDir = cmsROOT.'images/smilies/'.$pack.'/';
+
+		//check to see if the directory exists and has a smilies.txt in
+		if(!is_dir($smilieDir) || !is_readable($smilieDir.'smilies.txt')){
+			return;
+		}
+
+		//read the file and make sure its not empty
+        $lines = file($smilieDir.'smilies.txt');
+        if(!count($lines)){ return; }
+
+		$_smilie = '<input type="image" src="%s" height="16" width="16" data-code="%s" class="smilie" />';
+        $i=0; $columns=4;
+        $new = array();
+        foreach($lines as $line){
+            if($i!=0 && ($i%$columns==0)){
+                $smilies[] = $new;
+                $new = array();
+                $i=0;
+            }
+
+            $s = explode(' ', $line);
+            if(is_empty($s[0]) || is_empty($s[1])){ continue; }
+            if(in_array($s[1], $added)){ continue; }
+            $new[$i] = sprintf($_smilie, '/'.root().$smilieDir.$s[1], $s[0]);
+            $added[] = $s[1];
+
+            $i++;
+        }
+
+
+        //gah this was a pain in the ass ;p
+        foreach($smilies as $code){
+            $this->objTPL->assign_block_vars('smilies', array(
+                1=> $code[0], 2=> $code[1], 3=> $code[2], 4=> $code[3],
+            ));
+        }
+    }
+
     /**
      * Returns a formated URL for the threads
      *
@@ -1026,11 +1614,13 @@ class forum extends Module{
 		$authors = array_unique($uids);
 
 		$users = $this->objSQL->getTable($this->objSQL->prepare(
-			'SELECT u.id, COUNT( DISTINCT p.id ) AS post_count
-				FROM `$Pusers` u
-				LEFT JOIN `$Pforum_posts` p
-					ON p.author = u.id
-				WHERE u.id IN ( %s )
+			'SELECT u.id, COUNT(DISTINCT p.id) AS post_count
+				FROM `$Pusers` u, `$Pforum_posts` p, `$Pforum_threads` t, `$Pforum_cats` c
+					WHERE u.id IN ( %s )
+						AND p.author = u.id
+						AND p.thread_id = t.id
+						AND t.cat_id = c.id
+						AND c.postcounts = 1
 				GROUP BY u.id',
 			implode(', ', $authors)
 		));
@@ -1161,33 +1751,6 @@ class forum extends Module{
 		}
 		$this->objPage->addPagecrumb($crumbs);
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     function auth($type, $forum_id, $f_access=NULL){
 

@@ -89,7 +89,7 @@ if(is_dir($smilieDir) && is_readable($smilieDir.'smilies.txt')){
 		foreach($smilies as $line){
 			$s = explode(' ', $line);
 			if(!isset($s[0]) || !isset($s[1])){ continue; }
-			$objBBCode->AddSmiley($s[0], $pack.$s[1]);
+			$objBBCode->AddSmiley($s[0], $pack.'/'.$s[1]);
 		}
 	}
 }

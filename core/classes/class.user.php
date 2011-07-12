@@ -859,8 +859,6 @@ class user extends coreClass{
 	 * @return 	bool	True/False on successful check, -1 on unknown group
 	 */
 	public function profile($uid, $mode=LINK) {
-		global $config;
-
 		//check if the user has a UID of 0
 		if(is_number($uid) && $uid == GUEST){
 			$user = 'Guest';
@@ -875,6 +873,8 @@ class user extends coreClass{
 			}
 
 		if($user['primary_group']!=0){
+			global $config;
+
 			//see if the group we want is in the cache
 			foreach($config['groups'] as $g){
 				if($g['id'] == $user['primary_group']){
@@ -940,7 +940,7 @@ class user extends coreClass{
 	 *
 	 * @return 	string
 	 */
-	protected function _profile_processor($user, $group=null, $mode){
+	protected function _profile_processor($user, $group=null, $mode=0){
 		$user = (is_array($user) ? $user['username'] : $user);
 		$color = (!is_empty($group['color']) ? ' style="color: '.$group['color'].';"' : null);
 		$title = (!is_empty($group['description']) ? ' title="'.$group['description'].'"' : null);
@@ -954,14 +954,16 @@ class user extends coreClass{
         $user_no_link = sprintf($font, $color, $title, $user);
 
 		switch($mode){
-            case -1:    $return = $banned;      	break;
+            case -1:    		$return = $banned;      	break;
 
 		    default:
-            case 0:     $return = $user_link;   	break;
-            case 3:
-            case 1:     $return = $user_no_link;  	break;
-            case 2:     $return = $user_raw;    	break;
-            case 4:     $return = $uid;         	break;
+            case LINK:  		$return = $user_link;   	break;
+
+            case RETURN_USER:
+            case NO_LINK:     	$return = $user_no_link;  	break;
+
+            case RAW:     		$return = $user_raw;    	break;
+            case 4:     		$return = $uid;         	break;
         }
 
 		return $return;
