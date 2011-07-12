@@ -119,8 +119,8 @@ class user extends coreClass{
 		//register the user into the group
 		$this->objGroups->joinGroup($insert_id, $userInfo['primary_group'], 0);
 
-		unset($userInfo, $insert_id);
-		return true;
+		unset($userInfo);
+		return $insert_id;
     }
 
 	/**

@@ -102,6 +102,12 @@ document.observe('dom:loaded', function(){
 		});
 	}
 
+	$('a[href=#qreply]').observe('click', function(ele){
+		Effect.ScrollTo('qreply');
+		$('post').focus();
+		Event.stop();
+	});
+
 	$$('img[data-mode]').each(function(img) {
 		img.writeAttribute({'onclick': 'toggleMenu(this.name);'});
 	});

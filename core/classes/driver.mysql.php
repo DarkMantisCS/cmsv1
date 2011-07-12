@@ -672,6 +672,23 @@ class mysql extends coreClass implements SQLBase{
 		$info['lineInfo'] 		= secureMe($fileInfo);
 		return $this->insertRow('sqlerrors', $info, false);
 	}
+
+	/**
+	 * Gets the Auto Increment value from the Table
+	 *
+	 * @version	1.0
+	 * @since   1.0.0
+	 * @author  xLink
+	 *
+	 * @param 	string 	$table
+	 *
+	 * @return 	string
+	 */
+    public function getAI($table) {
+        $query = $this->getLine($this->prepare('SHOW TABLE STATUS LIKE `$P'.$table.'`"'));
+        return $query['Auto_increment'];
+    }
+
 }
 
 ?>

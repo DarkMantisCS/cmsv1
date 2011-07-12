@@ -83,6 +83,10 @@ $_lang['L_AUTO_LOCK']             		= 'Auto Lock the thread?';
 
 $_lang['L_PREVIEW']             		= 'Preview Post';
 
+//notify
+$_lang['L_THREAD_NOTIFY']				= 'Thread Reply Notification';
+$_lang['L_THREAD_NOTIFY']				= 'Thread Reply Notification';
+$_lang['L_USER_POSTED']					= '%s has posted a reply to %s. This was posted at %s';
 
 //blocks
 $_lang['L_SUBCATS']						= 'Sub Categories';

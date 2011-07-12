@@ -1187,7 +1187,7 @@ class forum extends Module{
 			$thread['mode']			= doArgs('type', false, $_POST, 'is_number') && ($catAuth['auth_mod'] || User::$IS_MOD) ? $_POST['type'] : 0;
 			$thread['cat_id']		= $id;
 			$thread['author']		= $uid;
-			$thread['locked']		= doArgs('autolock', false, $_POST) && ($catAuth['auth_mod'] || User::$IS_MOD) ? 1 : 0;
+			$thread['locked']		= isset($_POST['autolock']) && ($catAuth['auth_mod'] || User::$IS_MOD) ? 1 : 0;
 			$thread['subject']		= secureMe($_POST['title']);
 			$thread['last_uid']		= $uid;
 			$thread['timestamp']	= time();
@@ -1206,7 +1206,6 @@ class forum extends Module{
             unset($post);
             $post['post']		= secureMe($_POST['post']);
             $post['author']		= $uid;
-            $post['subject']	= secureMe($_POST['title']);
             $post['timestamp']	= time();
             $post['thread_id']	= $topic_insert;
             $post['poster_ip']	= User::getIP();
@@ -1233,14 +1232,14 @@ class forum extends Module{
 			//update the forum watch table
 			if(isset($_POST['watch_topic'])){
 				unset($array);
-				$array['uid']		= $_uid;
+				$array['user_id'] = $_uid;
 				$array['thread_id']	= $topic_insert;
 
 					$this->objSQL->insertRow('forum_watch', $array);
 			}
 
 			unset($_SESSION['site']);
-			$this->objPage->redirect('/'.root().'modules/forum/thread/'.seo(htmlspecialchars($_POST['title'])).'-'.$AI_topic_insert.'.html#top', 0, 3);
+			$this->objPage->redirect('/'.root().'modules/forum/thread/'.seo($thread['subject']).'-'.$topic_insert.'.html#top', 0, 3);
 			hmsgDie('INFO', 'Thread successfully posted. Redirecting you to it.');
 		}
 	}
@@ -1277,7 +1276,7 @@ class forum extends Module{
 
         //if we get this far then they have permissions, so start the page output
         $this->objPage->addPagecrumb(array(
-            array('url' => $this->config('global', 'url'), 'name' => langVar('B_POST_REPLY', $thread['title'])),
+            array('url' => $this->config('global', 'url'), 'name' => langVar('B_POST_REPLY', $thread['subject'])),
         ));
 
 		//okay so test to see which part of the page we should see..
@@ -1331,11 +1330,6 @@ class forum extends Module{
 	            );
 	        }
 
-			$autoLock = null;
-			if(User::$IS_MOD || $catAuth['auth_mod']){
-				$autoLock = $this->objForm->checkbox('autolock', '', false) . langVar('L_AUTO_LOCK');
-			}
-
             //enable direct quoting of posts
             $msg = null;
             if(doArgs('q', false, $_GET, 'is_number')){
@@ -1364,7 +1358,6 @@ class forum extends Module{
 				'L_POST_BODY'	=> langVar('L_POST_BODY').':',
 				'F_POST'		=> $this->objForm->textarea('post', $msg, array('extra'=> 'tabindex="2" rows="3"', 'style'=> 'height:350px;width:99%;')),
 
-				'AUTO_LOCK'		=> $autoLock,
 				'WATCH_TOPIC'   => $this->objForm->checkbox('watch_thread', '', true). langVar('L_WATCH_THREAD'),
 
 				'SUBMIT'        => $this->objForm->button('submit', 'Submit', array('extra'=> ' tabindex="3"')),
@@ -1400,69 +1393,171 @@ class forum extends Module{
         //
 			$uid = $this->objUser->grab('id');
 
-			//generate the sql for the topics table....Part 1
-			unset($thread);
-			$thread['mode']			= doArgs('type', false, $_POST, 'is_number') && ($catAuth['auth_mod'] || User::$IS_MOD) ? $_POST['type'] : 0;
-			$thread['cat_id']		= $id;
-			$thread['author']		= $uid;
-			$thread['locked']		= doArgs('autolock', false, $_POST) && ($catAuth['auth_mod'] || User::$IS_MOD) ? 1 : 0;
-			$thread['subject']		= secureMe($_POST['title']);
-			$thread['last_uid']		= $uid;
-			$thread['timestamp']	= time();
-
-				$thread['id'] = $this->objSQL->getAI('forum_threads');
-				$log = 'Forum: New thread posted - <a href="'.$this->generateThreadURL($thread).'">'.
-							secureMe($_POST['title']).'</a> by '.$this->objUser->profile($uid, RAW);
-				unset($thread['id']);
-				$topic_insert = $this->objSQL->insertRow('forum_threads', $thread, $log);
-					if(!$topic_insert){
-						unset($_SESSION['site']['forum']);
-						hmsgDie('FAIL', 'Post Failed - Inserting the data into the db failed.(1)');
-					}
-
-            //and now to generate the sql for the actual post table ;D...part 2
+            //generate the post
             unset($post);
             $post['post']		= secureMe($_POST['post']);
             $post['author']		= $uid;
-            $post['subject']	= secureMe($_POST['title']);
             $post['timestamp']	= time();
-            $post['thread_id']	= $topic_insert;
+            $post['thread_id']	= $thread['id'];
             $post['poster_ip']	= User::getIP();
 
                 $post_insert = $this->objSQL->insertRow('forum_posts', $post);
                     if(!$post_insert){
                         unset($_SESSION['site']['forum']);
-                        hmsgDie('FAIL', 'Post Failed - Inserting the data into the db failed.(2)');
+                        hmsgDie('FAIL', 'Post Failed - Inserting the data into the db failed.(1)');
                     }
 
-			//update the parent category
-	    	unset($array);
-	    	$array['last_poster'] = $uid;
-	    	$array['last_post_id'] = $topic_insert;
+			//update the thread
+            unset($update);
+            $update['last_uid'] = $uid;
 
-		    	$this->objSQL->updateRow('forum_cats', $array, array('id ="%s"', $id));
-
-            //this one is so we know which post is the original
-            unset($array);
-            $array['first_post_id'] = $post_insert;
-
-                $this->objSQL->updateRow('forum_threads', $array, array('id ="%s"', $topic_insert));
+            	$thread_update = $this->objSQL->updateRow('forum_threads', $update, array('id ="%s"', $id));
+		            if(!$thread_update){
+		                hmsgDie('FAIL', 'Error: Failed to update parent thread information.');
+		            }
 
 			//update the forum watch table
 			if(isset($_POST['watch_topic'])){
 				unset($array);
-				$array['uid']		= $_uid;
-				$array['thread_id']	= $topic_insert;
+				$array['user_id'] = $uid;
+				$array['thread_id']	= $thread['id'];
 
 					$this->objSQL->insertRow('forum_watch', $array);
 			}
 
+			//update the parent category
+	    	unset($array);
+	    	$array['last_post_id'] = $post_insert;
+
+		    	$this->objSQL->updateRow('forum_cats', $array, array('id ="%s"', $id));
+
+			//do the notifications
+			$info = array(
+				'timestamp' => time(),
+				'content_id' => $thread_id,
+				'thread_id' => $thread['id'],
+			);
+            $this->notify($id, $thread, $info);
+
 			unset($_SESSION['site']);
-			$this->objPage->redirect('/'.root().'modules/forum/thread/'.seo(htmlspecialchars($_POST['title'])).'-'.$AI_topic_insert.'.html#top', 0, 3);
-			hmsgDie('INFO', 'Thread successfully posted. Redirecting you to it.');
+			$this->objPage->redirect('/'.root().'modules/forum/thread/'.seo($thread['subject']).'-'.$thread['id'].'.html#top', 0, 3);
 		}
+	}
+
+    function postQuickReply($id){
+        //grab the required thread so we got something to work with..
+        $thread = $this->objSQL->getLine($this->objSQL->prepare('SELECT * FROM `$Pforum_threads` WHERE id ="%s" LIMIT 1;', $id));
+            if(!$thread) hmsgDie('FAIL', 'Failed to reteive thread information');
+
+		$category = $this->getForumInfo($thread['cat_id']);
+		$category = $category[0];
+		$catAuth = $this->auth[$category['id']];
+
+        //give em write by default
+            $writeTest = true;
+
+        //see if the user has write permissions
+        if(!$catAuth['auth_reply'] && !$catAuth['auth_mod'] && !User::$IS_MOD){
+            $writeTest = false;
+        }
+
+        //apparently they havent..
+        if(!$writeTest || $thread['locked']){
+            $this->objTPL->set_filenames(array(
+            	'body' => 'modules/forum/template/forum_category.tpl'
+            ));
+    		$this->objTPL->assign_block_vars('threads', array());
+        	$this->objTPL->assign_block_vars('threads.error', array(
+        		'ERROR' => $thread['locked'] ? langVar('L_LOCKED') : langVar('L_AUTH_POST', $catAuth['auth_reply_type']),
+        	));
+            $this->objTPL->parse('body', false);
+            return;
+        }
+
+        //if we get this far then they have permissions, so start the page output
+        $this->objPage->addPagecrumb(array(
+            array('url' => $this->config('global', 'url'), 'name' => langVar('B_POST_REPLY', $thread['title'])),
+        ));
 
 
+		//okay so test to see which part of the page we should see..
+		if(HTTP_POST && isset($_GET['mode']) && $_GET['mode']=='qreply'){
+			echo dump($_POST);
+           //check to make sure wer coming from a quick reply form
+            if(!doArgs('quick_reply', false, $_POST)){
+                hmsgDie('FAIL', 'Error: Post Failed.');
+            }
+
+			//check to make sure we have a cat id
+			if(!doArgs('id', false, $_POST)){
+				hmsgDie('FAIL', 'Error: I cannot remember where your posting to.');
+			}
+
+                //content checks
+                if(!doArgs('post', false, $_POST)){
+    		        unset($_SESSION['site']['forum']);
+                    hmsgDie('FAIL', 'Post Failed - Post either missing or not long enough.');
+                }
+
+            if(!doArgs('id', false, $_SESSION['site']['forum'][$id]) || $_SESSION['site']['forum'][$id]['id']!=$_POST['id']){
+                hmsgdie('FAIL', 'Post Failed - I cannot remember where your posting to.');
+            }
+
+            if(!doArgs('sessid', false, $_SESSION['site']['forum'][$id]) || $_SESSION['site']['forum'][$id]['sessid']!=$_POST['sessid']){
+                hmsgdie('FAIL', 'Post Failed - Security Check failed. Please make sure your posting directly from the page.');
+            }
+        //
+        //--insert the post info into the db
+        //
+			$uid = $this->objUser->grab('id');
+
+            //generate the post
+            unset($post);
+            $post['post']		= secureMe($_POST['post']);
+            $post['author']		= $uid;
+            $post['timestamp']	= time();
+            $post['thread_id']	= $thread['id'];
+            $post['poster_ip']	= User::getIP();
+
+                $post_insert = $this->objSQL->insertRow('forum_posts', $post);
+                    if(!$post_insert){
+                        unset($_SESSION['site']['forum']);
+                        hmsgDie('FAIL', 'Post Failed - Inserting the data into the db failed.(1)');
+                    }
+
+			//update the thread
+            unset($update);
+            $update['last_uid'] = $uid;
+            	$thread_update = $this->objSQL->updateRow('forum_threads', $update, array('id ="%s"', $id));
+
+			//update the forum watch table
+			if(isset($_POST['watch_topic'])){
+				unset($array);
+				$array['user_id'] = $uid;
+				$array['thread_id']	= $thread['id'];
+
+					$this->objSQL->insertRow('forum_watch', $array);
+			}
+
+			//update the parent category
+	    	unset($array);
+	    	$array['last_post_id'] = $post_insert;
+
+		    	$this->objSQL->updateRow('forum_cats', $array, array('id ="%s"', $id));
+
+			//do the notifications
+			$info = array(
+				'timestamp' => time(),
+				'content_id' => $thread_id,
+				'thread_id' => $thread['id'],
+			);
+            $this->notify($id, $thread, $info);
+
+			unset($_SESSION['site']);
+			$this->objPage->redirect('/'.root().'modules/forum/thread/'.seo($thread['subject']).'-'.$thread['id'].'.html#top', 0, 3);
+            return;
+		}
+		hmsgDie('FAIL', 'Error: Quick Reply Precedure Fail.');
 	}
 
 	function editPost(){}
@@ -1478,6 +1573,68 @@ class forum extends Module{
 
 
 
+    /**
+     * Retreives breadcrumb info for sub categories.
+     *
+     * @version	2.0
+     * @since   0.8.0
+     */
+    function notify($threadId, $thread, $postInfo){
+		$users2Notify = array(); $uid = $this->objUser->grab('id');
+
+		//grab the watching users
+		$watchingUsers = $this->objSQL->getTable($this->objSQL->prepare(
+			'SELECT DISTINCT user_id, seen FROM $Pforum_watch WHERE thread_id ="%s" AND seen = 1',
+			$threadId
+		));
+			foreach($watchingUsers as $user){ $users2Notify[] = $user['user_id']; }
+
+		//remove the current user, no point in email him about the post he just made O.o
+		$users2Notify = array_diff($users2Notify, array($uid));
+		if(is_empty($users2Notify)){ die('no users to notify'); }
+
+		//grab some info about the users
+		$users = array();
+		foreach($users2Notify as $user){
+			$users[] = $this->objUser->getUserInfo($user['id']);
+		}
+
+		//if we have no users then return here
+        if(is_empty($users)){ return; }
+
+        //update forum watch
+        unset($update);
+        $update['seen'] = 0;
+	        $this->objSQL->updateRow('forum_watch', $update, array(
+				'thread_id ="%d" AND uid IN (%s)',
+				$threadId,
+				implode(', ', $users2Notify)
+			));
+
+		$vars = array(
+			'AUTHOR' 		=> $uid,
+			'THREAD_NAME' 	=> $thread['subject'],
+			'TIME' 			=> $postInfo['posted'],
+			'THREAD_URL' 	=> $postInfo['thread_url'],
+		);
+
+        $nl = "\n";
+        //loop thru the users and exec the desired action :D
+        foreach($users as $user){
+            $message['title'] = langVar('L_THREAD_NOTIFY');
+            $message['email'] = parseEmail('E_USER_POSTED', $postInfo);
+            $message['notify'] =
+                langVar('L_USER_POSTED',
+                    $this->objUser->profile($uid, RAW),
+                    '[b]'.secureMe($thread['subject']).'[/b]',
+                    $this->objTime->mk_time($postInfo['posted'], 'db', $user['timezone'])
+                ).$nl.
+                'You can view the topic by visiting the following URL: '.
+					'[url=http://'.$_SERVER['HTTP_HOST'].'/'.root().'modules/forum/thread/'.seo($thread['subject']).'-'.$threadId.'.html?mode=last_page]Here[/url]';
+
+            doNotification($user['id'], 'forum', 'forumReplies', $message);
+        }
+    }
 
 
     /**

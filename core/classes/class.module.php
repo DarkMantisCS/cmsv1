@@ -57,7 +57,8 @@ class Module extends coreClass {
 		$this->modConf['ext'] = ((substr_count($this->modConf['filename'], '.') > 0)
 									? (substr($this->modConf['filename'], strrpos($this->modConf['filename'], '.') + 1))
 									: NULL);
-
+		$this->modConf['action'] = $this->modConf['action'] . $this->modConf['extra'];
+		$this->modConf['all'] = $this->modConf['path'] . $this->modConf['action'];
 
 		//specify some deafult actions
 		if(preg_match('/images\/(.*?)/i', $this->modConf['action'])) {

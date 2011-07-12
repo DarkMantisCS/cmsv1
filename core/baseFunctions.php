@@ -136,10 +136,98 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 		return false;
 	}
 
+    /**
+     * Handles Notifications for CMS Modules.
+     *
+     * @version 2.0
+     * @since 	0.8.0
+     * @author 	xLink
+     *
+     * @param 	string 	$to
+     * @param 	string 	$module
+     * @param 	int 	$setting
+     * @param 	array	$content
+     *
+     */
+    function doNotification($to, $module, $setting, $content=array()){
+        global $objSQL, $objUser, $objPage, $objSecurity;
+
+        //if the content we need is unavalible, then return false
+        if(!doArgs('title', false, $content) ||
+			!doArgs('email', false, $content) ||
+			!doArgs('notify', false, $content)){ return false; }
+
+		//we give the option to pass a $user array thru, it makes sense to use the query if they have already performed it
+		$user = $objUser->getUserInfo($to);
+			if(empty($user)){ return false; }
+
+		//grab the notification settings
+		$settings = $objSQL->getLine($objSQL->prepare('SELECT * FROM `$Pnotification_settings` WHERE module="%s" AND name="%s" LIMIT 1;', $module, $setting));
+			if(empty($settings)){ return false; }
+
+		//make sure we have something to work off
+		$userSetting = array();
+		if(doArgs('notification_settings', false, $user)){
+			$userSetting = unserialize($user['notification_settings']);
+		}
+
+		//do a check to see what we need to do
+		$setting = (isset($userSetting[$setting]) ? $userSetting[$setting] : $settings['default']);
+
+		if($setting==3){ $setting = $objUser->isUserOnline($to) ? 2 : 1; }
+
+		//execute sir, Yes sir!
+		switch($setting){
+			case 1: //email
+				if(!sendMail($user['email'],
+					$objPage->getSetting('site', 'title').' - '.secureMe($content['title']),
+					contentParse($content['email']),
+					true
+				)){
+					return false;
+				}
+			break;
+
+			case 2: //notify
+				return $objNotify->notifyUser($user['id'], contentParse($content['notify']), secureMe($content['title']));
+			break;
+
+			//not sure what to do here, so we shall do nothing atall
+			default:
+			case 0: break;
+			}
+		return true;
+	}
+
 	/**
 	 * Sends an email to the target.
 	 *
-	 * @version	2.0
+	 * @version 1.0
+	 * @since   1.0.0
+	 * @author  xLink
+	 *
+	 * @param   string 	$emailVar
+	 * @param   array	$vars
+	 *
+	 * @return 	string
+	 */
+    function parseEmail($emailVar, $vars){
+		global $objCore;
+
+		$message = $objCore->config('email', $emailVar);
+			if(!strlen($message)){ return false; }
+
+		//parse the email message
+		$objCore->objTPL->assign_vars($vars);
+		$objCore->objTPL->parseString('email', $message, false);
+
+		return $objCore->objTPL->get_html('email');
+    }
+
+	/**
+	 * Sends an email to the target.
+	 *
+	 * @version	2.2
 	 * @since   1.0.0
 	 * @author  xLink
 	 *
@@ -147,20 +235,11 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 	 * @param   string 	$emailVar
 	 * @param   array	$vars
 	 * @param   bool 	$dontDie
-	 *
-	 * @return 	bool
 	 */
-	function sendEMail($to, $emailVar, $vars=array(), $dontDie=false){
+	function sendEmail($to, $emailVar, $vars=array(), $dontDie=false){
 		global $objCore;
 
-		$message = $objCore->config('email', $emailVar);
-		if(!strlen($message)){ return false; }
-
-		//parse the email message
-		$objCore->objTPL->assign_vars($vars);
-		$objCore->objTPL->parseString('email', $message, false);
-
-		$message = $objCore->objTPL->get_html('email');
+		$message = parseEmail($emailVar, $vars);
 
 		//try and grab a title
 		$subject = langVar($emailVar);
@@ -1057,6 +1136,35 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 		return $password;
 	}
 
+	/**
+	 * Uses the BBCode Class to verify image
+	 *
+	 * @version	3.0
+	 * @since   1.0.0
+	 */
+	function doImage($content) {
+		global $objBBCode;
+	    if(!isset($objBBCode)){
+			if(is_empty($content)){ return false; }
+			return htmlspecialchars($content);
+	    }
+	    $content = trim($objBBCode->UnHTMLEncode(strip_tags($content)));
+	    if (preg_match("/\\.(?:gif|jpeg|jpg|jpe|png)$/", $content)) {
+	        if (preg_match("/^[a-zA-Z0-9_][^:]+$/", $content)) {
+	            if (!preg_match("/(?:\\/\\.\\.\\/)|(?:^\\.\\.\\/)|(?:^\\/)/", $content)) {
+	                $info = @getimagesize($content);
+	                if ($info[2] == IMAGETYPE_GIF || $info[2] == IMAGETYPE_JPEG || $info[2] == IMAGETYPE_PNG) {
+	                    return htmlspecialchars($content);
+	                }
+	            }
+	        } else if ($objBBCode->IsValidURL($content, false)) {
+	            return htmlspecialchars($content);
+	        }
+	    }
+	    return false;
+	}
+
+
 //
 //-- MSG Functions
 //
@@ -1330,7 +1438,7 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 
 
 //Various functions for those rulez
-function DoCode($content, $name=NULL, $lineNumbers=false, $killWS=true){
+function doCode($content, $name=NULL, $lineNumbers=false, $killWS=true){
     $lang = isset($name)&&$name!==NULL ? strtolower($name) : 'text';
 
     $extInfo = grabLangInfo($lang);
@@ -1400,7 +1508,7 @@ function you($bbcode, $action, $name, $default, $params, $content){
     #}
 }
 
-function DoQuote($bbcode, $action, $name, $default, $params, $content) {
+function doQuote($bbcode, $action, $name, $default, $params, $content) {
     global $objUser;
 
     if($action == BBCODE_CHECK){ return true; }

@@ -125,12 +125,18 @@ if(!HTTP_POST){
 	$userInfo['password'] = $_POST['password'];
 	$userInfo['email'] = $_POST['email'];
 
-	if(!$objUser->register($userInfo)){
-		msgDie('FAIL', $objUser->error());
-	}
+	$register = $objUser->register($userInfo);
+		if(!$register){
+			msgDie('FAIL', $objUser->error());
+		}
 
 	if($objPage->config('site', 'register_verification')){
-		sendEmail($userInfo['email'], 'register_successful');
+		$user = $objUser->getUserInfo($register);
+		$emailVars['URL'] = 'http://'.$_SERVER['HTTP_HOST'].'/'.root().'login.php?action=active&un='.$user['id'].'&check='.$user['code'];
+		$emailVars['USERNAME'] = $userInfo['username'];
+		$emailVars['SITE_NAME'] = $objCore->config('site', 'name');
+
+		sendEmail($userInfo['email'], 'register_successful', $emailVars);
 		$msg = langVar('L_REG_SUCCESS_EMAIL');
 	}else{
 		$msg = langVar('L_REG_SUCCESS_NO_EMAIL');

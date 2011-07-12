@@ -116,7 +116,7 @@ class notify extends coreClass{
 	 *
 	 * @return 	bool
 	 */
-	public function notifyUser($uid, $message, $moduleId=0){
+	public function notifyUser($uid, $message, $title=null, $moduleId=0){
 		global $objModule;
 
 		$user = $this->objUser->getUserInfo($uid);
