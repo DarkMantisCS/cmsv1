@@ -5,6 +5,8 @@
 if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 if(!isset($LANG_LOAD)){ die('Error: Cannot access directly.'); }
 
+global $objTime, $objCore;
+
 //breadcrumbs and page titles
 $_lang['B_FORUM']						= 'Forum';
 $_lang['B_POST_THREAD']					= 'Posting a thread to %s';
@@ -82,9 +84,11 @@ $_lang['L_WATCH_THREAD']             	= 'Watch this thread for replies?';
 $_lang['L_AUTO_LOCK']             		= 'Auto Lock the thread?';
 
 $_lang['L_PREVIEW']             		= 'Preview Post';
+$_lang['L_NO_EDIT_ABILITY']             = 'Either this isnt your post, or you no longer have permission to edit this post. '.
+											'There is a timer of '.$objTime->mk_time($objCore->config('forum', 'post_edit_time')).
+												' in place that may have already passed.';
 
 //notify
-$_lang['L_THREAD_NOTIFY']				= 'Thread Reply Notification';
 $_lang['L_THREAD_NOTIFY']				= 'Thread Reply Notification';
 $_lang['L_USER_POSTED']					= '%s has posted a reply to %s. This was posted at %s';
 

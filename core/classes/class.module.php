@@ -61,7 +61,7 @@ class Module extends coreClass {
 		$this->modConf['all'] = $this->modConf['path'] . $this->modConf['action'];
 
 		//specify some deafult actions
-		if(preg_match('/images\/(.*?)/i', $this->modConf['action'])) {
+		if(preg_match('/images\/(.*?)/i', str_replace($this->modConf['extra'], '', $this->modConf['action']))) {
 			$imagesTypes = array('jpg', 'gif', 'png', 'jpeg', 'jfif', 'jpe', 'bmp', 'ico', 'tif', 'tiff');
 			if(in_array($this->modConf['ext'], $imagesTypes) && is_readable(cmsROOT . 'modules/' . $this->modConf['module'] . '/images/' . $this->modConf['filename'])) {
 				header('Content-Type: image/' . $this->modConf['ext']);
@@ -71,19 +71,19 @@ class Module extends coreClass {
 				$this->throwHTTP('404');
 			}
 		}
-		if(preg_match('/scripts\/(.*?)/i', $this->modConf['action'])) {
-			if(file_exists(cmsROOT . 'modules/' . $this->modConf['module'] . '/' . $this->modConf['action'] . $this->modConf['extra'])) {
+		if(preg_match('/scripts\/(.*?)/i', str_replace($this->modConf['extra'], '', $this->modConf['action']))) {
+			if(file_exists(cmsROOT . 'modules/' . $this->modConf['module'] . '/' . $this->modConf['action'])) {
 				header('Content-Type: application/x-javascript');
-				include (cmsROOT . 'modules/' . $this->modConf['module'] . '/' . $this->modConf['action'] . $this->modConf['extra']);
+				include (cmsROOT . 'modules/' . $this->modConf['module'] . '/' . $this->modConf['action']);
 				exit;
 			} else {
 				$this->throwHTTP('404');
 			}
 		}
-		if(preg_match('/styles\/(.*?)/i', $this->modConf['action'])) {
-			if(file_exists(cmsROOT . 'modules/' . $this->modConf['module'] . '/' . $this->modConf['action'] . $this->modConf['extra'])) {
+		if(preg_match('/styles\/(.*?)/i', str_replace($this->modConf['extra'], '', $this->modConf['action']))) {
+			if(file_exists(cmsROOT . 'modules/' . $this->modConf['module'] . '/' . $this->modConf['action'])) {
 				header('Content-Type: text/css');
-				include (cmsROOT . 'modules/' . $this->modConf['module'] . '/' . $this->modConf['action'] . $this->modConf['extra']);
+				include (cmsROOT . 'modules/' . $this->modConf['module'] . '/' . $this->modConf['action']);
 				exit;
 			} else {
 				$this->throwHTTP('404');

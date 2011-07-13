@@ -48,3 +48,8 @@ form .s_column div.formRow {height:auto; margin-bottom:3px; padding:0px;}
 form .s_column div.formRow label {float:none; width:100%;}
 form .s_column div.formRow input {width:98%; float:none;}
 
+
+form.inplaceeditor-form textarea{
+	height: 50px;
+	width: 99%;
+}

@@ -8,7 +8,7 @@ function toggleMenu(id){
 	});
 
 	new Effect.toggle($('f_'+id), 'slide');
-	//updateCats();
+	updateCats();
 }
 
 function grabState(){
@@ -93,6 +93,23 @@ function togglePreview(){
 	$('preview', 'post-content').invoke('toggle');
 }
 
+function post_eip(id){
+	var post = $("post_id_"+id);
+	if(post.readAttribute("editInProgress") === null){ post.writeAttribute({"editInProgress": "false"}); }
+	if(post.readAttribute("editInProgress") == "true"){ post.editor.enterEditMode("click"); }
+	if(post.readAttribute("editInProgress") == "false"){
+		post.writeAttribute({"editInProgress": "true"});
+		post.editor = new Ajax.InPlaceEditor(post.id, '/'+cmsROOT+'modules/forum/ajax/eip.php?action=save&id='+id, {
+			rows: 15,
+			cancelControl: "button",
+			highlightcolor: Page.row_color1,
+			highlightendcolor: Page.row_color2,
+			loadTextURL: '/'+cmsROOT+'modules/forum/ajax/eip.php?action=load&id='+id
+		});
+		post.editor.enterEditMode("click");
+	}
+}
+
 document.observe('dom:loaded', function(){
 	if(User.IS_ONLINE && $('sortable_forums')){
 		Sortable.create('sortable_forums', {scroll:window, tag:'div', handle: 'cat_handle',
@@ -101,12 +118,6 @@ document.observe('dom:loaded', function(){
 			}
 		});
 	}
-
-	$('a[href=#qreply]').observe('click', function(ele){
-		Effect.ScrollTo('qreply');
-		$('post').focus();
-		Event.stop();
-	});
 
 	$$('img[data-mode]').each(function(img) {
 		img.writeAttribute({'onclick': 'toggleMenu(this.name);'});
@@ -122,6 +133,15 @@ document.observe('dom:loaded', function(){
 	    e.writeAttribute({'onclick': 'doBBCode(this); return false;'});
 	});
 
+
+	$$("a[class=editBtn]").each(function(ele){
+	    if(!empty(ele.id)){
+	        $(ele.id).observe('click', function(e){
+				Event.stop(e);
+	            post_eip(str_replace("post_", "", ele.id));
+	        });
+	    }
+	});
 
 	//make all td's with data-url's on em clickable
 	$$('td[data-url]').each(function(ele) {

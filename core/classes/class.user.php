@@ -743,6 +743,36 @@ class user extends coreClass{
     }
 
 	/**
+	 * Returns a specific Ajax Setting for the user.
+	 *
+	 * @version 1.0
+	 * @since   1.0.0
+	 * @author	xLink
+	 *
+	 * @param 	string	$setting
+	 *
+	 * @return 	mixed
+	 */
+    function ajaxSettings($setting){
+    	//grab the setting arsenal
+        $uAjaxSettings = $_SESSION['user']['ajax_settings'] = $this->getUserInfo($this->grab('id'), 'ajax_settings');
+        	if(is_empty($uAjaxSettings)){ return false; }
+
+        //unpack them
+        $ajaxSettings = unserialize($uAjaxSettings);
+        	if(!is_array($ajaxSettings)){ return false; }
+
+        //and then see if the one we want is present
+        if(in_array($setting, $ajaxSettings)){
+        	//and return it
+            return $ajaxSettings[$setting];
+        }
+
+        //or false
+        return false;
+    }
+
+	/**
 	 * Toggles the active flag on the user account
 	 *
 	 * @version 1.0

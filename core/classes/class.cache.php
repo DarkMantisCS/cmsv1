@@ -18,13 +18,24 @@ class cache extends coreClass{
 	private $cacheDir = '';
 	private $fileTpl = '';
 
-	function __construct($args=array()) {
+	public function __construct($args=array()) {
 		$this->cacheToggle = doArgs('useCache', false, $args);
 		$this->cacheDir = doArgs('cacheDir', '', $args);
 		$this->fileTpl = $this->cacheDir.'cache_%s.php';
 	}
 
-	public function remove($type){
+	/**
+	 * Removes a specific set of cache files
+	 *
+	 * @version 1.0
+	 * @since 	1.0.0
+	 * @author  xLink
+	 *
+	 * @param	string 	$type
+	 *
+	 * @return 	bool
+	 */
+	public function remove($type) {
 		$cacheFiles = '';
 		switch($type){
 			case 'config':
