@@ -12,7 +12,7 @@ $tpl['row_highlight']       = '#2B2B2B';
 
 
 $i = '/'.root().Page::$THEME_ROOT.'buttons/';
-$img = '/'.root().'images/bbcode/';
+$img = '/'.root().'images/icons/';
 
 $tpl['IMG_locked']          = $i.'locked_old.png';
 $tpl['IMG_moved']           = $i.'redirected.png';
@@ -32,6 +32,7 @@ $tpl['FIMG_locked']         = $i.'lock.png';
 $tpl['FIMG_unlocked']       = $i.'unlock.png';
 
 $tpl['FIMG_reply']          = $img.'comments.png';
+$tpl['FIMG_post_quote']     = $img.'comment.png';
 
 $tpl['PM_compose']			= $i.'sendpm.gif';
 $tpl['PM_reply']			= $i.'reply_small.gif';

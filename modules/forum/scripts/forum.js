@@ -93,6 +93,17 @@ function togglePreview(){
 	$('preview', 'post-content').invoke('toggle');
 }
 
+function quotePost(id){
+    new Ajax.Request('/'+cmsROOT+'modules/forum/ajax/quote.php?id='+id, {
+    	method: 'get',
+        onSuccess: function(t) {
+        	textarea = $$('textarea')[0];
+            textarea.value = textarea.value+ t.responseText;
+            Effect.ScrollTo(textarea.id);
+        }
+    });
+}
+
 function post_eip(id){
 	var post = $("post_id_"+id);
 	if(post.readAttribute("editInProgress") === null){ post.writeAttribute({"editInProgress": "false"}); }
@@ -110,6 +121,20 @@ function post_eip(id){
 	}
 }
 
+Ajax.Responders.register({
+	requestHeaders: {'X-Cms-Is': 'Cybershade'},
+	onCreate: function() {
+		if (Ajax.activeRequestCount === 1) {
+			$('spinner').show();
+		}
+	},
+	onComplete: function() {
+		if (Ajax.activeRequestCount === 0) {
+			$('spinner').hide();
+		}
+	}
+});
+
 document.observe('dom:loaded', function(){
 	if(User.IS_ONLINE && $('sortable_forums')){
 		Sortable.create('sortable_forums', {scroll:window, tag:'div', handle: 'cat_handle',
@@ -119,29 +144,44 @@ document.observe('dom:loaded', function(){
 		});
 	}
 
-	$$('img[data-mode]').each(function(img) {
-		img.writeAttribute({'onclick': 'toggleMenu(this.name);'});
-	});
+	if(User.IS_ONLINE){
+		$$('img[data-mode]').each(function(img) {
+			img.writeAttribute({'onclick': 'toggleMenu(this.name);'});
+		});
 
-	//smilies
-	$$('input[data-code][class*=smilie]').each(function(img) {
-		img.writeAttribute({'onclick': 'emoticon(this); return false;'});
-	});
+		//smilies
+		$$('input[data-code][class*=smilie]').each(function(img) {
+			img.writeAttribute({'onclick': 'emoticon(this); return false;'});
+		});
 
-	//bb buttons
-	$$('input[class*=bbButton]').each(function(e){
-	    e.writeAttribute({'onclick': 'doBBCode(this); return false;'});
-	});
+		//bb buttons
+		$$('input[class*=bbButton]').each(function(e){
+		    e.writeAttribute({'onclick': 'doBBCode(this); return false;'});
+		});
 
-
-	$$("a[class=editBtn]").each(function(ele){
-	    if(!empty(ele.id)){
-	        $(ele.id).observe('click', function(e){
-				Event.stop(e);
+		//EIP buttons
+		$$("a[class=editBtn]").each(function(ele){
+	        Event.observe(ele, 'click', function(event){
 	            post_eip(str_replace("post_", "", ele.id));
+				Event.stop(event);
 	        });
-	    }
-	});
+		});
+
+		if($('qreply')){
+			makeReplyForm('qreply');
+			Event.observe('qreply', 'submit', function(e){
+			    $('qreply').request({
+			        onFailure: function() { return true; },
+			        onSuccess: function(t) {
+			        	$$('#qreply textarea')[0].update('');
+			            $('post_container').insert(t.responseText);
+			            Effect.ScrollTo($$('table[name*=post_]').last().readAttribute('id'));
+			        }
+			    });
+			    Event.stop(e);
+			});
+		}
+	}
 
 	//make all td's with data-url's on em clickable
 	$$('td[data-url]').each(function(ele) {
@@ -154,11 +194,4 @@ document.observe('dom:loaded', function(){
 			});
 		}
 	});
-
-	if($('qreply')){
-		makeReplyForm('qreply');
-		/*$$('a[href=#qreply]')[0].observe('click', function(){
-			$$('#qreply textarea')[0].focus();
-		});*/
-	}
 });

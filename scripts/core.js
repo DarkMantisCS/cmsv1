@@ -67,7 +67,6 @@ function notify(message, header, sticky){
 	});
 }
 
-
 window.viewport = {
     height: function() {
         return document.viewport.getHeight();

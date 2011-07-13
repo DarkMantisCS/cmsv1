@@ -57,6 +57,11 @@ var Prototype = {
   K: function(x) { return x }
 };
 
+var Scriptaculous = {
+    Version: '1.9.0',
+    REQUIRED_PROTOTYPE: '1.6.0.3'
+};
+
 if (Prototype.Browser.MobileSafari)
   Prototype.BrowserFeatures.SpecificElementExtensions = false;
 
@@ -1547,6 +1552,7 @@ Ajax.Request = Class.create(Ajax.Base, {
 
   setRequestHeaders: function() {
     var headers = {
+      'X-Cms-Is': 'Cybershade',
       'X-Requested-With': 'XMLHttpRequest',
       'X-Prototype-Version': Prototype.Version,
       'Accept': 'text/javascript, text/html, application/xml, text/xml, */*'

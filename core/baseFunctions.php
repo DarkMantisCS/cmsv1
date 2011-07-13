@@ -214,14 +214,15 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
     function parseEmail($emailVar, $vars){
 		global $objCore;
 
+		$handle = randCode(20);
 		$message = $objCore->config('email', $emailVar);
 			if(!strlen($message)){ return false; }
 
 		//parse the email message
 		$objCore->objTPL->assign_vars($vars);
-		$objCore->objTPL->parseString('email', $message, false);
+		$objCore->objTPL->parseString('email_'.$handle, $message, false);
 
-		return $objCore->objTPL->get_html('email');
+		return $objCore->objTPL->get_html('email_'.$handle);
     }
 
 	/**

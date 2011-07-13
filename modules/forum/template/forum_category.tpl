@@ -41,19 +41,19 @@
 	
 	<!-- BEGIN search -->
 	  <tr id="{threads.row.ID}" class="{threads.row.CLASS}">
-		<td colspan="6">{threads.row.POST}</td>
+		<td colspan="7">{threads.row.POST}</td>
 	  </tr>
 	<!-- END search -->
 	
 	<!-- BEGIN hr -->
 	  <tr id="{threads.row.ID}" class="{threads.row.CLASS}">
-		<td colspan="5" align="center"><hr /></td>
+		<td colspan="7" align="center"><hr /></td>
 	  </tr>
 	<!-- END hr -->
 	
 	<!-- BEGIN error -->
 	  <tr>
-		<td colspan="6" align="center">{threads.error.ERROR}</td>
+		<td colspan="7" align="center">{threads.error.ERROR}</td>
 	  </tr>
 	<!-- END error -->
 	

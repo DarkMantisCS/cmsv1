@@ -24,7 +24,8 @@ class time extends coreClass {
      *
      * @return 	int
      */
-	function localTime($timestamp=null, $tz=null){
+	public function localTime($timestamp=null, $tz=null){
+		$a = func_get_args();
 		$timestamp = (is_empty($timestamp) ? time() : $timestamp);
 
 		//if we got DST set then go for it
@@ -82,6 +83,21 @@ class time extends coreClass {
     }
 
     /**
+     * Determines a timestamps length
+     *
+     * @version	1.0
+     * @since   1.0.0
+     * @author 	xLink
+     *
+     * @param 	int $timestamp
+	 *
+     * @return 	int
+     */
+	public function calc_time($timestamp){
+		return $this->timer(time()-$timestamp);
+	}
+
+    /**
      * Determine how long till next birthday
      *
      * @version	1.0
@@ -95,7 +111,7 @@ class time extends coreClass {
 	 *
      * @return 	mixed
      */
-    function calc_birthday($day=1, $month=1, $year=null, $return=0){
+    public function calc_birthday($day=1, $month=1, $year=null, $return=0){
     	//year is empty, then set it to the current year
         if(is_empty($year)){ $year = date('y'); }
 
@@ -250,7 +266,7 @@ class time extends coreClass {
 	 *
 	 * @return 	string 	$words 		Language parsed time-ago string
 	 */
-	function timeago($timestamp=0) {
+	public function timeago($timestamp=0) {
 		$timestamp = $this->localTime($timestamp);
 		$now = $this->localTime(time());
 

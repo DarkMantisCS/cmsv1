@@ -221,6 +221,19 @@ class forum extends Module{
 		return false;
 	}
 
+	/**
+	 * Ouputs categories into a template and returns the contents
+	 *
+	 * @version 1.0
+	 * @since 	1.0.0
+	 * @autor 	xLink
+	 *
+	 * @param 	array	$categories		Array of categories to output -parents only-
+	 * @param	bool 	$index			Determine if we are on the index, for sortable cats
+	 * @param 	string 	$title			The title to give to the block
+	 *
+	 * @return 	string
+	 */
 	public function outputCats($categories, $index=false, $title=null){
         $vars = $this->objPage->getVar('tplVars');
         $_row_color1 = $vars['row_color1']; $_row_color2 = $vars['row_color2'];  $_row_highlight = $vars['row_highlight'];
@@ -736,10 +749,19 @@ class forum extends Module{
 		$this->objTPL->parse('body', false);
 	}
 
+	/**
+	 * Allows a user to view a thread
+	 *
+	 * @version 2.0
+	 * @since 	1.0.0
+	 * @author 	xLink
+	 *
+	 * @param 	int 		$id
+	 */
 	public function viewThread($id){
 		$vars = $this->objPage->getVar('tplVars');
 		$this->objTPL->set_filenames(array(
-			'body' => 'modules/forum/template/forum_viewThread.tpl',
+			'body' => 'modules/forum/template/forum_thread.tpl',
 		));
 
 		//grab the thread
@@ -854,8 +876,8 @@ class forum extends Module{
         $watchThread = $this->objSQL->getInfo('forum_watch', array('user_id ="%s" AND thread_id ="%s"', $this->objUser->grab('id'), $id));
         $this->objTPL->assign_var('WATCH',
             (USER::$IS_ONLINE
-                ? '[ <a href="'.$threadUrl.'?mode='.($watchThread ? 'unwatch' : 'watch').'">'.
-						langVar(($watchThread ? 'L_UNWATCH_THREAD' : 'L_WATCH_THREAD')).'</a> ]'
+                ? '<a href="'.$threadUrl.'?mode='.($watchThread ? 'unwatch' : 'watch').'">'.
+						langVar(($watchThread ? 'L_UNWATCH_THREAD' : 'L_WATCH_THREAD')).'</a>'
                 : null)
         );
 
@@ -916,6 +938,38 @@ class forum extends Module{
 			));
 		}
 
+		$this->objTPL->assign_var('POSTS', $this->outputPosts($posts, $thread));
+
+		$this->objTPL->parse('body', false);
+	}
+
+	/**
+	 * Outputs threads
+	 *
+	 * @version 2.0
+	 * @since 	1.0.0
+	 * @author 	xLink
+	 *
+	 * @param 	array 	$posts
+	 * @param	array	$thread
+	 */
+	public function outputPosts($posts, $thread){
+        $vars = $this->objPage->getVar('tplVars');
+        $_row_color1 = $vars['row_color1']; $_row_color2 = $vars['row_color2'];  $_row_highlight = $vars['row_highlight'];
+
+        $this->objTPL->set_filenames(array(
+        	'posts' => 'modules/forum/template/forum_postsOutput.tpl',
+        ));
+
+		//grab the cat
+		$cat = $this->getForumInfo($thread['cat_id']);
+		$cat = $cat[0];
+
+		//grab the auth and make sure they /can/ see it
+        $threadAuth = $this->auth[$thread['cat_id']];
+
+		$threadUrl = $this->generateThreadURL($thread);
+
 		//grab posts counts
 		$authors = array();
 		foreach($posts as $post){
@@ -945,77 +999,97 @@ class forum extends Module{
 					}
 				}
 
-            //assign the info to the template
-    		$this->objTPL->assign_block_vars('thread', array(
+			$tplvars = array(
 				'ID'			=> $post['id'],
 
 				'USERNAME'		=> strtolower($author['profile']),
 				'AUTHOR'		=> $this->objUser->profile($author['id']),
 				'AUTHOR_IO'		=> $this->objUser->onlineIndicator($author['id']),
-    			'USERTITLE'		=> secureMe(doArgs('title', null, $author)),
 
 				'L_USERLEVEL'	=> langVar('LEVEL'),
 				'USERLEVEL'		=> $author['level'],
-
-    			'AVATAR'		=> $this->objUser->parseAvatar($author['id'], 100),
-    			'SIGNATURE'		=> contentParse(doArgs('signature', '&nbsp;', $author)),
-    			'POSTCOUNT'		=> langVar('L_POST_COUNT', $postCounts[$author['id']]),
-    			'LOCATION'		=> !is_empty($location) ? langVar('L_LOCATION', $location) : null,
-
-    			'POST'			=> contentParse($post['post']),
     			'TIME'			=> langVar('L_POSTED_ON', $this->objTime->mk_time($post['timestamp'], 'dS M y @ h:s a')),
+				'AVATAR'		=> $this->objUser->parseAvatar($author['id'], 100),
+    			'POST'			=> contentParse($post['post']),
     			'EDITED'		=> $post['edited']>0
                                      ? langVar('L_EDITED', $post['edited'], $this->objUser->profile($post['edited_uid']))
-                                     : null,
-                'IP'            => (User::$IS_MOD || $threadAuth['auth_mod'])
-                                     ? langVar('L_USERS_IP', $post['poster_ip'])
                                      : null,
 
     			'ROW'			=> $count%2==1 ? 'row_color2' : 'row_color1',
     			'ALTROW'		=> $count%2==1 ? 'row_color1' : 'row_color2',
-            ));
+            );
+
+			if(doArgs('mode', false, $_GET) != 'reply'){
+				$tplvars += array(
+	    			'USERTITLE'		=> secureMe(doArgs('title', null, $author)),
+	    			'SIGNATURE'		=> contentParse(doArgs('signature', '&nbsp;', $author)),
+	    			'POSTCOUNT'		=> langVar('L_POST_COUNT', $postCounts[$author['id']]),
+	    			'LOCATION'		=> !is_empty($location) ? langVar('L_LOCATION', $location) : null,
+	                'IP'            => (User::$IS_MOD || $threadAuth['auth_mod'])
+	                                     ? langVar('L_USERS_IP', $post['poster_ip'])
+	                                     : null,
+
+				);
+			}
+
+
+            //assign the info to the template
+    		$this->objTPL->assign_block_vars('thread', $tplvars);
 
 			//allow the user to hide the sigs if so desired
-			if(!is_empty($author['signature']) && !$this->objUser->grab('forum_show_sigs')){
+			if(doArgs('mode', false, $_GET) != 'reply' && !is_empty($author['signature']) && !$this->objUser->grab('forum_show_sigs')){
 				$this->objTPL->assign_block_vars('thread.sig', array());
 			}
 
 		//
 		//-- Post Control Buttons
 		//
-			//MOD permissions
-			if(User::$IS_MOD || $threadAuth['auth_mod']
-					//make sure the user is the author
-					|| ($this->objUser->grab('id') == $post['author']
-						//make sure there is only 1 reply, or they are within the time limit
-						&& ($thread['replies'] == 1 || (time()-$post['posted'] < $this->config('forum', 'post_edit_time'))))
-			){
+			if(doArgs('mode', false, $_GET) != 'reply'){
+				//MOD permissions
+				if(User::$IS_MOD || $threadAuth['auth_mod']
+						//make sure the user is the author
+						|| ($this->objUser->grab('id') == $post['author']
+							//make sure there is only 1 reply, or they are within the time limit
+							&& ($thread['replies'] == 1 || (time()-$post['posted'] < $this->config('forum', 'post_edit_time'))))
+				){
 
-	                if($threadAuth['auth_del'] && !$first_post){
-	        			$this->objTPL->assign_block_vars('thread.del', array(
-	        				'URL'	=> $threadUrl.'?mode=rm&postid='.$post['id'],
-	        				'IMG'	=> $vars['FIMG_post_del'],
-	                        'TEXT'  => langVar('L_DELETE'),
-	        			));
-	                }
-	                if($threadAuth['auth_edit']){
-	        			$this->objTPL->assign_block_vars('thread.edit', array(
-	                        'EIP'   => $this->objUser->ajaxSettings('forum_eip')
-	                                        ? ' id="post_'.$post['id'].'" class="editBtn"'
-	                                        : null,
-	        				'URL'	=> $threadUrl.'?mode=edit&postid='.$post['id'],
-	        				'IMG'	=> $vars['FIMG_post_edit'],
-	                        'TEXT'  => langVar('L_EDIT'),
-	        			));
-	                }
-    		}
-            if(User::$IS_ONLINE){
-    			$this->objTPL->assign_block_vars('thread.quote', array(
-    				'URL'       => $threadUrl.'?mode=reply&q='.$post['id'],
-    				'IMG'       => '/'.root().'images/bbcode/comment.png',
-                    'TEXT'      => langVar('L_QUOTE'),
-    			));
-            }
+		                if($threadAuth['auth_del'] && !$first_post){
+		        			$this->objTPL->assign_block_vars('thread.del', array(
+		        				'URL'	=> $threadUrl.'?mode=rm&postid='.$post['id'],
+		        				'IMG'	=> $vars['FIMG_post_del'],
+		                        'TEXT'  => langVar('L_DELETE'),
+		        			));
+		                }
+		                if($threadAuth['auth_edit']){
+		        			$this->objTPL->assign_block_vars('thread.edit', array(
+		                        'EXTRA' => $this->objUser->ajaxSettings('forum_eip')
+		                                        ? ' id="post_'.$post['id'].'" class="editBtn"'
+		                                        : null,
+		        				'URL'	=> $threadUrl.'?mode=edit&postid='.$post['id'],
+		        				'IMG'	=> $vars['FIMG_post_edit'],
+		                        'TEXT'  => langVar('L_EDIT'),
+		        			));
+		                }
+	    		}
+	            if(User::$IS_ONLINE){
+	    			$this->objTPL->assign_block_vars('thread.quote', array(
+	    				'URL'       => $threadUrl.'?mode=reply&q='.$post['id'],
+	    				'IMG'       => $vars['FIMG_post_quote'],
+	                    'TEXT'      => langVar('L_QUOTE'),
+	    			));
+	            }
+			}else{
+				//this version will give us a clickable link that will insert the post in a quote straight into our post we are writing
+				if(User::$IS_ONLINE){
+					$this->objTPL->assign_block_vars('thread.quote', array(
+	                    'EXTRA' 	=> 'onclick="quotePost(\''.$post['id'].'\'); return false;"',
+						'URL'       => '#',
+						'IMG'       => $vars['FIMG_post_quote'],
+						'TEXT'      => langVar('L_QUOTE'),
+					));
+				}
+			}
+
     	$count++;
 		}
 
@@ -1047,10 +1121,20 @@ class forum extends Module{
             }
 		}
 
-
-		$this->objTPL->parse('body', false);
+		$return = $this->objTPL->get_html('posts');
+		$this->objTPL->reset_block_vars('thread');
+		return $return;
 	}
 
+	/**
+	 * Allows posting of threads to the Forum
+	 *
+	 * @version 2.0
+	 * @since 	1.0.0
+	 * @author 	xLink
+	 *
+	 * @param 	int 		$id
+	 */
 	public function postThread($id){
 		$category = $this->getForumInfo($id);
 		$category = $category[0];
@@ -1262,7 +1346,16 @@ class forum extends Module{
 		}
 	}
 
-	function postReply($id){
+	/**
+	 * Allows static reply to a thread
+	 *
+	 * @version 2.0
+	 * @since 	1.0.0
+	 * @author 	xLink
+	 *
+	 * @param 	int 		$id
+	 */
+	public function postReply($id){
         //grab the required thread so we got something to work with..
         $thread = $this->objSQL->getLine($this->objSQL->prepare('SELECT * FROM `$Pforum_threads` WHERE id ="%s" LIMIT 1;', $id));
             if(!$thread) hmsgDie('FAIL', 'Failed to retreive thread information');
@@ -1362,7 +1455,7 @@ class forum extends Module{
 
             //yada yada, the general tpl crap..
 			$this->objTPL->assign_vars(array(
-				'F_START'       => $this->objForm->start('reply', array('method' => 'POST', 'action' => '?mode=post')),
+				'F_START'       => $this->objForm->start('reply', array('method' => 'POST', 'action' => '')),
 				'F_END'         => $this->objForm->finish(),
 
 				'SMILIES'       => $this->generateSmilies(),
@@ -1385,6 +1478,16 @@ class forum extends Module{
 			if(!$forumWatch){
 				$this->objTPL->assign_block_vars('new_post', array());
 			}
+
+	        $posts = $this->objSQL->getTable($this->objSQL->prepare('SELECT * FROM `$Pforum_posts` WHERE thread_id ="%s" ORDER BY id DESC LIMIT 10;', $id));
+
+	        if(count($posts)){
+				$this->objTPL->assign_block_vars('reply_posts', array(
+					'L_THREAD_RECAP' => langVar('L_THREAD_RECAP'),
+					'CONTENT' => $this->outputPosts($posts, $thread),
+				));
+			}
+
             $this->objTPL->parse('body', false);
             return;
 		}else{
@@ -1394,9 +1497,9 @@ class forum extends Module{
 			}
 
                 //content checks
-                if(!doArgs('title', false, $_POST) || !doArgs('post', false, $_POST)){
+                if(!doArgs('post', false, $_POST)){
     		        unset($_SESSION['site']['forum']);
-                    hmsgDie('FAIL', 'Post Failed - Title or Post either missing or not long enough.');
+                    hmsgDie('FAIL', 'Post Failed - Post either missing or not long enough.');
                 }
 
             if(!doArgs('id', false, $_SESSION['site']['forum'][$id]) || $_SESSION['site']['forum'][$id]['id']!=$_POST['id']){
@@ -1428,11 +1531,7 @@ class forum extends Module{
 			//update the thread
             unset($update);
             $update['last_uid'] = $uid;
-
             	$thread_update = $this->objSQL->updateRow('forum_threads', $update, array('id ="%s"', $id));
-		            if(!$thread_update){
-		                hmsgDie('FAIL', 'Error: Failed to update parent thread information.');
-		            }
 
 			//update the forum watch table
 			if(isset($_POST['watch_topic'])){
@@ -1462,7 +1561,16 @@ class forum extends Module{
 		}
 	}
 
-    function postQuickReply($id){
+	/**
+	 * Allows quick reply
+	 *
+	 * @version 2.0
+	 * @since 	1.0.0
+	 * @author 	xLink
+	 *
+	 * @param 	int 		$id
+	 */
+    public function postQuickReply($id){
         //grab the required thread so we got something to work with..
         $thread = $this->objSQL->getLine($this->objSQL->prepare('SELECT * FROM `$Pforum_threads` WHERE id ="%s" LIMIT 1;', $id));
             if(!$thread) hmsgDie('FAIL', 'Failed to retreive thread information');
@@ -1500,8 +1608,7 @@ class forum extends Module{
 
 		//okay so test to see which part of the page we should see..
 		if(HTTP_POST && isset($_GET['mode']) && $_GET['mode']=='qreply'){
-			echo dump($_POST);
-           //check to make sure wer coming from a quick reply form
+			//check to make sure wer coming from a quick reply form
             if(!doArgs('quick_reply', false, $_POST)){
                 hmsgDie('FAIL', 'Error: Post Failed.');
             }
@@ -1572,13 +1679,43 @@ class forum extends Module{
             $this->notify($id, $thread, $info);
 
 			unset($_SESSION['site']);
-			$this->objPage->redirect('/'.root().'modules/forum/thread/'.seo($thread['subject']).'-'.$thread['id'].'.html#top', 0, 3);
-            return;
+			if(!HTTP_AJAX){
+				$this->objPage->redirect('/'.root().'modules/forum/thread/'.seo($thread['subject']).'-'.$thread['id'].'.html#top', 0, 3);
+			}else{
+				//grab the thread
+				$thread = $this->objSQL->getLine($this->objSQL->prepare(
+					'SELECT t.*, COUNT(DISTINCT p.id) as posts
+						FROM `$Pforum_threads` t
+						LEFT JOIN `$Pforum_posts` p
+							ON p.thread_id = t.id
+						WHERE t.id = %d',
+					$thread['id']
+				));
+
+				$pages = ceil($thread['posts']/10);
+				$page = doArgs('mode', false, $_GET)=='last_page' ? $pages : doArgs('page', 1, $_GET);
+				if($page < $pages){
+					echo '<script>document.location= "'.$this->generateThreadURL($thread).'?mode=last_page";</script>';
+					exit;
+				}
+
+				echo $this->outputPosts(array($post), $thread);
+				exit;
+			}
 		}
 		hmsgDie('FAIL', 'Error: Quick Reply Precedure Fail.');
 	}
 
-	function editPost($id){
+	/**
+	 * Allows a user to edit post if conditions are right
+	 *
+	 * @version 2.0
+	 * @since 	1.0.0
+	 * @author 	xLink
+	 *
+	 * @param 	int 		$id
+	 */
+	public function editPost($id){
         //grab the post were reffering to
         $post = $this->objSQL->getLine($this->objSQL->prepare('SELECT * FROM `$Pforum_posts` WHERE id ="%s" LIMIT 1;', $id));
             if(!$post) hmsgDie('FAIL', 'Failed to retreive post information');
@@ -1771,7 +1908,13 @@ class forum extends Module{
 
 
 
-
+	/**
+	 * Keeps tracking topics upto date
+	 *
+	 * @version 1.0
+	 * @since 	1.0.0
+	 * @author 	xLink
+	 */
     private function forumTrackerInit(){
 		//if they arn't logged in return, no need to continue
 		if(!User::$IS_ONLINE){ return; }
@@ -1820,11 +1963,16 @@ class forum extends Module{
 
     /**
      * Retreives breadcrumb info for sub categories.
-     *
-     * @version	2.0
-     * @since   0.8.0
-     */
-    function notify($threadId, $thread, $postInfo){
+	 *
+	 * @version 2.0
+	 * @since 	1.0.0
+	 * @author 	xLink
+	 *
+	 * @param 	int		$threadId
+	 * @param 	array	$thread
+	 * @param	array	$postInfo
+	 */
+    private function notify($threadId, $thread, $postInfo){
 		$users2Notify = array(); $uid = $this->objUser->grab('id');
 
 		//grab the watching users
@@ -1882,13 +2030,16 @@ class forum extends Module{
     }
 
 
-    /**
-     *
-     *
-     * @version	1.0
-     * @since   0.8.0
-     */
-    function preview(){
+	/**
+	 * Outputs a parsed post
+	 *
+	 * @version 2.0
+	 * @since 	1.0.0
+	 * @author 	xLink
+	 *
+	 * @return 	string
+	 */
+    public function preview(){
         if(!doArgs('post_val', false, $_POST)){ die(); }
 
         $this->objTPL->set_filenames(array(
@@ -1906,11 +2057,16 @@ class forum extends Module{
 
     /**
      * Sets up some select boxes for the forums post page.
-     *
-     * @version	1.0
-     * @since   0.7.0
-     */
-    function genSelects($type){
+	 *
+	 * @version 1.0
+	 * @since 	1.0.0
+	 * @author 	xLink
+	 *
+	 * @param 	string	$type
+	 *
+	 * @return 	string
+	 */
+    public function genSelects($type){
         $bcode='';
 
         switch($type){
@@ -1937,7 +2093,14 @@ class forum extends Module{
     	return $return;
     }
 
-    function generateSmilies(){
+	/**
+	 * Generates a block for the smilies
+	 *
+	 * @version 2.0
+	 * @since 	1.0.0
+	 * @author 	xLink
+	 */
+    public function generateSmilies(){
 		//set some vars up
         $smilies = array(); $added = array();
         $pack = is_empty($this->config('site', 'smilie_pack')) ? $this->config('site', 'smilie_pack') : 'default';
@@ -2014,6 +2177,12 @@ class forum extends Module{
 			$uids = array($uids);
 		}
 		$authors = array_unique($uids);
+
+		foreach($authors as $k => $v){
+			if(!is_number($v)){
+				unset($authors[$k]);
+			}
+		}
 
 		$users = $this->objSQL->getTable($this->objSQL->prepare(
 			'SELECT u.id, COUNT(DISTINCT p.id) AS post_count
@@ -2166,7 +2335,7 @@ class forum extends Module{
 	 *
 	 * @return 	array
 	 */
-    function auth($type, $forum_id, $f_access=NULL){
+    public function auth($type, $forum_id, $f_access=NULL){
 
     	switch($type){
     		case AUTH_ALL:
@@ -2577,6 +2746,36 @@ class forum extends Module{
 			            die('Error: This is not your post, or there was a problem with saving the post. Error 0x02;');
 			        }
 				}
+		    break;
+
+		    case 'quote':
+				$id = doArgs('id', 0, $_GET, 'is_number');
+				$uid = $this->objUser->grab('id');
+
+				if($id==0 || !User::$IS_ONLINE){
+					die('Error: There was a problem with the form you submitted. Please try again.');
+				}
+
+				//grab the post were reffering to
+				$post = $this->objSQL->getLine($this->objSQL->prepare('SELECT * FROM `$Pforum_posts` WHERE id ="%s" LIMIT 1;', $id));
+					if(!$post){ die('Error: There was a problem obtaining the post data. Error 0x01;'); }
+
+				//grab the required thread so we got something to work with..
+				$thread = $this->objSQL->getLine($this->objSQL->prepare('SELECT id, cat_id FROM `$Pforum_threads` WHERE id ="%s" LIMIT 1;', $post['thread_id']));
+					if(!$thread){ die('Error: There was a problem obtaining the post data. Error 0x02;'); }
+
+				//now grab the cat id..
+				$cat = $this->getForumInfo($thread['cat_id']);
+					if(!$cat){ die('Error: There was a problem obtaining the post data. Error 0x03;'); }
+
+				$catAuth = $this->auth[$cat['id']];
+
+				if(!$catAuth['auth_read'] && !$catAuth['auth_mod'] && !IS_MOD){
+					die('Error: This is not your post;');
+				}
+
+				$quote = "\n[quote=%s]\n%s\n[/quote]\n";
+				echo sprintf($quote, $this->objUser->getUserInfo($post['author'], 'username'), $post['post']);
 		    break;
 
 		}

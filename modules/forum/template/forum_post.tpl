@@ -63,12 +63,12 @@
 	</table>
 </div><br />
 
-<!-- BEGIN reply_post -->
+<!-- BEGIN reply_posts -->
 <div class="content corners">
-	<div class="title corners-top"><h4>{L_THREAD_RECAP}</h4></div>
-	<div class="padding">
-		{THREAD}
+	<div class="title corners-top"><h4>{reply_posts.L_THREAD_RECAP}</h4></div>
+	<div class="padding" style="height: 200px; overflow:scroll;">
+		{reply_posts.CONTENT}
 	</div>
 	<div class="clear"></div>
-</div>
-<!-- END reply_post -->
+</div><br />
+<!-- END reply_posts -->

@@ -85,8 +85,9 @@ $_lang['L_AUTO_LOCK']             		= 'Auto Lock the thread?';
 
 $_lang['L_PREVIEW']             		= 'Preview Post';
 $_lang['L_NO_EDIT_ABILITY']             = 'Either this isnt your post, or you no longer have permission to edit this post. '.
-											'There is a timer of '.$objTime->mk_time($objCore->config('forum', 'post_edit_time')).
+											'There is a timer of '.$objTime->calc_time($objCore->config('forum', 'post_edit_time')).
 												' in place that may have already passed.';
+$_lang['L_THREAD_RECAP']             	= 'Previous Posts in the Thread';
 
 //notify
 $_lang['L_THREAD_NOTIFY']				= 'Thread Reply Notification';
