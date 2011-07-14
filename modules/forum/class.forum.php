@@ -116,6 +116,15 @@ class forum extends Module{
                 $this->editPost(isset($_GET['postid']) && is_number($_GET['postid']) ? $_GET['postid'] : 0);
             break;
 
+            case 'remove':
+            	$post = doArgs('postid', false, $_GET, 'is_number');
+				if($post!==false){
+					$this->delReply($post);
+				}else{
+					$this->delThread($threadId[2]);
+				}
+            break;
+
 
             case 'previewpost':
                 $this->preview();
@@ -979,7 +988,7 @@ class forum extends Module{
 
 		//posts get output here
 		foreach($posts as $post){
-			$first_post = ($post['id']==$thread['topic_post_id'] ? true : false);
+			$first_post = ($post['id']==$thread['first_post_id'] ? true : false);
 
 			//set default so we have something to work with
 				$author['profile'] = 'Guest';
@@ -1900,6 +1909,142 @@ class forum extends Module{
 		}
 	}
 
+    /**
+     * Deletes a thread from the forum
+     *
+     * @version	3.0
+     * @since   0.8.0
+     * @author 	xLink
+     *
+     * @param 	int 	$id
+     *
+     * @return 	bool
+     */
+    function delThread($id){
+		if(!isset($id) || !is_number($id)){
+			hmsgDie('Error: Thread ID is invalid.');
+		}
+
+        $thread = $this->objSQL->getLine($this->objSQL->prepare(
+			'SELECT t.*, COUNT(DISTINCT p.id) as replies
+				FROM `cscms_forum_threads` t
+				LEFT JOIN `cscms_forum_posts` p ON p.thread_id = t.id
+				WHERE t.id ="%s"
+				GROUP BY t.id',
+			$id
+		));
+
+		$category = $this->getForumInfo($thread['cat_id']);
+		$category = $category[0];
+		$catAuth = $this->auth[$category['id']];
+
+		//give em write by default
+			$writeTest = true;
+
+		//see if the user has write permissions
+			if(!$catAuth['auth_del'] && !$catAuth['auth_mod'] && !User::$IS_MOD){
+				$writeTest = false;
+			}
+
+			//no, no they havent so just error
+			if(!$writeTest){
+				//or show the thread, i think this is better
+				$this->viewThread($id);
+				return; //we dont want to go any further in the function now do we? :)
+			}
+
+			unset($update);
+
+		$continue = confirmMsg('INFO', 'You are about to delete this thread. Continue?', 'Thread Deletion', 'body');
+		if($continue){
+
+			//delete teh posts
+			$this->objSQL->deleteRow('forum_posts', array('thread_id ="%d"', $id));
+
+			$this->objSQL->deleteRow('forum_threads', array('id ="%d"', $id),
+			    'Forum: '.$this->objUser->profile($this->objUser->grab('id'), RAW).' Deleted Thread ID - '.$id.' / '.secureMe($thread['subject']));
+
+		    //update the source cat with the propper latest posts
+		    $lastPost = $this->objSQL->getLine($this->objSQL->prepare(
+				'SELECT p.*, t.id
+					FROM `$Pforum_posts` p, `$Pforum_threads` t
+
+					WHERE t.cat_id ="%d"
+					GROUP BY p.id
+					ORDER BY p.timestamp DESC
+					LIMIT 1',
+				$thread['cat_id']
+			));
+
+				unset($update);
+				$update['last_post_id'] = $lastPost['id'];
+					$this->objSQL->updateRow('forum_cats', $update, array('id="%d"', $thread['cat_id']));
+
+		    $this->objPage->redirect('/'.root().'modules/forum/', 0, 2);
+		    hmsgDie('INFO', 'Thread Deleted.');
+		}
+    }
+
+    /**
+     * Deletes a reply from a thread
+     *
+     * @version	3.0
+     * @since   0.8.0
+     * @author 	xLink
+     *
+     * @param 	int 	$id
+     *
+     * @return 	bool
+     */
+    function delReply($id){
+	        //grab the post
+	        $post = $this->objSQL->getLine($this->objSQL->prepare('SELECT * FROM `$Pforum_posts` WHERE id = "%d" LIMIT 1;', $id));
+	            if(!$post) hmsgDie('FAIL', 'Failed to reteive post information');
+
+			//grab the thread also
+	        $thread = $this->objSQL->getLine($this->objSQL->prepare(
+					'SELECT t.*, COUNT(DISTINCT p.id) as replies
+						FROM `cscms_forum_threads` t
+						LEFT JOIN `cscms_forum_posts` p ON p.thread_id = t.id
+						WHERE t.id ="%s"
+						GROUP BY t.id',
+					$id
+			));
+	            if(!$thread){ hmsgDie('FAIL', 'Failed to retreive thread information'); }
+
+			//and the category for permissions
+			$category = $this->getForumInfo($thread['cat_id']);
+			$category = $category[0];
+			$catAuth = $this->auth[$category['id']];
+
+	        //give em write by default
+		        $writeTest = true;
+
+	        //see if the user has write permissions
+				if(!$catAuth['auth_del'] && !$catAuth['auth_mod'] && !User::$IS_MOD){
+					$writeTest = false;
+				}
+
+            //no, no they havent so just error
+	            if(!$writeTest){
+	                //or show the thread, i think this is better
+	                $this->viewThread($id);
+	                return; //we dont want to go any further in the function now do we? :)
+	            }
+
+	        unset($update);
+
+		$continue = confirmMsg('INFO', 'You are about to delete a reply. Continue?', 'Reply Deletion', 'body');
+		if($continue){
+
+	        //delete teh actuall post
+	        $this->objSQL->deleteRow('forum_posts', array('id ="%d"', $id),
+	            'Forum: '.$this->objUser->profile($this->objUser->grab('id'), RAW).' Deleted Post ID - '.$id.' from '.secureMe($thread['subject']));
+
+	        $this->objPage->redirect($this->generateThreadURL($thread), 0, 2);
+	        hmsgDie('INFO', 'Post Deleted.');
+        }
+    }
 
 
 
@@ -1984,7 +2129,7 @@ class forum extends Module{
 
 		//remove the current user, no point in email him about the post he just made O.o
 		$users2Notify = array_diff($users2Notify, array($uid));
-		if(is_empty($users2Notify)){ die('no users to notify'); }
+		if(is_empty($users2Notify)){ return false; }
 
 		//grab some info about the users
 		$users = array();
@@ -1993,7 +2138,7 @@ class forum extends Module{
 		}
 
 		//if we have no users then return here
-        if(is_empty($users)){ return; }
+        if(is_empty($users)){ return false; }
 
         //update forum watch
         unset($update);

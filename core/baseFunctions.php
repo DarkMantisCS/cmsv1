@@ -1237,10 +1237,10 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 	        $_SESSION['site']['confirm']['sessid'] = $sessid = $objUser->mkPasswd($objUser->grab('username').time());
 
 	        //and the form, atm its gotta be crude, it'll be sexied up for the rebuild
-			$newMsg = $objForm->start('msg', 'POST', '');
+			$newMsg = $objForm->start('msg', array('method' => 'POST'));
 			$newMsg .= $msg.'<br />';
-			$newMsg .= $objForm->inputbox('hidden', $sessid, 'sessid').'<br />';
-			$newMsg .= '<div align="center">'.$objForm->button('Continue', 'submit').' '.$objForm->button('Go Back', 'submit').'</div>';
+			$newMsg .= $objForm->inputbox('sessid', 'hidden', $sessid).'<br />';
+			$newMsg .= '<div align="center">'.$objForm->button('submit', 'Continue').' '.$objForm->button('submit', 'Go Back', array('class'=>'black')).'</div>';
 			$newMsg .= $objForm->finish();
 
 			//use msg() to output and return false so the code wont exec below
