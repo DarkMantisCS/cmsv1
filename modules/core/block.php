@@ -110,8 +110,8 @@ function menu_login($args){
 				'FORM_START' 		=> $objForm->start('login', array('method' => 'POST', 'action' => '/'.root().'login.php?action=check')),
 				'FORM_END'			=> $objForm->inputbox('hash', 'hidden', $hash) . $objForm->finish(),
 
-        		'F_USERNAME'		=> $objForm->inputbox('username', 'text', $userValue, array('class'=>'username', 'br'=>true, 'disabled'=>$acpCheck, 'required'=>true)),
-        		'F_PASSWORD'		=> $objForm->inputbox('password', 'password', '', array('class'=>'password', 'br'=>true, 'required'=>true)),
+        		'F_USERNAME'		=> $objForm->inputbox('username', 'text', $userValue, array('class'=>'icon username', 'br'=>true, 'disabled'=>$acpCheck, 'required'=>true)),
+        		'F_PASSWORD'		=> $objForm->inputbox('password', 'password', '', array('class'=>'icon password', 'br'=>true, 'required'=>true)),
         		'F_REMME'			=> $objForm->select('remember', array('0'=>'No Thanks', '1'=>'Forever'), array('selected'=>0)),
 
         		'L_USERNAME' 		=> langVar('L_USERNAME'),

@@ -28,17 +28,15 @@
 		<tr><td rowspan="2" width="80%" valign="top">
 			<div id="preview" style="display:none;"> </div>
 			<div id="post-content">
-				{F_POST}
-			</div>		
-		</td><td valign="top">
+				{F_POST}			</div>		
+		</td><td colspan="2" valign="top">
 			<!-- BEGIN new_post -->
 			<div class="content corners">
 				<div class="title corners-top"><h4></h4></div>
 				<div class="padding">
 					{POST_MODE}
 					<div class="clear"></div>
-					{WATCH_TOPIC}<br />{AUTO_LOCK}
-				</div>
+					{WATCH_TOPIC}<br />{AUTO_LOCK}				</div>
 				<div class="clear"></div>
 			</div><br />
 			<!-- END new_post -->
@@ -59,7 +57,9 @@
 				<div class="clear"></div>
 			</div><br />
 		</td></tr>
-		<tr><td valign="bottom" class="editor-btn">{SUBMIT} {RESET}</td></tr>
+		<tr><td valign="bottom" class="editor-btn">{SUBMIT}</td>
+		  <td valign="bottom" class="editor-btn">{RESET}</td>
+		</tr>
 	</table>
 </div><br />
 

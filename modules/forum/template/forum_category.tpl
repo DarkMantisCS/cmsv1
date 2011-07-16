@@ -7,12 +7,14 @@
 <div class="clear"></div>
 
 <div class="content corners">
-    <div class="title corners-top">
+    <div class="title corners-top iblock">
 		<h4 class="float-left">{threads.CAT}</h4>
+		<div class="float-right padding">
 		{threads.SEARCH}
 		<!-- BEGIN post -->
 		<a href="{threads.post.URL}" class="button black"><span class="fnewpost">{threads.post.TEXT}</span></a>
 		<!-- END post -->
+		</div>
 		<div class="clear"></div>
 	</div>
 	<table width="100%" cellspacing="1" cellpadding="2" class="corners tborder">

@@ -121,20 +121,6 @@ function post_eip(id){
 	}
 }
 
-Ajax.Responders.register({
-	requestHeaders: {'X-Cms-Is': 'Cybershade'},
-	onCreate: function() {
-		if (Ajax.activeRequestCount === 1) {
-			$('spinner').show();
-		}
-	},
-	onComplete: function() {
-		if (Ajax.activeRequestCount === 0) {
-			$('spinner').hide();
-		}
-	}
-});
-
 document.observe('dom:loaded', function(){
 	if(User.IS_ONLINE && $('sortable_forums')){
 		Sortable.create('sortable_forums', {scroll:window, tag:'div', handle: 'cat_handle',
@@ -171,6 +157,8 @@ document.observe('dom:loaded', function(){
 			makeReplyForm('qreply');
 			Event.observe('qreply', 'submit', function(e){
 			    $('qreply').request({
+			    	onCreate: function(){ $('spinner').show(); },
+			    	onComplete: function(){ $('spinner').hide(); },
 			        onFailure: function() { return true; },
 			        onSuccess: function(t) {
 			        	$$('#qreply textarea')[0].update('');

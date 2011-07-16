@@ -70,6 +70,26 @@ $_lang['L_REMME']               = 'Remember Me';
 //other stuff
 $_lang['L_PER_DAY']				= '<strong>Per Day</strong>: %d';
 
+//control panels
+$_lang['L_ACCT_SETTINGS']		= 'Account Settings';
+
+//default user panel
+$_lang['L_REQUIRED_INFO']		= 'Required Information';
+$_lang['L_EMAIL']				= 'Email Address';
+$_lang['L_CHANGE_EMAIL']        = '<font color="red">Warning:</font> If you change your email address,<br /> you will be logged out and required to activate<br /> your user account again.';
+
+$_lang['L_CHANGE_PWDS']			= 'Change Account Password';
+$_lang['F_NEW_PASS_CONF']		= 'Password Change Confirmation';
+$_lang['L_OLD_PASSWD']			= 'Old Password';
+$_lang['L_NEW_PASSWD']			= 'New Password';
+$_lang['L_NEW_PASSWD_CONF']		= 'Confirm New Password';
+
+$_lang['L_PIN_UPDATE']			= 'PIN Code Update';
+$_lang['L_NEW_PIN_CONF']		= 'PIN Update Confirmation';
+$_lang['L_OLD_PIN']				= 'Old PIN Code';
+$_lang['L_NEW_PIN']				= 'New PIN Code';
+
+
 //Time Stuff
 $_lang['DATETIME']['Sunday'] 	= 'Sunday';
 $_lang['DATETIME']['Monday'] 	= 'Monday';

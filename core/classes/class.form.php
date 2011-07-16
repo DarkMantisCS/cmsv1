@@ -388,7 +388,7 @@ class form extends coreClass{
 			));
 		}
 
-
+		$count = 0;
 		$this->objTPL->reset_block_vars('field');
 		//loop thru each element
 		foreach($elements['field'] as $label => $field){
@@ -414,6 +414,7 @@ class form extends coreClass{
 
 				'F_ELEMENT' 	=> ($field == '_header_' ? '' : $field),
 				'F_INFO'		=> $desc,
+				'CLASS'			=> ($field != '_header_' ? ($count++%2 ? ' row_color1' : ' row_color2') : null),
 			));
 
 			//if this isnt a 'header' then output the label

@@ -598,7 +598,7 @@ class page extends coreClass{
 		}
 
     	//check for admin privs and file(debug) existing in the root
-		if(true || User::$IS_ADMIN && !file_exists('debug')){
+		if(User::$IS_ADMIN && !file_exists('debug')){
 			//if the debug happened..
 			if($this->objSQL->debug){
 				//output some debug vars
@@ -655,7 +655,7 @@ class page extends coreClass{
 		$this->objPlugins->hook('CMSPage_footer', $footerVars);
 
 		$page_gen = NULL;
-		if(User::$IS_ADMIN){
+		if($this->objUser->grab('userlevel') == ADMIN){
 			$page_gen = langVar('L_PAGE_GEN', $footerVars['sqlQueries'], $footerVars['sqlTimer'], $footerVars['pageGen'], $footerVars['ramUsage'], $footerVars['nextCron']);
 		}
 

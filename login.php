@@ -64,14 +64,14 @@ switch($mode){
 			'FORM_END'			=> $hidden . $objForm->inputbox('hash', 'hidden', $hash) . $objForm->finish(),
 
 			'L_USERNAME' 		=> langVar('L_USERNAME'),
-			'F_USERNAME'		=> $objForm->inputbox('username', 'text', $userValue, array('class'=>'username', 'br'=>true, 'disabled'=>$acpCheck, 'required'=>(!$acpCheck))),
+			'F_USERNAME'		=> $objForm->inputbox('username', 'text', $userValue, array('class'=>'icon username', 'br'=>true, 'disabled'=>$acpCheck, 'required'=>(!$acpCheck))),
 
 			'L_PASSWORD' 		=> langVar('L_PASSWORD'),
-			'F_PASSWORD'		=> $objForm->inputbox('password', 'password', '', array('class'=>'password', 'br'=>true, 'required'=>(!$acpCheck))),
+			'F_PASSWORD'		=> $objForm->inputbox('password', 'password', '', array('class'=>'icon password', 'br'=>true, 'required'=>(!$acpCheck))),
 
 			'L_PIN'				=> langVar('L_PIN'),
 			'L_PIN_DESC'		=> langVar('L_PIN_DESC'),
-			'F_PIN'			    => $objForm->inputbox('pin', 'password', '', array('class'=>'pin', 'br'=>true, 'autocomplete'=>false)),
+			'F_PIN'			    => $objForm->inputbox('pin', 'password', '', array('class'=>'icon pin', 'br'=>true, 'autocomplete'=>false)),
 
 
 			'L_REMBER_ME'		=> langVar('L_REMBER_ME'),

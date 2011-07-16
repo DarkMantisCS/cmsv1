@@ -21,7 +21,6 @@ class forum extends Module{
 		));
 
 
-
         //reset the forum tracker
         if(User::$IS_ONLINE){
             $this->forumTrackerInit();
@@ -783,7 +782,7 @@ class forum extends Module{
 			$id
 		));
 			//make sure it exists
-	        if(!is_array($thread)){ $this->throwHTTP(404); return; }
+	        if(is_empty($thread['id'])){ $this->throwHTTP(404); return; }
 
 		//grab the cat
 		$cat = $this->getForumInfo($thread['cat_id']);

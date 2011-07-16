@@ -34,7 +34,7 @@ textarea:focus {
 }
 
 /* special form styling */
-form div.formRow {margin-bottom:6px; padding:5px 0px;}
+form div.formRow {margin-bottom:6px; padding:5px;}
 form div.formRow label {float:left; width:auto;}
 form div.formRow input {width:52%; float:right;}
 form div.formRow input.invalid {border-bottom:1px solid #f00;}

@@ -79,7 +79,7 @@ class mysql extends coreClass implements SQLBase{
 		}
 
 		if($this->persistent == false && !defined('NO_DB')) {
-			$this->recordMessage('CMS is not using a persistant connection with the database.', 'WARNING');
+			$this->recordMessage('CMS is not using a persistent connection with the database.', 'WARNING');
 		}
 
 		$this->query('SET GLOBAL innodb_flush_log_at_trx_commit = 2;');
