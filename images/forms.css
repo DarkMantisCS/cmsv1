@@ -2,7 +2,7 @@
 /* ** ** forms ** ** */
 form fieldset {-webkit-border-radius: 3px; -moz-border-radius: 3px; border-radius:3px; padding:10px; border:1px solid #eee; }
 form fieldset legend {font-size:1.4em; padding:0 5px;}
-form input[type=text], form input[type=email], form input[type=url], form input[type=password], form input[type=number], textarea {
+form input[type=text], form input[type=email], form input[type=url], form input[type=password], form input[type=number], textarea, input:-webkit-autofill {
 	-moz-border-radius: 3px; 
 	-webkit-border-radius: 3px; 
 	border-radius:3px; 
@@ -11,6 +11,7 @@ form input[type=text], form input[type=email], form input[type=url], form input[
 	border:1px solid #ccc; 
 	padding:4px 0 1px 5px;
 	resize: none;
+	outline: none;
 }
 form .textarea textarea {
 	-moz-border-radius: 3px; 
@@ -34,8 +35,9 @@ textarea:focus {
 }
 
 /* special form styling */
-form div.formRow {margin-bottom:6px; padding:5px;}
-form div.formRow label {float:left; width:auto;}
+form div.formRow {padding:5px; border: 3px 0 solid #000;}
+form div.formRow.title{margin-top:6px;}
+form div.formRow label {float:left; width:auto; height: auto;}
 form div.formRow input {width:52%; float:right;}
 form div.formRow input.invalid {border-bottom:1px solid #f00;}
 form div.formRow input[type=submit], form div input[type=reset]{
@@ -52,4 +54,8 @@ form .s_column div.formRow input {width:98%; float:none;}
 form.inplaceeditor-form textarea{
 	height: 50px;
 	width: 99%;
+}
+
+input:-webkit-autofill{
+	background-color: transparent;
 }

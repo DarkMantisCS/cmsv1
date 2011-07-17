@@ -27,18 +27,25 @@ class form extends coreClass{
 	 */
 	public function start($name, $args=array()){
 		$args = array(
-			'method'        => doArgs('method', 	'get', 	$args),
-			'action'        => doArgs('action', 	null, 	$args),
-			'onsubmit'      => doArgs('onsubmit', 	false, 	$args),
-			'extra'      	=> doArgs('extra', 		null, 	$args),
-			'validate'    	=> doArgs('validate', 	true, 	$args),
+			'method'        => doArgs('method', 		'get', 	$args),
+			'action'        => doArgs('action', 		null, 	$args),
+			'onsubmit'      => doArgs('onsubmit', 		false, 	$args),
+			'extra'      	=> doArgs('extra', 			null, 	$args),
+			'validate'    	=> doArgs('validate', 		true, 	$args),
+
+			'autocomplete'  => doArgs('autocomplete', 	true, 	$args),
 		);
+
+		if($this->config('global', 'browser')=='Chrome'){
+			$args['autocomplete'] = false;
+		}
 
 		return '<form name="'.$name.'" id="'.$name.'" '.
 					(!is_empty($args['method'])     ? 'method="'.$args['method'].'" ' 		: 'method="'.$_SERVER['PHP_SELF'].'" ').
 					(!is_empty($args['action'])     ? 'action="'.$args['action'].'" ' 		: null).
 					($args['onsubmit']   			? 'onsubmit="'.$args['onsubmit'].'" ' 	: null).
-					($args['validate']===false 		? 'novalidate="novalidate" '  			: null).
+					(!$args['validate'] 			? 'novalidate="novalidate" '  			: null).
+					(!$args['autocomplete'] 		? 'autocomplete="off" '  				: null).
 					(!is_empty($args['extra'])      ? $args['extra'] 						: null).
 				'>'."\n";
 	}
@@ -409,12 +416,12 @@ class form extends coreClass{
 
 			//assign some vars to the template
 			$this->objTPL->assign_block_vars('field', array(
-				'L_LABEL' 		=> $label,
-				'L_LABELFOR'	=> inBetween('name="', '"', $field),
-
 				'F_ELEMENT' 	=> ($field == '_header_' ? '' : $field),
 				'F_INFO'		=> $desc,
-				'CLASS'			=> ($field != '_header_' ? ($count++%2 ? ' row_color1' : ' row_color2') : null),
+				'CLASS'			=> ($field == '_header_' ? ' title' : ($count++%2 ? ' row_color1' : ' row_color2')),
+
+				'L_LABEL' 		=> $label,
+				'L_LABELFOR'	=> inBetween('name="', '"', $field),
 			));
 
 			//if this isnt a 'header' then output the label
