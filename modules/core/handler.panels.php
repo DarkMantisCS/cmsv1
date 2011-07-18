@@ -36,6 +36,7 @@ case in_array($mode, $panels):
 	//set some vars
 	$path = cmsROOT.'modules/core/panels/'.$mode.'/'.$panel;
     $saveUrl = $objCore->config('global', 'url').'?save';
+    $url = str_replace('?save', '', $objCore->config('global', 'url'));
     $uid = (User::$IS_MOD && doArgs('uid', false, $_GET, 'is_number')) ? $_GET['uid'] : $objUser->grab('id');
 
 	if(isset($_GET['mode']) && !is_empty($_GET['mode'])){

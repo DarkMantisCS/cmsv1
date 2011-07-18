@@ -687,13 +687,65 @@ class user extends coreClass{
     }
 
 	/**
+	 * Sets the users password.
+	 *
+	 * @version 2.0
+	 * @since   0.8.0
+	 *
+	 * @param 	mixed	$uid 			Username or UserID
+	 * @param	string 	$password		Plaintext version of the password.
+	 *
+	 * @return  bool
+	 */
+    function setPassword($uid, $password, $log=NULL){
+        $array['password'] 			= $this->mkPasswd($password);
+        $array['password_update'] 	= 0;
+        $array['login_attempts'] 	= 0;
+
+        $this->objPlugins->execHook('CMSCore_prePasswordChanged', $array);
+
+		$uid = (!is_number($uid) ? $this->getUserInfo($uid, 'id') : $uid);
+        if($this->objSQL->updateRow('users', $array, array('id = "%d"', $uid))){
+            $this->objPlugins->execHook('CMSCore_postPasswordChanged', func_get_args());
+            return true;
+        }
+        return false;
+    }
+
+	/**
+	 * Sets the users PIN.
+	 *
+	 * @version 1.0
+	 * @since   1.0.0
+	 *
+	 * @param 	mixed	$uid 		Username or UserID
+	 * @param	string 	$pin		Plaintext version of the PIN.
+	 *
+	 * @return  bool
+	 */
+    function setPIN($uid, $pin, $log=NULL){
+        $array['pin'] 			= md5($pin.$this->config('db', 'ckeauth'));
+        $array['pin_attempts'] 	= 0;
+
+        $this->objPlugins->execHook('CMSCore_prePinChanged', $array);
+
+		$uid = (!is_number($uid) ? $this->getUserInfo($uid, 'id') : $uid);
+        if($this->objSQL->updateRow('users', $array, array('id = "%d"', $uid))){
+            $this->objPlugins->execHook('CMSCore_postPinChanged', func_get_args());
+            return true;
+        }
+        return false;
+    }
+
+
+	/**
 	 * Sets the user session on login
 	 *
 	 * @version 1.0
 	 * @since   1.0.0
 	 * @author	Jesus
 	 *
-	 * @param 	mixed	$uid 		Username or UserID
+	 * @param 	mixed	$uid 			Username or UserID
 	 * @param 	string 	$autoLogin
 	 *
 	 * @return 	bool
@@ -719,6 +771,7 @@ class user extends coreClass{
 			$update['last_active'] = time();
 			$this->objSQL->updateRow('users', $update, array('id = "%s"', $uid));
 		}
+		return true;
     }
 
 	/**

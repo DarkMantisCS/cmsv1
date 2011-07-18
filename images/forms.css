@@ -2,7 +2,18 @@
 /* ** ** forms ** ** */
 form fieldset {-webkit-border-radius: 3px; -moz-border-radius: 3px; border-radius:3px; padding:10px; border:1px solid #eee; }
 form fieldset legend {font-size:1.4em; padding:0 5px;}
-form input[type=text], form input[type=email], form input[type=url], form input[type=password], form input[type=number], textarea, input:-webkit-autofill {
+form input[type=text], form input[type=email], form input[type=url], form input[type=password], form input[type=number], textarea {
+	-moz-border-radius: 3px; 
+	-webkit-border-radius: 3px; 
+	border-radius:3px; 
+	height:20px; 
+	margin-bottom:5px; 
+	border:1px solid #ccc; 
+	padding:4px 0 1px 5px;
+	resize: none;
+	outline: none;
+}
+input:-webkit-autofill {
 	-moz-border-radius: 3px; 
 	-webkit-border-radius: 3px; 
 	border-radius:3px; 
@@ -44,8 +55,12 @@ form div.formRow input[type=submit], form div input[type=reset]{
 	width: auto; float: none;
 }
 
-/* single column form styling */
 
+form tr.formRow input {width:98%;}
+form tr.formRow input[type=checkbox], form tr.formRow input[type=radio] {width:auto;}
+
+
+/* single column form styling */
 form .s_column div.formRow {height:auto; margin-bottom:3px; padding:0px;}
 form .s_column div.formRow label {float:none; width:100%;}
 form .s_column div.formRow input {width:98%; float:none;}

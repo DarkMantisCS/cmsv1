@@ -27,13 +27,13 @@ class form extends coreClass{
 	 */
 	public function start($name, $args=array()){
 		$args = array(
-			'method'        => doArgs('method', 		'get', 	$args),
-			'action'        => doArgs('action', 		null, 	$args),
-			'onsubmit'      => doArgs('onsubmit', 		false, 	$args),
-			'extra'      	=> doArgs('extra', 			null, 	$args),
-			'validate'    	=> doArgs('validate', 		true, 	$args),
+			'method'        => strtolower(doArgs('method', 		'get', 	$args)),
+			'action'        => doArgs('action', 				null, 	$args),
+			'onsubmit'      => doArgs('onsubmit', 				false, 	$args),
+			'extra'      	=> doArgs('extra', 					null, 	$args),
+			'validate'    	=> doArgs('validate', 				true, 	$args),
 
-			'autocomplete'  => doArgs('autocomplete', 	true, 	$args),
+			'autocomplete'  => doArgs('autocomplete', 			true, 	$args),
 		);
 
 		if($this->config('global', 'browser')=='Chrome'){
@@ -41,8 +41,8 @@ class form extends coreClass{
 		}
 
 		return '<form name="'.$name.'" id="'.$name.'" '.
-					(!is_empty($args['method'])     ? 'method="'.$args['method'].'" ' 		: 'method="'.$_SERVER['PHP_SELF'].'" ').
-					(!is_empty($args['action'])     ? 'action="'.$args['action'].'" ' 		: null).
+					(!is_empty($args['method'])     ? 'method="'.$args['method'].'" ' 		: null).
+					(!is_empty($args['action'])     ? 'action="'.$args['action'].'" ' 		: 'action="'.$_SERVER['PHP_SELF'].'" ').
 					($args['onsubmit']   			? 'onsubmit="'.$args['onsubmit'].'" ' 	: null).
 					(!$args['validate'] 			? 'novalidate="novalidate" '  			: null).
 					(!$args['autocomplete'] 		? 'autocomplete="off" '  				: null).
@@ -386,6 +386,7 @@ class form extends coreClass{
 			$vars['SECTION_ID'] = doArgs('id', null, $options);
 		}
 
+		$dediHeader = doArgs('dedicatedHeader', false, $options);
 		$this->objTPL->assign_vars($vars);
 
 		$this->objTPL->reset_block_vars('form_error');
@@ -414,24 +415,32 @@ class form extends coreClass{
 				$label = sprintf(doArgs('header', '<h3>%s</h3><hr />', $options), $label);
 			}
 
-			//assign some vars to the template
-			$this->objTPL->assign_block_vars('field', array(
-				'F_ELEMENT' 	=> ($field == '_header_' ? '' : $field),
-				'F_INFO'		=> $desc,
-				'CLASS'			=> ($field == '_header_' ? ' title' : ($count++%2 ? ' row_color1' : ' row_color2')),
+			$header = ($field == '_header_' ? true : false);
+			$this->objTPL->assign_block_vars('_form_row', array());
+			if($dediHeader && $header){
+				$this->objTPL->assign_block_vars('_form_row._header', array(
+					'TITLE' => $label,
+				));
+			}else{
+				//assign some vars to the template
+				$this->objTPL->assign_block_vars('_form_row._field', array(
+					'F_ELEMENT' 	=> $header ? null : $field,
+					'F_INFO'		=> $desc,
+					'CLASS'			=> $header ? ' title' : ($count++%2 ? ' row_color2' : ' row_color1'),
 
-				'L_LABEL' 		=> $label,
-				'L_LABELFOR'	=> inBetween('name="', '"', $field),
-			));
+					'L_LABEL' 		=> $label,
+					'L_LABELFOR'	=> inBetween('name="', '"', $field),
+				));
 
-			//if this isnt a 'header' then output the label
-			if($field != '_header_'){
-				$this->objTPL->assign_block_vars('field.label', array());
-			}
+				//if this isnt a 'header' then output the label
+				if(!$header){
+					$this->objTPL->assign_block_vars('_form_row._field._label', array());
+				}
 
-			//if we have a description, lets output it with the label
-			if(!is_empty($desc)){
-				$this->objTPL->assign_block_vars('field.desc', array());
+				//if we have a description, lets output it with the label
+				if(!is_empty($desc)){
+					$this->objTPL->assign_block_vars('_form_row._field._desc', array());
+				}
 			}
 		}
 

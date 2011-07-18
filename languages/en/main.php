@@ -9,6 +9,8 @@ if(!isset($LANG_LOAD)){ die('Error: Cannot access directly.'); }
 $_lang['B_MAINSITE']		= 'Site Home';
 $_lang['B_REGISTER']		= 'Register';
 
+$_lang['B_UCP']				= 'User Control Panel';
+
 //header lang vars
 $_lang['L_MAINTENANCE'] 	= 'This website is in maintenance mode.';
 $_lang['L_BREADCRUMB']  	= 'You are here:';
@@ -74,9 +76,11 @@ $_lang['L_PER_DAY']				= '<strong>Per Day</strong>: %d';
 $_lang['L_ACCT_SETTINGS']		= 'Account Settings';
 
 //default user panel
-$_lang['L_REQUIRED_INFO']		= 'Required Information';
+$_lang['L_ACCOUNT_PANEL']		= 'Account Settings';
+
 $_lang['L_EMAIL']				= 'Email Address';
-$_lang['L_CHANGE_EMAIL']        = '<font color="red">Warning:</font> If you change your email address,<br /> you will be logged out and required to activate<br /> your user account again.';
+$_lang['L_CHANGE_EMAIL']        = '<font color="red">Warning:</font> If you change your email address,<br />'.
+									'you will be logged out and required to activate<br /> your user account again.';
 
 $_lang['L_CHANGE_PWDS']			= 'Change Account Password';
 $_lang['F_NEW_PASS_CONF']		= 'Password Change Confirmation';
@@ -89,6 +93,39 @@ $_lang['L_NEW_PIN_CONF']		= 'PIN Update Confirmation';
 $_lang['L_OLD_PIN']				= 'Old PIN Code';
 $_lang['L_NEW_PIN']				= 'New PIN Code';
 
+$_lang['L_USERNAME_UPDATE']		= 'The username you chose contained incorrect characters.';
+$_lang['L_EMAIL_UPDATE']    	= 'Your email address has been changed.';
+$_lang['L_EMAIL_ACTIVATION']	= 'Your email address has been changed. You must now reactivate your account with the email that has been sent to your email address.';
+$_lang['L_PASS_WRONG']			= 'The passwords you have entered do not match.';
+$_lang['L_INVALID_PASS']		= 'The old password you provided is incorrect. Cannot update your password.';
+$_lang['L_PIN_UPDATE_FAIL']		= 'Could not update PIN, Old PIN or Password given was incorrect.';
+
+//general panel
+$_lang['L_WEBSITE_PANEL']		= 'Website Settings';
+
+$_lang['L_SITE_SETTINGS']    	= 'Site Wide Settings';
+$_lang['L_FORUM_SETTINGS']      = 'Forum Settings';
+
+$_lang['L_SEX']       			= 'Sex';
+$_lang['L_SEX_F']               = 'Female';
+$_lang['L_SEX_M']               = 'Male';
+$_lang['L_SEX_U']               = 'Unknown';
+
+$_lang['L_USER_COLORING']       = 'Username Coloring';
+$_lang['L_SITE_TEMPLATE']       = 'Site Template';
+$_lang['L_QUICK_REPLY']         = 'Quick Reply';
+$_lang['L_PRIV_EMAIL']          = 'Make Email Private';
+$_lang['L_AUTO_WATCH']          = 'Auto Watch Threads';
+$_lang['L_TIMEZONE']            = 'Timezone';
+$_lang['L_QUICK_REPLIES']       = 'Quick Replies';
+
+//global panel stuff
+$_lang['L_PRO_UPDATE_SUCCESS']	= 'Profile update was successful.';
+$_lang['L_REQUIRED_INFO']		= 'Required Information';
+$_lang['L_NO_CHANGES']          = 'There are no changes to be made.';
+
+$_lang['L_YES']                 = 'Yes';
+$_lang['L_NO']                  = 'No';
 
 //Time Stuff
 $_lang['DATETIME']['Sunday'] 	= 'Sunday';
