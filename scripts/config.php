@@ -4,5 +4,5 @@ $scripts['framework'] = array('prototype.js', 'builder.js', 'effects.js', 'dragd
 $scripts['extras'] = array('php.min.js', 'stereotabs.js',  'sorttable.js', 'growl.js', 'lightwindow.js', 'proto.menu.js', 'core.js', 'adapt.js');
 
 
-$scripts['acp'] = array('acp.js', 'menu.js');
+$scripts['panels'] = array('panels.js', 'menu.js');
 ?>

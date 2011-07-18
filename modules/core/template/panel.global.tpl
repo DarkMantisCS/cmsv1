@@ -2,13 +2,13 @@
   <tr>
     <td valign="top">{_CONTENT}</td>
     <!-- BEGIN _PMENU -->
-    <td width="20%" valign="top" id="sideMenu">
-	<nav><div id="accNav" class="accordion">
+    <td width="20%" valign="top">
+	<nav><div id="accNav" class="accordion padding corners">
     <!-- END _PMENU -->
     <!-- BEGIN _PMENUS -->
 	<div class="accordion-toggle">{_PMENUS.TITLE}</div>
 	<div class="accordion-content">
-		<ul style="display: block;">
+		<ul class="menu">
 			{_PMENUS.CONTENT}
 		</ul>
 	</div>

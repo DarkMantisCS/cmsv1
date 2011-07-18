@@ -374,10 +374,6 @@ class page extends coreClass{
 		//files first
 		$jsFiles[] = '/'.root().'scripts/framework-min.js';
 		$jsFiles[] = '/'.root().'scripts/extras-min.js';
-
-		if($this->getVar('acpMode') === true){
-			$jsFiles[] = '/'.root().'scripts/acp-min.js';
-		}
 		$jsFiles[] = '/'.root().'scripts/user.js.php';
 
 		//load in the anything thats been passed in via addJSFiles()

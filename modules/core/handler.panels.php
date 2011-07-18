@@ -5,6 +5,8 @@
 if(!defined('INDEX_CHECK')){die('INDEX_CHECK not defined.');}
 define('PANEL_CHECK', 1);
 
+$objPage->addJSFile('/'.root().'scripts/panels-min.js');
+$objPage->addCSSFile('/'.root().'images/panels-min.css');
 $panels = array('admin', 'mod', 'user');
 switch($mode){
 case in_array($mode, $panels):
