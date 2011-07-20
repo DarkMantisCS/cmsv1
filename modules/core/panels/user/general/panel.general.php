@@ -6,7 +6,7 @@ if(!defined('INDEX_CHECK')){ die("INDEX_CHECK not defined."); }
 $objPage->setTitle(langVar('B_UCP').' > '.langVar('L_WEBSITE_PANEL'));
 $objPage->addPagecrumb(array( array('url' => $url, 'name' => langVar('L_WEBSITE_PANEL')) ));
 $objTPL->set_filenames(array(
-	'body' => "modules/core/template/panels/panel.editprofile.tpl"
+	'body' => "modules/core/template/panels/panel.settings.tpl"
 ));
 
 //grab the user info we need
@@ -105,7 +105,7 @@ switch(strtolower($mode)){
 			'errors' => $_SESSION['site']['panel']['error'],
 		),
 		array(
-			'header' => '<h5>%s</h5>',
+			'header' => '<h4>%s</h4>',
 			'dedicatedHeader' => true,
 		));
 	break;

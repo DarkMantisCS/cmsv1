@@ -71,6 +71,8 @@ $_lang['L_REMME']               = 'Remember Me';
 
 //other stuff
 $_lang['L_PER_DAY']				= '<strong>Per Day</strong>: %d';
+$_lang['L_EDIT']				= 'Edit';
+$_lang['L_DELETE']				= 'Delete';
 
 //control panels
 $_lang['L_ACCT_SETTINGS']		= 'Account Settings';
@@ -126,6 +128,9 @@ $_lang['L_NO_CHANGES']          = 'There are no changes to be made.';
 
 $_lang['L_YES']                 = 'Yes';
 $_lang['L_NO']                  = 'No';
+
+$_lang['L_ENABLED']             = 'Enabled';
+$_lang['L_DISABLED']            = 'Disabled';
 
 //Time Stuff
 $_lang['DATETIME']['Sunday'] 	= 'Sunday';

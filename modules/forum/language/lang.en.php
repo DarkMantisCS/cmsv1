@@ -11,6 +11,8 @@ global $objTime, $objCore;
 $_lang['B_FORUM']						= 'Forum';
 $_lang['B_POST_THREAD']					= 'Posting a thread to %s';
 $_lang['B_POST_REPLY']					= 'Posting a reply to %s';
+$_lang['B_FORUM_ADMIN']					= 'Forum Administration';
+
 $_lang['P_PERMISSION_DENIED']			= 'Permisisons Denial';
 
 //menu titles
@@ -113,5 +115,23 @@ $_lang['I_NEW_POSTS']           		= 'New Posts';
 $_lang['I_LOCKED']              		= 'Locked';
 $_lang['I_STICKY']              		= 'Sticky';
 $_lang['I_ANNOUNCEMENT']        		= 'Announcement';
+
+
+//admin
+$_lang['L_CONFIG'] 						= 'Forum Configuration';
+$_lang['L_CAT_MANAGE']	 				= 'Category Management';
+$_lang['L_GROUP_PERMS'] 				= 'Group Permissions';
+$_lang['L_USER_PERMS'] 					= 'User Permissions';
+
+$_lang['L_NEWS_CAT']					= 'News Category';
+$_lang['L_NEWS_CAT_DESC']				= 'Change this to whatever forum you want to feed News to the Homepage from. You can also use this as a Blog type thing too. '.
+											'It is also a good idea to make sure only [b]MODs[/b] plus can create threads in this group.';
+
+$_lang['L_SORTABLES']	 				= 'Forum Sortables';
+$_lang['L_SORTABLES_DESC'] 				= 'If enabled, users can drag and drop forum groups to better suit the ones they visit more often.';
+
+$_lang['L_NEW_CAT']						= 'Add New Category';
+$_lang['L_EDIT_CAT']					= 'Edit Category';
+$_lang['L_DELETE_CAT']					= 'Delete Category';
 
 ?>

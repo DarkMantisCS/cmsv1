@@ -425,7 +425,7 @@ class form extends coreClass{
 				//assign some vars to the template
 				$this->objTPL->assign_block_vars('_form_row._field', array(
 					'F_ELEMENT' 	=> $header ? null : $field,
-					'F_INFO'		=> $desc,
+					'F_INFO'		=> (doArgs('parseDesc', false, $options) ? contentParse($desc) : $desc),
 					'CLASS'			=> $header ? ' title' : ($count++%2 ? ' row_color2' : ' row_color1'),
 
 					'L_LABEL' 		=> $label,

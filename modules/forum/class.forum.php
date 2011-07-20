@@ -1176,6 +1176,7 @@ class forum extends Module{
 
 		//okay so test to see which part of the page we should see..
 		if(!HTTP_POST && (!isset($_GET['mode']) || $_GET['mode']!='post')){
+			$this->objPage->addJSFile('/'.root().'scripts/editor.js');
 			$this->objTPL->set_filenames(array(
 				'body' => 'modules/forum/template/forum_post.tpl'
 			));
@@ -1400,6 +1401,7 @@ class forum extends Module{
 
 		//okay so test to see which part of the page we should see..
 		if(!HTTP_POST && (!isset($_GET['mode']) || $_GET['mode']!='post')){
+			$this->objPage->addJSFile('/'.root().'scripts/editor.js');
 			$this->objTPL->set_filenames(array(
 				'body' => 'modules/forum/template/forum_post.tpl'
 			));
@@ -1779,6 +1781,7 @@ class forum extends Module{
 
 		//okay so test to see which part of the page we should see..
 		if(!HTTP_POST){
+			$this->objPage->addJSFile('/'.root().'scripts/editor.js');
 			$this->objTPL->set_filenames(array(
 				'body' => 'modules/forum/template/forum_post.tpl'
 			));

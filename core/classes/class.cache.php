@@ -76,7 +76,7 @@ class cache extends coreClass{
 	 *
 	 * @return 	bool
 	 */
-	function initCache($name, $file, $query, &$result, $callback=null){
+	public function initCache($name, $file, $query, &$result, $callback=null){
 		if($this->cacheToggle && is_file($this->cacheDir . $file)){
 			include($this->cacheDir . $file);
 			$result = $$name;
@@ -100,7 +100,7 @@ class cache extends coreClass{
 	 *
 	 * @param 	string 	$file
 	 */
-	function regenerateCache($file){
+	public function regenerateCache($file){
 		//if its present, remove it
 		if(is_readable(sprintf($this->fileTpl, $file))){
 			unlink(sprintf($this->fileTpl, $file));
@@ -124,7 +124,7 @@ class cache extends coreClass{
 	 *
 	 * @return 	array
 	 */
-	function generateCache($name, $file, $query){
+	public function generateCache($name, $file, $query){
 		unset($this->output);
 
 		//query db
@@ -169,7 +169,7 @@ class cache extends coreClass{
 	 *
 	 * @return 	array
 	 */
-    function generate_statistics_cache(){
+    public function generate_statistics_cache(){
 	    //grab some info to put into the stat file
 		$this->objSQL->recordMessage('Cache: Recalculating Statistics', 'INFO');
 			//total members in db
@@ -230,7 +230,7 @@ class cache extends coreClass{
 	 *
 	 * @return 	bool
 	 */
-	function writeFile($file, $contents){
+	public function writeFile($file, $contents){
 		if(!$this->cacheToggle){ return null; }
 
 		$fp = @fopen(sprintf($this->fileTpl, str_replace('_db', '', $file)), 'wb');
