@@ -6,24 +6,25 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 if(!isset($LANG_LOAD)){ die('Error: Cannot access directly.'); }
 
 //breadcrumbs
-$_lang['B_MAINSITE']		= 'Site Home';
-$_lang['B_REGISTER']		= 'Register';
+$_lang['B_MAINSITE']			= 'Site Home';
+$_lang['B_REGISTER']			= 'Register';
 
-$_lang['B_UCP']				= 'User Control Panel';
+$_lang['B_UCP']					= 'User Control Panel';
+$_lang['B_ACP']					= 'Admin Control Panel';
 
 //header lang vars
-$_lang['L_MAINTENANCE'] 	= 'This website is in maintenance mode.';
-$_lang['L_BREADCRUMB']  	= 'You are here:';
+$_lang['L_MAINTENANCE'] 		= 'This website is in maintenance mode.';
+$_lang['L_BREADCRUMB']  		= 'You are here:';
 
-$_lang['L_LOGIN'] 			= 'Login';
-$_lang['L_LOGOUT'] 			= 'Logout';
-$_lang['L_UCP'] 			= 'User Control Panel';
-$_lang['L_ACP'] 			= 'Admin Control Panel';
+$_lang['L_LOGIN'] 				= 'Login';
+$_lang['L_LOGOUT'] 				= 'Logout';
+$_lang['L_UCP'] 				= 'User Control Panel';
+$_lang['L_ACP'] 				= 'Admin Control Panel';
 
 //footer lang vars
-$_lang['L_PAGE_GEN']        = '[ Queries: <b>%s</b> | SQL Time: <b>%s</b> | Page Generation Time: <b>%s</b> | Memory Usage: <b>%s</b> | Next Cron Update: <b>%s</b> ]';
-$_lang['L_SITE_COPYRIGHT']  = '%s Powered By %s V%s';
-$_lang['TPL_INFO']          = 'Theme %s by %s V%s';
+$_lang['L_PAGE_GEN']        	= '[ Queries: <b>%s</b> | SQL Time: <b>%s</b> | Page Generation Time: <b>%s</b> | Memory Usage: <b>%s</b> | Next Cron Update: <b>%s</b> ]';
+$_lang['L_SITE_COPYRIGHT']  	= '%s Powered By %s V%s';
+$_lang['TPL_INFO']          	= 'Theme %s by %s V%s';
 
 //debug lang vars
 $_lang['MSG_INFO']              = 'Information';
@@ -75,7 +76,9 @@ $_lang['L_EDIT']				= 'Edit';
 $_lang['L_DELETE']				= 'Delete';
 
 //control panels
-$_lang['L_ACCT_SETTINGS']		= 'Account Settings';
+$_lang['L_OVERVIEW']			= 'Overview';
+$_lang['L_SITE_OVERVIEW']		= 'Website Overview';
+$_lang['L_SYS_INFO']			= 'System Information';
 
 //default user panel
 $_lang['L_ACCOUNT_PANEL']		= 'Account Settings';

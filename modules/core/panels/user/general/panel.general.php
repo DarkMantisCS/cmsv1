@@ -1,6 +1,6 @@
 <?php
 /*======================================================================*\
- |              Cybershade CMS - Your CMS, Your Way                     |
+||              Cybershade CMS - Your CMS, Your Way                     ||
 \*======================================================================*/
 if(!defined('INDEX_CHECK')){ die("INDEX_CHECK not defined."); }
 $objPage->setTitle(langVar('B_UCP').' > '.langVar('L_WEBSITE_PANEL'));

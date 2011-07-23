@@ -30,7 +30,7 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 	/**
 	 * Used to determine the base path of the CMS installation;
 	 *
-	 * @version	1.0
+	 * @version	1.2
 	 * @since 	1.0.0
 	 * @author 	Jesus
 	 *
@@ -39,6 +39,13 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 	function root(){
 		global $_SERVER;
 		$path = str_replace('\\', '/', __FILE__);
+
+		//if we are dealing with a users home directory
+		if(substr($_SERVER['REQUEST_URI'], 0, 2)=='/~'){
+			return substr($_SERVER['REQUEST_URI'], 1);
+		}
+
+		//else we are dealing with a propper url setup
 		$newPath = str_replace($_SERVER['DOCUMENT_ROOT'], '', $path);
 		$newPath = substr($newPath, 0, strrpos($newPath, 'core/baseFunctions.php'));
 		if(substr($newPath, 0, 1) == '/'){ $newPath = substr($newPath, 1); }
