@@ -17,7 +17,7 @@ switch(strtolower($mode)){
 	default:
 
 		//set some security crap
-		$_SESSION['site']['panel']['sessid'] = $sessid = $objUser->mkPasswd($uid.time());
+		$_SESSION['site']['panel']['sessid'] = $sessid = $objUser->mkPassword($uid.time());
 		$_SESSION['site']['panel']['id'] = $uid;
 
 		//generate a list of themes

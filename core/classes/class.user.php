@@ -80,7 +80,7 @@ class user extends coreClass{
 		}
 
 		//add some extra stuff in before we submit it
-		$userInfo['password'] 		= $this->mkPasswd($userInfo['password']);
+		$userInfo['password'] 		= $this->mkPassword($userInfo['password']);
 		$userInfo['register_date'] 	= time();
 		$userInfo['usercode'] 		= substr(md5(time()), 0, 6);
 		$userInfo['primary_group'] 	= $this->config('site', 'user_group');
@@ -306,7 +306,7 @@ class user extends coreClass{
 	 *
 	 * @return  string                Password Hashed Input
 	 */
-	public function mkPasswd($string, $salt=null){
+	public function mkPassword($string, $salt=null){
 		// Use the new portable password hashing framework
 		$objPass = new phpass(8, true);
 
@@ -329,7 +329,7 @@ class user extends coreClass{
 	 *
 	 * @return  bool
 	 */
-	public function checkPasswd($password, $hash){
+	public function checkPassword($password, $hash){
 		//use the new portable password hashing framework
 		$objPass = new phpass(8, true);
 
@@ -698,7 +698,7 @@ class user extends coreClass{
 	 * @return  bool
 	 */
     function setPassword($uid, $password, $log=NULL){
-        $array['password'] 			= $this->mkPasswd($password);
+        $array['password'] 			= $this->mkPassword($password);
         $array['password_update'] 	= 0;
         $array['login_attempts'] 	= 0;
 

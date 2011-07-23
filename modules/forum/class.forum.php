@@ -1181,7 +1181,7 @@ class forum extends Module{
 				'body' => 'modules/forum/template/forum_post.tpl'
 			));
 			$_SESSION['site']['forum'][$id]['id']     = $id;
-			$_SESSION['site']['forum'][$id]['sessid'] = $sessid = $this->objUser->mkPasswd($this->objUser->grab('username').$id);
+			$_SESSION['site']['forum'][$id]['sessid'] = $sessid = $this->objUser->mkPassword($this->objUser->grab('username').$id);
 
 		//
 		//-- BBCode Buttons
@@ -1406,7 +1406,7 @@ class forum extends Module{
 				'body' => 'modules/forum/template/forum_post.tpl'
 			));
 			$_SESSION['site']['forum'][$id]['id']     = $id;
-			$_SESSION['site']['forum'][$id]['sessid'] = $sessid = $this->objUser->mkPasswd($this->objUser->grab('username').$id);
+			$_SESSION['site']['forum'][$id]['sessid'] = $sessid = $this->objUser->mkPassword($this->objUser->grab('username').$id);
 
 		//
 		//-- BBCode Buttons
@@ -1786,7 +1786,7 @@ class forum extends Module{
 				'body' => 'modules/forum/template/forum_post.tpl'
 			));
 			$_SESSION['site']['forum'][$id]['id']     = $id;
-			$_SESSION['site']['forum'][$id]['sessid'] = $sessid = $this->objUser->mkPasswd($this->objUser->grab('username').$id);
+			$_SESSION['site']['forum'][$id]['sessid'] = $sessid = $this->objUser->mkPassword($this->objUser->grab('username').$id);
 
 			$first_post = false;
 			if($id == $thread['first_post_id']){

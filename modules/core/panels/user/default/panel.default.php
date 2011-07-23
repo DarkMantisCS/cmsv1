@@ -17,7 +17,7 @@ switch(strtolower($mode)){
 	default:
 
 		//set some security crap
-		$_SESSION['site']['panel']['sessid'] = $sessid = $objUser->mkPasswd($uid.time());
+		$_SESSION['site']['panel']['sessid'] = $sessid = $objUser->mkPassword($uid.time());
 		$_SESSION['site']['panel']['id'] = $uid;
 
 		//assign some vars
@@ -127,7 +127,7 @@ switch(strtolower($mode)){
 
 			//make sure all the password boxes are full
 			if($oldPass!==false && $newPass!==false && $confPass!==false){
-				if($this->objUser->CheckPassword($oldPass, $user['password']) && (md5($newPass) == md5($confPass))) {
+				if($objUser->checkPassword($oldPass, $user['password']) && (md5($newPass) == md5($confPass))) {
 					$objUser->setPassword($user['id'], $newPass);
 					$updatePass = true;
 				}else{
@@ -149,7 +149,7 @@ switch(strtolower($mode)){
 
 			//make sure the info is valid
 			if($oldPin!==false && $newPin!==false && $confPin!==false && $oldPass!==false){
-				if($this->objUser->CheckPassword($oldPass, $user['password']) && (md5($newPass) == md5($confPass))) {
+				if($objUser->checkPassword($oldPass, $user['password']) && (md5($newPass) == md5($confPass))) {
 					$doIt = false;
 
 					//if the PIN has already been set, then check to make sure they have given is the old PIN

@@ -1240,7 +1240,7 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 		if(!HTTP_POST){
 			//setup redirects and session ids
 			$_SESSION['site']['confirm']['return'] = (isset($_SERVER['HTTP_REFERER'])&&!is_empty($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '/'.root().'');
-	        $_SESSION['site']['confirm']['sessid'] = $sessid = $objUser->mkPasswd($objUser->grab('username').time());
+	        $_SESSION['site']['confirm']['sessid'] = $sessid = $objUser->mkPassword($objUser->grab('username').time());
 
 	        //and the form, atm its gotta be crude, it'll be sexied up for the rebuild
 			$newMsg = $objForm->start('msg', array('method' => 'POST'));
