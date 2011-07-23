@@ -192,7 +192,7 @@ class form extends coreClass{
 		$type 			= doArgs('type', 'button', $args); 
 
 		if(in_array(strtolower($name), array('submit', 'reset'))){ 
-			$type = doArgs('type', 'button', $args); 
+			$type = strtolower($name); 
 		}
 
 		return $this->inputbox($args['name'], $type, $value, $args);
