@@ -80,6 +80,7 @@ class form extends coreClass{
 	public function inputbox($name, $type='text', $value='', $args=array()){
 		$args = array(
 			'id'            => doArgs('id', 			$name, 	$args),
+			'name'			=> doArgs('name', 			$name,	$args),
 			'class'         => doArgs('class', 			null, 	$args),
 			'checked'       => doArgs('checked', 		false, 	$args),
 			'disabled'      => doArgs('disabled', 		false, 	$args),
@@ -105,7 +106,7 @@ class form extends coreClass{
 							'email', 'url', 'number', 'range', 'search', 'datetime-local', 'datetime', 'date', 'time', 'week', 'month' );
 
 		return '<input type="'.(in_array($type, $typeVali) ? $type : 'text').'" '.
-					'class="'.$args['class'].'" name="'.$name.'" id="'.$args['id'].'" '.
+					'class="'.$args['class'].'" name="'.$args['name'].'" id="'.$args['id'].'" '.
 					($args['xssFilter']===true			? 'value="'.htmlspecialchars($value).'" ' 	: 'value="'.$value.'" ').
 
 					(!is_empty($args['placeholder'])	? 'placeholder="'.$args['placeholder'].'" ' : null).
@@ -175,7 +176,7 @@ class form extends coreClass{
 	/**
 	 * Output a submit or reset button
 	 *
-	 * @version	1.0
+	 * @version	1.2
 	 * @since   1.0.0
 	 * @author  xLink
 	 *
@@ -186,11 +187,15 @@ class form extends coreClass{
 	 * @return  string
 	 */
 	public function button($name=null, $value, $args=array()){
-		$type = ($name=='submit' ? 'submit' : ($name=='reset' ? 'reset' : doArgs('type', 'button', $args)));
-		$name = doArgs('name', $name, $args);
-		$args['class'] = (is_empty($args['class']) ? 'button' : $args['class'].' button');
+		$args['name'] 	= doArgs('name', $name, $args);
+		$args['class'] 	= (is_empty($args['class']) ? 'button' : $args['class'].' button');
+		$type 			= doArgs('type', 'button', $args); 
 
-		return $this->inputbox($name, $type, $value, $args);
+		if(in_array(strtolower($name), array('submit', 'reset'))){ 
+			$type = doArgs('type', 'button', $args); 
+		}
+
+		return $this->inputbox($args['name'], $type, $value, $args);
 	}
 
 	/**
@@ -364,6 +369,7 @@ class form extends coreClass{
 
 
 	public function outputForm($vars, $elements, $options=array()){
+		//echo dump($elements);
 		//make sure we have something to use before continuing
 		if(is_empty($elements)){ $this->setError('Nothing to output'); return false; }
 

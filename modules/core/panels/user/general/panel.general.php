@@ -86,7 +86,7 @@ switch(strtolower($mode)){
 		),
 		array(
 			'field' => array(
-				langVar('L_ACCT_SETTINGS') 		=> '_header_',
+				langVar('L_ACCOUNT_PANEL') 		=> '_header_',
 	            langVar('L_SEX')				=> $objForm->radio('sex', array(0=>langVar('L_SEX_U'), 1=>langVar('L_SEX_M'), 2=>langVar('L_SEX_F')), $user['sex']),
 				langVar('L_PRIV_EMAIL')	    	=> $objForm->radio('show_email', $yn, $user['show_email']),
 

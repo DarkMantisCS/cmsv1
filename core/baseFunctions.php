@@ -78,11 +78,11 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 	 */
 	function doArgs($key, $default, $args, $callback=null){
 		$extra = true; //set this to true so the end result will work
-
+		
 		//if we have a callback then exec
 		if(is_empty($callback)){
 			//test and return a value
-			return (isset($args[$key]) ? $args[$key] : $defaultValue);
+			return (isset($args[$key]) ? $args[$key] : $default);
 		}
 
 		if(is_callable($callback)){

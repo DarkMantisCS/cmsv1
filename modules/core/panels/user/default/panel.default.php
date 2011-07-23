@@ -64,9 +64,6 @@ switch(strtolower($mode)){
 		),
 		array(
 			'field' => $vars,
-			'desc' => array(
-				langVar('L_EMAIL') => $email,
-			),
 			'errors' => $_SESSION['site']['panel']['error'],
 		),
 		array(

@@ -215,7 +215,7 @@ class login extends coreClass{
 		if(!$this->attemptsCheck()){   		$this->doError('0x03', $ajax); }
 
 		//make sure the password is valid
-		if(!$this->objUser->checkPasswd($password, $this->userData['password'])){
+		if(!$this->objUser->checkPassword($password, $this->userData['password'])){
 			$this->doError('0x07', $ajax);
 		}
 
