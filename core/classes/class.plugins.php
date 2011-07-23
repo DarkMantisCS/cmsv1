@@ -91,7 +91,7 @@ class plugins extends coreClass{
 						$cb = '';
 
 						//make sure we can call it still
-						if(is_callable($function)){ $cb = call_user_func($function, $args); }
+						if(is_callable($function)){ $cb = $function($args); }
 
 						//check to see if we got a response from the func, this should be true
 						if(is_empty($cb)){ $cb = false; }

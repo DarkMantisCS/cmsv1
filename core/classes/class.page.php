@@ -393,10 +393,9 @@ class page extends coreClass{
 		}
 
 		//support for google analytics out of the box
-		$analyticsKey = secureMe($this->config('site', 'analytics', ''), 'alphaNum');
-		if(!is_empty($analyticsKey)){
+		if($this->config('site', 'analytics', false)){
 	        $jsCode[] = 'var _gaq = _gaq || []; '.
-						'_gaq.push(["_setAccount", "'.$analyticsKey.'"]); '.
+						'_gaq.push(["_setAccount", "'.$this->config('site', 'analytics').'"]); '.
 						'_gaq.push(["_trackPageview"]); '.
 
 						'(function() { '.
@@ -424,7 +423,7 @@ class page extends coreClass{
 		}
 
 		$headerJs = null; //this is the var we will store this JS
-		$header_jsCode = array();	$header_jsFiles = array(); //these are for the hooks to populate
+		$header_jsCode = array(); $header_jsFiles = array(); //these are for the hooks to populate
 
 		//process the js files for the header
         $this->objPlugins->hook('CMSPage_header_jsFiles', $header_jsFiles);
@@ -435,12 +434,12 @@ class page extends coreClass{
         }
 
         //now the code
-        $header_jsCode = 'var ROOT = "'.root().'"; var usertpl = "'.root().self::$THEME_ROOT.'"; ';
+        $header_jsCode[] = 'var ROOT = "'.root().'"; var usertpl = "'.root().self::$THEME_ROOT.'"; ';
 
         $this->objPlugins->hook('CMSPage_header_jsCode', $header_jsCode);
-        if(!count($header_jsFiles)){
-			foreach($header_jsFiles as $file){
-				$headerJs .= sprintf('<script>%s</script>', $file).$nl;
+        if(!count($header_jsCode)){
+			foreach($header_jsCode as $code){
+				$headerJs .= sprintf('<script>%s</script>', $code).$nl;
 			}
         }
 
