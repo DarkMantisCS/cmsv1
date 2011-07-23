@@ -37,7 +37,6 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 	 * @return 	string
 	 */
 	function root(){
-		global $_SERVER;
 		$path = str_replace('\\', '/', __FILE__);
 
 		//if we are dealing with a users home directory
@@ -70,14 +69,14 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 	 * @since 	1.0.0
 	 * @author 	xLink
 	 *
-	 * @param 	string 	$key
-	 * @param 	string	$defaultValue
-	 * @param 	array	$args
-	 * @param 	string	$callback
+	 * @param 	string 	$key			Which key to check for
+	 * @param 	string	$default		A default value to use if our checks fail
+	 * @param 	array	$args			An array to check against
+	 * @param 	mixed	$callback 		Can be name of a func that returns a bool value or an anonymous function
 	 *
 	 * @return 	string
 	 */
-	function doArgs($key, $defaultValue, $args, $callback=null){
+	function doArgs($key, $default, $args, $callback=null){
 		$extra = true; //set this to true so the end result will work
 
 		//if we have a callback then exec
@@ -95,7 +94,7 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 			$extra = call_user_func($callback, $args[$key]);
 		}
 		//test and return a value
-		return (isset($args[$key]) && $extra ? $args[$key] : $defaultValue);
+		return (isset($args[$key]) && $extra ? $args[$key] : $default);
 	}
 
 	/**

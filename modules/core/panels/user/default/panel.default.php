@@ -80,10 +80,6 @@ switch(strtolower($mode)){
 			hmsgDie('FAIL', 'Error: Cannot verify information.');
 		}
 
-		if(!doArgs('id', false, $_SESSION['site']['user_edit'])){
-			hmsgDie('FAIL', 'Error: There was a problem with the information you submitted. Please try again.');
-		}
-
 		//security check 1
         if(doArgs('id', false, $_POST) != $_SESSION['site']['panel']['id']){
             hmsgDie('FAIL', 'Error: I cannot remember what you were saving...hmmmm');
