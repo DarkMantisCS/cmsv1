@@ -167,7 +167,7 @@ switch(strtolower($mode)){
 	                //update the PIN
 	                if($doIt === true){
 	                    $objUser->setPIN($user['id'], $newPin);
-	                    $updateMsg[] = langVar('L_CHANGED_PIN');
+	                    $updateMsg[] = langVar('L_PIN_UPDATE_OK');
 	                }
 
 				}else{
@@ -226,12 +226,12 @@ switch(strtolower($mode)){
 	});
 	
 	$('chk_conf_pin').observe('click', function(){
-		['veri_pass', 'new_pin', 'old_pin'].each(function(s){ 
+		['veri_pass', 'new_pin', 'old_pin', 'conf_pin'].each(function(s){ 
 			$(s).up('tr').toggle();
 		});
 	});
 	
-	['old_pass', 'new_pass', 'conf_pass', 'veri_pass', 'new_pin', 'old_pin'].each(function(s){ 
+	['old_pass', 'new_pass', 'conf_pass', 'veri_pass', 'new_pin', 'old_pin', 'conf_pin'].each(function(s){ 
 		$(s).up('tr').toggle();
 	});
 JSC;
