@@ -36,7 +36,7 @@ switch(strtolower($mode)){
 
 			langVar('L_OLD_PASSWD')		=> $objForm->inputbox('old_pass', 'password', '', array('class'=>'icon password')),
 			langVar('L_NEW_PASSWD')		=> $objForm->inputbox('new_pass', 'password', '', array('class'=>'icon password')),
-			langVar('L_NEW_PASSWD_CONF')=> $objForm->inputbox('conf_pass', 'password', '', array('class'=>'icon password')),
+			langVar('L_CONF_PASSWD')	=> $objForm->inputbox('conf_pass', 'password', '', array('class'=>'icon password')),
 		);
 
 		if($user['userlevel'] == ADMIN){
@@ -48,8 +48,9 @@ switch(strtolower($mode)){
     			langVar('L_PIN_UPDATE')		=> '_header_',
     			langVar('L_NEW_PIN_CONF')	=> $objForm->checkbox('chk_conf_pin', '1', false),
 				langVar('L_PASSWORD')		=> $objForm->inputbox('veri_pass', 'password', '', array('class'=>'icon password')),    			
-                langVar('L_OLD_PIN')		=> $objForm->inputbox('old_pin', 'password', '', array('autocomplete'=>false, 'class'=>'icon pin')),
-                langVar('L_NEW_PIN')		=> $objForm->inputbox('new_pin', 'password', '', array('autocomplete'=>false, 'class'=>'icon pin')),
+                langVar('L_OLD_PIN')		=> $objForm->inputbox('old_pin', 'password', '', array('class'=>'icon pin')),
+                langVar('L_NEW_PIN')		=> $objForm->inputbox('new_pin', 'password', '', array('class'=>'icon pin')),
+                langVar('L_CONF_PIN')		=> $objForm->inputbox('conf_pin', 'password', '', array('class'=>'icon pin')),
     		);
         }
 
@@ -116,7 +117,6 @@ switch(strtolower($mode)){
 
 
 		//make sure that the confirmation checkbox is set
-		$updatePass = false;
 		$passConf = doArgs('chk_conf_pass', false, $_POST);
 		if($passConf){
 			$oldPass 	= doArgs('old_pass', false, $_POST);
@@ -127,7 +127,7 @@ switch(strtolower($mode)){
 			if($oldPass!==false && $newPass!==false && $confPass!==false){
 				if($objUser->checkPassword($oldPass, $user['password']) && (md5($newPass) == md5($confPass))) {
 					$objUser->setPassword($user['id'], $newPass);
-					$updatePass = true;
+					$updateMsg[] = langVar('L_CHANGED_PASS');
 				}else{
 					$returnMsg[] = langVar('L_PASS_WRONG');
 				}
@@ -138,17 +138,17 @@ switch(strtolower($mode)){
 
 		//check to see if the user has admin permissions
 		//User::$IS_ADMIN is only set once they log into the ACP
-		$updatePin = false;
-		if($user['userlevel'] == ADMIN){
+		$pinConf = doArgs('chk_conf_pin', false, $_POST);
+		if($user['userlevel'] == ADMIN && $pinConf){
 			//grab info
 			$veriPass 	= doArgs('veri_pass', false, $_POST);
 			$oldPin 	= doArgs('old_pin', false, $_POST);
 			$newPin 	= doArgs('new_pin', false, $_POST);
-			$confPin 	= doArgs('chk_conf_pin', false, $_POST);
+			$confPin 	= doArgs('new_pin', false, $_POST);
 
 			//check if the confirm, new pin and old pass is valid
 			if($confPin!==false && $newPin!==false && $veriPass!==false){				
-				if($objUser->checkPassword($veriPass, $user['password']) && (md5($newPin) == md5($oldPin))){
+				if($objUser->checkPassword($veriPass, $user['password']) && (md5($newPin) == md5($confPin))){
 
 					$doIt = false;
 
@@ -167,8 +167,7 @@ switch(strtolower($mode)){
 	                //update the PIN
 	                if($doIt === true){
 	                    $objUser->setPIN($user['id'], $newPin);
-	                    $updatePin = true;
-	                    $updateMsg[] = 'PIN Update was successfull';
+	                    $updateMsg[] = langVar('L_CHANGED_PIN');
 	                }
 
 				}else{
@@ -196,9 +195,6 @@ switch(strtolower($mode)){
 				}
 			$noUpdate = false;
 		}
-
-		if($passConf && $updatePass){ $noUpdate = false; }
-		if($pinConf && $updatePIN){ $noUpdate = false; }
 
     	//if update is empty
 		if($noUpdate && !count($updateMsg)){

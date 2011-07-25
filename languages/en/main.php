@@ -103,6 +103,8 @@ $_lang['L_EMAIL_UPDATE']    	= 'Your email address has been changed.';
 $_lang['L_EMAIL_ACTIVATION']	= 'Your email address has been changed. You must now reactivate your account with the email that has been sent to your email address.';
 $_lang['L_PASS_WRONG']			= 'The passwords you have entered do not match.';
 $_lang['L_INVALID_PASS']		= 'The old password you provided is incorrect. Cannot update your password.';
+$_lang['L_CHANGED_PASS']		= 'Password has been updated.';
+$_lang['L_CHANGED_PIN']			= 'Password has been updated.';
 $_lang['L_PIN_UPDATE_FAIL']		= 'Could not update PIN, Old PIN or Password given was incorrect.';
 
 //general panel
