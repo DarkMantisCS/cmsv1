@@ -45,7 +45,7 @@ switch(strtolower($mode)){
 
 		$tcount = count($timezone_array);
 		$timezone = '';
-		$timezone .= '<select name="timezone">'."\n";
+		$timezone .= '<select name="timezone" id="timezone" class="chzn-select" data-search="true">'."\n";
 		$option = "\t".'<option value="%1$s"%2$s>GMT %1$s</option>'."\n";
 		foreach($timezone_array as $tzone){
 			$timezone .= sprintf($option, $tzone, ($user['timezone']===$tzone ? ' selected="selected"' : ''));
@@ -63,14 +63,13 @@ switch(strtolower($mode)){
 		));
 
 		$sMembers = '';
-		$sMembers .= '<select name="primary_group">'."\n";
+		$sMembers .= '<select name="primary_group" id="primary_group" class="chzn-select" data-search="true">'."\n";
         $sMembers .= "\t".'<option value="0">CMS Pick</option>'."\n";
 		$option = "\t".'<option value="%1$s" style="color: %2$s"%4$s>%3$s</option>'."\n";
         foreach($query as $row){
 			$sMembers .= sprintf($option, $row['id'], $row['color'], $row['name'], ($user['primary_group'] == $row['id'] ? ' selected="selected"' : ''));
         }
 		$sMembers .= '</select>';
-
 
         $yn = array(1=>langVar('L_YES'), 0=>langVar('L_NO'));
 
@@ -91,9 +90,9 @@ switch(strtolower($mode)){
 				langVar('L_PRIV_EMAIL')	    	=> $objForm->radio('show_email', $yn, $user['show_email']),
 
 				langVar('L_SITE_SETTINGS') 		=> '_header_',
-	            langVar('L_USER_COLORING')		=> $sMembers,
 	            langVar('L_TIMEZONE')			=> $timezone,
-				langVar('L_SITE_TEMPLATE')		=> $objForm->select('theme', $tpl, $user['template']),
+	            langVar('L_USER_COLORING')		=> $sMembers,
+				langVar('L_SITE_TEMPLATE')		=> $objForm->select('theme', $tpl),
 
 				langVar('L_FORUM_SETTINGS')		=> '_header_',
 				langVar('L_QUICK_REPLIES')		=> $objForm->radio('quick_reply', $yn, $user['forum_quickreply']),

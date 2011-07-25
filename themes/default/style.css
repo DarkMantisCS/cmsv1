@@ -322,7 +322,7 @@ input.icon.username{
 }
 
 input.icon.password{
-	background-image: url(../../images/icons/locked.png);
+	background-image: url(../../images/icons/locked.gif);
 }
 
 input.icon.pin{

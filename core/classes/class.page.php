@@ -419,7 +419,7 @@ class page extends coreClass{
 
 		//now add em to the $js
 		foreach($jsCode as $code){
-			$js .= '<script>'.$nl. $code .$nl.'</script>'.$nl;
+			$js .= '<script>'.str_replace(array("\n", "\r", "\t"), '', trim($code)).'</script>'.$nl;
 		}
 
 		$headerJs = null; //this is the var we will store this JS
@@ -427,22 +427,18 @@ class page extends coreClass{
 
 		//process the js files for the header
         $this->objPlugins->hook('CMSPage_header_jsFiles', $header_jsFiles);
-        if(!count($header_jsFiles)){
+        if(count($header_jsFiles)){
 			foreach($header_jsFiles as $file){
 				$headerJs .= sprintf('<script src="%s"></script>', $file).$nl;
 			}
         }
 
-        //now the code
-        $header_jsCode[] = 'var ROOT = "'.root().'"; var usertpl = "'.root().self::$THEME_ROOT.'"; ';
-
         $this->objPlugins->hook('CMSPage_header_jsCode', $header_jsCode);
-        if(!count($header_jsCode)){
+        if(count($header_jsCode)){
 			foreach($header_jsCode as $code){
-				$headerJs .= sprintf('<script>%s</script>', $code).$nl;
+				$headerJs .= sprintf('<script>%s</script>', str_replace(array("\n", "\r", "\t"), '', trim($code))).$nl;
 			}
         }
-
 
 	//
 	//--Load CSS
@@ -473,7 +469,7 @@ class page extends coreClass{
 
 		//add it to the $css
 		foreach($cssCode as $code){
-			$css .= '<style>'.$nl.$code.$nl.'</style>'.$nl;
+			$css .= '<style>'.$nl.str_replace(array("\n", "\r", "\t"), '', trim($code)).$nl.'</style>'.$nl;
 		}
 
 	//

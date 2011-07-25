@@ -280,11 +280,13 @@ class form extends coreClass{
 			'selected'  => doArgs('selected', 	null, $args),
 			'noKeys'  	=> doArgs('noKeys', 	false, $args),
 			'multi'		=> doArgs('multi', 		false, $args),
+			'search'	=> doArgs('search', 	false, $args),
 
 			'class'     => doArgs('class', 		null, $args),
 			'disabled'  => doArgs('disabled', 	false, $args),
 			'style'		=> doArgs('style', 		null, $args),
 			'extra'     => doArgs('extra', 		null, $args),
+			'opt_extra' => doArgs('opt_extra',  null, $args),			
 			'xssFilter' => doArgs('xssFilter', 	true, $args),
 		);
 
@@ -293,12 +295,16 @@ class form extends coreClass{
 			$name = $name.'[]';
 			$args['extra'] .= ' multiple="multiple"';
 		}
+		
+		//add support for Chosen
+		$args['extra'] .= ' data-search="'.($args['search']===true ? 'true' : 'false').'"';
+		$args['class'] .= 'chzn-select';
 
 		$extra = $args['extra'];
 		$selected = $args['selected'];
 		$noKeys = $args['noKeys'];
 
-		$option = '<option value="%1$s"%2$s>%3$s</option>'."\n";
+		$option = '<option value="%1$s"%2$s%4$s>%3$s</option>'."\n";
 		$val = sprintf('<select name="%1$s" id="%2$s"%3$s%4$s%5$s%6$s>',
 					$name,
 					$args['id'],
@@ -314,12 +320,13 @@ class form extends coreClass{
 				$val .= sprintf('<optgroup label="%s">'."\n", $k);
 				foreach($v as $a => $b){
 					if(is_array($b)){
-						$val .= $this->processSelect($b, $selected, $noKeys);
+						$val .= $this->processSelect($b, $args);
 					}else{
 						$val .= sprintf($option,
 											$a,
 											(md5($a)==md5($selected) ? ' selected="true"' : null),
-											($noKeys===true ? $a : $b)
+											($noKeys===true ? $a : $b),
+											doArgs('opt_extra', null, $args)
 										);
 					}
 				}
@@ -327,7 +334,8 @@ class form extends coreClass{
 				$val .= sprintf($option,
 									$k,
 									(md5($k)==md5($selected) ? ' selected="true"' : null),
-									($noKeys===true ? $k : $v)
+									($noKeys===true ? $k : $v),
+									doArgs('opt_extra', null, $args)
 								);
 			}
 		}
@@ -343,24 +351,26 @@ class form extends coreClass{
 	 * @author  xLink
 	 *
 	 * @param   array 	$options
-	 * @param   string 	$selected
-	 * @param   bool	$noKeys
+	 * @param   array 	$args
 	 *
 	 * @return  string
 	 */
-	private function processSelect($options, $selected, $noKeys=false){
+	private function processSelect($options, $args=array()){
+		$selected = doArgs('selected', false, $args);
+		$noKeys = doArgs('noKeys', false, $args);
+
 		foreach ($options as $k => $v){
 			if(is_array($v)){
 				foreach($v as $a => $b){
 					if(is_array($b)){
-						$val .= $this->processSelect($b, $selected, $noKeys);
+						$val .= $this->processSelect($b, $args);
 					}else{
-						$val .= '<option value="'.$a.'"'.(md5($a)==md5($selected) ? ' selected="true" ' : null).'>'.
+						$val .= '<option value="'.$a.'"'.(md5($a)==md5($selected) ? ' selected="true" ' : null).doArgs('opt_extra', null, $args).'>'.
 									($noKeys===true ? $b : $a).'</option>'."\n";
 					}
 				}
 			}else{
-				$val .= '<option value="'.$k.'"'.(md5($k)==md5($selected) ? ' selected="true" ' : null).'>'.
+				$val .= '<option value="'.$k.'"'.(md5($k)==md5($selected) ? ' selected="true" ' : null).doArgs('opt_extra', null, $args).'>'.
 							($noKeys===true ? $v : $k).'</option>'."\n";
 			}
 		}

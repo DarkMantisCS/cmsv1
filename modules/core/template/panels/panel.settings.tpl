@@ -35,7 +35,7 @@
                     </label>
                     <!-- END _label -->
                 </td>
-                <td valign="middle">{_form_row._field.F_ELEMENT}</td>
+                <td width="60%" valign="middle">{_form_row._field.F_ELEMENT}</td>
               </tr>
             <!-- END _field -->
         <!-- END _form_row -->

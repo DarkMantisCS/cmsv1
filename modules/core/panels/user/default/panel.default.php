@@ -15,7 +15,7 @@ $uid = $objUser->grab('id');
 
 switch(strtolower($mode)){
 	default:
-
+		$objPage->addJSFile('?mode=js');
 		//set some security crap
 		$_SESSION['site']['panel']['sessid'] = $sessid = $objUser->mkPassword($uid.time());
 		$_SESSION['site']['panel']['id'] = $uid;
@@ -32,11 +32,11 @@ switch(strtolower($mode)){
 			langVar('L_EMAIL') 			=> $objForm->inputbox('email', 'text', $user['email'], array('class'=>'icon email')),
 
 			langVar('L_CHANGE_PWDS')	=> '_header_',
-			langVar('F_NEW_PASS_CONF')	=> $objForm->checkbox('chk_pass_conf', '1', false),
+			langVar('F_NEW_PASS_CONF')	=> $objForm->checkbox('chk_conf_pass', '1', false),
 
-			langVar('L_OLD_PASSWD')		=> $objForm->inputbox('old_pass', 'password', array('class'=>'icon password')),
-			langVar('L_NEW_PASSWD')		=> $objForm->inputbox('new_pass', 'password', array('class'=>'icon password')),
-			langVar('L_NEW_PASSWD_CONF')=> $objForm->inputbox('conf_pass', 'password', array('class'=>'icon password')),
+			langVar('L_OLD_PASSWD')		=> $objForm->inputbox('old_pass', 'password', '', array('class'=>'icon password')),
+			langVar('L_NEW_PASSWD')		=> $objForm->inputbox('new_pass', 'password', '', array('class'=>'icon password')),
+			langVar('L_NEW_PASSWD_CONF')=> $objForm->inputbox('conf_pass', 'password', '', array('class'=>'icon password')),
 		);
 
 		if($user['userlevel'] == ADMIN){
@@ -46,9 +46,10 @@ switch(strtolower($mode)){
 
     		$vars += array(
     			langVar('L_PIN_UPDATE')		=> '_header_',
-    			langVar('L_NEW_PIN_CONF')	=> $objForm->checkbox(0, 'conf_pin', '1'),
-                langVar('L_OLD_PIN')		=> $objForm->inputbox('old_pin', 'password', '', array('autocomplete'=>false)),
-                langVar('L_NEW_PIN')		=> $objForm->inputbox('new_pin', 'password', '', array('autocomplete'=>false)),
+    			langVar('L_NEW_PIN_CONF')	=> $objForm->checkbox('chk_conf_pin', '1', false),
+				langVar('L_PASSWORD')		=> $objForm->inputbox('veri_pass', 'password', '', array('class'=>'icon password')),    			
+                langVar('L_OLD_PIN')		=> $objForm->inputbox('old_pin', 'password', '', array('autocomplete'=>false, 'class'=>'icon pin')),
+                langVar('L_NEW_PIN')		=> $objForm->inputbox('new_pin', 'password', '', array('autocomplete'=>false, 'class'=>'icon pin')),
     		);
         }
 
@@ -56,7 +57,7 @@ switch(strtolower($mode)){
 			'FORM_START' 	=> $objForm->start('panel', array('method' => 'POST', 'action' => $saveUrl)),
 			'FORM_END'	 	=> $objForm->finish(),
 
-			'FORM_TITLE' 	=> langVar('L_ACCT_SETTINGS'),
+			'FORM_TITLE' 	=> langVar('L_ACCOUNT_PANEL'),
 			'FORM_SUBMIT'	=> $objForm->button('submit', 'Submit'),
 			'FORM_RESET' 	=> $objForm->button('reset', 'Reset'),
 
@@ -116,7 +117,7 @@ switch(strtolower($mode)){
 
 		//make sure that the confirmation checkbox is set
 		$updatePass = false;
-		$passConf = doArgs('chk_pass_conf', false, $_POST);
+		$passConf = doArgs('chk_conf_pass', false, $_POST);
 		if($passConf){
 			$oldPass 	= doArgs('old_pass', false, $_POST);
 			$newPass 	= doArgs('new_pass', false, $_POST);
@@ -139,13 +140,17 @@ switch(strtolower($mode)){
 		//User::$IS_ADMIN is only set once they log into the ACP
 		$updatePin = false;
 		if($user['userlevel'] == ADMIN){
+			//grab info
 			$oldPass 	= doArgs('old_pass', false, $_POST);
 			$oldPin 	= doArgs('old_pin', false, $_POST);
 			$newPin 	= doArgs('new_pin', false, $_POST);
-			$confPin 	= doArgs('conf_pin', false, $_POST);
+			$confPin 	= doArgs('chk_conf_pin', false, $_POST);
 
-			//make sure the info is valid
-			if($oldPin!==false && $newPin!==false && $confPin!==false && $oldPass!==false){
+			//check if the confirm, new pin and old pass is valid
+			if($confPin!==false && $newPin!==false && $oldPass!==false){
+				
+				
+				
 				if($objUser->checkPassword($oldPass, $user['password']) && (md5($newPass) == md5($confPass))) {
 					$doIt = false;
 
@@ -214,6 +219,29 @@ switch(strtolower($mode)){
     	unset($_SESSION['site']['panel']);
         $objPage->redirect($url, 3);
         hmsgDie('OK', implode('<br />', $updateMsg).langVar('L_PRO_UPDATE_SUCCESS'));
+	break;
+	
+	case 'js':
+	header('content-type: application/x-javascript');
+
+	echo <<<JSC
+	$('chk_conf_pass').observe('click', function(){
+		['old_pass', 'new_pass', 'conf_pass'].each(function(s){ 
+			$(s).up('tr').toggle();
+		});
+	});
+	
+	$('chk_conf_pin').observe('click', function(){
+		['veri_pass', 'new_pin', 'old_pin'].each(function(s){ 
+			$(s).up('tr').toggle();
+		});
+	});
+	
+	['old_pass', 'new_pass', 'conf_pass', 'veri_pass', 'new_pin', 'old_pin'].each(function(s){ 
+		$(s).up('tr').toggle();
+	});
+JSC;
+	exit;
 	break;
 }
 

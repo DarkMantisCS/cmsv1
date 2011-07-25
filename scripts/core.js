@@ -183,7 +183,27 @@ document.observe('dom:loaded', function(){
 	if($('clock')){ updateClock(); }
 });
 
+function getDataAttributes(ele){
+	var list = [];
 
+	var prefix = 'data-';
+	var attr = $(ele).attributes;
+
+	var attributes = {};
+	for(var key in attr) {
+	    if(isNaN(key)){ continue; }
+
+	    key = attr[key];
+	    if(typeof key != 'object'){ continue; }
+
+	    if(!prefix || !empty(key.nodeName) && substr(key.nodeName, 0, prefix.length) == prefix){
+			attributes[substr(key.nodeName, prefix.length)] = key.nodeValue;
+	    }
+	}
+	list.push(attributes);
+		
+	return attributes;
+}
 
 //+ Jonas Raoni Soares Silva
 //@ http://jsfromhell.com/forms/selection [rev. #1]

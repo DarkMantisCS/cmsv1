@@ -2723,7 +2723,7 @@ class forum extends Module{
 	 */
     public function buildJumpBox($name, $options, $selected=null, $allowMasters=true){
 
-        $val = '<select name="'.$name.'" id="'.$name.'">'."\n";
+        $val = '<select name="'.$name.'" id="'.$name.'" class="chzn-select">'."\n";
         foreach ($options as $k => $v){
             $j=0; $title = str_replace(array('\''), array(''), $this->catTitles[$k]['title']);
             if($allowMasters){
