@@ -143,7 +143,7 @@ class user extends coreClass{
 	/**
 	 * Retrieves information about a given user
 	 *
-	 * @version 1.1
+	 * @version 1.2
 	 * @since   1.0.0
 	 * @author	xLink
 	 *
@@ -154,16 +154,6 @@ class user extends coreClass{
 	 */
 	public function getUserInfo($uid, $field='*'){
 		$backCalls = debug_backtrace();
-
-		//test for a few bad fields
-		$badFields = array('password', 'pin');
-		if(in_array($field, $badFields)){
-			$this->setError('Field is blacklisted.');
-			return false;
-		}
-
-		//if we are being called from the login class, then give em the password and pin, everywhere else can stuff it
-		$bypassCheck = ($backCalls[1]['function'] == 'doLogin' && $backCalls[1]['class'] == 'login');
 
 		//we need to populate the query
 		if(!isset($this->userInfo[$uid]) || $bypassCheck){
@@ -184,11 +174,8 @@ class user extends coreClass{
 				return false;
 			}
 
-
-			if($bypassCheck){ return $info; }
-
-			//these are blacklisted, no point putting em out
-			unset($info['password'], $info['pin'], $info['uid']);
+			//uid is for the extras table, no need to have it here
+			unset($info['uid']);
 
 			//this is so the cache will work even if they give you a username first time and uid the second
 			$this->userInfo[$info['username']] = $info;
@@ -354,7 +341,7 @@ class user extends coreClass{
 	 * @return  bool 					True if settings were fully updated, False if they wasnt.
 	 */
 	public function updateUserSettings($uid, array $setting, $log=false){
-		unset($setting['id'], $setting['uid'], $setting['password'], $setting['pin']);
+		unset($setting['id'], $setting['uid']);
 
 		if(!count($setting)){
 			$this->setError('No setting changes detected. Make sure the array you gave was populated. '.
@@ -702,11 +689,11 @@ class user extends coreClass{
         $array['password_update'] 	= 0;
         $array['login_attempts'] 	= 0;
 
-        $this->objPlugins->execHook('CMSCore_prePasswordChanged', $array);
+        $this->objPlugins->hook('CMSCore_prePasswordChanged', $array);
 
 		$uid = (!is_number($uid) ? $this->getUserInfo($uid, 'id') : $uid);
         if($this->objSQL->updateRow('users', $array, array('id = "%d"', $uid))){
-            $this->objPlugins->execHook('CMSCore_postPasswordChanged', func_get_args());
+            $this->objPlugins->hook('CMSCore_postPasswordChanged', func_get_args());
             return true;
         }
         return false;
@@ -727,11 +714,11 @@ class user extends coreClass{
         $array['pin'] 			= md5($pin.$this->config('db', 'ckeauth'));
         $array['pin_attempts'] 	= 0;
 
-        $this->objPlugins->execHook('CMSCore_prePinChanged', $array);
+        $this->objPlugins->hook('CMSCore_prePinChanged', $array);
 
 		$uid = (!is_number($uid) ? $this->getUserInfo($uid, 'id') : $uid);
         if($this->objSQL->updateRow('users', $array, array('id = "%d"', $uid))){
-            $this->objPlugins->execHook('CMSCore_postPinChanged', func_get_args());
+            $this->objPlugins->hook('CMSCore_postPinChanged', func_get_args());
             return true;
         }
         return false;

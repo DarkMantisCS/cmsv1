@@ -141,17 +141,15 @@ switch(strtolower($mode)){
 		$updatePin = false;
 		if($user['userlevel'] == ADMIN){
 			//grab info
-			$oldPass 	= doArgs('old_pass', false, $_POST);
+			$veriPass 	= doArgs('veri_pass', false, $_POST);
 			$oldPin 	= doArgs('old_pin', false, $_POST);
 			$newPin 	= doArgs('new_pin', false, $_POST);
 			$confPin 	= doArgs('chk_conf_pin', false, $_POST);
 
 			//check if the confirm, new pin and old pass is valid
-			if($confPin!==false && $newPin!==false && $oldPass!==false){
-				
-				
-				
-				if($objUser->checkPassword($oldPass, $user['password']) && (md5($newPass) == md5($confPass))) {
+			if($confPin!==false && $newPin!==false && $veriPass!==false){				
+				if($objUser->checkPassword($veriPass, $user['password']) && (md5($newPin) == md5($oldPin))){
+
 					$doIt = false;
 
 					//if the PIN has already been set, then check to make sure they have given is the old PIN
@@ -170,6 +168,7 @@ switch(strtolower($mode)){
 	                if($doIt === true){
 	                    $objUser->setPIN($user['id'], $newPin);
 	                    $updatePin = true;
+	                    $updateMsg[] = 'PIN Update was successfull';
 	                }
 
 				}else{
@@ -177,7 +176,6 @@ switch(strtolower($mode)){
 				}
 			}
 		}
-
 
 		//if errors
 		if(!is_empty($returnMsg)){
@@ -193,7 +191,7 @@ switch(strtolower($mode)){
 			$update = $objUser->updateUserSettings($uid, $update);
 				if(!$update){
 					$_SESSION['site']['panel']['error'] = array($objUser->error());
-					$objPage->redirect($url);
+					$objPage->redirect($url, 3);
 					exit;
 				}
 			$noUpdate = false;
@@ -203,8 +201,8 @@ switch(strtolower($mode)){
 		if($pinConf && $updatePIN){ $noUpdate = false; }
 
     	//if update is empty
-		if($noUpdate){
-			hmsgDie('FAIL', implode('<br />', $updateMsg).langVar('L_NO_CHANGES'));
+		if($noUpdate && !count($updateMsg)){
+			hmsgDie('FAIL', langVar('L_NO_CHANGES'));
 		}
 
 		//if email changed, and email verification is on, log the user out
@@ -218,7 +216,7 @@ switch(strtolower($mode)){
 
     	unset($_SESSION['site']['panel']);
         $objPage->redirect($url, 3);
-        hmsgDie('OK', implode('<br />', $updateMsg).langVar('L_PRO_UPDATE_SUCCESS'));
+        hmsgDie('OK', implode('<br />', $updateMsg).'<br />'.langVar('L_PRO_UPDATE_SUCCESS'));
 	break;
 	
 	case 'js':

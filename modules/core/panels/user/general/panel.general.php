@@ -63,11 +63,11 @@ switch(strtolower($mode)){
 		));
 
 		$sMembers = '';
-		$sMembers .= '<select name="primary_group" id="primary_group" class="chzn-select" data-search="true">'."\n";
+		$sMembers .= '<select name="primary_group" id="primary_group" class="chzn-select" data-search="'.(count($query)>=8 ? 'true' : 'false').'">'."\n";
         $sMembers .= "\t".'<option value="0">CMS Pick</option>'."\n";
 		$option = "\t".'<option value="%1$s" style="color: %2$s"%4$s>%3$s</option>'."\n";
         foreach($query as $row){
-			$sMembers .= sprintf($option, $row['id'], $row['color'], $row['name'], ($user['primary_group'] == $row['id'] ? ' selected="selected"' : ''));
+			$sMembers .= sprintf($option, $row['id'], $row['color'], $row['name'], ($user['primary_group']==$row['id'] ? ' selected="selected"' : ''));
         }
 		$sMembers .= '</select>';
 
