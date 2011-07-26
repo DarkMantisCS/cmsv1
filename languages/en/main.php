@@ -82,7 +82,7 @@ $_lang['L_SYS_INFO']			= 'System Information';
 $_lang['L_CORE_SETTINGS']		= 'Core Settings';
 
 $_lang['L_SET_UPDATED']			= 'Successfully updated settings. Returning you to the panel.';
-$_lang['L_SET_NOT_UPDATED']		= 'Error: Some settings wer not saved.<br />%s<br />Redirecting you back.';
+$_lang['L_SET_NOT_UPDATED']		= 'Error: Some settings were not saved.<br />%s<br />Redirecting you back.';
 
 //UCP: default
 $_lang['L_ACCOUNT_PANEL']		= 'Account Settings';

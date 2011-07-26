@@ -21,7 +21,7 @@ class cache extends coreClass{
 	public function __construct($args=array()) {
 		$this->cacheToggle = doArgs('useCache', false, $args);
 		$this->cacheDir = doArgs('cacheDir', '', $args);
-		$this->fileTpl = $this->cacheDir.'cache_%s.php';
+		$this->fileTpl = cmsROOT.'cache/cache_%s.php';
 	}
 
 	/**
