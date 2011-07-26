@@ -153,12 +153,10 @@ class user extends coreClass{
 	 * @return  mixed			Field requested or whole user information.
 	 */
 	public function getUserInfo($uid, $field='*'){
-		$backCalls = debug_backtrace();
-
 		//we need to populate the query
-		if(!isset($this->userInfo[$uid]) || $bypassCheck){
+		if(!isset($this->userInfo[$uid])){
 			//figure out if they gave us a username or a user id
-			$user = (is_number($uid) ? 'u.id = "%s" ' : 'upper( u.username ) = upper( %s ) ');
+			$user = (is_number($uid) ? 'u.id = "%s" ' : 'upper( u.username ) = upper( "%s" ) ');
 
 			$query = $this->objSQL->prepare('SELECT u.*, e.*, u.id as id, o.timestamp, o.hidden, o.userkey '.
 											'FROM `$Pusers` u '.
@@ -178,14 +176,15 @@ class user extends coreClass{
 			unset($info['uid']);
 
 			//this is so the cache will work even if they give you a username first time and uid the second
-			$this->userInfo[$info['username']] = $info;
+			$this->userInfo[strtolower($info['username'])] = $info;
 			$this->userInfo[$info['id']] = $info;
+			unset($info);
 		}
 
 		//if we didnt want it all then make sure the bit they wanted is there
 		if($field != '*'){
-			if(isset($this->userInfo[$uid][$field])){
-				return $this->userInfo[$uid][$field];
+			if(isset($this->userInfo[strtolower($uid)][$field])){
+				return $this->userInfo[strtolower($uid)][$field];
 			}else{
 				//if what they wanted isnt there, no point returning the whole thing, might confuse a few people
 				$this->setError('Requested field dosen\'t exist. ('.$field.')');
@@ -193,9 +192,8 @@ class user extends coreClass{
 			}
 		}
 
-		unset($info);
 		//worst case, return the entire user
-		return $this->userInfo[$uid];
+		return $this->userInfo[strtolower($uid)];
 	}
 
 
