@@ -29,7 +29,7 @@ $this->addHook('CMSForm_Captcha', 'form_recaptcha');
 
 
 function recaptcha_announce(&$args){
-	$args['recaptcha'] = 'reCaptcha';
+	$args['recaptcha'] = langVar('L_RECAPTCHA');
 
 	return true;
 }

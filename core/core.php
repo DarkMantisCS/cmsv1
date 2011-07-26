@@ -315,7 +315,7 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 		$objCore->objUser->tracker();
 	}
 
-	$theme = !User::$IS_ONLINE || !$objCore->config('site', 'template_override')
+	$theme = !User::$IS_ONLINE || !$objCore->config('site', 'theme_override')
 				? $objCore->config('site', 'theme')
 				: $objUser->grab('theme');
 

@@ -189,10 +189,10 @@ class form extends coreClass{
 	public function button($name=null, $value, $args=array()){
 		$args['name'] 	= doArgs('name', $name, $args);
 		$args['class'] 	= (is_empty($args['class']) ? 'button' : $args['class'].' button');
-		$type 			= doArgs('type', 'button', $args); 
+		$type 			= doArgs('type', 'button', $args);
 
-		if(in_array(strtolower($name), array('submit', 'reset'))){ 
-			$type = strtolower($name); 
+		if(in_array(strtolower($name), array('submit', 'reset'))){
+			$type = strtolower($name);
 		}
 
 		return $this->inputbox($args['name'], $type, $value, $args);
@@ -264,7 +264,7 @@ class form extends coreClass{
 	/**
 	 * Select box tag - convert any array to a select box...i think :D
 	 *
-	 * @version	1.0
+	 * @version	1.2
 	 * @since   1.0.0
 	 * @author  xLink
 	 *
@@ -286,7 +286,7 @@ class form extends coreClass{
 			'disabled'  => doArgs('disabled', 	false, $args),
 			'style'		=> doArgs('style', 		null, $args),
 			'extra'     => doArgs('extra', 		null, $args),
-			'opt_extra' => doArgs('opt_extra',  null, $args),			
+			'opt_extra' => doArgs('opt_extra',  null, $args),
 			'xssFilter' => doArgs('xssFilter', 	true, $args),
 		);
 
@@ -295,7 +295,7 @@ class form extends coreClass{
 			$name = $name.'[]';
 			$args['extra'] .= ' multiple="multiple"';
 		}
-		
+
 		//add support for Chosen
 		$args['extra'] .= ' data-search="'.($args['search']===true ? 'true' : 'false').'"';
 		$args['class'] .= 'chzn-select';
@@ -314,7 +314,34 @@ class form extends coreClass{
 					(!is_empty($args['style'])  ? ' style="'.$args['style'].'"' : null)
 				)."\n";
 
+		//if we are playing with noKeys
+		if($noKeys){
+			foreach($options as $k){
+				if(is_array($v)){
+					$val .= sprintf('<optgroup label="%s">'."\n", $k);
+					foreach($v as $a){
+						$val .= sprintf($option,
+									$a,
+									(md5($a)==md5($selected) ? ' selected="true"' : null),
+									$a,
+									doArgs('opt_extra', null, $args)
+								);
+					}
+				}else{
+					$val .= sprintf($option,
+						$k,
+						(md5($k)==md5($selected) ? ' selected="true"' : null),
+						($noKeys===true ? $k : $v),
+						doArgs('opt_extra', null, $args)
+					);
 
+				}
+			}
+			$val .= '</select>'."\n";
+			return $val;
+		}
+
+		//else carry on as normal
 		foreach($options as $k => $v){
 			if(is_array($v)){
 				$val .= sprintf('<optgroup label="%s">'."\n", $k);
@@ -323,20 +350,20 @@ class form extends coreClass{
 						$val .= $this->processSelect($b, $args);
 					}else{
 						$val .= sprintf($option,
-											$a,
-											(md5($a)==md5($selected) ? ' selected="true"' : null),
-											($noKeys===true ? $a : $b),
-											doArgs('opt_extra', null, $args)
-										);
+									$a,
+									(md5($a)==md5($selected) ? ' selected="true"' : null),
+									$b,
+									doArgs('opt_extra', null, $args)
+								);
 					}
 				}
 			}else{
 				$val .= sprintf($option,
-									$k,
-									(md5($k)==md5($selected) ? ' selected="true"' : null),
-									($noKeys===true ? $k : $v),
-									doArgs('opt_extra', null, $args)
-								);
+							$k,
+							(md5($k)==md5($selected) ? ' selected="true"' : null),
+							$v,
+							doArgs('opt_extra', null, $args)
+						);
 			}
 		}
 		$val .= '</select>'."\n";

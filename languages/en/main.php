@@ -79,8 +79,12 @@ $_lang['L_DELETE']				= 'Delete';
 $_lang['L_OVERVIEW']			= 'Overview';
 $_lang['L_SITE_OVERVIEW']		= 'Website Overview';
 $_lang['L_SYS_INFO']			= 'System Information';
+$_lang['L_CORE_SETTINGS']		= 'Core Settings';
 
-//default user panel
+$_lang['L_SET_UPDATED']			= 'Successfully updated settings. Returning you to the panel.';
+$_lang['L_SET_NOT_UPDATED']		= 'Error: Some settings wer not saved.<br />%s<br />Redirecting you back.';
+
+//UCP: default
 $_lang['L_ACCOUNT_PANEL']		= 'Account Settings';
 
 $_lang['L_EMAIL']				= 'Email Address';
@@ -108,7 +112,7 @@ $_lang['L_CHANGED_PASS']		= 'Password has been updated.';
 $_lang['L_PIN_UPDATE_OK']		= 'PIN has been updated.';
 $_lang['L_PIN_UPDATE_FAIL']		= 'Could not update PIN, Old PIN or Password given was incorrect.';
 
-//general panel
+//UCP: general
 $_lang['L_WEBSITE_PANEL']		= 'Website Settings';
 
 $_lang['L_SITE_SETTINGS']    	= 'Site Wide Settings';
@@ -127,7 +131,7 @@ $_lang['L_AUTO_WATCH']          = 'Auto Watch Threads';
 $_lang['L_TIMEZONE']            = 'Timezone';
 $_lang['L_QUICK_REPLIES']       = 'Quick Replies';
 
-//global panel stuff
+//UCP global langvars
 $_lang['L_PRO_UPDATE_SUCCESS']	= 'Profile update was successful.';
 $_lang['L_REQUIRED_INFO']		= 'Required Information';
 $_lang['L_NO_CHANGES']          = 'There are no changes to be made.';
@@ -137,6 +141,45 @@ $_lang['L_NO']                  = 'No';
 
 $_lang['L_ENABLED']             = 'Enabled';
 $_lang['L_DISABLED']            = 'Disabled';
+
+//ACP: core settings
+$_lang['L_SITE_CONFIG']			= 'Website Configuration';
+$_lang['L_CUSTOMIZE']			= 'Customization';
+$_lang['L_REG_LOGIN']			= 'Registration / Login';
+
+$_lang['L_SITE_TITLE'] 			= 'Site Title';
+$_lang['L_SITE_SLOGAN'] 		= 'Site Slogan';
+$_lang['L_ADMIN_EMAIL'] 		= 'Administrator Email';
+$_lang['L_INDEX_MODULE'] 		= 'Index Default Module';
+$_lang['L_SITE_TZ'] 			= 'Site Timezone';
+$_lang['L_DST'] 				= 'Daylight Saving Time';
+$_lang['L_DEF_DATE_FORMAT'] 	= 'Default Date Format';
+$_lang['L_DEF_LANG'] 			= 'Default Language';
+$_lang['L_DEF_THEME'] 			= 'Default Theme';
+$_lang['L_THEME_OVERRIDE'] 		= 'Override Site Theme';
+$_lang['L_ALLOW_REGISTER'] 		= 'Allow Registrations';
+$_lang['L_EMAIL_ACTIVATE'] 		= 'Email Activation';
+$_lang['L_MAX_LOGIN_TRIES'] 	= 'Max Login Tries';
+$_lang['L_USERNAME_EDIT'] 		= 'Editable Usernames';
+$_lang['L_GANALYTICS'] 			= 'Google Analytics Key';
+
+$_lang['L_DESC_IMODULE'] 		= 'This setting controls the active functionality you have running on the website index(home page). For more advanced configuration check the module Administration panel.';
+$_lang['L_DESC_SITE_TZ'] 		= 'This will change the time globally across the site, unless the user has overridden it.';
+$_lang['L_DESC_DEF_DATE'] 		= 'The default date format. You can use [url="?mode=dateFormats"]date formats[/url] for more information about configuring it.';
+$_lang['L_DESC_DEF_THEME'] 		= 'This will be the theme guests and users who havent configured their profiles will see.';
+$_lang['L_DESC_THEME_OVERRIDE'] = 'If this is enabled [b]ALL users[/b] will see the default theme';
+$_lang['L_DESC_ALLOW_REGISTER'] = 'If disabled, users will not be allowed to register on the website.';
+$_lang['L_DESC_EMAIL_ACTIVATE'] = 'Make the users have to validate their accounts via email before being allowed to login.';
+$_lang['L_DESC_MAX_LOGIN'] 		= 'Once a user exceeds this, he is banned for a predefined time.';
+$_lang['L_DESC_REMME'] 			= 'If disabled, users will not be allowed to use the remember me to automatically login.';
+$_lang['L_DESC_GANALYTICS'] 	= 'This allows you to use Google Analytics directly with the CMS.';
+
+//ACP: reCaptcha
+$_lang['L_RECAPTCHA']			= 'reCaptcha';
+$_lang['L_RECAPTCHA_SETTINGS']	= 'reCaptcha Settings';
+
+$_lang['L_PUB_KEY']				= 'Public Key';
+$_lang['L_PRIV_KEY']			= 'Private Key';
 
 //Time Stuff
 $_lang['DATETIME']['Sunday'] 	= 'Sunday';

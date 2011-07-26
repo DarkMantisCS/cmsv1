@@ -2,11 +2,11 @@
 /*======================================================================*\
 ||              Cybershade CMS - Your CMS, Your Way                     ||
 \*======================================================================*/
-if(!defined('INDEX_CHECK')){ die("INDEX_CHECK not defined."); }
+if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 $objPage->setTitle(langVar('B_UCP').' > '.langVar('L_WEBSITE_PANEL'));
 $objPage->addPagecrumb(array( array('url' => $url, 'name' => langVar('L_WEBSITE_PANEL')) ));
 $objTPL->set_filenames(array(
-	'body' => "modules/core/template/panels/panel.settings.tpl"
+	'body' => 'modules/core/template/panels/panel.settings.tpl'
 ));
 
 //grab the user info we need

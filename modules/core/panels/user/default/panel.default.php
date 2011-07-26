@@ -2,7 +2,7 @@
 /*======================================================================*\
 ||              Cybershade CMS - Your CMS, Your Way                     ||
 \*======================================================================*/
-if(!defined('INDEX_CHECK')){ die("INDEX_CHECK not defined."); }
+if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 $objPage->setTitle(langVar('B_UCP').' > '.langVar('L_ACCOUNT_PANEL'));
 $objPage->addPagecrumb(array( array('url' => $url, 'name' => langVar('L_ACCOUNT_PANEL')) ));
 $objTPL->set_filenames(array(

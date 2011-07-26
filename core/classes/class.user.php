@@ -158,7 +158,7 @@ class user extends coreClass{
 		//we need to populate the query
 		if(!isset($this->userInfo[$uid]) || $bypassCheck){
 			//figure out if they gave us a username or a user id
-			$user = (is_number($uid) ? 'u.id = "%s" ' : 'u.username = "%s" ');
+			$user = (is_number($uid) ? 'u.id = "%s" ' : 'upper( u.username ) = upper( %s ) ');
 
 			$query = $this->objSQL->prepare('SELECT u.*, e.*, u.id as id, o.timestamp, o.hidden, o.userkey '.
 											'FROM `$Pusers` u '.

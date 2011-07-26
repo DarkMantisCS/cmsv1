@@ -1,6 +1,3 @@
-<!-- BEGIN msg -->
-{msg.MSG}
-<!-- END msg -->
 {FORM_START}
 <div class="content corners">
     <div class="title corners-top iblock">
@@ -10,6 +7,11 @@
 	<div>
 		{HIDDEN}
         <table width="100%" border="0" cellspacing="0" cellpadding="5">
+        <!-- BEGIN msg -->
+          <tr>
+            <td colspan="2" class="padding">{msg.MSG}</td>
+          </tr>
+        <!-- END msg -->
         <!-- BEGIN _form_error -->
           <tr>
             <td colspan="2" class="boxred">{_form_error.ERROR_MSG}</td>

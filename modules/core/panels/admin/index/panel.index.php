@@ -2,7 +2,7 @@
 /*======================================================================*\
 ||              Cybershade CMS - Your CMS, Your Way                     ||
 \*======================================================================*/
-if(!defined('INDEX_CHECK')){ die("INDEX_CHECK not defined."); }
+if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 if(!defined('PANEL_CHECK')){ die('Error: Cannot include panel from current location.'); }
 $objPage->setTitle(langVar('B_ACP').' > '.langVar('L_OVERVIEW'));
 $objPage->addPagecrumb(array( array('url' => $url, 'name' => langVar('L_OVERVIEW')) ));

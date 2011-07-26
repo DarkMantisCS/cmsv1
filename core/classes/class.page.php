@@ -279,7 +279,7 @@ class page extends coreClass{
 			$theme = $this->objUser->grab('theme');
 		}
 
-		if($config['site']['template_override']){
+		if($this->config('site', 'theme_override', false)){
 			if(!is_dir(cmsROOT.'themes/'.$theme.'/')){
 				$theme = 'default';
 			}
@@ -393,9 +393,9 @@ class page extends coreClass{
 		}
 
 		//support for google analytics out of the box
-		if($this->config('site', 'analytics', false)){
+		if($this->config('site', 'google_analytics', false)){
 	        $jsCode[] = 'var _gaq = _gaq || []; '.
-						'_gaq.push(["_setAccount", "'.$this->config('site', 'analytics').'"]); '.
+						'_gaq.push(["_setAccount", "'.$this->config('site', 'google_analytics').'"]); '.
 						'_gaq.push(["_trackPageview"]); '.
 
 						'(function() { '.

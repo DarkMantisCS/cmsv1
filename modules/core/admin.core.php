@@ -2,7 +2,7 @@
 /*======================================================================*\
 ||              Cybershade CMS - Your CMS, Your Way                     ||
 \*======================================================================*/
-if (!defined('INDEX_CHECK')) die("INDEX_CHECK not defined.");
+if (!defined('INDEX_CHECK')) die('Error: Cannot access directly.');
 
 class core extends Module{
 
