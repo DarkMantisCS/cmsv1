@@ -95,7 +95,7 @@ $_lang['L_CHANGE_PWDS']			= 'Change Account Password';
 $_lang['F_NEW_PASS_CONF']		= 'Password Change Confirmation';
 $_lang['L_OLD_PASSWD']			= 'Old Password';
 $_lang['L_NEW_PASSWD']			= 'New Password';
-$_lang['L_NEW_PASSWD_CONF']		= 'Confirm New Password';
+$_lang['L_CONF_PASSWD']			= 'Confirm New Password';
 
 $_lang['L_PIN_UPDATE']			= 'PIN Code Update';
 $_lang['L_NEW_PIN_CONF']		= 'PIN Update Confirmation';

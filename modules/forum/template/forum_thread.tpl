@@ -19,12 +19,12 @@
 				<h4>{THREAD_TITLE}</h4>
 			</div>			
 			</td>
-			<td align="right" class="padding">{JUMPBOX}</td>
+			<td align="right" class="padding">{PAGINATION}</td>
 		</tr></table>
 	</div>
 	<table width="100%" border="0" cellspacing="0" cellpadding="0" class="padding"><tr>
-		<td align="left">{PAGINATION}</td>
-		<td align="right">
+		<td align="left">{JUMPBOX}</td>
+		<td align="right" width="30%">
             <!-- BEGIN reply -->
                 <a href="{reply.URL}" class="button blue float-right"><span class="freply">{reply.TEXT}</span></a>
             <!-- END reply -->

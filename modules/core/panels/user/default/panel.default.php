@@ -219,21 +219,27 @@ switch(strtolower($mode)){
 	header('content-type: application/x-javascript');
 
 	echo <<<JSC
-	$('chk_conf_pass').observe('click', function(){
-		['old_pass', 'new_pass', 'conf_pass'].each(function(s){ 
-			$(s).up('tr').toggle();
-		});
-	});
-	
-	$('chk_conf_pin').observe('click', function(){
-		['veri_pass', 'new_pin', 'old_pin', 'conf_pin'].each(function(s){ 
-			$(s).up('tr').toggle();
-		});
-	});
+	$('chk_conf_pass').observe('click', function(){ toggleFields(this); });
+	$('chk_conf_pin').observe('click', function(){ toggleFields(this); });
 	
 	['old_pass', 'new_pass', 'conf_pass', 'veri_pass', 'new_pin', 'old_pin', 'conf_pin'].each(function(s){ 
-		$(s).up('tr').toggle();
+		$(s).up('tr').hide();
 	});
+	
+	function toggleFields(ele){
+		var chkPass = ['old_pass', 'new_pass', 'conf_pass'];
+		var chkPin = ['veri_pass', 'new_pin', 'old_pin', 'conf_pin'];
+		
+		fields = (ele.id == 'chk_conf_pass' ? chkPass : chkPin);
+		
+		fields.each(function(s){ 
+			if(ele.checked){
+				$(s).up('tr').show();
+			}else{
+				$(s).up('tr').hide();
+			}
+		});
+	}
 JSC;
 	exit;
 	break;

@@ -31,10 +31,18 @@ function updateCats(){
 		}
 	});
 }
+
 function doPreview(){
-	new Ajax.Updater('preview', '/'+cmsROOT+'modules/forum/preview/?ajax', {method: 'post', parameters: {post_val: $F('post')}});
-	setTimeout(function () { togglePreview(); } , 550);
+	new Ajax.Updater('preview', '/'+cmsROOT+'modules/forum/preview/?ajax', {
+		method: 'post', 
+		parameters: { post_val: $F('post') },
+		onSuccess: function(){
+			togglePreview();
+			setTimeout(function () { updateDimensions(); } , 550);
+		}
+	});
 }
+
 function togglePreview(){
 	$('preview', 'post-content').invoke('toggle');
 }

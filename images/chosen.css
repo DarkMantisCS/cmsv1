@@ -245,6 +245,9 @@ div.chzn-container ul.chzn-results li {
   z-index: 22;
   margin: 0;
   list-style-type: none;
+  color: #000000;
+  clear: both;
+  float: left;
 }
 div.chzn-container ul.chzn-results li.active-result {
   cursor: pointer;
