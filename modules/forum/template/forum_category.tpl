@@ -2,7 +2,7 @@
 
 <!-- BEGIN threads -->
 <div class="float-right">
-	{PAGINATION} 
+	{PAGINATION}
 </div>
 <div class="clear"></div>
 
@@ -40,25 +40,25 @@
 		<td class="padding" data-url="{threads.row.LP_URL}">{threads.row.LP_AUTHOR}<br />{threads.row.LP_TIME}</td>
 	  </tr>
 	<!-- END row -->
-	
+
 	<!-- BEGIN search -->
 	  <tr id="{threads.row.ID}" class="{threads.row.CLASS}">
 		<td colspan="7">{threads.row.POST}</td>
 	  </tr>
 	<!-- END search -->
-	
+
 	<!-- BEGIN hr -->
 	  <tr id="{threads.row.ID}" class="{threads.row.CLASS}">
 		<td colspan="7" align="center"><hr /></td>
 	  </tr>
 	<!-- END hr -->
-	
+
 	<!-- BEGIN error -->
 	  <tr>
 		<td colspan="7" align="center">{threads.error.ERROR}</td>
 	  </tr>
 	<!-- END error -->
-	
+
     </table>
 	<div class="clear"></div>
 </div>

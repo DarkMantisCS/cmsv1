@@ -1,7 +1,7 @@
 <script>
 var RecaptchaOptions = { theme: "custom", lang: "en", custom_theme_widget: "recaptcha_widget" };
 </script>
-		
+
 <div id="recaptcha_widget" style="border: 1px solid #abadb3; margin-bottom: 5px; height:57px; background:#fff; float:right; width: 60%">
 <div id="recaptcha_image"></div>
 <input type="text" id="recaptcha_response_field" name="recaptcha_response_field" style="width: 99%;" required="required" />
@@ -13,7 +13,7 @@ var RecaptchaOptions = { theme: "custom", lang: "en", custom_theme_widget: "reca
   <textarea name="recaptcha_challenge_field" rows="3" cols="40" required="required"></textarea>
   <input type="hidden" name="recaptcha_response_field" value="manual_challenge" />
 </noscript>
-		
+
 <script>
 window.onload = function() {
 	Recaptcha.focus_response_field();

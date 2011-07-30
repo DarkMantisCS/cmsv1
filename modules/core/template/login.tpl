@@ -15,7 +15,7 @@
 		<label for="username">{L_PASSWORD}:</label>
 		<span class="field">{F_PASSWORD}</span>
 	</div><div class="clear">&nbsp;</div>
-	
+
 	<!-- BEGIN pin -->
 	<div>
 		<label for="username">{L_PIN}:
