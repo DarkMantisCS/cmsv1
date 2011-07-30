@@ -74,6 +74,7 @@ $_lang['L_REMME']               = 'Remember Me';
 $_lang['L_PER_DAY']				= '<strong>Per Day</strong>: %d';
 $_lang['L_EDIT']				= 'Edit';
 $_lang['L_DELETE']				= 'Delete';
+$_lang['L_COMMENTS']            = 'Comments: %s';
 
 //control panels
 $_lang['L_OVERVIEW']			= 'Overview';

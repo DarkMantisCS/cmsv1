@@ -6,16 +6,23 @@ define('INDEX_CHECK', 1);
 define('cmsDEBUG', 1);
 include_once('core/core.php');
 
-$module = $objCore->config('site', 'default_module');
+//check to make sure the module has the needed function to run
+$module = $objCore->config('site', 'index_module');
 if(is_dir(cmsROOT.'modules/'.$module.'/') && is_readable(cmsROOT.'modules/'.$module.'/cfg.php')){
 	if(!preg_match('/function\sshowMain\(/is', file_get_contents(cmsROOT.'modules/'.$module.'/class.'.$module.'.php'))){
 		$module = 'core';
 	}
-	include(cmsROOT.'modules/'.$module.'/class.'.$module.'.php');
-	$objModule = new $module($objPage, $objSQL, $objTPL, $objUser, $objTime, $objForm, $objComments);
-	$objModule->showMain();  
+}else{ $module = 'core'; }
+
+if(!empty($module) && $objCore->loadModule($module, true)){
+    $objModule = new $module($objCore);
+    if(method_exists($objModule, 'showMain')){
+		$objModule->showMain();
+    }else{
+		hmsgDie('FAIL', 'Sorry the Module that was supposed to be supplying this page with data apparently cant....');
+    }
 }else{
-	hmsgDie('FAIL', 'Sorry you dont have the correct permissions to access the '.$module.' Module.');
+    $objCore->throwHTTP(404);
 }
 
 $objPage->showHeader();

@@ -140,6 +140,50 @@ class forum extends Module{
 		}
 	}
 
+	public function showMain(){
+		$this->objTPL->set_filenames(array(
+			'body' => 'modules/forum/template/forum_newsPost.tpl'
+		));
+
+			$newsPosts = $this->objSQL->getTable($this->objSQL->prepare(
+				'SELECT t.*, p.timestamp as last_timestamp, p.post as post, count(DISTINCT p.id) as replies
+					FROM `$Pforum_threads` t
+	                LEFT JOIN `$Pforum_posts` p
+		                ON p.id = t.first_post_id
+					WHERE t.cat_id ="%d"
+					GROUP BY t.id
+					ORDER BY t.timestamp DESC 
+					LIMIT 4',				
+				$this->config('forum', 'news_category')
+			));
+
+			if(!$newsPosts){
+            	$this->objTPL->assign_block_vars('error', array(
+            		'ERROR' => msg('INFO', langVar('L_NO_NEWS'), 'return')
+            	));
+			}else{
+				$count = 0;
+				foreach($newsPosts as $thread){
+					$title = secureMe(doArgs('subject', null, $thread));
+					$author = $this->objUser->profile($thread['author']);
+					$threadURL = $this->generateThreadURL($thread);
+					
+					$this->objTPL->assign_block_vars('thread', array(
+						'ID'		=> $thread['id'],
+						'ROW'		=> $count++%2==1 ? 'row_color2' : 'row_color1',
+						'POSTED'	=> langVar('L_NEWS_POSTED_ON', $author, $this->objTime->mk_time($thread['posted'])),
+						
+						'AVATAR'    => $this->objUser->parseAvatar($thread['author'], 64),
+						'AUTHOR'    => $author,
+						'TITLE'		=> '<a href="'.$threadURL.'">'.$title.'</a>',
+						'POST'		=> contentParse($thread['post']),
+						'COMMENTS'  => '<a href="'.$threadURL.'.html">'.langVar('L_COMMENTS', $thread['replies']).'</a>',
+					));
+				}
+			}
+		$this->objTPL->parse('body', false);
+	}
+
 	/**
 	 * Returns sql about a specific forum
 	 *
@@ -1707,7 +1751,8 @@ class forum extends Module{
 					echo '<script>document.location= "'.$this->generateThreadURL($thread).'?mode=last_page";</script>';
 					exit;
 				}
-
+				
+				$post['id'] = $post_insert;
 				echo $this->outputPosts(array($post), $thread);
 				exit;
 			}

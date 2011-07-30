@@ -101,9 +101,9 @@ document.observe('dom:loaded', function(){
 
 		//EIP buttons
 		$$("a[class=editBtn]").each(function(ele){
-	        Event.observe(ele, 'click', function(event){
+	        Event.observe(ele, 'click', function(e){
+				Event.stop(e);
 	            post_eip(str_replace("post_", "", ele.id));
-				Event.stop(event);
 	        });
 		});
 

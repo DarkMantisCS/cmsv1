@@ -131,8 +131,8 @@ div.chzn-container div.chzn-search input {
   margin: 1px 0;
   outline: 0;
 }
-div.chzn-container div.chzn-search.nosearch, 
-div.chzn-container div.chzn-search input.nosearch, 
+div.chzn-container div.chzn-search.nosearch,
+div.chzn-container div.chzn-search input.nosearch,
 div.chzn-container div.chzn-search input.nosearch:focus {
   height: 0px; padding: 0; border: 0; margin: 0; margin-top: 0; margin-bottom: 0; background: none !important; box-shadow: 0;
 }
@@ -159,7 +159,6 @@ div.chzn-container ul.chzn-choices:focus {
   box-shadow: 0px 0px 5px #999;
 }
 div.chzn-container ul.chzn-choices li {
-  float: left;
   list-style-type: none;
   margin: 0px;
 }
@@ -247,7 +246,6 @@ div.chzn-container ul.chzn-results li {
   list-style-type: none;
   color: #000000;
   clear: both;
-  float: left;
 }
 div.chzn-container ul.chzn-results li.active-result {
   cursor: pointer;

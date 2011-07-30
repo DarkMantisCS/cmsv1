@@ -120,6 +120,7 @@ switch(strtolower($mode)){
 					langVar('L_SITE_TZ') 		=> $timezone,
 					langVar('L_DST') 			=> $objForm->radio('dst', $yn, $objCore->config('time', 'dst')),
 					langVar('L_DEF_DATE_FORMAT')=> $objForm->inputbox('default_format', 'input', $objCore->config('time', 'default_format')),
+					
 				langVar('L_REG_LOGIN')		=> '_header_',
 					langVar('L_USERNAME_EDIT') 	=> $objForm->radio('username_change', $yn, $objCore->config('user', 'username_change')),
 					langVar('L_ALLOW_REGISTER') => $objForm->radio('allow_register', $yn, $objCore->config('site', 'allow_register')),
@@ -182,7 +183,7 @@ switch(strtolower($mode)){
 				$postSetting = doArgs($setting, null, $_POST);
 				if($postSetting === null){ continue; }
 
-				if($postSetting!=$objCore->config($array, $setting, true)){
+				if(md5($postSetting) != md5($objCore->config($array, $setting, 'true'))){
 					$update[$setting] = $postSetting;
 				}
 			}

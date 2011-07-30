@@ -116,6 +116,10 @@ $_lang['I_LOCKED']              		= 'Locked';
 $_lang['I_STICKY']              		= 'Sticky';
 $_lang['I_ANNOUNCEMENT']        		= 'Announcement';
 
+//index page
+$_lang['L_NO_NEWS']						= 'There isnt any recorded news.';
+$_lang['L_POSTED_ON']					= 'Posted On <br> %s';
+$_lang['L_NEWS_POSTED_ON']				= 'News Posted By %s on %s';
 
 //admin
 $_lang['L_CONFIG'] 						= 'Forum Configuration';
