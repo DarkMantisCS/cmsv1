@@ -318,7 +318,6 @@ CREATE TABLE IF NOT EXISTS `cscms_menu_blocks` (
   `module` text COLLATE utf8_bin,
   `function` text COLLATE utf8_bin,
   `position` tinyint(2) NOT NULL DEFAULT '0',
-  `order` tinyint(2) NOT NULL DEFAULT '0',
   `perms` tinyint(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_id` (`unique_id`)
@@ -328,7 +327,7 @@ CREATE TABLE IF NOT EXISTS `cscms_menu_blocks` (
 -- Dumping data for table `cscms_menu_blocks`
 --
 
-INSERT INTO `cscms_menu_blocks` (`id`, `unique_id`, `module`, `function`, `position`, `order`, `perms`) VALUES
+INSERT INTO `cscms_menu_blocks` (`id`, `unique_id`, `module`, `function`, `position`, `perms`) VALUES
 (1, 'jv1h9w6m2y', NULL, NULL, 0, 0),
 (2, 'x91z6yvmrw', 'core', 'affiliates', 0, 0),
 (3, 'ndxhzj9w54', 'core', 'wio', 0, 0),

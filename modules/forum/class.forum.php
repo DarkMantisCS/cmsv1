@@ -875,10 +875,9 @@ class forum extends Module{
     	$this->objTPL->assign_vars(array(
             'THREAD_TITLE'  => $threadTitle,
             'PAGINATION'    => $objPagination->getPagination(true),
-            'JUMPBOX'       => $this->objForm->start('jump'.randcode(2)).
-                                $this->buildJumpBox('jumpbox', $this->buildJumpBoxArray(), $thread['cat_id'], false, ' onchange="jump(\'jumpbox\');" ').
-                                $this->objForm->finish(),
-    	));
+            'JUMPBOX'       => $this->objForm->start('jump'.randcode(2)).$this->buildJumpBox('jumpbox', $this->buildJumpBoxArray(), $thread['cat_id'], false).$this->objForm->finish(),
+            'JUMPBOX2'      => $this->objForm->start('jump'.randcode(2)).$this->buildJumpBox('jumpbox2', $this->buildJumpBoxArray(), $thread['cat_id'], false).$this->objForm->finish(),
+		));
 
 		//setup the watch thread trigger
         $watchThread = $this->objSQL->getInfo('forum_watch', array('user_id ="%s" AND thread_id ="%s"', $this->objUser->grab('id'), $id));
@@ -1728,7 +1727,7 @@ class forum extends Module{
 	public function editPost($id){
         //grab the post were reffering to
         $post = $this->objSQL->getLine($this->objSQL->prepare('SELECT * FROM `$Pforum_posts` WHERE id ="%s" LIMIT 1;', $id));
-            if(!$post) hmsgDie('FAIL', 'Failed to retreive post information');
+            if(!$post){ hmsgDie('FAIL', 'Failed to retreive post information'); }
 
         $thread = $this->objSQL->getLine($this->objSQL->prepare(
 				'SELECT t.*, COUNT(DISTINCT p.id) as replies
@@ -1738,31 +1737,24 @@ class forum extends Module{
 					GROUP BY t.id',
 				$post['thread_id']
 		));
-            if(!$thread) hmsgDie('FAIL', 'Failed to retreive thread information');
+            if(!$thread){ hmsgDie('FAIL', 'Failed to retreive thread information'); }
 
 		$category = $this->getForumInfo($thread['cat_id']);
 		$category = $category[0];
 		$catAuth = $this->auth[$category['id']];
 
-        //give em write by default
-            $writeTest = true; $msg = false;
-
+		$writeTest = false;
         //see if the user has write permissions
-        if(!$catAuth['auth_edit'] && !$catAuth['auth_mod'] && !User::$IS_MOD){
-            $writeTest = false;
-        }
-
-        //apparently they havent..
-        if(!$writeTest || $thread['locked']){
-        	$msg = $thread['locked'] ? langVar('L_LOCKED') : langVar('L_AUTH_POST', $catAuth['auth_edit_type']);
-        }
-
-		//check to make sure either author of post
-		if($this->objUser->grab('id') != $post['author'] || ($thread['replies'] != 1 && (time()-$post['posted'] > $this->config('forum', 'post_edit_time')))){
-			$msg = langVar('L_NO_EDIT_ABILITY');
+		if(User::$IS_MOD || $catAuth['auth_mod']
+			//make sure the user is the author
+			|| ($catAuth['auth_edit'] && $this->objUser->grab('id') == $post['author']
+				//make sure there is only 1 reply, or they are within the time limit
+				&& ($thread['replies'] == 1 || (time()-$post['posted'] < $this->config('forum', 'post_edit_time'))))
+		){
+			$writeTest = true;
 		}
 
-		if($msg!==false){
+		if(!$writeTest){
             $this->objTPL->set_filenames(array(
             	'body' => 'modules/forum/template/forum_category.tpl'
             ));
@@ -1850,7 +1842,7 @@ class forum extends Module{
 
             //yada yada, the general tpl crap..
 			$this->objTPL->assign_vars(array(
-				'F_START'       => $this->objForm->start('edit', array('method' => 'POST', 'action' => '')),
+				'F_START'       => $this->objForm->start('edit', array('method' => 'POST', 'action' => '?mode=edit&postid='.$id)),
 				'F_END'         => $this->objForm->finish(),
 
 				'SMILIES'       => $this->generateSmilies(),
@@ -1906,7 +1898,7 @@ class forum extends Module{
                     hmsgDie('FAIL', 'Error: This is not your post, or there was a problem with saving the post. Error 0x02;');
                 }
 
-            $this->objPage->redirect('/'.root().'modules/forum/thread/'.seo($thread['title']).'-'.$thread['id'].'.html');
+            $this->objPage->redirect('/'.root().'modules/forum/thread/'.seo($thread['subject']).'-'.$thread['id'].'.html');
 			hmsgDie('INFO', 'Thread successfully posted. Redirecting you to it.');
 		}
 	}

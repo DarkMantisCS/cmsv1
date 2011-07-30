@@ -322,7 +322,7 @@ class form extends coreClass{
 					foreach($v as $a){
 						$val .= sprintf($option,
 									$a,
-									(md5($a)==md5($selected) ? ' selected="true"' : null),
+									(md5($a)==md5($selected) ? ' selected' : null),
 									$a,
 									doArgs('opt_extra', null, $args)
 								);
@@ -330,7 +330,7 @@ class form extends coreClass{
 				}else{
 					$val .= sprintf($option,
 						$k,
-						(md5($k)==md5($selected) ? ' selected="true"' : null),
+						(md5($k)==md5($selected) ? ' selected' : null),
 						($noKeys===true ? $k : $v),
 						doArgs('opt_extra', null, $args)
 					);

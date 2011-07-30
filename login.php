@@ -25,7 +25,7 @@ switch($mode){
 		$_SESSION['login']['referer'] = $_SERVER['HTTP_REFERER'];
 
 	    $objTPL->set_filenames(array(
-	    	'body' => 'modules/core/template/login.tpl'
+	    	'body' => 'modules/core/template/panels/panel.settings.tpl'
 	    ));
 
 		//if we are going to the acp
@@ -46,8 +46,6 @@ switch($mode){
 			$objTPL->assign_block_vars('remember_me', array());
         }
 
-		//but enables the pin portion of the form
-        if($acpCheck){ $objTPL->assign_block_vars('pin', array()); }
 
 		$hash = md5(time().'userkey');
     	$_SESSION['login']['cs_hash'] = $hash;
@@ -59,26 +57,43 @@ switch($mode){
 			$hidden .= $objForm->inputbox('username', 'hidden', $userValue);
 		}
 
-    	$objTPL->assign_vars(array(
-			'FORM_START' 		=> $objForm->start('login', array('method' => 'POST', 'action' => '/'.root().'login.php?action=check')),
-			'FORM_END'			=> $hidden . $objForm->inputbox('hash', 'hidden', $hash) . $objForm->finish(),
+		$fields = array(
+	        langVar('L_USERNAME') => $objForm->inputbox('username', 'text', $userValue, array('class'=>'icon username', 'br'=>true, 'disabled'=>$acpCheck, 'required'=>(!$acpCheck))),
+			langVar('L_PASSWORD') => $objForm->inputbox('password', 'password', '', array('class'=>'icon password', 'br'=>true, 'required'=>(!$acpCheck))),
+			langVar('L_REMBER_ME') => $objForm->select('remember', array('0'=>'No Thanks', '1'=>'Forever'), array('selected'=>0))
+		);
 
-			'L_USERNAME' 		=> langVar('L_USERNAME'),
-			'F_USERNAME'		=> $objForm->inputbox('username', 'text', $userValue, array('class'=>'icon username', 'br'=>true, 'disabled'=>$acpCheck, 'required'=>(!$acpCheck))),
-
-			'L_PASSWORD' 		=> langVar('L_PASSWORD'),
-			'F_PASSWORD'		=> $objForm->inputbox('password', 'password', '', array('class'=>'icon password', 'br'=>true, 'required'=>(!$acpCheck))),
-
-			'L_PIN'				=> langVar('L_PIN'),
-			'L_PIN_DESC'		=> langVar('L_PIN_DESC'),
-			'F_PIN'			    => $objForm->inputbox('pin', 'password', '', array('class'=>'icon pin', 'br'=>true, 'autocomplete'=>false)),
+		//but enables the pin portion of the form
+        if($acpCheck){
+        	$fields += array(
+				langVar('L_PIN') => $objForm->inputbox('pin', 'password', '', array('class'=>'icon pin', 'br'=>true, 'autocomplete'=>false)),
+			);
+        }
 
 
-			'L_REMBER_ME'		=> langVar('L_REMBER_ME'),
-			'F_REMBER_ME'		=> $objForm->select('remember', array('0'=>'No Thanks', '1'=>'Forever'), array('selected'=>0)),
+		$objForm->outputForm(array(
+			'FORM_START' 	=> $objForm->start('panel', array('method' => 'POST', 'action' => '/'.root().'login.php?action=check')),
+			'FORM_END'	 	=> $objForm->finish(),
 
-	  		'F_SUBMIT'			=> $objForm->button('submit', 'Login'),
+			'FORM_TITLE' 	=> langVar('L_LOGIN'),
+			'FORM_SUBMIT'	=> $objForm->button('submit', 'Login'),
+			'FORM_RESET' 	=> $objForm->button('reset', 'Reset'),
+
+			'HIDDEN' 		=> $hidden . $objForm->inputbox('hash', 'hidden', $hash),
+		),
+		array(
+			'field' => $fields,
+			'desc' => array(
+				langVar('L_PIN') => langVar('L_PIN_DESC'),
+			),
+			'errors' => $_SESSION['site']['panel']['error'],
+		),
+		array(
+			'header' => '<h4>%s</h4>',
+			'dedicatedHeader' => true,
+			'parseDesc' => true,
 		));
+
 
 		$objTPL->parse('body', false);
 	break;

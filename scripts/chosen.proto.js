@@ -35,14 +35,14 @@
     };
     Chosen.prototype.set_up_html = function() {
       var base_template, container_props, dd_top, dd_width, sf_width;
-      this.container_id = this.form_field.id + "_chzn";
+      this.container_id = this.form_field.identify().replace('.', '_') + "_chzn";
       this.f_width = this.form_field.getStyle("width") ? parseInt(this.form_field.getStyle("width"), 10) : this.form_field.getWidth();
       container_props = {
         'id': this.container_id,
         'class': 'chzn-container',
         'style': 'width: ' + this.f_width + 'px'
       };
-      this.default_text = this.form_field.readAttribute('title') ? this.form_field.readAttribute('title') : this.default_text_default;
+      this.default_text = this.form_field.readAttribute('data-placeholder') ? this.form_field.readAttribute('data-placeholder') : this.default_text_default;
       base_template = this.is_multiple ? new Element('div', container_props).update(this.multi_temp.evaluate({
         "default": this.default_text
       })) : new Element('div', container_props).update(this.single_temp.evaluate({
@@ -60,7 +60,9 @@
         "width": dd_width + "px",
         "top": dd_top + "px"
       });
-      this.search_field = this.container.down('input'); 
+      
+      this.options = getDataAttributes(this.form_field.identify());
+      this.search_field = this.container.down('input');
       this.search_results = this.container.down('ul.chzn-results');
       this.search_field_scale();
       this.search_no_results = this.container.down('li.no-results');
@@ -71,12 +73,12 @@
         this.search_container = this.container.down('div.chzn-search');
         this.selected_item = this.container.down('.chzn-single');
         sf_width = dd_width - get_side_border_padding(this.search_container) - get_side_border_padding(this.search_field);
-        this.search_field.setStyle({
-          "width": sf_width + "px"
-        });
+        
+        this.search_field.setStyle({"width": sf_width + "px"});
+        if(empty(this.options.search) || this.options.search=='false'){
+	        [this.search_field, this.search_field.up()].invoke('addClassName', 'nosearch');
+        }
       }
-      this.options = getDataAttributes(this.form_field.id);
-      if(empty(this.options.search) || this.options.search=='false'){ this.search_container.hide(); }
       
       this.results_build();
       return this.set_tab_index();
@@ -168,20 +170,17 @@
     };
     Chosen.prototype.close_field = function() {
       document.stopObserving("click", this.click_test_action);
-      if(!this.is_multiple) {
+      if (!this.is_multiple) {
         this.selected_item.tabIndex = this.search_field.tabIndex;
         this.search_field.tabIndex = -1;
       }
       this.active_field = false;
       this.results_hide();
-      this.winnow_results_clear();
       this.container.removeClassName("chzn-container-active");
+      this.winnow_results_clear();
       this.clear_backstroke();
-      
-      if(empty(this.options.search) || this.options.search!='false'){
       this.show_search_field_default();
       return this.search_field_scale();
-      }
     };
     Chosen.prototype.activate_field = function() {
       if (!this.is_multiple && !this.active_field) {
@@ -190,14 +189,12 @@
       }
       
       this.container.addClassName("chzn-container-active");
-      if(empty(this.options.search) || this.options.search!='false'){
-	      this.active_field = true;
-	      this.search_field.value = this.search_field.value;
-	      return this.search_field.focus();
-      }
+      this.active_field = true;
+      this.search_field.value = this.search_field.value;      
+      return this.search_field.focus();
     };
     Chosen.prototype.test_active_click = function(evt) {
-      if (evt.target.up('#' + this.container.id)) {
+      if (evt.target.up('#' + this.container_id)) {
         return this.active_field = true;
       } else {
         return this.close_field();
@@ -225,19 +222,18 @@
           if (data.selected && this.is_multiple) {
             this.choice_build(data);
           } else if (data.selected && !this.is_multiple) {
-            this.selected_item.down("span").update(data.text);
+            this.selected_item.down("span").update(data.html);
           }
         }
       }
-      
       this.show_search_field_default();
       this.search_field_scale();
-      this.search_results.update(content); 
+      this.search_results.update(content);
       return this.parsing = false;
     };
     Chosen.prototype.result_add_group = function(group) {
       if (!group.disabled) {
-        group.dom_id = this.form_field.id + "chzn_g_" + group.array_index;
+        group.dom_id = this.container_id + "_g_" + group.array_index;
         return '<li id="' + group.dom_id + '" class="group-result">' + group.label.escapeHTML() + '</li>';
       } else {
         return "";
@@ -246,7 +242,7 @@
     Chosen.prototype.result_add_option = function(option) {
       var classes;
       if (!option.disabled) {
-        option.dom_id = this.form_field.id + "chzn_o_" + option.array_index;
+        option.dom_id = this.container_id + "_o_" + option.array_index;
         classes = option.selected && this.is_multiple ? [] : ["active-result"];
         if (option.selected) {
           classes.push("result-selected");
@@ -254,7 +250,7 @@
         if (option.group_array_index != null) {
           classes.push("group-option");
         }
-        return '<li id="' + option.dom_id + '" class="' + classes.join(' ') + '">' + option.text.escapeHTML() + '</li>';
+        return '<li id="' + option.dom_id + '" class="' + classes.join(' ') + '">' + option.html + '</li>';
       } else {
         return "";
       }
@@ -371,13 +367,13 @@
     };
     Chosen.prototype.choice_build = function(item) {
       var choice_id, link;
-      choice_id = this.form_field.id + "_chzn_c_" + item.array_index;
+      choice_id = this.container_id + "_c_" + item.array_index;
       this.choices += 1;
       this.search_container.insert({
         before: this.choice_temp.evaluate({
-          "id": choice_id,
-          "choice": item.text,
-          "position": item.array_index
+          id: choice_id,
+          choice: item.html,
+          position: item.array_index
         })
       });
       link = $(choice_id).down('a');
@@ -417,7 +413,7 @@
         if (this.is_multiple) {
           this.choice_build(item);
         } else {
-          this.selected_item.down("span").update(item.text);
+          this.selected_item.down("span").update(item.html);
         }
         this.results_hide();
         this.search_field.value = "";
@@ -438,7 +434,7 @@
       result_data = this.results_data[pos];
       result_data.selected = false;
       this.form_field.options[result_data.options_index].selected = false;
-      result = $(this.form_field.id + "chzn_o_" + pos);
+      result = $(this.container_id + "_o_" + pos);
       result.removeClassName("result-selected").addClassName("active-result").show();
       this.result_clear_highlight();
       this.winnow_results();
@@ -459,7 +455,7 @@
       startTime = new Date();
       this.no_results_clear();
       results = 0;
-      searchText = this.search_field.value === this.default_text ? "" : this.search_field.value.strip();
+      searchText = this.search_field.value === this.default_text ? "" : this.search_field.value.strip().escapeHTML();
       regex = new RegExp('^' + searchText.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&"), 'i');
       zregex = new RegExp(searchText.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&"), 'i');
       _ref = this.results_data;
@@ -471,11 +467,11 @@
           } else if (!(this.is_multiple && option.selected)) {
             found = false;
             result_id = option.dom_id;
-            if (regex.test(option.text)) {
+            if (regex.test(option.html)) {
               found = true;
               results += 1;
-            } else if (option.text.indexOf(" ") >= 0 || option.text.indexOf("[") === 0) {
-              parts = option.text.replace(/\[|\]/g, "").split(" ");
+            } else if (option.html.indexOf(" ") >= 0 || option.html.indexOf("[") === 0) {
+              parts = option.html.replace(/\[|\]/g, "").split(" ");
               if (parts.length) {
                 for (_j = 0, _len2 = parts.length; _j < _len2; _j++) {
                   part = parts[_j];
@@ -488,11 +484,11 @@
             }
             if (found) {
               if (searchText.length) {
-                startpos = option.text.search(zregex);
-                text = option.text.substr(0, startpos + searchText.length) + '</em>' + option.text.substr(startpos + searchText.length);
+                startpos = option.html.search(zregex);
+                text = option.html.substr(0, startpos + searchText.length) + '</em>' + option.html.substr(startpos + searchText.length);
                 text = text.substr(0, startpos) + '<em>' + text.substr(startpos);
               } else {
-                text = option.text;
+                text = option.html;
               }
               if ($(result_id).innerHTML !== text) {
                 $(result_id).update(text);
@@ -538,7 +534,7 @@
     };
     Chosen.prototype.no_results = function(terms) {
       return this.search_results.insert(this.no_results_temp.evaluate({
-        "terms": terms.escapeHTML()
+        terms: terms
       }));
     };
     Chosen.prototype.no_results_clear = function() {
@@ -668,7 +664,7 @@
         }
         div = new Element('div', {
           'style': style_block
-        }).update(this.search_field.value);
+        }).update(this.search_field.value.escapeHTML());
         document.body.appendChild(div);
         w = Element.measure(div, 'width') + 25;
         div.remove();
@@ -745,6 +741,7 @@
             options_index: this.options_index,
             value: option.value,
             text: option.text,
+            html: option.innerHTML,
             selected: option.selected,
             disabled: group_disabled === true ? group_disabled : option.disabled,
             group_array_index: group_position

@@ -21,14 +21,13 @@
 <div class="content corners">
     <div class="title corners-top"><h4>{ID}{L_POST_BODY}</h4></div>
     <div class="padding row_color1">
-		<div class="iblock">{BUTTONS}</div>
+		<div class="bbrow iblock">{BUTTONS}</div>
 		<div class="clear"></div>
 	</div>
 	<table width="100%" border="0" class="padding">
 		<tr><td rowspan="2" width="80%" valign="top">
 			<div id="preview" style="display:none;"> </div>
-			<div id="post-content">
-				{F_POST}			</div>		
+			<div id="post-content">{F_POST}</div>		
 		</td><td colspan="2" valign="top">
 			<!-- BEGIN new_post -->
 			<div class="content corners">
@@ -36,7 +35,8 @@
 				<div class="padding">
 					{POST_MODE}
 					<div class="clear"></div>
-					{WATCH_TOPIC}<br />{AUTO_LOCK}				</div>
+					{WATCH_TOPIC}<br />{AUTO_LOCK}
+				</div>
 				<div class="clear"></div>
 			</div><br />
 			<!-- END new_post -->

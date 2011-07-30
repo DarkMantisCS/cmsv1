@@ -19,21 +19,19 @@
 				<h4>{THREAD_TITLE}</h4>
 			</div>			
 			</td>
-			<td align="right" class="padding">				
-				{JUMPBOX}
-			</td>
+			<td align="right" class="padding">{JUMPBOX}</td>
 		</tr></table>
 	</div>
 	<table width="100%" border="0" cellspacing="0" cellpadding="0" class="padding"><tr>
 		<td align="left">{PAGINATION}</td>
 		<td align="right">
-		<!-- BEGIN reply -->
-			<a href="{reply.URL}" class="button blue float-right"><span class="freply">{reply.TEXT}</span></a>
-		<!-- END reply -->
-		<!-- BEGIN qreply -->
-			&nbsp;<a href="#quick_reply" class="button blue float-right"><span class="freply">{qreply.TEXT}</span></a>
-		<!-- END qreply -->
-		</td>
+            <!-- BEGIN reply -->
+                <a href="{reply.URL}" class="button blue float-right"><span class="freply">{reply.TEXT}</span></a>
+            <!-- END reply -->
+            <!-- BEGIN qreply -->
+                &nbsp;<a href="#quick_reply" class="button blue float-right"><span class="freply">{qreply.TEXT}</span></a>
+            <!-- END qreply -->
+        </td>
 	</tr></table>
 </div><br />
 <div class="clear"></div>
@@ -45,23 +43,16 @@
 <div class="content corners">
     <div class="title corners-top">
 		<table width="100%" border="0" cellspacing="0" cellpadding="0"><tr>
-			<td align="left" valign="middle">
-				<h4>{WATCH}</h4>
-			</td>
-			<td align="right" class="padding">				
-				{JUMPBOX}
-			</td>
+			<td align="left" valign="middle"><h4>{WATCH}</h4></td>
+			<td align="right" class="padding">{PAGINATION}</td>
 		</tr></table>
 	</div>
 	<table width="100%" border="0" cellspacing="0" cellpadding="0" class="padding"><tr>
-		<td align="left">{PAGINATION}</td>
+		<td align="left">{JUMPBOX2}</td>
 		<td align="right">
 		<!-- BEGIN reply -->
 			<a href="{reply.URL}" class="button blue float-right"><span class="freply">{reply.TEXT}</span></a>
 		<!-- END reply -->
-		<!-- BEGIN qreply -->
-			&nbsp;<a href="#quick_reply" class="button blue float-right"><span class="freply">{qreply.TEXT}</span></a>
-		<!-- END qreply -->
 		</td>
 	</tr></table>
 </div><br />

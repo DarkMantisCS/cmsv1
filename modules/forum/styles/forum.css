@@ -44,3 +44,5 @@ input.smilie{
 td.editor-btn{
 	padding: 0 0 8px 6px;
 }
+
+div.bbrow select{ width: auto; height: 22px; }
