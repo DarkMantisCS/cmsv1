@@ -269,15 +269,15 @@ CREATE TABLE IF NOT EXISTS `cs_menu_setups` (
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin ;
 SQL;
 $sql[] = <<<SQL
-INSERT INTO `cs_menu_setups` (`module`, `pageId`, `menuId`, `params`, `order`) VALUES
-    ('core', 'default',  'jv1h9w6m2y', 'menu_name=mm\r\nmenu_title=Main Menu', 1),
-	('core', 'default',  'x91z6yvmrw', 'menu_title=m_affiliates\r\nlimit=6\r\nperRow=2', 3),
-	('core', 'default',  'ndxhzj9w54', 'menu_title=m_wio', 4),
-	('core', 'default',  '9rgtdk2zv8', 'menu_title=m_login', 2),
-    ('forum','default',  'jv1h9w6m2y', 'menu_name=mm\r\nmenu_title=Main Menu', 0),
-    ('forum','default',  'n4fym8r9gd', 'menu_title=m_latest_post\r\nlimit=5', 0),
-    ('forum','default',  'ndxhzj9w54', 'menu_title=m_wio', 0),
-    ('forum', 'default', '343fwfwr34', 'menu_title=M_TOP_USER\r\nlimit=5', 2);
+INSERT INTO `cs_menu_setups` (`module`, `page_id`, `menu_id`, `params`, `order`) VALUES
+    ('core', 	'default',  'jv1h9w6m2y', 'menu_name=mm\r\nmenu_title=Main Menu', 1),
+	('core', 	'default',  'x91z6yvmrw', 'menu_title=m_affiliates\r\nlimit=6\r\nperRow=2', 3),
+	('core', 	'default',  'ndxhzj9w54', 'menu_title=m_wio', 4),
+	('core', 	'default',  '9rgtdk2zv8', 'menu_title=m_login', 2),
+    ('forum',	'default',  'jv1h9w6m2y', 'menu_name=mm\r\nmenu_title=Main Menu', 0),
+    ('forum',	'default',  'n4fym8r9gd', 'menu_title=m_latest_post\r\nlimit=5', 0),
+    ('forum',	'default',  'ndxhzj9w54', 'menu_title=m_wio', 0),
+    ('forum', 	'default',  '343fwfwr34', 'menu_title=M_TOP_USER\r\nlimit=5', 2);
 SQL;
 
 /*--Affiliate System
