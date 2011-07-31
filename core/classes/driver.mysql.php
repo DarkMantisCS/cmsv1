@@ -658,7 +658,7 @@ class mysql extends coreClass implements SQLBase{
 		if(is_empty($this->query)){ return false; }
 
 		$error = mysql_error();
-		if(is_empty($error)){ return false; }
+			if(is_empty($error) || $error == $this->lastError){ return false; }
 
 		$info['uid'] 			= (User::$IS_ONLINE ? $this->objUser->grab('id') : '0');
 		$info['date'] 			= time();
@@ -670,6 +670,7 @@ class mysql extends coreClass implements SQLBase{
 
 		$info['error'] 			= secureMe($error);
 		$info['lineInfo'] 		= secureMe($fileInfo);
+		$this->lastError = $error;
 		return $this->insertRow('sqlerrors', $info, false);
 	}
 

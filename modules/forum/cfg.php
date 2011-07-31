@@ -10,6 +10,6 @@ $mod_desc		= 'Forum Module';
 $mod_dir		= './modules/forum/';
 $mod_author		= 'xLink';
 $mod_url		= 'http://www.cybershade.org';
-$mod_id			= '7f23addd6b9d4aef7b21d6e07f029988';
+$mod_id			= 'aaa3078a02a0de4e85925611c8a9b677';
 
 ?>

@@ -124,7 +124,6 @@ class forum extends Module{
 				}
             break;
 
-
             case 'previewpost':
                 $this->preview();
             break;
@@ -184,7 +183,7 @@ class forum extends Module{
 						'AUTHOR'    => $author,
 						'TITLE'		=> '<a href="'.$threadURL.'">'.$title.'</a>',
 						'POST'		=> contentParse($thread['post']),
-						'COMMENTS'  => '<a href="'.$threadURL.'.html">'.langVar('L_COMMENTS', $thread['replies']).'</a>',
+						'COMMENTS'  => '<a href="'.$threadURL.'.html">'.langVar('L_COMMENTS', ($thread['replies']-1)).'</a>',
 					));
 				}
 			}
