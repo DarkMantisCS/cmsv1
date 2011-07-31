@@ -109,3 +109,14 @@ input[name*="reset"]:hover, .editor_cancel_button:hover	{ background-color: #872
 	margin: 2px;
 	font-weight: bold;
 }
+
+.button span, input.icon{
+    text-indent: 23px;
+	display: block;
+    height: 16px;
+}
+
+input.icon{
+	background-position: 5px 50%;
+	background-repeat: no-repeat;
+}

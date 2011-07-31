@@ -55,7 +55,6 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 		die(sprintf($errorTPL, 'Fatal Error - 404', 'We have been unable to locate/read the constants file.'));
 	}else{ require_once($file); }
 
-
 	$redoHandler = false;
 	$file = cmsROOT.'core/debugFunctions.php';
 	if(!is_readable($file)){
@@ -108,13 +107,14 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 					$libDir.'geshi/class.geshi.php',
 					$libDir.'nbbc/class.nbbc.php'
 				);
+					
 		foreach($classFiles as $file){
 			$file = $file;
 			if(!is_file($file) || !is_readable($file)){
 				msgDie('FAIL', sprintf($errorTPL, 'Fatal Error - 404', 'We have been unable to locate/read the '.$file.' file.'));
 			}else{ require_once($file); }
 		}
-
+		
 	$objCore = new coreClass;
 
 	//cache setup
@@ -149,7 +149,7 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 	//plugins have been moved here so we can hook into the init of stage 2 classes
 	//and possibly load some custom ones such as reCaptcha etc ;)
 	$classes['objPlugins']		= array($classDir.'class.plugins.php');
-
+	
 	//init the sql and cache classes, we need these before we can go any further
 	$doneSetup = $objCore->setup($classes);
 	if(!$doneSetup){
@@ -367,7 +367,7 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 		}
 
 	//if site is closed, make it so, kill debug, no menu is needed, 'cmsCLOSED' can be used as a bypass
-	if (($objCore->config('site', 'closed') == 1) && (!defined('cmsCLOSED'))){
+	if (($objCore->config('site', 'site_closed') == 1) && (!defined('cmsCLOSED'))){
 		if(!User::$IS_ADMIN){
 			$objSQL->debug = false;
 			$objPage->setMenu(false);

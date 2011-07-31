@@ -182,6 +182,12 @@ $_lang['L_RECAPTCHA_SETTINGS']	= 'reCaptcha Settings';
 $_lang['L_PUB_KEY']				= 'Public Key';
 $_lang['L_PRIV_KEY']			= 'Private Key';
 
+//ACP: Site Maintenance
+$_lang['L_MAINTENANCE'] 		= 'Site Maintenance';
+$_lang['L_MAIN_DESC']			= 'This section enables you to disable the website whilst you work on it. It will be unavalible to everyone apart from logged in administrators. The login form will also be enabled just incase your logged out for any reason.';
+$_lang['L_DISABLE_SITE']		= 'Disable Site';
+$_lang['L_DISABLE_MSG']			= 'Disable Message';
+
 //Time Stuff
 $_lang['DATETIME']['Sunday'] 	= 'Sunday';
 $_lang['DATETIME']['Monday'] 	= 'Monday';

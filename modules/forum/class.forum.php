@@ -140,6 +140,13 @@ class forum extends Module{
 		}
 	}
 
+	/**
+	 * Function to output content directly to the index.php page
+	 *
+	 * @version 2.0
+	 * @since 	1.0.0
+	 * @autor 	xLink
+	 */
 	public function showMain(){
 		$this->objTPL->set_filenames(array(
 			'body' => 'modules/forum/template/forum_newsPost.tpl'

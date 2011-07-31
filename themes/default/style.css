@@ -293,16 +293,6 @@ div.bbcode_quote_head, div.bbcode_code_head{
 div.bbcode_quote_body, div.bbcode_code_body { background-color: #FEFEFE; color: black; padding: 0.5em 1em; }
 
 
-.button span, input.icon{
-    text-indent: 23px;
-	display: block;
-    height: 16px;
-}
-
-input.icon{
-	background-position: 5px 50%;
-	background-repeat: no-repeat;
-}
 
 .button span.freply{
 	background: url(buttons/reply.png) no-repeat;

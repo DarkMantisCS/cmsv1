@@ -154,7 +154,6 @@ function makeReplyForm(formId){
 }
 
 function updateDimensions(){
-	console.log(['i got execd']);
     $$('img[class="bbcode_img"]').each(function (ele){
         var needed = {width: 500};
     	var curImg = $(ele).getDimensions();
