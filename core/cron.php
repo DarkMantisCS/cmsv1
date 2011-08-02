@@ -9,9 +9,9 @@ if(defined('NO_DB')){ return; }
 
     //set hourly cron to exec, run every 1 hour
     $crons = array(
-		'hourly' 	=> $config['cron']['hourly_time'],
-		'daily' 	=> $config['cron']['daily_time'],
-		'weekly' 	=> $config['cron']['weekly_time'],
+		'hourly' 	=> $objCore->config('cron', 'hourly_time'),
+		'daily' 	=> $objCore->config('cron', 'daily_time'),
+		'weekly' 	=> $objCore->config('cron', 'weekly_time'),
 	);
 
 	//loop thru each of the crons and set em to go if needed

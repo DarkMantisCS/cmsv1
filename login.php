@@ -41,12 +41,6 @@ switch($mode){
             unset($_SESSION['login']['error']);
 	    }
 
-	    //we do want let them auto login? acpCheck auto disables it
-	    if($objCore->config('login', 'remember_me') && !$acpCheck){
-			$objTPL->assign_block_vars('remember_me', array());
-        }
-
-
 		$hash = md5(time().'userkey');
     	$_SESSION['login']['cs_hash'] = $hash;
 
@@ -60,8 +54,14 @@ switch($mode){
 		$fields = array(
 	        langVar('L_USERNAME') => $objForm->inputbox('username', 'text', $userValue, array('class'=>'icon username', 'br'=>true, 'disabled'=>$acpCheck, 'required'=>(!$acpCheck))),
 			langVar('L_PASSWORD') => $objForm->inputbox('password', 'password', '', array('class'=>'icon password', 'br'=>true, 'required'=>(!$acpCheck))),
-			langVar('L_REMBER_ME') => $objForm->select('remember', array('0'=>'No Thanks', '1'=>'Forever'), array('selected'=>0))
 		);
+
+	    //we do want let them auto login? acpCheck auto disables it
+	    if($objCore->config('login', 'remember_me') && !$acpCheck){
+        	$fields += array(
+				langVar('L_REMBER_ME') => $objForm->select('remember', array('0'=>'No Thanks', '1'=>'Forever'), array('selected'=>0))
+			);
+        }
 
 		//but enables the pin portion of the form
         if($acpCheck){

@@ -209,11 +209,10 @@ img{ border: 0px; }
 /** Tabs **/
 ul.tabs {
 	text-align: left;
-	margin: 1em 0 1em 0;
+	margin: 12px 0 0;
 	border-bottom: 1px solid #000000;
 	list-style-type: none;
 	padding: 3px 0px 3px 10px;
-	font-size: 11px;
 }
     ul.tabs li { display: inline; }
     ul.tabs a:hover { background: #000000; color: #FFFFFF; }
@@ -223,7 +222,6 @@ ul.tabs {
     	text-decoration: none;
     	border-bottom: none;
     	border: 1px solid #313131;
-    	background-color: #000000;
     	color: #666;
     }
 

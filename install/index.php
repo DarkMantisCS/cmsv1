@@ -117,7 +117,7 @@ switch($mode){
         $checks[] = array('check'       => '<strong>Directories and Such</strong>', 
                           'setting'     => '<strong>Setting</strong>');
 
-        $dirs = array('cache/', 'cache/template/', 'cache/js/', 'images/avatars/');
+        $dirs = array('cache/', 'cache/template/', 'cache/media/', 'images/avatars/');
         foreach($dirs as $dir){
 			$exists = $write = false;
 
@@ -370,9 +370,9 @@ if(!defined(\'INDEX_CHECK\')){die(\'Error: Cannot access directly.\');}
     $config[\'db\'][\'ckefix\']                 = \'CMS_\'; 
 
 //some settings for the cron
-    $config[\'site\'][\'hourly_time\']			= (3600); //1 Hour
-    $config[\'site\'][\'daily_time\']			= (3600*24); //1 Day
-    $config[\'site\'][\'weekly_time\']			= (3600*24*7); //1 Week
+    $config[\'cron\'][\'hourly_time\']			= (3600); //1 Hour
+    $config[\'cron\'][\'daily_time\']			= (3600*24); //1 Day
+    $config[\'cron\'][\'weekly_time\']			= (3600*24*7); //1 Week
 
 //some default settings, incase the cms dies before getting  
 //the chance to populate the config array.
