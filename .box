@@ -21,16 +21,16 @@ url_rewrites:
     - ^modules($|/) modules.php
     
 permissions:
-	/cache:
-		- all: deny
-		
+    /cache:
+        - all: deny
+        
 ## PHP SPECIFIC SETTINGS
 php_version: 5.3.5
 php_extensions:
-	- mysql
-	- mysqli
-	- mcrypt
-	- mbstring
+    - mysql
+    - mysqli
+    - mcrypt
+    - mbstring
 php_error_reporting: 'E_ALL'
 php_display_errors: On
 php_short_open_tag: Off
