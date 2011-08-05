@@ -216,7 +216,7 @@ switch(strtolower($mode)){
 	break;
 	
 	case 'js':
-	header('content-type: application/x-javascript');
+header('Content-type: text/javascript');	header('Content-type: text/javascript');
 
 	echo <<<JSC
 	$('chk_conf_pass').observe('click', function(){ toggleFields(this); });

@@ -292,6 +292,34 @@ div.bbcode_quote_head, div.bbcode_code_head{
 }
 div.bbcode_quote_body, div.bbcode_code_body { background-color: #FEFEFE; color: black; padding: 0.5em 1em; }
 
+/** Tabs **/
+ul.tabs {
+	text-align: left;
+	margin: 1em 0 0;
+	border-bottom: 4px solid #2B2B2B;
+	list-style-type: none;
+	padding: 3px 0px 3px 10px;
+	font-size: 14px;
+}
+
+	ul.tabs a:hover, ul.tabs li a.tabActive { background: #000000; color: #FFFFFF; }
+	ul.tabs li a {
+		margin-right: 2px;
+		font-weight: bold;
+		border-bottom: none;
+		border: 1px solid #313131;
+		background: #2B2B2B;
+		color: #FFFFFF;
+		display: inline;
+
+		-webkit-border-top-left-radius: 5px;
+		-webkit-border-top-right-radius: 5px;
+		-moz-border-radius-topleft: 5px;
+		-moz-border-radius-topright: 5px;
+		border-top-left-radius: 5px;
+		border-top-right-radius: 5px;
+	}
+	#tabContents { margin: 0 0 20px 0; }
 
 
 .button span.freply{

@@ -143,6 +143,9 @@ $_lang['L_NO']                  = 'No';
 $_lang['L_ENABLED']             = 'Enabled';
 $_lang['L_DISABLED']            = 'Disabled';
 
+//UCP: contact info
+$_lang['L_CONTACT_INFO']		= 'Contact Information';
+
 //ACP: core settings
 $_lang['L_SITE_CONFIG']			= 'Website Configuration';
 $_lang['L_CUSTOMIZE']			= 'Customization';

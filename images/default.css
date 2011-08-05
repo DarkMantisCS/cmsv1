@@ -180,6 +180,7 @@ div#user_autocomplete {
         border: 0 none;
         outline: 0 none;
         height: 20px;
+        width: 100%;
     }
 
 /** Table Stuff **/
@@ -215,7 +216,7 @@ ul.tabs {
 	padding: 3px 0px 3px 10px;
 }
     ul.tabs li { display: inline; }
-    ul.tabs a:hover { background: #000000; color: #FFFFFF; }
+	ul.tabs a:hover, ul.tabs li a.tabActive { background: #000000; color: #FFFFFF; }
     ul.tabs li a {
     	padding: 3px 4px;
     	margin-right: 2px;
@@ -224,4 +225,3 @@ ul.tabs {
     	border: 1px solid #313131;
     	color: #666;
     }
-

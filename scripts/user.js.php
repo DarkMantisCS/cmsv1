@@ -2,7 +2,7 @@
 /*======================================================================*\
 ||              Cybershade CMS - Your CMS, Your Way                     ||
 \*======================================================================*/
-header('content-type: application/x-javascript');
+header('Content-type: text/javascript');
 define('INDEX_CHECK', true);
 define('NO_LOG', true);
 

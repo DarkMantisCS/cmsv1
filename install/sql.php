@@ -338,21 +338,21 @@ INSERT INTO `cs_notification_settings` (`id`, `module`, `setting`, `description`
     (1, 'forum', 'forumReplies', 'Forum Replies', '1');
 SQL;
 
-/*--Comments
+//--Comments
 $sql[] = <<<SQL
     DROP TABLE IF EXISTS `cs_comments`;
 SQL;
 $sql[] = <<<SQL
-    CREATE TABLE IF NOT EXISTS `cs_comments` (
-      `id` int(11) NOT NULL AUTO_INCREMENT,
-      `module` varchar(100) NOT NULL,
-      `moduleid` int(11) NOT NULL,
-      `author` int(11) NOT NULL,
-      `comment` text NOT NULL,
-      `posted` int(11) NOT NULL,
-      PRIMARY KEY (`id`)
-    ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 ;
-SQL;*/
+CREATE TABLE IF NOT EXISTS `cs_comments` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `module` varchar(255) NOT NULL,
+  `module_id` int(11) NOT NULL,
+  `author` int(11) unsigned NOT NULL,
+  `comment` text NOT NULL,
+  `timestamp` int(11) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin ;
+SQL;
 
 //--Online Table
 $sql[] = <<<SQL

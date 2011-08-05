@@ -73,7 +73,7 @@ class Module extends coreClass {
 		}
 		if(preg_match('/scripts\/(.*?)/i', str_replace($this->modConf['extra'], '', $this->modConf['action']))) {
 			if(file_exists(cmsROOT . 'modules/' . $this->modConf['module'] . '/' . $this->modConf['action'])) {
-				header('Content-Type: application/x-javascript');
+				header('Content-type: text/javascript');
 				include (cmsROOT . 'modules/' . $this->modConf['module'] . '/' . $this->modConf['action']);
 				exit;
 			} else {

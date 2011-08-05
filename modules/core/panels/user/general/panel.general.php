@@ -92,7 +92,7 @@ switch(strtolower($mode)){
 				langVar('L_SITE_SETTINGS') 		=> '_header_',
 	            langVar('L_TIMEZONE')			=> $timezone,
 	            langVar('L_USER_COLORING')		=> $sMembers,
-				langVar('L_SITE_TEMPLATE')		=> $objForm->select('theme', $tpl),
+				langVar('L_SITE_TEMPLATE')		=> $objForm->select('theme', $tpl, array('selected'=>$user['theme'])),
 
 				langVar('L_FORUM_SETTINGS')		=> '_header_',
 				langVar('L_QUICK_REPLIES')		=> $objForm->radio('quick_reply', $yn, $user['forum_quickreply']),

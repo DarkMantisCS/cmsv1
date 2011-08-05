@@ -96,11 +96,10 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 
 	//load in outside classes
 	$classFiles = array(
-					$classDir.'base.core.php', #all CMS classes extend this one
-					$classDir.'base.sql.php', #this is the SQL template
+					$classDir.'base.core.php', # all CMS classes extend this one
+					$classDir.'base.sql.php', # this is the SQL template
 
-					$classDir.'class.pagination.php', #include pagination functionality
-					//$classDir.'class.comments.php', #includes comments functionality
+					$classDir.'class.pagination.php', # include pagination functionality
 					//$classDir.'class.rating.php', # this one includes a rating system
 
 					$libDir.'phpass/class.phpass.php',
@@ -256,8 +255,11 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 	$classes['objGroups'] 		= array($classDir.'class.groups.php');
 	$classes['objForm'] 		= array($classDir.'class.form.php');
 	$classes['objTime'] 		= array($classDir.'class.time.php');
+	
+	//funky functionality classes here :D
 	$classes['objNotify'] 		= array($classDir.'class.notify.php');
-
+	#$classes['objComments'] 	= array($classDir.'class.comments.php');
+	
 	/**
 	 * this should allow for some custom classes to be init'd
 	 * keep in mind you can't use any of the classes that get init'd here
