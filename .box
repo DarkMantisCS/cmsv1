@@ -31,7 +31,9 @@ php_extensions:
     - mysqli
     - mcrypt
     - mbstring
+    - gd2
 php_error_reporting: 'E_ALL'
+magic_quotes_gpc: Off
 php_display_errors: On
 php_short_open_tag: Off
 php_default_mimetype: text/html

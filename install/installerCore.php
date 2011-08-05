@@ -40,7 +40,7 @@ if(!defined('INDEX_CHECK')){die('Error: Cannot access directly.');}
     if(is_writable($file)){ unlink($file); }
 
     //The config file
-    $file = cmsROOT.'core/config.php';
+    $file = cmsROOT.'cache/config.php';
     if(is_file($file) && file_get_contents($file)!='' && !isset($_SESSION['allow_config'])){
         die(sprintf($errorTPL, 'Fatal Error', 'CMS has already been installed. Cannot run installer.'));
     }
@@ -90,10 +90,6 @@ if(!defined('INDEX_CHECK')){die('Error: Cannot access directly.');}
 					$classDir.'base.sql.php', #this is the SQL template
 					$classDir.'driver.mysql.php', #this is the SQL driver
 					
-					$classDir.'class.pagination.php', #include pagination functionality
-					//$classDir.'class.comments.php', #includes comments functionality
-					//$classDir.'class.rating.php', # this one includes a rating system
-
 					$libDir.'phpass/class.phpass.php',
 					$libDir.'geshi/class.geshi.php',
 					$libDir.'nbbc/class.nbbc.php'

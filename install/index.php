@@ -339,7 +339,7 @@ switch($mode){
     break;
     
     case 5:
-        $file = cmsROOT.'core/config.php';
+        $file = cmsROOT.'cache/config.php';
         if(!file_exists($file)){
             $test = fopen($file, 'w');
     		fwrite($test, 'test');
@@ -395,7 +395,7 @@ if(!defined(\'INDEX_CHECK\')){die(\'Error: Cannot access directly.\');}
     break;
     
     case 6:
-        include(cmsROOT.'core/config.php');
+        include(cmsROOT.'cache/config.php');
     //
     //--SQL Setup
     //
