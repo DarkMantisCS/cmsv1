@@ -256,7 +256,7 @@ class coreClass{
                 break;
 
                 case 'first': //null means we havent so continue
-        		    $enable_check = $this->objSQL->getValue('modules', 'enabled', 'name = \''.$module.'\'');
+        		    $enable_check = $this->objSQL->getValue('modules', 'enabled', array('name = "%s"', $module));
         		    switch($enable_check){
                         case NULL:
                             $this->objPage->setTitle('Module Not Installed');

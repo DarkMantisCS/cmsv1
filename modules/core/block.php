@@ -11,7 +11,7 @@ function menu_wio($args){
     ));
 
     	$expiry = $objTime->mod_time(time(), 0, 20, 0, 'TAKE');
-        $query = $objSQL->getTable($objSQL->prepare('SELECT DISTINCT uid, ip_address FROM `$Ponline` WHERE %d < timestamp', $expiry));
+        $query = $objSQL->getTable('SELECT DISTINCT uid, ip_address FROM `$Ponline` WHERE %d < timestamp', array($expiry));
             if(!count($query)){
             	$objTPL->assign_vars(array(
                    'USERS_ONLINE'  => langVar('L_USERS_ONLINE'),
@@ -75,7 +75,7 @@ function menu_affiliates($args){
     );
 
     //grab the table
-    $table = $objSQL->getTable('SELECT * FROM '.$objSQL->prefix().'affiliates WHERE active = 1 AND showOnMenu = 1 ORDER BY rand() LIMIT '.$settings['limit'].';');
+    $table = $objSQL->getTable('SELECT * FROM `$Paffiliates` WHERE active = 1 AND showOnMenu = 1 ORDER BY rand() LIMIT %d;', array($settings['limit']));
         if($table===NULL){ return 'Error: Could not query Affiliates.'; }
         if(is_empty($table)){ return 'Error: No Affiliates in the database active.'; }
 

@@ -139,24 +139,6 @@ CREATE TABLE IF NOT EXISTS `cs_fileregistry` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 SQL;
 
-//--Logs
-$sql[] = <<<SQL
-    DROP TABLE IF EXISTS `cs_logs`;
-SQL;
-$sql[] = <<<SQL
-CREATE TABLE IF NOT EXISTS `cs_logs` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `uid` int(11) unsigned NOT NULL DEFAULT '0',
-  `username` varchar(50) COLLATE utf8_bin DEFAULT NULL,
-  `description` text COLLATE utf8_bin NOT NULL,
-  `query` text COLLATE utf8_bin,
-  `refer` varchar(255) COLLATE utf8_bin DEFAULT NULL,
-  `date` int(11) unsigned NOT NULL DEFAULT '0',
-  `ip_address` varchar(15) COLLATE utf8_bin NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin ;
-SQL;
-
 //--Groups
 $sql[] = <<<SQL
     DROP TABLE IF EXISTS `cs_groups`;
@@ -277,7 +259,7 @@ INSERT INTO `cs_menu_setups` (`module`, `page_id`, `menu_id`, `params`, `order`)
     ('forum',	'default',  'jv1h9w6m2y', 'menu_name=mm\r\nmenu_title=Main Menu', 0),
     ('forum',	'default',  'n4fym8r9gd', 'menu_title=m_latest_post\r\nlimit=5', 0),
     ('forum',	'default',  'ndxhzj9w54', 'menu_title=m_wio', 0),
-    ('forum', 	'default',  '343fwfwr34', 'menu_title=M_TOP_USER\r\nlimit=5', 2);
+    ('forum', 	'default',  '343fwfwr34', 'menu_title=m_top_user\r\nlimit=5', 2);
 SQL;
 
 /*--Affiliate System

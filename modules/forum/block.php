@@ -14,7 +14,7 @@ function menu_forum_posts($args){
     ));
 
 	//grab the last 50 threads, it makes sure we have something to show the user (hopefully)
-	$query = $objCore->objSQL->getTable($objCore->objSQL->prepare(
+	$query = $objCore->objSQL->getTable(
 		'SELECT t.*
 	        FROM `$Pforum_threads` t
 	        LEFT JOIN `$Pforum_posts` p
@@ -22,7 +22,7 @@ function menu_forum_posts($args){
 			GROUP BY t.id
 	        ORDER BY t.timestamp DESC
 	        LIMIT 50'
-	));
+	);
 
 	//if empty show an error and quit
 	if(is_empty($query)){
@@ -100,15 +100,15 @@ function menu_forum_users($args){
     ));
 
 
-	$users = $objCore->objSQL->getTable($objCore->objSQL->prepare(
+	$users = $objCore->objSQL->getTable(
 		'SELECT u.id, COUNT(DISTINCT p.id) AS count
 		FROM `$Pusers` u, `$Pforum_posts` p, `$Pforum_threads` t, `$Pforum_cats` c
 			WHERE p.author = u.id AND p.thread_id = t.id AND t.cat_id = c.id AND c.postcounts = 1
 		GROUP BY u.id
 		ORDER BY count DESC
 		LIMIT %d',
-		$limit
-	));
+		array($limit)
+	);
 
 	if(!$users){
 		$objCore->objTPL->assign_block_vars('error', array(

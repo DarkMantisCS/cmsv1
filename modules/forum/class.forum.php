@@ -151,7 +151,7 @@ class forum extends Module{
 			'body' => 'modules/forum/template/forum_newsPost.tpl'
 		));
 
-			$newsPosts = $this->objSQL->getTable($this->objSQL->prepare(
+			$newsPosts = $this->objSQL->getTable(
 				'SELECT t.*, p.timestamp as last_timestamp, p.post as post, count(DISTINCT p.id) as replies
 					FROM `$Pforum_threads` t
 	                LEFT JOIN `$Pforum_posts` p
@@ -160,8 +160,8 @@ class forum extends Module{
 					GROUP BY t.id
 					ORDER BY t.timestamp DESC 
 					LIMIT 4',				
-				$this->config('forum', 'news_category')
-			));
+				array($this->config('forum', 'news_category'))
+			);
 
 			if(!$newsPosts){
             	$this->objTPL->assign_block_vars('error', array(
@@ -208,8 +208,8 @@ class forum extends Module{
 			$this->forum = array();
 
 			//grab the categories and some extra details
-			$cats = $this->objSQL->getTable($this->objSQL->prepare('
-				SELECT f.*, u.id as uid,
+			$cats = $this->objSQL->getTable(
+				'SELECT f.*, u.id as uid,
 					t.id as tid, t.subject as thread_name, t.timestamp as thread_posted, p.author as last_author, p.timestamp as last_posted
 				FROM `$Pforum_cats` as f
 				LEFT JOIN `$Pforum_posts` as p
@@ -218,8 +218,8 @@ class forum extends Module{
 					ON p.thread_id = t.id
 				LEFT JOIN `$Pusers` as u
 					ON u.id = p.author
-				ORDER BY f.id, f.order ASC
-			'));
+				ORDER BY f.id, f.order ASC'
+			);
 		        if(!$cats){ hmsgDie('FAIL', 'Error: No forum information avalible at this time.'); }
 				$this->objSQL->freeResult($cats);
 
@@ -231,16 +231,16 @@ class forum extends Module{
 	        //get a list of permissions for the user
 	    	$this->auth = $this->auth(AUTH_ALL, AUTH_LIST_ALL, $cats);
 
-			$counts = $this->objSQL->getTable($this->objSQL->prepare('
-				SELECT c.id, c.postcounts, COUNT(DISTINCT t.id) AS thread_count, COUNT(DISTINCT p.id) AS post_count
+			$counts = $this->objSQL->getTable(
+				'SELECT c.id, c.postcounts, COUNT(DISTINCT t.id) AS thread_count, COUNT(DISTINCT p.id) AS post_count
 				FROM `$Pforum_cats` c
 				LEFT JOIN `$Pforum_threads` t
 					ON t.cat_id = c.id
 				LEFT JOIN `$Pforum_posts` p
 					ON t.id = p.thread_id
 
-				GROUP BY c.id
-			'));
+				GROUP BY c.id'
+			);
 		        if(!$counts){ hmsgDie('FAIL', 'Error: No forum information avalible at this time.'); }
 				$this->objSQL->freeResult($counts);
 
@@ -306,8 +306,8 @@ class forum extends Module{
     	$forum_moderators = array();
 
     	// Obtain list of moderators(users only) of each forum
-    	$query = $this->objSQL->getTable($this->objSQL->prepare('
-            SELECT aa.cat_id, u.id, u.username
+    	$query = $this->objSQL->getTable(
+            'SELECT aa.cat_id, u.id, u.username
             FROM `$Pforum_auth` aa, `$Pgroup_subs` ug, `$Pgroups` g, `$Pusers` u
             WHERE aa.auth_mod = 1
                     AND g.single_user_group = 1
@@ -315,8 +315,8 @@ class forum extends Module{
                     AND g.id = aa.group_id
                     AND u.id = ug.uid
             GROUP BY u.id, u.username, aa.cat_id
-            ORDER BY aa.cat_id, u.id
-        '));
+            ORDER BY aa.cat_id, u.id'
+        );
 
         if(is_empty($query)){ hmsgDie('FAIL', 'Could not query forum moderator information'); }
             $this->objSQL->freeResult($query);
@@ -541,12 +541,12 @@ class forum extends Module{
 	//-- Stats
 	//
 		//figure out which users have been active in the last 24 hours
-		$user24 = $this->objSQL->getTable($this->objSQL->prepare(
+		$user24 = $this->objSQL->getTable(
 			'SELECT id, last_active FROM `$Pusers`
 				WHERE last_active >= %d
 				ORDER BY last_active DESC',
-			$this->objTime->mod_time(time(), 0, 0, 24, 'MINUS')
-		));
+			array($this->objTime->mod_time(time(), 0, 0, 24, 'MINUS'))
+		);
 
         if(!is_empty($user24)){
             $users24 = array();
@@ -579,10 +579,10 @@ class forum extends Module{
 		}
 
 		//grab the currently online users
-        $userO = $this->objSQL->getTable($this->objSQL->prepare(
+        $userO = $this->objSQL->getTable(
 			'SELECT * FROM `$Ponline` WHERE timestamp >= %s',
 			$this->objTime->mod_time(time(), 0, 20, 0, 'MINUS')
-		));
+		);
 
         $usersO = 0; $guestsO = 0;
         if(count($userO)){
@@ -596,7 +596,7 @@ class forum extends Module{
         $total_topics   = $this->objSQL->getInfo('forum_threads', false);
         $total_posts    = $this->objSQL->getInfo('forum_posts', false) + $total_topics;
         $total_users    = $this->objSQL->getInfo('users', false);
-        $last_user      = $this->objSQL->getLine($this->objSQL->prepare('SELECT id FROM `$Pusers` WHERE active = 1 ORDER BY id DESC'));
+        $last_user      = $this->objSQL->getLine('SELECT id FROM `$Pusers` WHERE active = 1 ORDER BY id DESC');
 
 		$this->objTPL->assign_block_vars('stats', array(
 			'L_STATS'			=> langVar('L_STATS'),
@@ -677,7 +677,7 @@ class forum extends Module{
 			$objPagination = new pagination('page', $limit, $this->objSQL->getInfo('forum_threads', array('`cat_id`=%s AND `mode`=0', $id)));
 
 			//grab the threads with the current pagination limit
-	        $threads = $this->objSQL->getTable($this->objSQL->prepare(
+	        $threads = $this->objSQL->getTable(
 				'SELECT t.*, p.timestamp as last_timestamp, count(DISTINCT p.id) as replies
 					FROM `$Pforum_threads` t
 	                LEFT JOIN `$Pforum_posts` p
@@ -688,12 +688,11 @@ class forum extends Module{
 	                GROUP BY t.id
 	                ORDER BY p.timestamp DESC
 	                LIMIT %s',
-	            $id,
-				$objPagination->getSqlLimit()
-			));
+	            array($id, $objPagination->getSqlLimit())
+			);
 
 			//grab the 'special' threads, announcements, stickies etc
-	        $special = $this->objSQL->getTable($this->objSQL->prepare(
+	        $special = $this->objSQL->getTable(
 				'SELECT t.*, p.timestamp as last_timestamp, count(DISTINCT p.id) as replies
 					FROM `$Pforum_threads` t
 	                LEFT JOIN `$Pforum_posts` p
@@ -703,8 +702,8 @@ class forum extends Module{
 
 	                GROUP BY t.id
 	                ORDER BY p.timestamp DESC',
-	            $id
-			));
+	            array($id)
+			);
 
 			//output the header
 	        $this->objTPL->assign_block_vars('threads', array(
@@ -823,14 +822,14 @@ class forum extends Module{
 		));
 
 		//grab the thread
-		$thread = $this->objSQL->getLine($this->objSQL->prepare(
+		$thread = $this->objSQL->getLine(
 			'SELECT t.*, COUNT(DISTINCT p.id) as posts
 				FROM `$Pforum_threads` t
 				LEFT JOIN `$Pforum_posts` p
 					ON p.thread_id = t.id
 				WHERE t.id = %d',
-			$id
-		));
+			array($id)
+		);
 			//make sure it exists
 	        if(is_empty($thread['id'])){ $this->throwHTTP(404); return; }
 
@@ -860,7 +859,7 @@ class forum extends Module{
 
         //update views
         if(!isset($_SESSION['site']['forum']['view'][$thread['tid']])){
-            $this->objSQL->query($this->objSQL->prepare('UPDATE `$Pforum_threads` SET views = (views+1) WHERE id = %d LIMIT 1', $id));
+            $this->objSQL->query('UPDATE `$Pforum_threads` SET views = (views+1) WHERE id = %d LIMIT 1', array($id));
             $_SESSION['site']['forum']['view'][$thread['tid']] = 1;
         }
 
@@ -893,7 +892,7 @@ class forum extends Module{
 	            unset($update);
 
 			//update the users watch status
-	        $this->objSQL->updateRow('forum_watch', array('seen'=>1), array('user_id ="%s" AND thread_id ="%s"', $this->objUser->grab('id'), $id));
+	        $this->objSQL->updateRow('forum_watch', array('seen'=>1), array('user_id ="%d" AND thread_id ="%d"', $this->objUser->grab('id'), $id));
 
 			// && read notification if needed
 			$this->objNotify->clearNotifications($id, true);
@@ -916,10 +915,10 @@ class forum extends Module{
         }
 
         //grab the thread posts
-        $posts = $this->objSQL->getTable($this->objSQL->prepare(
+        $posts = $this->objSQL->getTable(
 			'SELECT * FROM `$Pforum_posts` WHERE thread_id = %d ORDER by timestamp, id ASC LIMIT %s',
-			$id, $limit
-		));
+			array($id, $limit)
+		);
 
         //assign some vars to the tpl
     	$this->objTPL->assign_vars(array(
@@ -1415,7 +1414,7 @@ class forum extends Module{
 	 */
 	public function postReply($id){
         //grab the required thread so we got something to work with..
-        $thread = $this->objSQL->getLine($this->objSQL->prepare('SELECT * FROM `$Pforum_threads` WHERE id ="%s" LIMIT 1;', $id));
+        $thread = $this->objSQL->getLine('SELECT * FROM `$Pforum_threads` WHERE id ="%s" LIMIT 1;', array($id));
             if(!$thread) hmsgDie('FAIL', 'Failed to retreive thread information');
 
 		$category = $this->getForumInfo($thread['cat_id']);
@@ -1503,7 +1502,7 @@ class forum extends Module{
             //enable direct quoting of posts
             $msg = null;
             if(doArgs('q', false, $_GET, 'is_number')){
-                $query = $this->objSQL->getLine($this->objSQL->prepare('SELECT author, post FROM `$Pforum_posts` WHERE id = '.$_GET['q'].' LIMIT 1;'));
+                $query = $this->objSQL->getLine('SELECT author, post FROM `$Pforum_posts` WHERE id = "%d" LIMIT 1;', array($_GET['q']));
 
                 if(is_array($query)){
                     $msg = '[quote='.$this->objUser->getUserInfo($query['author'], 'username').']'."\n".(htmlspecialchars_decode($query['post']))."\n".'[/quote]'."\n";
@@ -1538,7 +1537,7 @@ class forum extends Module{
 				$this->objTPL->assign_block_vars('new_post', array());
 			}
 
-	        $posts = $this->objSQL->getTable($this->objSQL->prepare('SELECT * FROM `$Pforum_posts` WHERE thread_id ="%s" ORDER BY id DESC LIMIT 10;', $id));
+	        $posts = $this->objSQL->getTable('SELECT * FROM `$Pforum_posts` WHERE thread_id ="%s" ORDER BY id DESC LIMIT 10;', array($id));
 
 	        if(count($posts)){
 				$this->objTPL->assign_block_vars('reply_posts', array(
@@ -1631,7 +1630,7 @@ class forum extends Module{
 	 */
     public function postQuickReply($id){
         //grab the required thread so we got something to work with..
-        $thread = $this->objSQL->getLine($this->objSQL->prepare('SELECT * FROM `$Pforum_threads` WHERE id ="%s" LIMIT 1;', $id));
+        $thread = $this->objSQL->getLine('SELECT * FROM `$Pforum_threads` WHERE id ="%s" LIMIT 1;', array($id));
             if(!$thread) hmsgDie('FAIL', 'Failed to retreive thread information');
 
 		$category = $this->getForumInfo($thread['cat_id']);
@@ -1742,14 +1741,14 @@ class forum extends Module{
 				$this->objPage->redirect('/'.root().'modules/forum/thread/'.seo($thread['subject']).'-'.$thread['id'].'.html#top', 0, 3);
 			}else{
 				//grab the thread
-				$thread = $this->objSQL->getLine($this->objSQL->prepare(
+				$thread = $this->objSQL->getLine(
 					'SELECT t.*, COUNT(DISTINCT p.id) as posts
 						FROM `$Pforum_threads` t
 						LEFT JOIN `$Pforum_posts` p
 							ON p.thread_id = t.id
 						WHERE t.id = %d',
-					$thread['id']
-				));
+					array($thread['id'])
+				);
 
 				$pages = ceil($thread['posts']/10);
 				$page = doArgs('mode', false, $_GET)=='last_page' ? $pages : doArgs('page', 1, $_GET);
@@ -1777,17 +1776,17 @@ class forum extends Module{
 	 */
 	public function editPost($id){
         //grab the post were reffering to
-        $post = $this->objSQL->getLine($this->objSQL->prepare('SELECT * FROM `$Pforum_posts` WHERE id ="%s" LIMIT 1;', $id));
+        $post = $this->objSQL->getLine('SELECT * FROM `$Pforum_posts` WHERE id ="%s" LIMIT 1;', array($id));
             if(!$post){ hmsgDie('FAIL', 'Failed to retreive post information'); }
 
-        $thread = $this->objSQL->getLine($this->objSQL->prepare(
+        $thread = $this->objSQL->getLine(
 				'SELECT t.*, COUNT(DISTINCT p.id) as replies
 					FROM `cscms_forum_threads` t
 					LEFT JOIN `cscms_forum_posts` p ON p.thread_id = t.id
 					WHERE t.id ="%s"
 					GROUP BY t.id',
-				$post['thread_id']
-		));
+				array($post['thread_id'])
+		);
             if(!$thread){ hmsgDie('FAIL', 'Failed to retreive thread information'); }
 
 		$category = $this->getForumInfo($thread['cat_id']);
@@ -1970,14 +1969,14 @@ class forum extends Module{
 			hmsgDie('Error: Thread ID is invalid.');
 		}
 
-        $thread = $this->objSQL->getLine($this->objSQL->prepare(
+        $thread = $this->objSQL->getLine(
 			'SELECT t.*, COUNT(DISTINCT p.id) as replies
 				FROM `cscms_forum_threads` t
 				LEFT JOIN `cscms_forum_posts` p ON p.thread_id = t.id
 				WHERE t.id ="%s"
 				GROUP BY t.id',
-			$id
-		));
+			array($id)
+		);
 
 		$category = $this->getForumInfo($thread['cat_id']);
 		$category = $category[0];
@@ -2010,7 +2009,7 @@ class forum extends Module{
 			    'Forum: '.$this->objUser->profile($this->objUser->grab('id'), RAW).' Deleted Thread ID - '.$id.' / '.secureMe($thread['subject']));
 
 		    //update the source cat with the propper latest posts
-		    $lastPost = $this->objSQL->getLine($this->objSQL->prepare(
+		    $lastPost = $this->objSQL->getLine(
 				'SELECT p.*, t.id
 					FROM `$Pforum_posts` p, `$Pforum_threads` t
 
@@ -2018,8 +2017,8 @@ class forum extends Module{
 					GROUP BY p.id
 					ORDER BY p.timestamp DESC
 					LIMIT 1',
-				$thread['cat_id']
-			));
+				array($thread['cat_id'])
+			);
 
 				unset($update);
 				$update['last_post_id'] = $lastPost['id'];
@@ -2043,18 +2042,18 @@ class forum extends Module{
      */
     function delReply($id){
 	        //grab the post
-	        $post = $this->objSQL->getLine($this->objSQL->prepare('SELECT * FROM `$Pforum_posts` WHERE id = "%d" LIMIT 1;', $id));
+	        $post = $this->objSQL->getLine('SELECT * FROM `$Pforum_posts` WHERE id = "%d" LIMIT 1;', $thread['cat_id']);
 	            if(!$post) hmsgDie('FAIL', 'Failed to reteive post information');
 
 			//grab the thread also
-	        $thread = $this->objSQL->getLine($this->objSQL->prepare(
-					'SELECT t.*, COUNT(DISTINCT p.id) as replies
-						FROM `cscms_forum_threads` t
-						LEFT JOIN `cscms_forum_posts` p ON p.thread_id = t.id
-						WHERE t.id ="%s"
-						GROUP BY t.id',
-					$id
-			));
+	        $thread = $this->objSQL->getLine(
+				'SELECT t.*, COUNT(DISTINCT p.id) as replies
+					FROM `cscms_forum_threads` t
+					LEFT JOIN `cscms_forum_posts` p ON p.thread_id = t.id
+					WHERE t.id ="%s"
+					GROUP BY t.id',
+				array($thread['cat_id'])
+			);
 	            if(!$thread){ hmsgDie('FAIL', 'Failed to retreive thread information'); }
 
 			//and the category for permissions
@@ -2120,7 +2119,16 @@ class forum extends Module{
 		}
 
         //grab the latest posts since users last visit
-        $query = $this->objSQL->getTable($this->objSQL->prepare('SELECT id, cat_id, last_poster FROM `$Pforum_threads` WHERE last_poster >= "%s"', $this->objUser->grab('last_visit')));
+        $query = $this->objSQL->getTable(
+			'SELECT t.id, t.cat_id, p.timestamp as last_poster
+		        FROM `$Pforum_threads` t
+		        LEFT JOIN `$Pforum_posts` p
+		        	ON t.id = p.thread_id
+		        	
+		      	WHERE p.timestamp >= "%s"
+				GROUP BY t.id',
+			array($this->objUser->grab('last_visit'))
+		);
 	        if(!count($query)){ return; }
 
         //loop through em and set them in the tracking array
@@ -2166,10 +2174,10 @@ class forum extends Module{
 		$users2Notify = array(); $uid = $this->objUser->grab('id');
 
 		//grab the watching users
-		$watchingUsers = $this->objSQL->getTable($this->objSQL->prepare(
+		$watchingUsers = $this->objSQL->getTable(
 			'SELECT DISTINCT user_id, seen FROM $Pforum_watch WHERE thread_id ="%s" AND seen = 1',
-			$threadId
-		));
+			array($threadId)
+		);
 			foreach($watchingUsers as $user){ $users2Notify[] = $user['user_id']; }
 
 		//remove the current user, no point in email him about the post he just made O.o
@@ -2374,7 +2382,7 @@ class forum extends Module{
 			}
 		}
 
-		$users = $this->objSQL->getTable($this->objSQL->prepare(
+		$users = $this->objSQL->getTable(
 			'SELECT u.id, COUNT(DISTINCT p.id) AS post_count
 				FROM `$Pusers` u, `$Pforum_posts` p, `$Pforum_threads` t, `$Pforum_cats` c
 					WHERE u.id IN ( %s )
@@ -2383,8 +2391,8 @@ class forum extends Module{
 						AND t.cat_id = c.id
 						AND c.postcounts = 1
 				GROUP BY u.id',
-			implode(', ', $authors)
-		));
+			array(implode(', ', $authors))
+		);
 
 		$return = array();
 		foreach($users as $user){
@@ -2550,7 +2558,7 @@ class forum extends Module{
             	$forum_match_sql = ($forum_id != AUTH_LIST_ALL ? 'WHERE a.id = '.$forum_id : '');
                 $sql = 'SELECT a.id, %s FROM `$Pforum_cats` a %s';
             		$function = ($forum_id != AUTH_LIST_ALL ? 'getLine' : 'getTable');
-            		if(!($this->authQuery[$type][$forum_id] = $f_access = $this->objSQL->$function($this->objSQL->prepare($sql, $a_sql, $forum_match_sql)))){
+            		if(!($this->authQuery[$type][$forum_id] = $f_access = $this->objSQL->$function($sql, array($a_sql, $forum_match_sql)))){
             			$this->objSQL->freeResult($f_access);
             			return array();
             		}
@@ -2567,14 +2575,14 @@ class forum extends Module{
     	if(user::$IS_ONLINE){
             if(!isset($this->authQuery2[$type][$forum_id])){
                 if(!isset($this->authQuery3)){
-            		$this->authQuery3 = $query = $this->objSQL->getTable($this->objSQL->prepare(
+            		$this->authQuery3 = $query = $this->objSQL->getTable(
 						'SELECT a.cat_id, %s, a.auth_mod
 	            			FROM `$Pforum_auth` a, `$Pgroup_subs` ug
 	            			WHERE ug.uid = "%s"
 	            				AND ug.pending = 0
 	            				AND a.group_id = ug.gid',
-	           			$a_sql, $this->objUser->grab('id')
-					));
+	           			array($a_sql, $this->objUser->grab('id'))
+					);
 
                     if(is_empty($query)){
                         hmsgDie('FAIL', 'Error: Cannot retreive the forum authorization');
@@ -2895,11 +2903,11 @@ class forum extends Module{
 				}
 
 				//grab the post were reffering to
-				$post = $this->objSQL->getLine($this->objSQL->prepare('SELECT * FROM `$Pforum_posts` WHERE id ="%s" LIMIT 1;', $id));
+				$post = $this->objSQL->getLine('SELECT * FROM `$Pforum_posts` WHERE id ="%s" LIMIT 1;', array($id));
 					if(!$post){ die('Error: There was a problem obtaining the post data. Error 0x01;'); }
 
 				//grab the required thread so we got something to work with..
-				$thread = $this->objSQL->getLine($this->objSQL->prepare('SELECT id, cat_id FROM `$Pforum_threads` WHERE id ="%s" LIMIT 1;', $post['thread_id']));
+				$thread = $this->objSQL->getLine('SELECT id, cat_id FROM `$Pforum_threads` WHERE id ="%s" LIMIT 1;', array($post['thread_id']));
 					if(!$thread){ die('Error: There was a problem obtaining the post data. Error 0x02;'); }
 
 				//now grab the cat id..
@@ -2947,11 +2955,11 @@ class forum extends Module{
 				}
 
 				//grab the post were reffering to
-				$post = $this->objSQL->getLine($this->objSQL->prepare('SELECT * FROM `$Pforum_posts` WHERE id ="%s" LIMIT 1;', $id));
+				$post = $this->objSQL->getLine('SELECT * FROM `$Pforum_posts` WHERE id ="%s" LIMIT 1;', array($id));
 					if(!$post){ die('Error: There was a problem obtaining the post data. Error 0x01;'); }
 
 				//grab the required thread so we got something to work with..
-				$thread = $this->objSQL->getLine($this->objSQL->prepare('SELECT id, cat_id FROM `$Pforum_threads` WHERE id ="%s" LIMIT 1;', $post['thread_id']));
+				$thread = $this->objSQL->getLine('SELECT id, cat_id FROM `$Pforum_threads` WHERE id ="%s" LIMIT 1;', array($post['thread_id']));
 					if(!$thread){ die('Error: There was a problem obtaining the post data. Error 0x02;'); }
 
 				//now grab the cat id..

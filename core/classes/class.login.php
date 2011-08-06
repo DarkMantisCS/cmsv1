@@ -25,10 +25,10 @@ class login extends coreClass{
 	public function onlineData(){
 		if(isset($this->onlineData)){ return $this->onlineData; }
 
-		$query = $this->objSQL->prepare('SELECT `id`, `uid`, `username`, `ip_address`, `timestamp`, `location`, `referer`, `language`,
-												`useragent`, `login_attempts`, `login_time`, `userkey`, `mode`
-										FROM `$Ponline` WHERE userkey="%s"', $_SESSION['user']['userkey']);
-		return $this->onlineData = $this->objSQL->getLine($query);
+		$query = 'SELECT `id`, `uid`, `username`, `ip_address`, `timestamp`, `location`, 
+					`referer`, `language`, `useragent`, `login_attempts`, `login_time`, `userkey`, `mode`
+						FROM `$Ponline` WHERE userkey="%s"';
+		return $this->onlineData = $this->objSQL->getLine($query, array($_SESSION['user']['userkey']));
 	}
 
 	/**
@@ -120,8 +120,8 @@ class login extends coreClass{
 			$this->objUser->updateUserSettings($this->userData['id'], array('login_attempts' => $this->userData['login_attempts']+1));
 		}
 
-		$query = $this->objSQL->prepare('UPDATE `$Ponline` SET login_attempts = (login_attempts + 1) WHERE userkey = "%s"', $_SESSION['user']['userkey']);
-		$this->objSQL->query($query, 'Online System: '.USER::getIP().' failed to login to '.$this->userData['username'].'\'s account.');
+		$query = 'UPDATE `$Ponline` SET login_attempts = (login_attempts + 1) WHERE userkey = "%s"';
+		$this->objSQL->query($query, array($_SESSION['user']['userkey']), 'Online System: '.USER::getIP().' failed to login to '.$this->userData['username'].'\'s account.');
 	}
 
 	/**
@@ -135,7 +135,7 @@ class login extends coreClass{
 	 */
 	public function updateACPAttempts(){
         if(!is_empty($this->userData)){
-			$this->objSQL->updateRow('users', array('pin_attempts' => $this->userData['pin_attempts']+1), "id = '".$this->userData['id']."'",
+			$this->objSQL->updateRow('users', array('pin_attempts' => $this->userData['pin_attempts']+1), array('id = "%s"', $this->userData['id']),
             'Online System: '.$this->userData['username'].' attemped to authenticate as administrator.');
         }
 
@@ -145,7 +145,7 @@ class login extends coreClass{
             $update['banned'] = '1';
             $update['pin_attempts'] = '0';
 
-			$this->objSQL->updateRow('users', $update, "id = '".$this->userData['id']."'",
+			$this->objSQL->updateRow('users', $update, array('id = "%s"', $this->userData['id']),
                 'Online System: Logged '.$this->userData['username'].' out as a security measure. 3 Wrong Authentication attempts for ACP.');
 
             $this->objSQL->updateRow('online', array(
@@ -364,9 +364,7 @@ class login extends coreClass{
 		$query[] = 'LIMIT 1;';
 
 		//prepare and exec
-		$query = $this->objSQL->prepare(implode(' ', $query));
-
-		$query = $this->objSQL->getLine($query);
+		$query = $this->objSQL->getLine(implode(' ', $query));
 
 		if(!count($query)){
 			$this->setError('Could not query for userkey');
@@ -515,7 +513,7 @@ class login extends coreClass{
 		if(!is_empty($check) && $check == $this->objUser->grab('usercode')){
 
 			$this->objUser->updateUserSettings($this->objUser->grab('id'), array('autologin'=>'0'));
-			$this->objSQL->deleteRow('online', 'userkey = "'.$_SESSION['user']['userkey'].'"');
+			$this->objSQL->deleteRow('online', array('userkey = "%s"', $_SESSION['user']['userkey']));
 			unset($_SESSION['user']);
 
 			if(isset($_COOKIE['login'])){

@@ -158,19 +158,21 @@ class user extends coreClass{
 			//figure out if they gave us a username or a user id
 			$user = (is_number($uid) ? 'u.id = "%s" ' : 'upper( u.username ) = upper( "%s" ) ');
 
-			$query = $this->objSQL->prepare('SELECT u.*, e.*, u.id as id, o.timestamp, o.hidden, o.userkey '.
-											'FROM `$Pusers` u '.
-												'LEFT JOIN `$Puser_extras` e '.
-													'ON u.id = e.uid '.
-												'LEFT JOIN `$Ponline` o '.
-													'ON u.id = o.uid '.
-											'WHERE '.$user.' '.
-											'LIMIT 1;', $uid);
-			$info = $this->objSQL->getLine($query);
-			if(!count($info)){
-				$this->setError('User query failed. SQL: '.mysql_error()."\n<br />".$query);
-				return false;
-			}
+			$info = $this->objSQL->getLine(
+				'SELECT u.*, e.*, u.id as id, o.timestamp, o.hidden, o.userkey '.
+				'FROM `$Pusers` u '.
+					'LEFT JOIN `$Puser_extras` e '.
+						'ON u.id = e.uid '.
+					'LEFT JOIN `$Ponline` o '.
+						'ON u.id = o.uid '.
+				'WHERE '.$user.' '.
+				'LIMIT 1;', 
+				array($uid)
+			);
+				if(!count($info)){
+					$this->setError('User query failed. SQL: '.mysql_error()."\n<br />".$query);
+					return false;
+				}
 
 			//uid is for the extras table, no need to have it here
 			unset($info['uid']);
@@ -682,7 +684,7 @@ class user extends coreClass{
 	 *
 	 * @return  bool
 	 */
-    function setPassword($uid, $password, $log=NULL){
+    public function setPassword($uid, $password, $log=NULL){
         $array['password'] 			= $this->mkPassword($password);
         $array['password_update'] 	= 0;
         $array['login_attempts'] 	= 0;
@@ -708,7 +710,7 @@ class user extends coreClass{
 	 *
 	 * @return  bool
 	 */
-    function setPIN($uid, $pin, $log=NULL){
+    public function setPIN($uid, $pin, $log=NULL){
         $array['pin'] 			= md5($pin.$this->config('db', 'ckeauth'));
         $array['pin_attempts'] 	= 0;
 
@@ -953,16 +955,17 @@ class user extends coreClass{
 
 		//if not then we'll query for it
 		if(!$group){
-            $groups = $this->objSQL->getTable($this->objSQL->prepare('
-                SELECT g.* FROM `$Pgroup_subs` ug
+            $groups = $this->objSQL->getTable(
+                'SELECT g.* FROM `$Pgroup_subs` ug
                     JOIN `$Pusers` u
                         ON u.id = ug.uid
                     JOIN `$Pgroups` g
                         ON ug.gid = g.id
 
                 WHERE ug.uid = "%s" AND ug.pending = 0
-                ORDER BY g.`order` ASC
-            ', $uid));
+                ORDER BY g.`order` ASC',
+            	array($uid)
+			);
 
             //no groups wer received so we'll jump to the output stage
             if(!$groups){
@@ -1030,7 +1033,7 @@ class user extends coreClass{
             case RETURN_USER:
             case NO_LINK:     	$return = $user_no_link;  	break;
 
-            case RAW:     		$return = $user_raw;    	break;
+            case RAW:     		$return = $raw;    			break;
             case 4:     		$return = $uid;         	break;
         }
 

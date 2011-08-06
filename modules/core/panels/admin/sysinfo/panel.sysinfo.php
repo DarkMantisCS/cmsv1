@@ -73,13 +73,13 @@ $objTPL->set_filenames(array(
 	cmsROOT: "'.cmsROOT.'"
 	https?: "'.($objCore->config('global', 'secure') ? 'true' : 'false').'"
 
-'.json_encode($objSQL->getTable($objSQL->prepare(
+'.json_encode($objSQL->getTable(
 	'SELECT * FROM `$Pconfig`
 	WHERE array NOT IN("cms", "db", "email")
 		AND var NOT IN("analytics", "registry_update")
 		AND var NOT LIKE "%captcha_%"
 	ORDER BY array, var ASC'
-))).'';
+)).'';
 
 	//and output
 	include($path.'/cfg.php');

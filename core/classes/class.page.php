@@ -615,7 +615,7 @@ class page extends coreClass{
 				}
 
 				//grab the logs and output em if needed
-				$logs = $this->objSQL->getTable($this->objSQL->prepare('SELECT * FROM `$Plogs` ORDER BY id DESC LIMIT 10'));
+				$logs = $this->objSQL->getTable('SELECT * FROM `$Plogs` ORDER BY id DESC LIMIT 10');
 				if(!is_empty($logs)){
 					foreach($logs as $log){
 						$this->objTPL->assign_block_vars('debug.log', array(

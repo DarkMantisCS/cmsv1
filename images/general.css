@@ -67,13 +67,11 @@ a:hover, a:focus { }
 a:active, a:visited { }
 
 blockquote {
-		font-family: Georgia,"Times New Roman", Times, serif;
 		margin:5px;
 		padding:10px;
 		font-size:1.52em;
 		color:#999;
 		font-style:italic;
-		line-height:1.3em;
 		width:100%;
 		quotes:none;
 	}

@@ -37,7 +37,7 @@ if(defined('NO_DB')){ return; }
 	$objSQL->recordMessage('Hourly CRON is running', 'INFO');
 
 		//update the user table with last active timestamp from online table
-		$objSQL->query($objSQL->prepare(
+		$objSQL->query(
 			'UPDATE `$Pusers` u SET u.last_active =
 				(SELECT o.timestamp
 					FROM `$Ponline` o
@@ -46,7 +46,7 @@ if(defined('NO_DB')){ return; }
 				(SELECT oo.timestamp
 					FROM `$Ponline` oo
 					WHERE oo.uid = u.id)'
-		));
+		);
 
 		//remove the inactive ones..atm 20 mins == inactive
 	    $objSQL->deleteRow('online', 'timestamp < '.$objTime->mod_time(time(), 0, 20, 0, 'TAKE'));

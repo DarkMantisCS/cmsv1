@@ -54,13 +54,13 @@ switch(strtolower($mode)){
 
         //get list of groups
 		$sMembers = array();
-		$query = $objSQL->getTable($objSQL->prepare(
+		$query = $objSQL->getTable(
 			'SELECT DISTINCT g.id, g.name, g.color, g.type
 				FROM `$Pgroups` g, `$Pgroup_subs` gs
 				WHERE gs.uid ="%d" AND g.id = gs.gid AND gs.pending = 0
 				ORDER BY g.order ASC',
-			$uid
-		));
+			array($uid)
+		);
 
 		$sMembers = '';
 		$sMembers .= '<select name="primary_group" id="primary_group" class="chzn-select" data-search="'.(count($query)>=8 ? 'true' : 'false').'">'."\n";

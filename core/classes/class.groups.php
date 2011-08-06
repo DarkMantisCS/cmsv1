@@ -36,8 +36,7 @@ class groups extends coreClass {
         	return $this->group[$gid];
 		}
 
-		$query = $this->objSQL->prepare('SELECT id, name, moderator, single_user_group FROM `$Pgroups` WHERE id = "%s" LIMIT 1;', $gid);
-        $this->group[$gid] = $this->objSQL->getLine($query);
+        $this->group[$gid] = $this->objSQL->getLine('SELECT id, name, moderator, single_user_group FROM `$Pgroups` WHERE id = "%s" LIMIT 1;', array($gid));
             if(is_empty($this->group[$gid])){
             	$this->setError('Cannot query group');
 				return false;
@@ -143,8 +142,7 @@ class groups extends coreClass {
         if($group['single_user_group']){ $this->setError('Group is user specific, Cannot reassign Moderator'); return false; }
 
         //make sure old moderator is a subscriber
-        $query = $this->objSQL->prepare('SELECT * FROM `$Pgroup_subs` WHERE gid = "%s" AND uid = "%s" LIMIT 1', $gid, $group['moderator']);
-        $oldModerator = $this->objSQL->getLine($query);
+        $oldModerator = $this->objSQL->getLine('SELECT * FROM `$Pgroup_subs` WHERE gid = "%s" AND uid = "%s" LIMIT 1', array($gid, $group['moderator']));
             if(is_empty($oldModerator)){
             	$this->joinGroup($group['moderator'], $gid, 0);
 			}
@@ -186,8 +184,7 @@ class groups extends coreClass {
         $group = $this->getGroup($gid);
 
         //grab the necesary row
-        $query = $this->objSQL->prepare('SELECT uid, gid, pending FROM `$Pgroup_subs` WHERE gid = "%s" AND uid = "%s" LIMIT 1', $gid, $uid);
-        $subRow = $this->objSQL->getLine($query);
+        $subRow = $this->objSQL->getLine('SELECT uid, gid, pending FROM `$Pgroup_subs` WHERE gid = "%s" AND uid = "%s" LIMIT 1', array($gid, $uid));
             if(is_empty($subRow)){
             	$this->setError('User is not in group');
 				return false;
@@ -226,17 +223,18 @@ class groups extends coreClass {
 
         //get group
         if(is_empty($query)){
-	        $query = $this->objSQL->getTable($this->objSQL->prepare('SELECT ug.uid, g.type, g.moderator
-					                                                    FROM `$Pgroups` g, `$Pgroup_subs` ug
-					                                                    WHERE g.id = %s
-					                                                        AND g.type != %s
-					                                                        AND ug.gid = g.id',
-					                                                $gid,
-					                                                GROUP_HIDDEN));
-            if(is_empty($query)){
-            	$this->setError('No group for ID: '.$gid);
-				return false;
-			}
+	        $query = $this->objSQL->getTable(
+				'SELECT ug.uid, g.type, g.moderator
+                    FROM `$Pgroups` g, `$Pgroup_subs` ug
+                    WHERE g.id = %s
+                        AND g.type != %s
+                        AND ug.gid = g.id',
+	        	array($gid, GROUP_HIDDEN)
+			);
+	            if(is_empty($query)){
+	            	$this->setError('No group for ID: '.$gid);
+					return false;
+				}
         }
 
         //test to see if user is in group and return accordingly
@@ -264,11 +262,13 @@ class groups extends coreClass {
         if(!is_number($pending)){ $this->setError('$pending is not valid'); return false; }
 
         //get group
-        $query = $this->objSQL->getTable($this->objSQL->prepare('SELECT ug.uid, ug.pending, g.type, g.moderator
-				                                                    FROM `$Pgroups` g, `$Pgroup_subs` ug
-				                                                    WHERE g.id = %s
-				                                                        AND ug.gid = g.id',
-				                                                $gid));
+        $query = $this->objSQL->getTable(
+			'SELECT ug.uid, ug.pending, g.type, g.moderator
+	            FROM `$Pgroups` g, `$Pgroup_subs` ug
+	            WHERE g.id = %s
+	                AND ug.gid = g.id',
+	        array($gid)
+		);
             if(is_empty($query)){
             	$this->setError('No group for ID: '.$gid);
 				return false;

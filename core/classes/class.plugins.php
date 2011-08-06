@@ -32,7 +32,7 @@ class plugins extends coreClass{
 		//make sure we didnt get an empty var...
 		if(!is_array($plugin) || is_empty($plugin)){
 			//if we did try and get a fresh copy from the db
-			$plugin = $this->objSQL->getTable($this->objSQL->prepare('SELECT * FROM `$Pplugins`'));
+			$plugin = $this->objSQL->getTable('SELECT * FROM `$Pplugins`');
 
 			if(!is_array($plugin) || is_empty($plugin)){
 				$this->dontBother = true;

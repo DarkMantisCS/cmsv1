@@ -258,7 +258,7 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 	
 	//funky functionality classes here :D
 	$classes['objNotify'] 		= array($classDir.'class.notify.php');
-	#$classes['objComments'] 	= array($classDir.'class.comments.php');
+	$classes['objComments'] 	= array($classDir.'class.comments.php');
 	
 	/**
 	 * this should allow for some custom classes to be init'd

@@ -6,6 +6,7 @@
             <div class="formRow">
                 {TEXTAREA}
             </div><div class="clear">&nbsp;</div>
-    {SUBMIT}
+        {SUBMIT}<div class="clear">&nbsp;</div>
+     </fieldset>
 {FORM_END}
 </section>

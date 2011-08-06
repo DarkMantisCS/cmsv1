@@ -176,7 +176,6 @@ div#user_autocomplete {
         margin: 10px 7px;
     }
     #replybox textarea{
-        background: none;
         border: 0 none;
         outline: 0 none;
         height: 20px;
@@ -202,6 +201,14 @@ div.messages{
     .error 	 .icon{ background-image: url(fail.png); }
     .status  .icon{ background-image: url(ok.png); }
 
+/** Comments **/
+section#comments{}
+    section#comments article{ border: 1px solid #000000;}
+    section#comments article header{ height: 25px; color: #fff; }
+    section#comments article header div.comment-title{ padding: 3px; }
+   
+    section#comments article blockquote{  }
+    
 /** Images **/
 img{ border: 0px; }
     img.right{ margin: 5px 0px 10px 10px; }

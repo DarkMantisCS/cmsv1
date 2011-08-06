@@ -128,7 +128,6 @@ class cache extends coreClass{
 		unset($this->output);
 
 		//query db
-		$query = $this->objSQL->prepare($query);
 		$query = $this->objSQL->getTable($query);
 
 		//check to make sure it worked
@@ -176,19 +175,14 @@ class cache extends coreClass{
 			$total_members  = $this->objSQL->getInfo('users');
 
 			//last user info, for the stat menu
-			$query = $this->objSQL->prepare('SELECT id, username FROM `$Pusers` ORDER BY id DESC LIMIT 1');
-			$last_user      = $this->objSQL->getLine($query);
+			$last_user = $this->objSQL->getLine('SELECT id, username FROM `$Pusers` ORDER BY id DESC LIMIT 1');
 
 			//online members and guests
-			$query = $this->objSQL->prepare('SELECT DISTINCT uid FROM `$Ponline` WHERE uid != "0"');
-			$online_users   = $this->objSQL->getTable($query);
-
-			$query = $this->objSQL->prepare('SELECT DISTINCT ip_address FROM `$Ponline` WHERE uid = "0"');
-			$online_guests  = $this->objSQL->getTable($query);
+			$online_users   = $this->objSQL->getTable('SELECT DISTINCT uid FROM `$Ponline` WHERE uid != "0"');
+			$online_guests  = $this->objSQL->getTable('SELECT DISTINCT ip_address FROM `$Ponline` WHERE uid = "0"');
 
 			//get cron updates
-			$query = $this->objSQL->prepare('SELECT * FROM `$Pstatistics`');
-			$cron = $this->objSQL->getTable($query);
+			$cron = $this->objSQL->getTable('SELECT * FROM `$Pstatistics`');
 
 		if(count($cron) > 0){
 			foreach($cron as $i){

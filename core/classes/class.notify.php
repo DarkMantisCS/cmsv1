@@ -94,10 +94,10 @@ class notify extends coreClass{
 			return false;
 		}
 
-		$query = $this->objSQL->getTable($this->objSQL->prepare(
+		$query = $this->objSQL->getTable(
 			'SELECT * FROM `$Pnotifications` WHERE uid="%s"' . $read,
-			$user['uid']
-		));
+			array($user['uid'])
+		);
 
 		if(!$query || !is_array($query)){ return false; }
 		return $query;

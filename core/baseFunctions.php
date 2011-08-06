@@ -168,7 +168,7 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 			if(empty($user)){ return false; }
 
 		//grab the notification settings
-		$settings = $objSQL->getLine($objSQL->prepare('SELECT * FROM `$Pnotification_settings` WHERE module="%s" AND name="%s" LIMIT 1;', $module, $setting));
+		$settings = $objSQL->getLine('SELECT * FROM `$Pnotification_settings` WHERE module="%s" AND name="%s" LIMIT 1;', array($module, $setting));
 			if(empty($settings)){ return false; }
 
 		//make sure we have something to work off
@@ -600,7 +600,7 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 		//if we havent got what we need, attempt to grab it
 		if(!doArgs('menu_setups', false, $config)){
 			$query = 'SELECT * FROM $Pmenu_setups WHERE module = "%s" AND page_id = "%s" ORDER BY `order` ASC';
-			$config['menu_setups'] = $objSQL->getTable($objSQL->prepare($query, $module, $page_id));
+			$config['menu_setups'] = $objSQL->getTable($query, array($module, $page_id));
 		}
 
         //make sure we have something to play with

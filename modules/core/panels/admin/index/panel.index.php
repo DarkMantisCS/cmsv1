@@ -25,7 +25,7 @@ if($mode == 'sessionKill'){
 	//and the id isnt false
 	if($id){
 		//verify the id actually exists
-		$query = $objSQL->getLine($objSQL->prepare('SELECT * FROM `$Ponline` WHERE id ="%d" LIMIT 1;'));
+		$query = $objSQL->getLine('SELECT * FROM `$Ponline` WHERE id ="%d" LIMIT 1;', $id);
 		if($query){
 			//and set it to kill, the CMS will do the rest
 			unset($update);

@@ -193,8 +193,7 @@ class mysql extends coreClass implements SQLBase{
 	 * @return 	array
 	 */
 	public function getColumns($table){
-		$query = $this->prepare('SHOW COLUMNS FROM `$P'.$table.'`');
-		$columns = $this->getTable($query);
+		$columns = $this->getTable('SHOW COLUMNS FROM `$P%s`', array($table));
 			if(!$columns || (is_array($columns) && !count($columns))){
 				$this->setError('Query failed. SQL: '.mysql_error());
 				return false;
@@ -270,7 +269,7 @@ class mysql extends coreClass implements SQLBase{
 	/**
 	 * Prepares the query for use, escapes parameters, sets table prefix.
 	 *
-	 * @version	1.0
+	 * @version	1.3
 	 * @since   1.0.0
 	 * @author  xLink
 	 *
@@ -285,17 +284,14 @@ class mysql extends coreClass implements SQLBase{
 		//grab the functions args
 		$args = func_get_args();
 
+		//first arg is the query
+		$query = array_shift($args);
+		
 		//replace $P with the table prefix
-		$query = str_replace('$P', $this->prefix(), $args[0]);
-
-		//escape the rest of the arguments
-		#$args = $this->escape($args);
-
-		//make sure the query is 'normal'
-		$args[0] = $query;
+		$query = str_replace('$P', $this->prefix(), $query);
 
 		//return thru sprintf
-		return (count($args)>1 ? call_user_func_array('sprintf', $args) : $query);
+		return vsprintf($query, (is_array($args[0]) ? $args[0] : $args));
 	}
 
 
@@ -321,7 +317,7 @@ class mysql extends coreClass implements SQLBase{
 	/**
 	 * Queries the database
 	 *
-	 * @version	1.0
+	 * @version	1.1
 	 * @since   1.0.0
 	 * @author  xLink
 	 *
@@ -330,15 +326,15 @@ class mysql extends coreClass implements SQLBase{
 	 *
 	 * @return 	resource
 	 */
-	public function query($query, $log=false) {
+	public function query($query, $args=array(), $log=false) {
 		$this->freeResult();
 
 		$this->query_time = microtime(true);
 
 		if($log){ $this->recordLog($query, $log); }
 
-		$this->query = $query;
-		$this->results = mysql_query($query, $this->link_id) or $this->recordMessage(mysql_error(), 'WARNING');
+		$this->query = $this->prepare($query, $args);
+		$this->results = mysql_query($this->query, $this->link_id) or $this->recordMessage(mysql_error(), 'WARNING');
 
 		if($this->debug){
 			$a = debug_backtrace();
@@ -353,9 +349,9 @@ class mysql extends coreClass implements SQLBase{
 			$pinpoint = '<br /><div class="content padding"><strong>'.realpath($file['file']).'</strong> @ <strong>'.$file['line'].
 							'</strong> // Affected '.mysql_affected_rows().' rows.. <br /> '.$file['function'].'(<strong>\''.
 							(isset($file['args']) ? secureMe(implode('\', \'', $file['args'])) : null).'\'</strong>); </div>';
-			$this->debugtext[] = array('query' => $query.$pinpoint, 'time' => substr((microtime(true) - $this->query_time), 0, 7), 'status' => 'ok');
+			$this->debugtext[] = array('query' => $this->query.$pinpoint, 'time' => substr((microtime(true) - $this->query_time), 0, 7), 'status' => 'ok');
 		}else{
-			$this->debugtext[] = array('query' => $query, 'time' => null, 'status' => 'ok');
+			$this->debugtext[] = array('query' => $this->query, 'time' => null, 'status' => 'ok');
 		}
 
 
@@ -365,7 +361,7 @@ class mysql extends coreClass implements SQLBase{
 	/**
 	 * Gets a row count from a table
 	 *
-	 * @version	1.0
+	 * @version	1.1
 	 * @since   1.0.0
 	 * @author  xLink
 	 *
@@ -376,21 +372,23 @@ class mysql extends coreClass implements SQLBase{
 	 * @return 	int
 	 */
 	public function getInfo($table, $clause=null, $log=false){
+		$args = array();
+		
 		$statement = 'SELECT COUNT(*) as count FROM `$P%s`';
+		$args[] = $table;
 		if(!is_empty($clause)){
-			$statement .= ' WHERE '.$this->autoPrepare($clause);
+			$statement .= ' WHERE %s';
+			$args[] = $this->autoPrepare($clause);
 		}
 
-		$statement = $this->prepare($statement, $table);
-		$line = $this->getLine($statement, $log);
-
+		$line = $this->getLine($statement, $args, $log);
 		return $line['count'];
 	}
 
 	/**
 	 * Gets a row count from a table
 	 *
-	 * @version	1.0
+	 * @version	1.1
 	 * @since   1.0.0
 	 * @author  xLink
 	 *
@@ -402,32 +400,35 @@ class mysql extends coreClass implements SQLBase{
 	 * @return 	string
 	 */
 	public function getValue($table, $field, $clause=null, $log=false){
+		$args = array();
+		
 		$statement = 'SELECT %1$s FROM `$P%2$s`';
+		$args[] = $table;
 		if(!is_empty($clause)){
-			$statement .= ' WHERE '.$this->autoPrepare($clause);
+			$statement .= ' WHERE %s';
+			$args[] = $this->autoPrepare($clause);
 		}
 		$statement .= ' LIMIT 1;';
 
-		$statement = $this->prepare($statement, $field, $table);
-		$line = $this->getLine($statement, $log);
-
+		$line = $this->getLine($statement, $args, $log);
 		return $line[$field];
 	}
 
 	/**
 	 * Gets a row from a table
 	 *
-	 * @version	1.0
+	 * @version	1.1
 	 * @since   1.0.0
 	 * @author  xLink
 	 *
 	 * @param 	string 	$query
+	 * @param 	array 	$args
 	 * @param 	string 	$log
 	 *
 	 * @return 	array
 	 */
-	public function getLine($query, $log=false) {
-		$this->query($query, $log);
+	public function getLine($query, $args=array(), $log=false) {
+		$this->query($query, $args, $log);
 
 		if(!is_resource($this->results)) {
 			$this->recordMessage('getLine: ('.$query.')', 'ERROR');
@@ -443,17 +444,18 @@ class mysql extends coreClass implements SQLBase{
 	/**
 	 * Returns query results in the form of an array
 	 *
-	 * @version	1.0
+	 * @version	1.1
 	 * @since   1.0.0
 	 * @author  xLink
 	 *
 	 * @param 	string 	$query
+	 * @param 	array 	$args
 	 * @param 	string 	$log
 	 *
 	 * @return 	array
 	 */
-	public function getTable($query, $log=false) {
-		$this->query($query, $log);
+	public function getTable($query, $args=array(), $log=false) {
+		$this->query($query, $args, $log);
 
 		if(!is_resource($this->results)) {
 			$this->recordMessage('getTable: ('.$query.')', 'ERROR');
@@ -472,7 +474,7 @@ class mysql extends coreClass implements SQLBase{
 	/**
 	 * Inserts a row into specified table
 	 *
-	 * @version	1.0
+	 * @version	1.1
 	 * @since   1.0.0
 	 * @author  xLink
 	 *
@@ -501,16 +503,15 @@ class mysql extends coreClass implements SQLBase{
 		}
 
 		$query = 'INSERT HIGH_PRIORITY INTO `$P%1$s` (%2$s) VALUES (%3$s)';
-		$query = $this->prepare($query, $table, $listOfElements, $listOfValues);
-		$this->query($query, $log);
+		$this->query($query, array($table, $listOfElements, $listOfValues), $log);
 
 		return mysql_insert_id($this->link_id);
 	}
 
 	/**
-	 * Updates a table
+	 * Updates a table with the array of values
 	 *
-	 * @version	1.0
+	 * @version	1.1
 	 * @since   1.0.0
 	 * @author  xLink
 	 *
@@ -524,20 +525,17 @@ class mysql extends coreClass implements SQLBase{
 	public function updateRow($table, $array, $clause, $log=false){
 		if(is_empty($array)){ return false; }
 
-		$query = 'UPDATE `$P%s` SET ';
-
+		$vars = null;
 		foreach($array as $index => $value){
 			if($value === null){
-				$query .= '`'.$index.'`=null, ';
+				$vars .= '`'.$index.'`=null, ';
 			}else{
-				$query .= '`'.$index.'`="'.$this->escape($value).'", ';
+				$vars .= '`'.$index.'`="'.$this->escape($value).'", ';
 			}
 		}
-
-		$query = substr($query, 0, -2).' WHERE '.$this->autoPrepare($clause);
-
-		$query = $this->prepare($query, $table);
-		$this->query($query, $log);
+		
+		$query = 'UPDATE `$P%s` SET %s WHERE %s';
+		$this->query($query, array($table, substr($vars, 0, -2), $this->autoPrepare($clause)), $log);
 
 		return mysql_affected_rows($this->link_id);
 	}
@@ -545,7 +543,7 @@ class mysql extends coreClass implements SQLBase{
 	/**
 	 * Deletes row(s) form a table
 	 *
-	 * @version	1.0
+	 * @version	1.1
 	 * @since   1.0.0
 	 * @author  xLink
 	 *
@@ -556,8 +554,8 @@ class mysql extends coreClass implements SQLBase{
 	 * @return 	array
 	 */
 	public function deleteRow($table, $clause, $log=false){
-		$query = 'DELETE FROM `$P%s` WHERE '. $this->autoPrepare($clause);
-		$this->query($this->prepare($query, $table), $log);
+		$query = 'DELETE FROM `$P%s` WHERE %s';
+		$this->query($query, array($table, $this->autoPrepare($clause)), $log);
 
 		return mysql_affected_rows($this->link_id);
 	}
@@ -574,8 +572,6 @@ class mysql extends coreClass implements SQLBase{
 	 */
 	public function recordMessage($message, $mode=false) {
 		$this->failed = true;
-
-
 
 		$a = debug_backtrace();
 		$file = $a[1];

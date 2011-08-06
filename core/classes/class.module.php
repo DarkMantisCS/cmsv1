@@ -32,13 +32,14 @@ class Module extends coreClass {
 		$this->objUser 		= $objCore->objUser;
 		$this->objTime 		= $objCore->objTime;
 		$this->objForm 		= $objCore->objForm;
-		$this->objComments 	= $objCore->objComments;
 		$this->objLogin 	= $objCore->objLogin;
-		$this->objNotify	= $objCore->objNotify;
 		$this->objPlugins	= $objCore->objPlugins;
 		$this->objCache		= $objCore->objCache;
 		$this->objGroups	= $objCore->objGroups;
-
+		
+		$this->objNotify	= $objCore->objNotify;
+		$this->objComments 	= $objCore->objComments;
+		
 		if(isset($_GET['ajax'])) {
 			$this->objPage->setVar('simpleTpl', true);
 		}
@@ -138,7 +139,7 @@ class Module extends coreClass {
 			return true;
 		} else {
 			// Else query the database and find it
-			$modules = $this->objSQL->getTable($this->objSQL->prepare('SELECT * FROM `$Pmodules`'));
+			$modules = $this->objSQL->getTable('SELECT * FROM `$Pmodules`');
 				if(!$modules){ return false; }
 
 			foreach($modules as $module) {
