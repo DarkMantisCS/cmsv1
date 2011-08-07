@@ -16,7 +16,7 @@
       <tr class="{forum.row.ROW}">
         <td width="4%" rowspan="2" valign="middle" align="center"><img src="{forum.row.CAT_ICO}" /></td>
         <td colspan="2">
-            <span class="float-left bold"><a href="{forum.row.URL}">{forum.row.CAT}</a></span>
+            <span class="float-left bold" id="forum_title"><a href="{forum.row.URL}">{forum.row.CAT}</a></span>
             <!-- BEGIN subs -->
             <span class="float-right">
                 <!-- BEGIN cats -->

@@ -123,7 +123,7 @@ function menu_forum_users($args){
 
  		$objCore->objTPL->assign_block_vars('userRow', array(
  			'ID' 		=> $objCore->objUser->getUserInfo($user['id'], 'id'),
- 			'USERNAME' 	=> $objCore->objUser->profile($user['id'], NO_LINK),
+ 			'USERNAME' 	=> $objCore->objUser->profile($user['id']),
  			'COUNT' 	=> $user['count'],
  			'PER_DAY'	=> langVar('L_PER_DAY', round(sprintf('%.2f', $user['count'] / $opened), 0)),
 
