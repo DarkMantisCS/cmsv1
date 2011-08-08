@@ -12,28 +12,35 @@ include_once($cmsROOT.'core/core.php');
 if(!User::$IS_ONLINE){ die(); }
 if(is_readable('/'.Page::$THEME_ROOT.'extras.php')){ include '/'.Page::$THEME_ROOT.'extras.php'; }
 $vars = $objPage->getVar('tplVars');
-?>
-function showNotification(id, message, header, sticky){
-	$.gritter.add({
-		id : id,
-		title : header || "",
-		text : message,
-		sticky : Boolean(sticky),
-		before_open: function(){
-			console.log(this);
-			$(this).attr('id', 'notify-'+id);
+
+//notifications
+$notifications = null;
+if(User::$IS_ONLINE){
+	$notes = $objNotify->getNotifications(false);
+	if($notes){
+		foreach($notes as $note){
+		    $notifications .= $objNotify->outputNotification($note, true);
 		}
-	});
+	}
+}
+?>
+function growl(message, header, sticky){
+    growler.growl(message, {header: header || "", sticky: Boolean(sticky)});
 }
 
-/*$.periodic({period: 5000, decay: 1.2, max_period: 60000}, function() {
-	$.ajax({
-		url: '/'+cmsROOT+'scripts/ajax.php?action=grabNewNotifications',
-		complete: this.ajax_complete,
-		dataType: 'script'
-	});
-});*/
-
+function showNotification(id, message, header, sticky){
+    growler.growl(message, {header: header || "", sticky: Boolean(sticky),
+        destroyed: function(){
+            new Ajax.Request("/"+cmsROOT+"scripts/ajax.php?action=notificationRead", {
+                method: "post",
+                parameters: {id: id} 
+            });
+        }
+    });
+    $$("div.Growler-notice([id=\"\"])").reject(function(el){ return (strlen(el.id) > 0); }).each(function(ele){
+        ele.writeAttribute("id", "notify_"+id);
+    });
+}
 
 var avatarMenu = [
 	{ name: "Avatar Options", className: "title", disabled: true },
@@ -44,10 +51,33 @@ var avatarMenu = [
 	{ name: "More User Preferences", className: "title", callback: function(){ document.location = "/"+root+"user/"; } }
 ];
 
+function usernameAutocomplete(input){
+	new Ajax.Autocompleter(input, "user_autocomplete", "/"+cmsROOT+"scripts/ajax.php?action=userAutocomplete", {
+	    paramName: "var", 
+	    height: "20", 
+	    width: "200", 
+	    tokens: ", " 
+	});
+}
+
 document.observe('dom:loaded', function(){
-	//if($("user_autocomplete")){ usernameAutocomplete($("#user_autocomplete").attr('data-input')); }
-
-
+	//setup growl (notifications)
+	growler = new k.Growler({location: 'nu'});
+	
+	
+	//input autocomplete
+	if($("user_autocomplete")){ usernameAutocomplete($("user_autocomplete").readAttribute("data-input")); }
+	
+	//setup notifications
+	if(User.IS_ONLINE){
+		if($("notificationGrabber")){
+		    new Ajax.PeriodicalUpdater('notificationGrabber', '/'+cmsROOT+'scripts/ajax.php?action=grabNewNotifications', {
+		        method: "post", frequency: 5, decay: 3, evalScripts: true
+		    });
+		}
+		<?php echo $notifications; ?>
+	}
+	
 	//context menu on the users own avatar frames
 	new Proto.Menu({
 	    selector: "#"+User.username+"_avatar",

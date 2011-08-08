@@ -233,7 +233,8 @@ INSERT INTO `cs_menus` (`id`, `menu_id`, `link_value`, `link_name`, `link_color`
 	(5, 'menu_mm', 'user/', 'User Control Panel', NULL, 0, 4, 1, 0),
 	(6, 'menu_mm', 'mod/', 'Moderator Panel', NULL, 0, 9, 3, 0),
 	(7, 'main_nav', 'index.php', 'Site Home', NULL, 0, 1, 0, 0),
-	(8, 'main_nav', 'modules/profile/view/', 'Profile', NULL, 0, 2, 1, 0);
+	(8, 'main_nav', 'modules/profile/view/', 'Profile', NULL, 0, 2, 1, 0),
+	(9, 'main_nav', 'modules/forum/', 'Forum', NULL, 0, 3, 0, 0);
 SQL;
 
 $sql[] = <<<SQL

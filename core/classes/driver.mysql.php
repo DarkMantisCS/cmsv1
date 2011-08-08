@@ -11,7 +11,7 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 * @since		1.0.0
 * @author		xLink
 */
-class mysql extends coreClass implements SQLBase{
+class driver_mysql extends coreClass implements SQLBase{
 
 	/**
 	 * Sets up a new MySQL Class
@@ -232,7 +232,7 @@ class mysql extends coreClass implements SQLBase{
 	 *
 	 * @return	string
 	 */
-	function prefix($mode='') {
+	public function prefix($mode='') {
 		if(isset($this->prefix[$mode])){
 			return $this->prefix[$mode];
 		}
@@ -256,7 +256,7 @@ class mysql extends coreClass implements SQLBase{
 	 *
 	 * @return 	bool
 	 */
-	function addPrefix($mode, $prefix){
+	public function addPrefix($mode, $prefix){
 		if($mode == 0){
 			return false;
 		}

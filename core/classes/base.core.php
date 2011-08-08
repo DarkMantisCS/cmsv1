@@ -36,9 +36,10 @@ class coreClass{
 
 				//explode the filename, so we dont get interference pre-filename
 				$fileName = explode('/', $path[0]);
-
+				
 				//grab the class name from the file and make sure it exists before continuing
-				$class = inBetween('.', '.php', end($fileName));
+				$fileName = explode('.', end($fileName)); $class = $fileName[1]; 
+					if($fileName[0] == 'driver'){ $class = 'driver_'.$class; }
 					if(!class_exists($class)){ continue; }
 
 				//set the class to new var and continue

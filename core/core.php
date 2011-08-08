@@ -160,8 +160,8 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 	//connect to mysql
 	$connectTest = $objCore->objSQL->connect(true, (LOCALHOST && cmsDEBUG ? true : false), is_file(cmsROOT.'cache/ALLOW_LOGGING'));
 	if(!$connectTest){
-        msgDie('FAIL', sprintf($errorTPL, 'Fatal Error', 'Connecting to mySQL failed. '.$objSQL->errorMsg.
-            (cmsDEBUG ? '<br />'.mysql_error() : NULL)));
+        msgDie('FAIL', sprintf($errorTPL, 'Fatal Error', 'Connecting to SQL failed. '.$objCore->objSQL->getVar('errorMsg').
+            (cmsDEBUG ? '<br />'.$objCore->objSQL->getError() : NULL)));
 	}
 	unset($config['db']['password'], $connectTest);
 //

@@ -16,22 +16,29 @@ class notify extends coreClass{
 	/**
 	 * Outputs the notifications to the user
 	 *
-	 * @version 1.0
+	 * @version 1.2
 	 * @since 	1.0.0
 	 * @author 	xLink
 	 *
-	 * @param 	int 	$id  		ID of the notification
-	 * @param	string	$message	Message to output in the notification
-	 * @param	string	$title		Title of the notification
-	 * @param	bool	$sticky		Whether to dissapear or stay on screen
+	 * @param 	array 	$notification  	An array holding the notification
+	 * @param	bool	$return			true = output drectly && false = return
 	 */
-	public function outputNotification($id, $msg, $title, $sticky=false){
-		$msg = addslashes($msg);
-		$msg = str_replace(array("\t"),
-							array(''),
-							html_entity_decode($msg));
+	public function outputNotification($notify=array(), $return=false){
+		if(!is_array($notify) 
+				|| !isset($notify['id']) || !isset($notify['body']) 
+				|| !isset($notify['title'])){
+			
+			return false;
+		}
 
-		$this->objPage->addJSCode('showNotification("'.$id.'", "'.$msg.'", "'.$title.'", '.$sticky.');');
+		$notify['body'] = str_replace(array("\t"), array(''), addslashes(secureMe($notify['body'])));
+
+		$notify = sprintf('showNotification("%s", "%s", "%s", %s);', $notify['id'], $notify['body'], $notify['title'], 'true');
+		if($return == false){
+			$this->objPage->addJSCode($notify);
+		}else{
+			return $notify;
+		}
 	}
 
 	/**
@@ -88,15 +95,20 @@ class notify extends coreClass{
 		if($read===true){ 			$read = ' and `read`!="0"'; }
 		else if($read===false){ 	$read = ' and `read`="0"'; }
 
-		$user = ($uid==0 ? $this->objUser->grab('id') : $this->objUser->getUserInfo($uid));
-		if(is_empty($user)){
+		if($uid==0){
+			$uid = $this->objUser->grab('id');
+		}else{
+			$user = $this->objUser->getUserInfo($uid);
+			$uid = $user['id'];
+		}
+		if(is_empty($uid) || !is_number($uid)){
 			$this->setError('Invalid User ID.');
 			return false;
 		}
 
 		$query = $this->objSQL->getTable(
-			'SELECT * FROM `$Pnotifications` WHERE uid="%s"' . $read,
-			array($user['uid'])
+			'SELECT * FROM `$Pnotifications` WHERE uid="%d"' . $read,
+			array($uid)
 		);
 
 		if(!$query || !is_array($query)){ return false; }
@@ -112,11 +124,11 @@ class notify extends coreClass{
 	 *
 	 * @param	int		$uid		0 for current user, or UID of user
 	 * @param	string	$message	Message to output in the notification
-	 * @param	int		$moduleID	ID that corresponds with the content peice for that module
+	 * @param	int		$module_id	ID that corresponds with the content peice for that module
 	 *
 	 * @return 	bool
 	 */
-	public function notifyUser($uid, $message, $title=null, $moduleId=0){
+	public function notifyUser($uid, $message, $title=null, $module_id=0){
 		global $objModule;
 
 		$user = $this->objUser->getUserInfo($uid);
@@ -125,13 +137,13 @@ class notify extends coreClass{
 			return false;
 		}
 
-		$insert['uid'] 			= $user['uid'];
+		$insert['uid'] 			= $user['id'];
 		$insert['type'] 		= 0; //not implemented yet
 		$insert['body'] 		= secureMe($message);
 		$insert['timestamp'] 	= time();
 		$insert['title'] 		= !is_empty($title) ? $title : null;
 		$insert['module'] 		= $objModule->module;
-		$insert['module_id'] 	= is_number($moduleId) ? $moduleId : 0;
+		$insert['module_id'] 	= is_number($module_id) ? $module_id : 0;
 
 		$insert = $this->objSQL->insertRow('notifications', $insert);
 

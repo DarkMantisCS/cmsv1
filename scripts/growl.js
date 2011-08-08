@@ -104,7 +104,7 @@ k.Growler = Class.create({
 		
 		
             this.growler = new Element("div", { "class": "Growler", "id": "Growler" });
-            this.growler.setStyle({ position: ((IE==6)?"absolute":"fixed"), padding: "10px", "width": opt.width, "z-index": "99999" });
+            this.growler.setStyle({ position: ((IE==6)?"absolute":"fixed"), padding: "0px", "width": opt.width, "z-index": "99999" });
         
 		if(IE==6){
 			var offset = { w: parseInt(this.growler.style.width)+parseInt(this.growler.style.padding)*3, h: parseInt(this.growler.style.height)+parseInt(this.growler.style.padding)*3 };
@@ -145,7 +145,7 @@ k.Growler = Class.create({
 					this.growler.setStyle({bottom: 0, left: "25%", width: "50%"});
 					break;
 				case "nu":
-                    this.growler.setStyle({top:"4px",right:"5%"});
+                    this.growler.setStyle({top:"40px",right:"2%"});
                     break;
 				default:
 					this.growler.setStyle({top: 0, right: 0});

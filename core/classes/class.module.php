@@ -24,7 +24,7 @@ class Module extends coreClass {
 		$this->modConf['module'] = doArgs('__module', null, $_GET);
 		$this->modConf['action'] = doArgs('__action', null, $_GET);
 		$this->modConf['extra']  = doArgs('__extra', null, $_GET);
-
+		
 		//global the classes for this module
 		$this->objPage 		= $objCore->objPage;
 		$this->objSQL 		= $objCore->objSQL;
