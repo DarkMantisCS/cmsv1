@@ -283,6 +283,9 @@ class driver_mysql extends coreClass implements SQLBase{
 	public function prepare(){
 		//grab the functions args
 		$args = func_get_args();
+		if($args[0]==='SELECT * FROM `$Ppm_conversations` WHERE `users` LIKE "[,%" OR `users` LIKE "%,,%" OR `users` LIKE "%,]%"'){
+			echo dump($args);
+		}
 
 		//first arg is the query
 		$query = array_shift($args);
@@ -341,17 +344,17 @@ class driver_mysql extends coreClass implements SQLBase{
 			$file = $a[1];
 			if(isset($file['args'])){
 				foreach($file['args'] as $k => $v){
-					$file['args'][$k] = (is_array($v) ? serialize($v) : $v);
+					$file['args'][$k] = (is_array($v) ? json_encode($v) : $v);
 				}
 			}
 
-			$query = secureMe($query);
+			$query = secureMe($this->query);
 			$pinpoint = '<br /><div class="content padding"><strong>'.realpath($file['file']).'</strong> @ <strong>'.$file['line'].
 							'</strong> // Affected '.mysql_affected_rows().' rows.. <br /> '.$file['function'].'(<strong>\''.
 							(isset($file['args']) ? secureMe(implode('\', \'', $file['args'])) : null).'\'</strong>); </div>';
-			$this->debugtext[] = array('query' => $this->query.$pinpoint, 'time' => substr((microtime(true) - $this->query_time), 0, 7), 'status' => 'ok');
+			$this->debugtext[] = array('query' => $query.$pinpoint, 'time' => substr((microtime(true) - $this->query_time), 0, 7), 'status' => 'ok');
 		}else{
-			$this->debugtext[] = array('query' => $this->query, 'time' => null, 'status' => 'ok');
+			$this->debugtext[] = array('query' => $query, 'time' => null, 'status' => 'ok');
 		}
 
 

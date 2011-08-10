@@ -87,7 +87,10 @@ function menu_forum_posts($args){
 		));
         $j++;
     }
-    return $objCore->objTPL->get_html($args['uniqueId']);
+
+	$return = $objCore->objTPL->get_html($args['uniqueId']);
+	$objCore->objTPL->reset_block_vars('threadRow');
+    return $return;
 }
 
 function menu_forum_users($args){

@@ -278,7 +278,7 @@ switch($mode){
 		);
         
         $objTPL->assign_vars(array(	
-            'FORM_START'    => $objForm->start('databse', array('method' => 'POST', 'action' => '?action=4', 'onsubmit'=>'return confirm(\'Only continue if you are happy with the details you provided.\')')),
+            'FORM_START'    => $objForm->start('databse', array('method' => 'POST', 'action' => '?action=3&try', 'onsubmit'=>'return confirm(\'Only continue if you are happy with the details you provided.\')')),
             'FORM_END'      => $objForm->finish(),
             'SUBMIT'        => $objForm->button('submit', 'Next'),
         ));
@@ -399,7 +399,7 @@ if(!defined(\'INDEX_CHECK\')){die(\'Error: Cannot access directly.\');}
     //
     //--SQL Setup
     //
-        $objSQL     = new mysql($config['db']);
+        $objSQL     = new driver_mysql($config['db']);
         //check and see whether we can connect to the db
         if(!$objSQL->connect(true, (LOCALHOST && cmsDEBUG ? true : false), is_file(cmsROOT.'cache/ALLOW_LOGGING'))){
             msgDie('FAIL', '<b>Fatal Error</b>: <i>No Connection to the database</i>. SQL Said: '.$objSQL->error(), __LINE__, __FILE__);

@@ -317,8 +317,7 @@ class forum extends Module{
             GROUP BY u.id, u.username, aa.cat_id
             ORDER BY aa.cat_id, u.id'
         );
-
-        if(is_empty($query)){ hmsgDie('FAIL', 'Could not query forum moderator information'); }
+        if($query===false){ hmsgDie('FAIL', 'Could not query forum moderator information'); }
             $this->objSQL->freeResult($query);
 
         if(count($query)){
@@ -2584,7 +2583,7 @@ class forum extends Module{
 	           			array($a_sql, $this->objUser->grab('id'))
 					);
 
-                    if(is_empty($query)){
+                    if($query===false){
                         hmsgDie('FAIL', 'Error: Cannot retreive the forum authorization');
                     }
                 }else{

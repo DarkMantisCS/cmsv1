@@ -184,30 +184,6 @@ SQL;
 
 //--CMS Menus
 $sql[] = <<<SQL
-    DROP TABLE IF EXISTS `cs_menu_blocks`;
-SQL;
-$sql[] = <<<SQL
-CREATE TABLE IF NOT EXISTS `cs_menu_blocks` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `unique_id` char(10) COLLATE utf8_bin NOT NULL,
-  `module` text COLLATE utf8_bin,
-  `function` text COLLATE utf8_bin,
-  `position` tinyint(2) NOT NULL DEFAULT '0',
-  `perms` tinyint(11) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `unique_id` (`unique_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin ;
-SQL;
-$sql[] = <<<SQL
-INSERT INTO `cs_menu_blocks` (`id`, `unique_id`, `module`, `function`, `position`, `perms`) VALUES
-    (1, 'jv1h9w6m2y', 'NULL', 'NULL', 0, 0),
-    (2, 'x91z6yvmrw', 'core', 'affiliates', 0, 0),
-    (3, 'ndxhzj9w54', 'core', 'wio', 0, 0),
-    (4, 'n4fym8r9gd', 'forum', 'forum_posts', 0, 0),
-    (5, '343fwfwr34', 'forum', 'forum_users', 0, 0);
-SQL;
-
-$sql[] = <<<SQL
     DROP TABLE IF EXISTS `cs_menus`;
 SQL;
 $sql[] = <<<SQL
@@ -238,6 +214,30 @@ INSERT INTO `cs_menus` (`id`, `menu_id`, `link_value`, `link_name`, `link_color`
 SQL;
 
 $sql[] = <<<SQL
+    DROP TABLE IF EXISTS `cs_menu_blocks`;
+SQL;
+$sql[] = <<<SQL
+CREATE TABLE IF NOT EXISTS `cs_menu_blocks` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `unique_id` char(10) COLLATE utf8_bin NOT NULL,
+  `module` text COLLATE utf8_bin,
+  `function` text COLLATE utf8_bin,
+  `position` tinyint(2) NOT NULL DEFAULT '0',
+  `perms` tinyint(11) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_id` (`unique_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin ;
+SQL;
+$sql[] = <<<SQL
+INSERT INTO `cs_menu_blocks` (`id`, `unique_id`, `module`, `function`, `position`, `perms`) VALUES
+    (1, 'jv1h9w6m2y', 'NULL', 'NULL', 0, 0),
+    (2, 'x91z6yvmrw', 'core', 'affiliates', 0, 0),
+    (3, 'ndxhzj9w54', 'core', 'wio', 0, 0),
+    (4, '9rgtdk2zv8', 'login', 'login', 0, 0),
+    (5, 'n4fym8r9gd', 'forum', 'forum_posts', 0, 0),
+    (6, '343fwfwr34', 'forum', 'forum_users', 0, 0);
+SQL;
+$sql[] = <<<SQL
     DROP TABLE IF EXISTS `cs_menu_setups`;
 SQL;
 $sql[] = <<<SQL
@@ -257,9 +257,9 @@ INSERT INTO `cs_menu_setups` (`module`, `page_id`, `menu_id`, `params`, `order`)
 	('core', 	'default',  'x91z6yvmrw', 'menu_title=m_affiliates\r\nlimit=6\r\nperRow=2', 3),
 	('core', 	'default',  'ndxhzj9w54', 'menu_title=m_wio', 4),
 	('core', 	'default',  '9rgtdk2zv8', 'menu_title=m_login', 2),
-    ('forum',	'default',  'jv1h9w6m2y', 'menu_name=mm\r\nmenu_title=Main Menu', 0),
-    ('forum',	'default',  'n4fym8r9gd', 'menu_title=m_latest_post\r\nlimit=5', 0),
-    ('forum',	'default',  'ndxhzj9w54', 'menu_title=m_wio', 0),
+    ('forum',	'default',  'jv1h9w6m2y', 'menu_name=mm\r\nmenu_title=Main Menu', 1),
+    ('forum',	'default',  'n4fym8r9gd', 'menu_title=m_latest_post\r\nlimit=5', 3),
+    ('forum',	'default',  'ndxhzj9w54', 'menu_title=m_wio', 4),
     ('forum', 	'default',  '343fwfwr34', 'menu_title=m_top_user\r\nlimit=5', 2);
 SQL;
 
