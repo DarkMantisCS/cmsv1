@@ -280,7 +280,8 @@ class page extends coreClass{
 		}
 
 		if($this->config('site', 'theme_override', false)){
-			if(!is_dir(cmsROOT.'themes/'.$theme.'/')){
+			$theme = $this->config('site', 'theme');
+			if(!is_dir(cmsROOT.'themes/'.$theme.'/') || !is_readable(cmsROOT.'themes/'.$theme.'/cfg.php')){
 				$theme = 'default';
 			}
 		}

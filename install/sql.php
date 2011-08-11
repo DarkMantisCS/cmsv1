@@ -233,7 +233,7 @@ INSERT INTO `cs_menu_blocks` (`id`, `unique_id`, `module`, `function`, `position
     (1, 'jv1h9w6m2y', 'NULL', 'NULL', 0, 0),
     (2, 'x91z6yvmrw', 'core', 'affiliates', 0, 0),
     (3, 'ndxhzj9w54', 'core', 'wio', 0, 0),
-    (4, '9rgtdk2zv8', 'login', 'login', 0, 0),
+    (4, '9rgtdk2zv8', 'core', 'login', 0, 0),
     (5, 'n4fym8r9gd', 'forum', 'forum_posts', 0, 0),
     (6, '343fwfwr34', 'forum', 'forum_users', 0, 0);
 SQL;

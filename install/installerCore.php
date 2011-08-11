@@ -184,4 +184,19 @@ if(!defined('INDEX_CHECK')){die('Error: Cannot access directly.');}
 
 	$objPage->setVar('language', $language);
 
+//
+//--BBCode Setup
+//
+	$objBBCode = new BBCode;
+	$objBBCode->SetDebug(true);
+	$objBBCode->SetDetectURLs(false);
+	$objBBCode->ClearSmileys();
+	$objBBCode->SetSmileyDir('/'.root().'images/smilies/');
+	$file = cmsROOT.'core/bbcode_tags.php';
+	if(is_readable($file)){
+		require_once($file);
+	}else{
+		hmsgDie('FAIL', 'Fatal Error - BBCode\'s not available.');
+	}
+
 ?>
