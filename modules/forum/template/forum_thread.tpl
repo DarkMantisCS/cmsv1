@@ -60,10 +60,7 @@
 <!-- BEGIN qreply -->
 <a name="quick_reply">&nbsp;</a>
 <div class="content corners">
-    <div class="title corners-top iblock">
-		<h4 class="float-left">{L_QUICK_REPLY}</h4>
-		<div class="float-right padding"><img alt="spinner" id="spinner" src="/{ROOT}images/ajax-loader.gif" style="display:none;" /> </div>
-	</div>
+    <div class="title corners-top"><h4>{L_QUICK_REPLY}</h4></div>
 	{F_START}
 		{HIDDEN}
 		<div id="preview" style="display:none;" class="preview"></div> 

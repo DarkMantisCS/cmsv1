@@ -111,8 +111,6 @@ document.observe('dom:loaded', function(){
 			makeReplyForm('qreply');
 			Event.observe('qreply', 'submit', function(e){
 			    $('qreply').request({
-			    	onCreate: function(){ $('spinner').show(); },
-			    	onComplete: function(){ $('spinner').hide(); },
 			        onFailure: function() { return true; },
 			        onSuccess: function(t) {
 			        	$$('#qreply textarea')[0].update('');

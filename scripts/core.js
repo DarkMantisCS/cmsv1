@@ -167,6 +167,24 @@ function updateDimensions(){
     });
 }
 
+function spinnerMove(e){
+	var spinner = $('spinner_');
+	if(!isset(spinner)){
+		Event.stopObserving(document, 'mousemove', spinnerMove);
+		return;
+	}
+	
+	mouseX = Event.pointerX(e);
+	mouseY = Event.pointerY(e);
+	spinner.setStyle({'top': (mouseY-10)+'px', 'left': (mouseX+10)+'px', 'position': 'fixed'});	
+}
+
+//keep a div updated at the mouse pointed, this will be shown if we fire an ajax event
+Ajax.Responders.register({
+	onCreate: function(){ $('spinner_').show(); Event.observe(document, 'mousemove', spinnerMove); },
+	onComplete: function(){ $('spinner_').hide(); Event.stopObserving(document, 'mousemove', spinnerMove); },
+});
+
 document.observe('dom:loaded', function(){
 	$$('textarea').each(function (txtarea){
 		if(!txtarea.hasClassName('noResize')){

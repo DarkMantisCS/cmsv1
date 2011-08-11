@@ -43,7 +43,7 @@
 <!-- END debug -->
 </div>
 <div id="bg-strip">&nbsp;</div>
-
+<div id="spinner_"><img alt="spinner" id="spinner" src="/{ROOT}/images/ajax-loader.gif" /></div>
 {_JS_FOOTER}
 </body>
 </html>
