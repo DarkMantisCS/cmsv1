@@ -33,11 +33,11 @@ DROP TABLE IF EXISTS `cs_config`;
 SQL;
 $sql[] = <<<SQL
 CREATE TABLE IF NOT EXISTS `cs_config` (
-  `array` varchar(30) COLLATE utf8_bin NOT NULL,
-  `var` varchar(50) COLLATE utf8_bin NOT NULL,
-  `value` text COLLATE utf8_bin,
+  `array` varchar(30) COLLATE utf8_unicode_ci NOT NULL,
+  `var` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  `value` text COLLATE utf8_unicode_ci,
   KEY `array` (`array`,`var`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 SQL;
 $sql[] = <<<SQL
 INSERT INTO `cs_config` (`array`, `var`, `value`) VALUES
@@ -101,14 +101,14 @@ CREATE TABLE IF NOT EXISTS `cs_sqlerrors` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `uid` int(11) NOT NULL DEFAULT '0',
   `date` int(11) NOT NULL DEFAULT '0',
-  `query` text CHARACTER SET latin1,
-  `page` text CHARACTER SET latin1,
-  `vars` text CHARACTER SET latin1,
-  `error` text CHARACTER SET latin1,
-  `lineInfo` text CHARACTER SET latin1,
+  `query` text COLLATE utf8_unicode_ci,
+  `page` text COLLATE utf8_unicode_ci,
+  `vars` text COLLATE utf8_unicode_ci,
+  `error` text COLLATE utf8_unicode_ci,
+  `lineInfo` text COLLATE utf8_unicode_ci,
   PRIMARY KEY (`id`),
   KEY `uid` (`uid`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ;
 SQL;
 $sql[] = <<<SQL
     DROP TABLE IF EXISTS `cs_logs`;
@@ -117,14 +117,14 @@ $sql[] = <<<SQL
 CREATE TABLE IF NOT EXISTS `cs_logs` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `uid` int(11) unsigned NOT NULL DEFAULT '0',
-  `username` varchar(50) COLLATE utf8_bin DEFAULT NULL,
-  `description` text COLLATE utf8_bin NOT NULL,
-  `query` text COLLATE utf8_bin,
-  `refer` varchar(255) COLLATE utf8_bin DEFAULT NULL,
+  `username` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `description` text COLLATE utf8_unicode_ci NOT NULL,
+  `query` text COLLATE utf8_unicode_ci,
+  `refer` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `date` int(11) unsigned NOT NULL DEFAULT '0',
-  `ip_address` varchar(15) COLLATE utf8_bin NOT NULL,
+  `ip_address` varchar(15) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ;
 SQL;
 
 //--FileHashes
@@ -133,10 +133,10 @@ $sql[] = <<<SQL
 SQL;
 $sql[] = <<<SQL
 CREATE TABLE IF NOT EXISTS `cs_fileregistry` (
-  `filename` varchar(255) COLLATE utf8_bin NOT NULL,
-  `hash` char(64) COLLATE utf8_bin NOT NULL,
+  `filename` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `hash` char(64) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`filename`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 SQL;
 
 //--Groups
@@ -147,14 +147,14 @@ $sql[] = <<<SQL
 CREATE TABLE IF NOT EXISTS `cs_groups` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `type` tinyint(1) NOT NULL DEFAULT '1',
-  `name` varchar(30) COLLATE utf8_bin NOT NULL DEFAULT '',
-  `description` text COLLATE utf8_bin,
+  `name` varchar(30) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `description` text COLLATE utf8_unicode_ci,
   `moderator` int(11) unsigned NOT NULL DEFAULT '0',
   `single_user_group` tinyint(1) NOT NULL DEFAULT '1',
-  `color` varchar(20) COLLATE utf8_bin NOT NULL,
+  `color` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
   `order` tinyint(3) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ;
 SQL;
 $sql[] = <<<SQL
 INSERT INTO `cs_groups` (`id`,     `type`, `name`,     `description`,             `moderator`, `single_user_group`,     `color`,     `order`) VALUES
@@ -175,7 +175,7 @@ CREATE TABLE IF NOT EXISTS `cs_group_subs` (
   `pending` tinyint(1) NOT NULL DEFAULT '1',
   KEY `gid` (`gid`),
   KEY `uid` (`uid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 SQL;
 $sql[] = <<<SQL
 INSERT INTO `cs_group_subs` (`uid`, `gid`, `pending`) VALUES 
@@ -189,16 +189,16 @@ SQL;
 $sql[] = <<<SQL
 CREATE TABLE IF NOT EXISTS `cs_menus` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `menu_id` varchar(20) COLLATE utf8_bin DEFAULT NULL,
-  `link_value` tinytext COLLATE utf8_bin,
-  `link_name` varchar(50) COLLATE utf8_bin DEFAULT NULL,
-  `link_color` varchar(20) COLLATE utf8_bin DEFAULT NULL,
+  `menu_id` varchar(20) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `link_value` tinytext COLLATE utf8_unicode_ci,
+  `link_name` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `link_color` varchar(20) COLLATE utf8_unicode_ci DEFAULT NULL,
   `blank` tinyint(1) NOT NULL DEFAULT '0',
   `order` int(11) NOT NULL DEFAULT '0',
   `perms` int(1) NOT NULL DEFAULT '0',
   `external` int(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ;
 SQL;
 $sql[] = <<<SQL
 INSERT INTO `cs_menus` (`id`, `menu_id`, `link_value`, `link_name`, `link_color`, `blank`, `order`, `perms`, `external`) VALUES
@@ -219,14 +219,14 @@ SQL;
 $sql[] = <<<SQL
 CREATE TABLE IF NOT EXISTS `cs_menu_blocks` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `unique_id` char(10) COLLATE utf8_bin NOT NULL,
-  `module` text COLLATE utf8_bin,
-  `function` text COLLATE utf8_bin,
+  `unique_id` char(10) COLLATE utf8_unicode_ci NOT NULL,
+  `module` text COLLATE utf8_unicode_ci,
+  `function` text COLLATE utf8_unicode_ci,
   `position` tinyint(2) NOT NULL DEFAULT '0',
   `perms` tinyint(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_id` (`unique_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ;
 SQL;
 $sql[] = <<<SQL
 INSERT INTO `cs_menu_blocks` (`id`, `unique_id`, `module`, `function`, `position`, `perms`) VALUES
@@ -243,13 +243,13 @@ SQL;
 $sql[] = <<<SQL
 CREATE TABLE IF NOT EXISTS `cs_menu_setups` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `module` varchar(30) COLLATE utf8_bin NOT NULL,
-  `page_id` text COLLATE utf8_bin NOT NULL,
-  `menu_id` char(10) COLLATE utf8_bin NOT NULL,
-  `params` longtext COLLATE utf8_bin,
+  `module` varchar(30) COLLATE utf8_unicode_ci NOT NULL,
+  `page_id` text COLLATE utf8_unicode_ci NOT NULL,
+  `menu_id` char(10) COLLATE utf8_unicode_ci NOT NULL,
+  `params` longtext COLLATE utf8_unicode_ci,
   `order` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ;
 SQL;
 $sql[] = <<<SQL
 INSERT INTO `cs_menu_setups` (`module`, `page_id`, `menu_id`, `params`, `order`) VALUES
@@ -294,14 +294,14 @@ CREATE TABLE IF NOT EXISTS `cs_notifications` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `uid` int(11) unsigned NOT NULL,
   `type` tinyint(1) NOT NULL DEFAULT '0',
-  `body` text COLLATE utf8_bin,
+  `body` text COLLATE utf8_unicode_ci,
   `timestamp` int(11) NOT NULL DEFAULT '0',
   `read` int(11) NOT NULL DEFAULT '0',
-  `module` varchar(50) COLLATE utf8_bin DEFAULT NULL,
+  `module` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
   `module_id` int(11) unsigned NOT NULL DEFAULT '0',
-  `title` varchar(255) COLLATE utf8_bin DEFAULT NULL,
+  `title` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ;
 SQL;
 $sql[] = <<<SQL
     DROP TABLE IF EXISTS `cs_notification_settings`;
@@ -309,12 +309,12 @@ SQL;
 $sql[] = <<<SQL
 CREATE TABLE IF NOT EXISTS `cs_notification_settings` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `module` varchar(50) COLLATE utf8_bin DEFAULT NULL,
-  `setting` varchar(50) COLLATE utf8_bin NOT NULL,
-  `description` text COLLATE utf8_bin,
-  `default` varchar(50) COLLATE utf8_bin NOT NULL,
+  `module` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `setting` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  `description` text COLLATE utf8_unicode_ci,
+  `default` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ;
 SQL;
 $sql[] = <<<SQL
 INSERT INTO `cs_notification_settings` (`id`, `module`, `setting`, `description`, `default`) VALUES
@@ -334,7 +334,7 @@ CREATE TABLE IF NOT EXISTS `cs_comments` (
   `comment` text NOT NULL,
   `timestamp` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ;
 SQL;
 
 //--Online Table
@@ -345,23 +345,23 @@ $sql[] = <<<SQL
 CREATE TABLE IF NOT EXISTS `cs_online` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `uid` int(11) unsigned NOT NULL,
-  `username` varchar(50) COLLATE utf8_bin DEFAULT NULL,
-  `ip_address` varchar(15) COLLATE utf8_bin DEFAULT NULL,
+  `username` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `ip_address` varchar(15) COLLATE utf8_unicode_ci DEFAULT NULL,
   `timestamp` int(11) NOT NULL,
   `hidden` int(1) NOT NULL DEFAULT '0',
-  `location` text COLLATE utf8_bin NOT NULL,
-  `referer` varchar(255) COLLATE utf8_bin DEFAULT NULL,
-  `language` varchar(5) COLLATE utf8_bin NOT NULL,
-  `useragent` text COLLATE utf8_bin NOT NULL,
+  `location` text COLLATE utf8_unicode_ci NOT NULL,
+  `referer` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `language` varchar(5) COLLATE utf8_unicode_ci NOT NULL,
+  `useragent` text COLLATE utf8_unicode_ci NOT NULL,
   `login_attempts` tinyint(2) NOT NULL DEFAULT '0',
   `login_time` int(11) NOT NULL,
-  `userkey` char(32) COLLATE utf8_bin DEFAULT NULL,
-  `mode` enum('active','kill','ban','update') COLLATE utf8_bin NOT NULL DEFAULT 'active',
+  `userkey` char(32) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `mode` enum('active','kill','ban','update') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'active',
   PRIMARY KEY (`id`),
   UNIQUE KEY `userkey` (`userkey`),
   KEY `uid` (`uid`),
   KEY `username` (`username`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ;
 SQL;
 
 /*--Ban Table
@@ -389,13 +389,13 @@ SQL;
 $sql[] = <<<SQL
 CREATE TABLE IF NOT EXISTS `cs_plugins` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(50) COLLATE utf8_bin NOT NULL,
-  `filePath` text COLLATE utf8_bin NOT NULL,
-  `author` varchar(50) COLLATE utf8_bin NOT NULL,
-  `priority` enum('1','2','3') COLLATE utf8_bin NOT NULL DEFAULT '1',
+  `name` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  `filePath` text COLLATE utf8_unicode_ci NOT NULL,
+  `author` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  `priority` enum('1','2','3') COLLATE utf8_unicode_ci NOT NULL DEFAULT '1',
   `enabled` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ;
 SQL;
 
 //--Stats
@@ -405,9 +405,9 @@ SQL;
 $sql[] = <<<SQL
 CREATE TABLE IF NOT EXISTS `cs_statistics` (
   `variable` varchar(255) NOT NULL DEFAULT '',
-  `value` text COLLATE utf8_bin NOT NULL,
+  `value` text COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`variable`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 SQL;
 $sql[] = <<<SQL
 INSERT INTO `cs_statistics` (`variable`, `value`) VALUES
@@ -424,13 +424,13 @@ SQL;
 $sql[] = <<<SQL
 CREATE TABLE IF NOT EXISTS `cs_modules` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(50) COLLATE utf8_bin DEFAULT NULL,
+  `name` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
   `enabled` tinyint(1) NOT NULL DEFAULT '0',
-  `hash` char(32) COLLATE utf8_bin DEFAULT NULL,
+  `hash` char(32) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`),
   UNIQUE KEY `hash` (`hash`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=2 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=2 ;
 SQL;
 $sql[] = <<<SQL
 INSERT INTO `cs_modules` (`name`, `hash`, `enabled`) VALUES
@@ -453,8 +453,8 @@ $sql[] = <<<SQL
 CREATE TABLE IF NOT EXISTS `cs_forum_cats` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `parent_id` int(11) unsigned NOT NULL DEFAULT '0',
-  `title` varchar(255) COLLATE utf8_bin NOT NULL,
-  `desc` text COLLATE utf8_bin,
+  `title` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `desc` text COLLATE utf8_unicode_ci,
   `order` int(3) NOT NULL DEFAULT '0',
   `last_post_id` int(11) unsigned NOT NULL DEFAULT '0',
   `postcounts` int(1) NOT NULL DEFAULT '1',
@@ -468,7 +468,7 @@ CREATE TABLE IF NOT EXISTS `cs_forum_cats` (
   `auth_special` int(1) NOT NULL DEFAULT '0',
   `auth_mod` int(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ;
 SQL;
 $sql[] = <<<SQL
 INSERT INTO `cs_forum_cats` (`parent_id`, `title`, `desc`, `order`, `last_post_id`, `auth_view`, `auth_read`, `auth_post`, `auth_reply`, `auth_edit`, `auth_del`, `auth_move`, `auth_special`, `auth_mod`) VALUES
@@ -484,7 +484,7 @@ CREATE TABLE IF NOT EXISTS `cs_forum_threads` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `cat_id` int(11) unsigned NOT NULL DEFAULT '0',
   `author` int(11) unsigned NOT NULL DEFAULT '0',
-  `subject` varchar(255) COLLATE utf8_bin NOT NULL DEFAULT '',
+  `subject` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `timestamp` int(11) NOT NULL DEFAULT '0',
   `first_post_id` int(11) unsigned NOT NULL DEFAULT '0',
   `last_uid` int(11) unsigned NOT NULL DEFAULT '0',
@@ -493,7 +493,7 @@ CREATE TABLE IF NOT EXISTS `cs_forum_threads` (
   `views` int(1) NOT NULL DEFAULT '0',
   `old_cat_id` int(11) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ;
 SQL;
 $sql[] = <<<SQL
 INSERT INTO `cs_forum_threads` (`cat_id`, `author`, `subject`, `timestamp`, `first_post_id`, `last_uid`) VALUES
@@ -508,15 +508,15 @@ CREATE TABLE IF NOT EXISTS `cs_forum_posts` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `thread_id` int(11) unsigned NOT NULL DEFAULT '0',
   `author` int(11) unsigned NOT NULL DEFAULT '0',
-  `post` text COLLATE utf8_bin,
+  `post` text COLLATE utf8_unicode_ci,
   `timestamp` int(11) NOT NULL DEFAULT '0',
-  `poster_ip` varchar(15) COLLATE utf8_bin NOT NULL DEFAULT '',
+  `poster_ip` varchar(15) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `edited` int(5) NOT NULL DEFAULT '0',
   `edited_uid` int(11) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `thread_id` (`thread_id`),
   KEY `author` (`author`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ;
 SQL;
 $sql[] = <<<SQL
 INSERT INTO `cs_forum_posts` (`thread_id`, `author`, `post`, `timestamp`, `poster_ip`, `edited`, `edited_uid`) VALUES
@@ -533,7 +533,7 @@ CREATE TABLE IF NOT EXISTS `cs_forum_watch` (
   `thread_id` int(11) NOT NULL DEFAULT '0',
   `seen` int(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ;
 SQL;
 
 $sql[] = <<<SQL
@@ -552,7 +552,7 @@ CREATE TABLE IF NOT EXISTS `cs_forum_auth` (
   `auth_move` int(1) NOT NULL DEFAULT '0',
   `auth_special` int(1) NOT NULL DEFAULT '0',
   `auth_mod` int(1) NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 SQL;
 
 /*--PM Sys
@@ -605,12 +605,12 @@ SQL;
 $sql[] = <<<SQL
 CREATE TABLE IF NOT EXISTS `cs_userkeys` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `uData` varchar(11) COLLATE utf8_bin DEFAULT NULL,
-  `uAgent` char(32) COLLATE utf8_bin NOT NULL,
-  `uIP` varchar(15) COLLATE utf8_bin NOT NULL DEFAULT '',
+  `uData` varchar(11) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `uAgent` char(32) COLLATE utf8_unicode_ci NOT NULL,
+  `uIP` varchar(15) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   PRIMARY KEY (`id`),
   KEY `uid` (`uData`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ;
 SQL;
 
 //--Users
@@ -620,19 +620,19 @@ SQL;
 $sql[] = <<<SQL
 CREATE TABLE IF NOT EXISTS `cs_users` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `username` varchar(50) COLLATE utf8_bin NOT NULL DEFAULT '',
-  `password` char(34) COLLATE utf8_bin DEFAULT NULL,
-  `pin` varchar(32) COLLATE utf8_bin DEFAULT NULL,
+  `username` varchar(50) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `password` char(34) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `pin` varchar(32) COLLATE utf8_unicode_ci DEFAULT NULL,
   `register_date` int(11) NOT NULL DEFAULT '0',
   `last_active` int(11) NOT NULL DEFAULT '0',
-  `usercode` varchar(6) COLLATE utf8_bin DEFAULT NULL,
-  `email` varchar(100) COLLATE utf8_bin NOT NULL DEFAULT '',
+  `usercode` varchar(6) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `email` varchar(100) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `show_email` tinyint(1) NOT NULL DEFAULT '0',
-  `avatar` varchar(255) COLLATE utf8_bin DEFAULT NULL,
-  `title` varchar(30) COLLATE utf8_bin DEFAULT NULL,
-  `language` char(5) COLLATE utf8_bin NOT NULL DEFAULT 'en',
+  `avatar` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `title` varchar(30) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `language` char(5) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'en',
   `timezone` decimal(5,1) NOT NULL DEFAULT '0.0',
-  `theme` varchar(20) COLLATE utf8_bin NOT NULL DEFAULT 'default',
+  `theme` varchar(20) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'default',
   `hidden` tinyint(1) NOT NULL DEFAULT '0',
   `active` tinyint(1) NOT NULL DEFAULT '0',
   `userlevel` tinyint(1) NOT NULL DEFAULT '0',
@@ -644,13 +644,13 @@ CREATE TABLE IF NOT EXISTS `cs_users` (
   `reffered_by` int(11) unsigned NOT NULL DEFAULT '0',
   `password_update` tinyint(1) NOT NULL DEFAULT '0',
   `whitelist` tinyint(1) NOT NULL DEFAULT '0',
-  `whitelisted_ips` text COLLATE utf8_bin,
+  `whitelisted_ips` text COLLATE utf8_unicode_ci,
   `warnings` int(2) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`),
   UNIQUE KEY `usercode` (`usercode`),
   KEY `email` (`email`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ;
 SQL;
 $sql[] = <<<SQL
     INSERT INTO `cs_users` (`username`, `password`, `register_date`, `last_active`, `usercode`, `email`, `show_email`, `language`, `timezone`, `theme`, `active`, `userlevel`) VALUES
@@ -663,24 +663,24 @@ SQL;
 $sql[] = <<<SQL
 CREATE TABLE IF NOT EXISTS `cs_user_extras` (
   `uid` int(11) unsigned NOT NULL,
-  `birthday` varchar(11) COLLATE utf8_bin NOT NULL DEFAULT '00/00/0000',
+  `birthday` varchar(11) COLLATE utf8_unicode_ci NOT NULL DEFAULT '00/00/0000',
   `sex` tinyint(1) NOT NULL DEFAULT '0',
-  `contact_info` text COLLATE utf8_bin,
-  `about` text COLLATE utf8_bin,
-  `interests` text COLLATE utf8_bin,
-  `signature` text COLLATE utf8_bin,
-  `usernotes` text COLLATE utf8_bin NOT NULL,
-  `ajax_settings` text COLLATE utf8_bin,
-  `notification_settings` text COLLATE utf8_bin,
+  `contact_info` text COLLATE utf8_unicode_ci,
+  `about` text COLLATE utf8_unicode_ci,
+  `interests` text COLLATE utf8_unicode_ci,
+  `signature` text COLLATE utf8_unicode_ci,
+  `usernotes` text COLLATE utf8_unicode_ci NOT NULL,
+  `ajax_settings` text COLLATE utf8_unicode_ci,
+  `notification_settings` text COLLATE utf8_unicode_ci,
   `forum_show_sigs` tinyint(1) NOT NULL DEFAULT '0',
   `forum_autowatch` tinyint(1) NOT NULL DEFAULT '0',
   `forum_quickreply` tinyint(1) NOT NULL DEFAULT '0',
-  `forum_cat_order` text COLLATE utf8_bin,
-  `forum_tracker` text COLLATE utf8_bin,
+  `forum_cat_order` text COLLATE utf8_unicode_ci,
+  `forum_tracker` text COLLATE utf8_unicode_ci,
   `pagination_style` int(2) NOT NULL DEFAULT '1',
   PRIMARY KEY (`uid`),
   UNIQUE KEY `uid_2` (`uid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 SQL;
 $sql[] = <<<SQL
     INSERT INTO `cs_user_extras` (`uid`) VALUES (1);

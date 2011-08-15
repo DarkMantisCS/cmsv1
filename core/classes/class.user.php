@@ -221,16 +221,17 @@ class user extends coreClass{
      *
      * @version 2.0
      * @since   1.0.0
-     * @author    xLink
+     * @author  xLink
      *
-     * @param    string $username     Username used to retreive the UID
+     * @param   int $uid    UID used to retreive the Username
      *
-     * @return  int                    The UID that was returned, Or 0 if it failed.
+     * @return  string      The username that was returned, Or Guest if it failed.
+
      */
     public function getUsernameById($username){
-        $return = $this->getUserInfo($username, 'id');
+        $return = $this->getUserInfo($uid, 'username');
 
-        if($return === false){ return 0; }
+        if($return === false){ return 'Guest'; }
         return $return;
     }
 
@@ -239,16 +240,16 @@ class user extends coreClass{
      *
      * @version 2.0
      * @since   1.0.0
-     * @author    xLink
+     * @author  xLink
      *
-     * @param    int $uid        UID used to retreive the Username
+     * @param   string $username    Username used to retreive the UID
      *
-     * @return  string            The username that was returned, Or Guest if it failed.
+     * @return  int                 The UID that was returned, Or 0 if it failed.
      */
     public function getIdByUsername($uid){
-        $return = $this->getUserInfo($uid, 'username');
+        $return = $this->getUserInfo($username, 'id');
 
-        if($return === false){ return 'Guest'; }
+        if($return === false){ return 0; }
         return $return;
     }
 
