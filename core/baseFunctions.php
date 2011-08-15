@@ -1151,10 +1151,7 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
      */
     function doImage($content) {
         global $objBBCode;
-        if(!isset($objBBCode)){
-            if(is_empty($content)){ return false; }
-            return htmlspecialchars($content);
-        }
+	
         $content = trim($objBBCode->UnHTMLEncode(strip_tags($content)));
         if (preg_match("/\\.(?:gif|jpeg|jpg|jpe|png)$/", $content)) {
             if (preg_match("/^[a-zA-Z0-9_][^:]+$/", $content)) {

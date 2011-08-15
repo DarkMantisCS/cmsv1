@@ -283,9 +283,6 @@ class driver_mysql extends coreClass implements SQLBase{
     public function prepare(){
         //grab the functions args
         $args = func_get_args();
-        if($args[0]==='SELECT * FROM `$Ppm_conversations` WHERE `users` LIKE "[,%" OR `users` LIKE "%,,%" OR `users` LIKE "%,]%"'){
-            echo dump($args);
-        }
 
         //first arg is the query
         $query = array_shift($args);
@@ -658,6 +655,9 @@ class driver_mysql extends coreClass implements SQLBase{
 
         $error = mysql_error();
             if(is_empty($error) || $error == $this->lastError){ return false; }
+        $this->lastError = $error;
+
+        if(!is_file(cmsROOT.'cache/ALLOW_LOGGING')){ return false; }
 
         $info['uid']             = (User::$IS_ONLINE ? $this->objUser->grab('id') : '0');
         $info['date']             = time();
@@ -669,7 +669,7 @@ class driver_mysql extends coreClass implements SQLBase{
 
         $info['error']             = secureMe($error);
         $info['lineInfo']         = secureMe($fileInfo);
-        $this->lastError = $error;
+
         return $this->insertRow('sqlerrors', $info, false);
     }
 
