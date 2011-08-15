@@ -21,7 +21,7 @@ if(isset($url[1])){
     $_GET = array_merge($GET, $_GET);
 }
 
-$mode   = doArgs('__mode', 	 null, $_GET);
+$mode   = doArgs('__mode',      null, $_GET);
 $module = doArgs('__module', null, $_GET);
 $action = doArgs('__action', null, $_GET);
 $extra  = doArgs('__extra', null, $_GET);

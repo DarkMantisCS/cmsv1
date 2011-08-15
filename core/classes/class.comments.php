@@ -9,60 +9,60 @@ class comments extends coreClass {
     /**
      * Set the comments up, this will handle the post form also.
      * 
-     * @version	1.0
+     * @version    1.0
      * @since   0.8.0 
      */    
-	public function start($tplVar=NULL, $paginationVar, $module, $module_id, $perPage=10, $author_id=0){
-		$this->paginationVar 	= $paginationVar;
-		$this->module 			= $module;
-		$this->module_id 		= $module_id;
-		$this->perPage 			= $perPage;
-		$this->author_id 		= $author_id;
+    public function start($tplVar=NULL, $paginationVar, $module, $module_id, $perPage=10, $author_id=0){
+        $this->paginationVar     = $paginationVar;
+        $this->module             = $module;
+        $this->module_id         = $module_id;
+        $this->perPage             = $perPage;
+        $this->author_id         = $author_id;
 
-		$this->aURL = explode('?', $this->config('global', 'fullPath'));
-		parse_str($this->aURL[1], $vars); 
-		$this->fURL = $this->aURL[0].'?'.$this->getQueryString($vars);
-		
-		if($tplVar!==NULL){
-			$this->getComments($tplVar);
-		}
-	}
+        $this->aURL = explode('?', $this->config('global', 'fullPath'));
+        parse_str($this->aURL[1], $vars); 
+        $this->fURL = $this->aURL[0].'?'.$this->getQueryString($vars);
+        
+        if($tplVar!==NULL){
+            $this->getComments($tplVar);
+        }
+    }
 
-	/**
-	 * Inserts a comment into the database
-	 *
-	 * @version 1.0
-	 * @since 	1.0.0
-	 * @autor 	xLink
-	 *
-	 * @param 	string 	$module			The module name
-	 * @param 	int 	$module_id		The Unique ID of the content
-	 * @param 	int 	$author			The comment author's UID
-	 * @param 	string 	$comment		The comment's content
-	 * 
-	 * @return 	int		mysql_inserted_id()
-	 */
-	function insertComment($module, $module_id, $author, $comment){
-		unset($array);
-		$array['module'] 	= $module;
-		$array['module_id'] = $module_id;
-		$array['author'] 	= $author;
-		$array['comment'] 	= secureMe($comment);
-		$array['timestamp'] = time();
-		
-		$log = 'Comments System: '.$this->objUser->profile($this->objUser->grab('id'), RAW).' commented on <a href="'.$this->aURL[1].'">this</a>.';
-		return $this->objSQL->insertRow('comments', $array, $log);
-	}
+    /**
+     * Inserts a comment into the database
+     *
+     * @version 1.0
+     * @since     1.0.0
+     * @autor     xLink
+     *
+     * @param     string     $module            The module name
+     * @param     int     $module_id        The Unique ID of the content
+     * @param     int     $author            The comment author's UID
+     * @param     string     $comment        The comment's content
+     * 
+     * @return     int        mysql_inserted_id()
+     */
+    function insertComment($module, $module_id, $author, $comment){
+        unset($array);
+        $array['module']     = $module;
+        $array['module_id'] = $module_id;
+        $array['author']     = $author;
+        $array['comment']     = secureMe($comment);
+        $array['timestamp'] = time();
+        
+        $log = 'Comments System: '.$this->objUser->profile($this->objUser->grab('id'), RAW).' commented on <a href="'.$this->aURL[1].'">this</a>.';
+        return $this->objSQL->insertRow('comments', $array, $log);
+    }
 
     /**
      * Grabs all avalible comments for the requested module and id
-	 *
-	 * @version 1.0
-	 * @since 	1.0.0
-	 * @autor 	xLink
-	 *
-	 * @param 	string 	$tplVar
-	 */
+     *
+     * @version 1.0
+     * @since     1.0.0
+     * @autor     xLink
+     *
+     * @param     string     $tplVar
+     */
     function getComments($tplVar){
         //set the template for the comments
         $this->objTPL->set_filenames(array(
@@ -74,7 +74,7 @@ class comments extends coreClass {
             switch($_GET['mode']){
                 case 'postComment':
                     if(HTTP_POST){
-                        if(doArgs('comment_'.$this->module_id, false, $_SESSION[$this->module]) != $_POST['sessid']){                            	
+                        if(doArgs('comment_'.$this->module_id, false, $_SESSION[$this->module]) != $_POST['sessid']){                                
                             msg('FAIL', 'Error: Cant remember where you wer posting to.', '_ERROR');
                         }else{
                             $comment = $this->insertComment($this->module, $this->module_id, $this->objUser->grab('id'), $_POST['comment']);
@@ -103,7 +103,7 @@ class comments extends coreClass {
                 
                 case 'deleteComment':
                     $id = doArgs('id', 0, $_GET, 'is_number');
-			        $comment = $this->objSQL->getLine('SELECT * FROM `$Pcomments` WHERE id = "%d"', array($id));
+                    $comment = $this->objSQL->getLine('SELECT * FROM `$Pcomments` WHERE id = "%d"', array($id));
                         if(!$comment){ msg('FAIL', 'Error: Comment not found.', '_ERROR'); break; }
                         
                     //check if user has perms
@@ -123,8 +123,8 @@ class comments extends coreClass {
                 
                 case 'ajDelComment':
                     if(HTTP_AJAX && HTTP_POST){
-	                    $id = doArgs('id', 0, $_GET, 'is_number');
-				        $comment = $this->objSQL->getLine('SELECT * FROM `$Pcomments` WHERE id = "%d"', array($id));
+                        $id = doArgs('id', 0, $_GET, 'is_number');
+                        $comment = $this->objSQL->getLine('SELECT * FROM `$Pcomments` WHERE id = "%d"', array($id));
                             if(!$comment){ die('-1'); }
                             
                         //check if user has perms
@@ -133,7 +133,7 @@ class comments extends coreClass {
     
                             //do teh the delete
                             $log = 'Comments System: '.$this->objUser->profile($this->objUser->grab('id'), RAW).' deleted comment from <a href="'.$this->aURL[1].'">this</a>.';
-	                        $delete = $this->objSQL->deleteRow('comments', array('id = "%d"', $id), $log);
+                            $delete = $this->objSQL->deleteRow('comments', array('id = "%d"', $id), $log);
                             die((!$delete ? '0' : '1'));
                         }
                     }else{
@@ -151,19 +151,19 @@ class comments extends coreClass {
         $commentsCount = $this->getCount();
         $comPagination = new pagination('commentsPage', $this->perPage, $commentsCount);
 
-			//check to see if we have a positive number
-			if($commentsCount){
-				//now lets actually grab the comments
-				$commentsData = $this->objSQL->getTable(
-					'SELECT * FROM `$Pcomments`
-						WHERE module="%s" AND module_id="%d" 
-						ORDER BY timestamp ASC 
-						LIMIT %s', 
-				array(
-					$this->module,
-					$this->module_id, 
-					$comPagination->getSqlLimit()
-				));
+            //check to see if we have a positive number
+            if($commentsCount){
+                //now lets actually grab the comments
+                $commentsData = $this->objSQL->getTable(
+                    'SELECT * FROM `$Pcomments`
+                        WHERE module="%s" AND module_id="%d" 
+                        ORDER BY timestamp ASC 
+                        LIMIT %s', 
+                array(
+                    $this->module,
+                    $this->module_id, 
+                    $comPagination->getSqlLimit()
+                ));
                                                         
                 if(!$commentsData){ //something went wrong
                     msg('INFO', 'Error loading comments.', '_ERROR');
@@ -211,7 +211,7 @@ class comments extends coreClass {
     /**
      * Outputs the submit form for a new comment
      * 
-     * @version	1.0
+     * @version    1.0
      * @since   0.8.0 
      */    
     function makeSubmitForm(){       
@@ -224,14 +224,14 @@ class comments extends coreClass {
 
         $sessid = $_SESSION[$this->module]['comment_'.$this->module_id] = md5(time().'�');
         $this->objTPL->assign_vars(array(
-            'FORM_START'    	=>  $this->objForm->start('comments', array('method'=>'POST', 'action'=>$this->aURL[0].'?mode=postComment')),
-            'FORM_END'      	=>  $this->objForm->finish(),
-            'SUBMIT'        	=>  $this->objForm->button('submit', 'Submit'),
+            'FORM_START'        =>  $this->objForm->start('comments', array('method'=>'POST', 'action'=>$this->aURL[0].'?mode=postComment')),
+            'FORM_END'          =>  $this->objForm->finish(),
+            'SUBMIT'            =>  $this->objForm->button('submit', 'Submit'),
 
-            'L_SUBMIT_COMMENT'	=>  'Submit a comment:',
-            'TEXTAREA'      	=>  $this->objForm->textarea('comment', ''),
-            'HIDDEN'    		=>  $this->objForm->inputbox('sessid', 'hidden', $sessid) . 
-                                    	$this->objForm->inputbox('module', 'hidden', $this->module),
+            'L_SUBMIT_COMMENT'    =>  'Submit a comment:',
+            'TEXTAREA'          =>  $this->objForm->textarea('comment', ''),
+            'HIDDEN'            =>  $this->objForm->inputbox('sessid', 'hidden', $sessid) . 
+                                        $this->objForm->inputbox('module', 'hidden', $this->module),
         ));
 
         //and then output the comments to the parent template
@@ -241,7 +241,7 @@ class comments extends coreClass {
     /**
      * Put together a list query list
      * 
-     * @version	1.0
+     * @version    1.0
      * @since   0.8.0 
      */    
     private function getQueryString($vars){
@@ -261,9 +261,9 @@ class comments extends coreClass {
         ));
 
         $comments = $this->objSQL->getLine($this->objSQL->prepare(
-			'SELECT * FROM `$Pcomments` WHERE id = "%d"',
-			$id
-		));
+            'SELECT * FROM `$Pcomments` WHERE id = "%d"',
+            $id
+        ));
             $this->objTPL->assign_block_vars('comment', array(
                 'ID'        => $comments['id'],
                 'cID'       => 'comment-'.$comments['id'],

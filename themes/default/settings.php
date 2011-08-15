@@ -34,8 +34,8 @@ $tpl['FIMG_unlocked']       = $i.'unlock.png';
 $tpl['FIMG_reply']          = $img.'comments.png';
 $tpl['FIMG_post_quote']     = $img.'comment.png';
 
-$tpl['PM_compose']			= $i.'sendpm.gif';
-$tpl['PM_reply']			= $i.'reply_small.gif';
+$tpl['PM_compose']            = $i.'sendpm.gif';
+$tpl['PM_reply']            = $i.'reply_small.gif';
 
 $tpl['IMG_expand']          = $i.'maximize.png';
 $tpl['IMG_retract']         = $i.'minimize.png';

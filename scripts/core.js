@@ -23,22 +23,22 @@ var ADAPT_CONFIG = {
 };
 
 function updateClock(){
-	if(!$('clock')){ return; }
-	$('clock').update(date('l H:i:s a', time())).writeAttribute('title', date('jS F Y', time()));
-	setTimeout(updateClock, 1000);
+    if(!$('clock')){ return; }
+    $('clock').update(date('l H:i:s a', time())).writeAttribute('title', date('jS F Y', time()));
+    setTimeout(updateClock, 1000);
 }
 
 function inBetween($begin, $end, $contents) {
-	$pos1 = strpos($contents, $begin);
-	if($pos1 !== false){
-		$pos1 += strlen($begin);
-		$pos2 = strpos($cotents, $end, $pos1);
-		if($pos2 !== false){
-			$substr = substr($contents, $pos1, $pos2 - $pos1);
-			return $substr;
-		}
-	}
-	return false;
+    $pos1 = strpos($contents, $begin);
+    if($pos1 !== false){
+        $pos1 += strlen($begin);
+        $pos2 = strpos($cotents, $end, $pos1);
+        if($pos2 !== false){
+            $substr = substr($contents, $pos1, $pos2 - $pos1);
+            return $substr;
+        }
+    }
+    return false;
 }
 
 function inWindow(url, title, width, height){
@@ -52,19 +52,19 @@ function inWindow(url, title, width, height){
     }
 
       myLightWindow.activateWindow({
-    	   href: 	url,
-    	   title: 	title,
-    	   width: 	width > window.viewport.width ?  window.viewport.width : width,
-    	   height: 	height > window.viewport.height ? window.viewport.height : height
+           href:     url,
+           title:     title,
+           width:     width > window.viewport.width ?  window.viewport.width : width,
+           height:     height > window.viewport.height ? window.viewport.height : height
       });
     return false;
 }
 
 function notify(message, header, sticky){
     growler.growl(message, {
-    	header: header || "",
-		sticky: Boolean(sticky)
-	});
+        header: header || "",
+        sticky: Boolean(sticky)
+    });
 }
 
 window.viewport = {
@@ -133,22 +133,22 @@ function makeReplyForm(formId){
     txtArea = $$('#'+formId+' textarea')[0];
     sendButton = $$('#'+formId+' #submit')[0];
 
-	var show = function(){
+    var show = function(){
         sendButton.show();
         formArea.addClassName('row_color2');
     }
 
-	var hide = function(){
+    var hide = function(){
         if(empty(txtArea.value)){
             sendButton.hide();
         }
         formArea.removeClassName('row_color2');
     }
 
-	txtArea.observe('focus', show);
-	txtArea.observe('blur', hide);
-	txtArea.observe('init:blur', hide);
-	txtArea.fire('init:blur');
+    txtArea.observe('focus', show);
+    txtArea.observe('blur', hide);
+    txtArea.observe('init:blur', hide);
+    txtArea.fire('init:blur');
 
     formArea.observe('click', function(){ txtArea.focus(); });
 }
@@ -156,70 +156,70 @@ function makeReplyForm(formId){
 function updateDimensions(){
     $$('img[class="bbcode_img"]').each(function (ele){
         var needed = {width: 500};
-    	var curImg = $(ele).getDimensions();
-    	if(curImg.width > needed.width){
-    		var newWidth = 328;
-    		var scaleFactor = newWidth/curImg.width;
-    		var newHeight = scaleFactor*curImg.height;
-    		$(ele).writeAttribute({width: newWidth, height: newHeight});
-    		$(ele).wrap('a', {'href': $(ele).readAttribute('src'), 'class': 'lightwindow', 'title': 'Resized Image: Click to open fullscreen'});
-    	}
+        var curImg = $(ele).getDimensions();
+        if(curImg.width > needed.width){
+            var newWidth = 328;
+            var scaleFactor = newWidth/curImg.width;
+            var newHeight = scaleFactor*curImg.height;
+            $(ele).writeAttribute({width: newWidth, height: newHeight});
+            $(ele).wrap('a', {'href': $(ele).readAttribute('src'), 'class': 'lightwindow', 'title': 'Resized Image: Click to open fullscreen'});
+        }
     });
 }
 
 function spinnerMove(e){
-	var spinner = $('spinner_');
-	if(!isset(spinner)){
-		Event.stopObserving(document, 'mousemove', spinnerMove);
-		return;
-	}
-	
-	mouseX = Event.pointerX(e);
-	mouseY = Event.pointerY(e);
-	spinner.setStyle({'top': (mouseY-10)+'px', 'left': (mouseX+10)+'px', 'position': 'fixed'});	
+    var spinner = $('spinner_');
+    if(!isset(spinner)){
+        Event.stopObserving(document, 'mousemove', spinnerMove);
+        return;
+    }
+    
+    mouseX = Event.pointerX(e);
+    mouseY = Event.pointerY(e);
+    spinner.setStyle({'top': (mouseY-10)+'px', 'left': (mouseX+10)+'px', 'position': 'fixed'});    
 }
 
 //keep a div updated at the mouse pointed, this will be shown if we fire an ajax event
 Ajax.Responders.register({
-	onCreate: function(){ $('spinner_').show(); Event.observe(document, 'mousemove', spinnerMove); },
-	onComplete: function(){ $('spinner_').hide(); Event.stopObserving(document, 'mousemove', spinnerMove); },
+    onCreate: function(){ $('spinner_').show(); Event.observe(document, 'mousemove', spinnerMove); },
+    onComplete: function(){ $('spinner_').hide(); Event.stopObserving(document, 'mousemove', spinnerMove); },
 });
 
 document.observe('dom:loaded', function(){
-	$$('textarea').each(function (txtarea){
-		if(!txtarea.hasClassName('noResize')){
-			txtarea.onkeyup = new ResizeableTextarea(txtarea);
-		}
+    $$('textarea').each(function (txtarea){
+        if(!txtarea.hasClassName('noResize')){
+            txtarea.onkeyup = new ResizeableTextarea(txtarea);
+        }
 
-		//if(!txtarea.hasClassName('noTab')){
-		//	txtarea.writeAttribute('onkeydown', 'return catchTab(this, event)');
-		//}
+        //if(!txtarea.hasClassName('noTab')){
+        //    txtarea.writeAttribute('onkeydown', 'return catchTab(this, event)');
+        //}
     });
     updateDimensions();
 
-	if($('clock')){ updateClock(); }
+    if($('clock')){ updateClock(); }
 });
 
 function getDataAttributes(ele){
-	var list = [];
+    var list = [];
 
-	var prefix = 'data-';
-	var attr = $(ele).attributes;
+    var prefix = 'data-';
+    var attr = $(ele).attributes;
 
-	var attributes = {};
-	for(var key in attr) {
-	    if(isNaN(key)){ continue; }
+    var attributes = {};
+    for(var key in attr) {
+        if(isNaN(key)){ continue; }
 
-	    key = attr[key];
-	    if(typeof key != 'object'){ continue; }
+        key = attr[key];
+        if(typeof key != 'object'){ continue; }
 
-	    if(!prefix || !empty(key.nodeName) && substr(key.nodeName, 0, prefix.length) == prefix){
-			attributes[substr(key.nodeName, prefix.length)] = key.nodeValue;
-	    }
-	}
-	list.push(attributes);
-		
-	return attributes;
+        if(!prefix || !empty(key.nodeName) && substr(key.nodeName, 0, prefix.length) == prefix){
+            attributes[substr(key.nodeName, prefix.length)] = key.nodeValue;
+        }
+    }
+    list.push(attributes);
+        
+    return attributes;
 }
 
 //+ Jonas Raoni Soares Silva

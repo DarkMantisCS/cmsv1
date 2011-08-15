@@ -56,12 +56,12 @@ if (isset($_GET['g'])) {
 }
 $min_serveOptions['rewriteCssUris'] = false;
 if(isset($_GET['g']) && isset($_GET['t'])){
-	switch($_GET['t']){
-		case 'js': $prefix = 'script_'; break;
-		case 'css': $prefix = 'style_'; break;
-		default: $prefix = ''; break;
-	}
-	$_GET['g'] = $prefix.$_GET['g'];
+    switch($_GET['t']){
+        case 'js': $prefix = 'script_'; break;
+        case 'css': $prefix = 'style_'; break;
+        default: $prefix = ''; break;
+    }
+    $_GET['g'] = $prefix.$_GET['g'];
 }
 if (isset($_GET['f']) || isset($_GET['g'])) {
     // serve!   

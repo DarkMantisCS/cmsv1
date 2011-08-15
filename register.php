@@ -16,134 +16,134 @@ if(!$objPage->config('site', 'allow_register')){
 
 //setup breadcrumbs
 $objPage->addPagecrumb(array(
-	array('url' => '/'.root().'register.php',  'name' => langVar('B_REGISTER')),
+    array('url' => '/'.root().'register.php',  'name' => langVar('B_REGISTER')),
 ));
 
 if(!HTTP_POST){
-	//add our JS in here for the register
-	$objPage->addJSFile('/'.root().'scripts/register.js');
+    //add our JS in here for the register
+    $objPage->addJSFile('/'.root().'scripts/register.js');
 
 
-	$objPage->showHeader();
+    $objPage->showHeader();
 
-		//set the fields to blank if they dont already have a value
-		$fields = array('username', 'password', 'password_verify', 'email');
-		foreach($fields as $e){
-			$_POST[$e] = $_SESSION['register']['form'][$e];
-			if(!isset($_SESSION['register']['form'][$e]) || is_empty($_SESSION['register']['form'][$e])){
-				$_POST[$e] = '';
-			}
-		}
+        //set the fields to blank if they dont already have a value
+        $fields = array('username', 'password', 'password_verify', 'email');
+        foreach($fields as $e){
+            $_POST[$e] = $_SESSION['register']['form'][$e];
+            if(!isset($_SESSION['register']['form'][$e]) || is_empty($_SESSION['register']['form'][$e])){
+                $_POST[$e] = '';
+            }
+        }
 
-	echo $objForm->outputForm(array(
-			'FORM_START' 	=> $objForm->start('register', array('method'=>'POST', 'action'=>'?')),
-			'FORM_END'	 	=> $objForm->finish(),
+    echo $objForm->outputForm(array(
+            'FORM_START'     => $objForm->start('register', array('method'=>'POST', 'action'=>'?')),
+            'FORM_END'         => $objForm->finish(),
 
-			'FORM_TITLE' 	=> 'User Registration',
-			'FORM_SUBMIT'	=> $objForm->button('submit', 'Submit'),
-			'FORM_RESET' 	=> $objForm->button('reset', 'Reset'),
-		),
-		array(
-			'field' => array(
-				'User Info'			=> '_header_',
-				'Username' 			=> $objForm->inputbox('username', 'text', $_POST['username'], array('extra' => 'maxlength="20" size="20"', 'required'=>true)),
-				'Password' 			=> $objForm->inputbox('password', 'password', $_POST['password'], array('required'=>true)),
-				'Verify Password' 	=> $objForm->inputbox('password_verify', 'password', $_POST['password_verify'], array('required'=>true)),
+            'FORM_TITLE'     => 'User Registration',
+            'FORM_SUBMIT'    => $objForm->button('submit', 'Submit'),
+            'FORM_RESET'     => $objForm->button('reset', 'Reset'),
+        ),
+        array(
+            'field' => array(
+                'User Info'            => '_header_',
+                'Username'             => $objForm->inputbox('username', 'text', $_POST['username'], array('extra' => 'maxlength="20" size="20"', 'required'=>true)),
+                'Password'             => $objForm->inputbox('password', 'password', $_POST['password'], array('required'=>true)),
+                'Verify Password'     => $objForm->inputbox('password_verify', 'password', $_POST['password_verify'], array('required'=>true)),
 
-				'Email' 			=> $objForm->inputbox('email', 'text', $_POST['email'], array('required'=>true)),
+                'Email'             => $objForm->inputbox('email', 'text', $_POST['email'], array('required'=>true)),
 
-				'Captcha'			=> '_header_',
-				'Recaptcha'			=> $objForm->loadCaptcha('captcha'),
-			),
-			'desc' => array(
-				'Username' 			=> 'This field can be [a-zA-Z0-9-_.]',
-				'Recaptcha'			=> $objForm->loadCaptcha('desc').'<br />'.langVar('L_CAPTCHA_DESC'),
-			),
-			'errors' => $_SESSION['register']['error'],
-		));
+                'Captcha'            => '_header_',
+                'Recaptcha'            => $objForm->loadCaptcha('captcha'),
+            ),
+            'desc' => array(
+                'Username'             => 'This field can be [a-zA-Z0-9-_.]',
+                'Recaptcha'            => $objForm->loadCaptcha('desc').'<br />'.langVar('L_CAPTCHA_DESC'),
+            ),
+            'errors' => $_SESSION['register']['error'],
+        ));
 
-	$objPage->showFooter();
+    $objPage->showFooter();
 }else{
-	$userInfo = array();
+    $userInfo = array();
 
-	if(is_empty($_POST)){
-		$objPage->redirect($objCore->config('global', 'fullPath'), 3, 0);
-		msgdie('FAIL', 'Error: Please use the form to submit your registration request.');
-	}
+    if(is_empty($_POST)){
+        $objPage->redirect($objCore->config('global', 'fullPath'), 3, 0);
+        msgdie('FAIL', 'Error: Please use the form to submit your registration request.');
+    }
 
-	//run through each of the expected fields and make sure theyre are here
-	//we dont add the captcha in here purely cause the admin might hook in another captcha
-	//and we wont know what fields it outputs etc
-	$fields = array('username', 'password', 'password_verify', 'email');
-	foreach($fields as $e){
-		if(!isset($_POST[$e]) || is_empty($_POST[$e])){
-			$_error[$e] = 'Please make sure all the fields are populated ('.$e.').';
-		}
-	}
+    //run through each of the expected fields and make sure theyre are here
+    //we dont add the captcha in here purely cause the admin might hook in another captcha
+    //and we wont know what fields it outputs etc
+    $fields = array('username', 'password', 'password_verify', 'email');
+    foreach($fields as $e){
+        if(!isset($_POST[$e]) || is_empty($_POST[$e])){
+            $_error[$e] = 'Please make sure all the fields are populated ('.$e.').';
+        }
+    }
 
     //validate the username conforms to site standards
     if(!isset($_error['username']) && !$objUser->validateUsername($_POST['username'])){
         $_error['username'] = 'You have chosen an Username with invalid characters in. Please choose another one.';
     }
 
-	//make sure there isnt already a user in the db with this username
-	if(!isset($_error['username']) && strlen($objUser->getUserInfo($_POST['username'], 'username'))>0){
+    //make sure there isnt already a user in the db with this username
+    if(!isset($_error['username']) && strlen($objUser->getUserInfo($_POST['username'], 'username'))>0){
         $_error['username'] = 'You have chosen an Username that already exists. Please choose another one.';
-	}
+    }
 
-	//validate the email
+    //validate the email
     if(!isset($_error['email']) && strlen($objUser->getUserInfo($_POST['username'], 'email'))>0){
-		$_error['email'] = 'The Email address provided is invalid. Please make sure it is correct and try again.';
+        $_error['email'] = 'The Email address provided is invalid. Please make sure it is correct and try again.';
     }
 
     if(!isset($_error['email']) && !$objUser->validateEmail($_POST['email'])){
-		$_error['email'] = 'The Email address provided couldn\'t be validated properly. Please make sure it is correct and try again.';
+        $_error['email'] = 'The Email address provided couldn\'t be validated properly. Please make sure it is correct and try again.';
     }
 
-	//check the passwords
-	if(!isset($_error['passwords']) && strlen($_POST['password'])<4 || strlen($_POST['password_verify'])<4){
+    //check the passwords
+    if(!isset($_error['passwords']) && strlen($_POST['password'])<4 || strlen($_POST['password_verify'])<4){
         $_error['passwords'] = 'Your passwords are too small. Please make sure they are longer than 4 characters long.';
-	}
+    }
 
-	if(!isset($_error['passwords']) && md5($_POST['password'])!=md5($_POST['password_verify'])){
+    if(!isset($_error['passwords']) && md5($_POST['password'])!=md5($_POST['password_verify'])){
         $_error['passwords'] = 'Your passwords do not match. Please verify them and try again.';
-	}
+    }
 
-	//validate the captcha
-	if($objForm->loadCaptcha('verify')===false){
-		$_error['captcha'] = 'The captcha you provided was incorrect. Please try again.';
-	}
+    //validate the captcha
+    if($objForm->loadCaptcha('verify')===false){
+        $_error['captcha'] = 'The captcha you provided was incorrect. Please try again.';
+    }
 
-	if(count($_error)){
+    if(count($_error)){
         $_SESSION['register']['error'] = $_error;
-		$_SESSION['register']['form'] = $_POST;
-		$objPage->redirect($objCore->config('global', 'fullPath'), 3, 0);
-		exit;
-	}
-	//set the input array up
-	$userInfo['username'] = $_POST['username'];
-	$userInfo['password'] = $_POST['password'];
-	$userInfo['email'] = $_POST['email'];
+        $_SESSION['register']['form'] = $_POST;
+        $objPage->redirect($objCore->config('global', 'fullPath'), 3, 0);
+        exit;
+    }
+    //set the input array up
+    $userInfo['username'] = $_POST['username'];
+    $userInfo['password'] = $_POST['password'];
+    $userInfo['email'] = $_POST['email'];
 
-	$register = $objUser->register($userInfo);
-		if(!$register){
-			msgDie('FAIL', $objUser->error());
-		}
+    $register = $objUser->register($userInfo);
+        if(!$register){
+            msgDie('FAIL', $objUser->error());
+        }
 
-	if($objPage->config('site', 'register_verification')){
-		$user = $objUser->getUserInfo($register);
-		$emailVars['URL'] = 'http://'.$_SERVER['HTTP_HOST'].'/'.root().'login.php?action=active&un='.$user['id'].'&check='.$user['code'];
-		$emailVars['USERNAME'] = $userInfo['username'];
-		$emailVars['SITE_NAME'] = $objCore->config('site', 'name');
+    if($objPage->config('site', 'register_verification')){
+        $user = $objUser->getUserInfo($register);
+        $emailVars['URL'] = 'http://'.$_SERVER['HTTP_HOST'].'/'.root().'login.php?action=active&un='.$user['id'].'&check='.$user['code'];
+        $emailVars['USERNAME'] = $userInfo['username'];
+        $emailVars['SITE_NAME'] = $objCore->config('site', 'name');
 
-		sendEmail($userInfo['email'], 'register_successful', $emailVars);
-		$msg = langVar('L_REG_SUCCESS_EMAIL');
-	}else{
-		$msg = langVar('L_REG_SUCCESS_NO_EMAIL');
-	}
+        sendEmail($userInfo['email'], 'register_successful', $emailVars);
+        $msg = langVar('L_REG_SUCCESS_EMAIL');
+    }else{
+        $msg = langVar('L_REG_SUCCESS_NO_EMAIL');
+    }
 
-	unset($_SESSION['register'], $_SESSION['error'], $query, $userInfo, $_error);
-	$objCache->generate_statistics_cache();
-	hmsgDie('INFO', $msg);
+    unset($_SESSION['register'], $_SESSION['error'], $query, $userInfo, $_error);
+    $objCache->generate_statistics_cache();
+    hmsgDie('INFO', $msg);
 }
 ?>

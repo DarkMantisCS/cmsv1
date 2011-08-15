@@ -2,8 +2,8 @@
 
 class test extends Module{
 
-	function doAction($action){
-	
-	}
+    function doAction($action){
+    
+    }
 }
 ?>

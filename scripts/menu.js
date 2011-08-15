@@ -36,7 +36,7 @@ var Accordion = Class.create({
     expand: function(el) {
         this.toExpand = el.next('div.'+this.options.contentClass);
         if(this.current != this.toExpand){
-			this.toExpand.show();
+            this.toExpand.show();
             this.animate();
         }
     },
@@ -50,7 +50,7 @@ var Accordion = Class.create({
     },
 
     attachInitialMaxHeight: function() {
-		this.current.previous('div.'+this.options.toggleClass).addClassName(this.options.toggleActive);
+        this.current.previous('div.'+this.options.toggleClass).addClassName(this.options.toggleActive);
         if(this.current.getHeight() != this.maxHeight) this.current.setStyle({height: this.maxHeight+"px"});
     },
 

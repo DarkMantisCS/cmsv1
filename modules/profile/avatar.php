@@ -11,12 +11,12 @@ if(IS_MOD && isset($_GET['username']))
 
 switch(strtolower($_GET['action'])){
     case 'offlink':
-		if(HTTP_POST){
-		  
-		    if(!isset($_POST['avatar']))
+        if(HTTP_POST){
+          
+            if(!isset($_POST['avatar']))
                 msgDie('FAIL', 'The update failed. Please try again.', '', '', '', 0);
-		    
-	        $a = $this->objUser->DoImage($_POST['avatar']);
+            
+            $a = $this->objUser->DoImage($_POST['avatar']);
             $update['avatar'] = $a!=='FAIL' ? $_POST['avatar'] : '/'.root().'images/no_avatar.png';
             if(!$this->objSQL->updateRow('users', $update, 'id = '.$uid))
                 msgDie('FAIL', 'The update failed. Please try again.', '', '', '', 0);
@@ -25,11 +25,11 @@ switch(strtolower($_GET['action'])){
             if($a=='FAIL')
                 msgdie('FAIL', 'The update failed. Please try again.'.$avachgr, '', '', '', 0);
                 
-			$this->objLogin->setSessions($uid);
+            $this->objLogin->setSessions($uid);
             msgdie('OK', 'The avatar update was successful.'.$avachgr, '', '', '', 0);
         }else{
             $this->objTPL->set_filenames(array(
-            	'body' => 'modules/profile/template/ava_upload.tpl'
+                'body' => 'modules/profile/template/ava_upload.tpl'
             ));
 
                 $this->objTPL->assign_vars(array(
@@ -47,13 +47,13 @@ switch(strtolower($_GET['action'])){
     break;
     
     case 'remove':
-		if(HTTP_POST){
-		    $script = '';
-		    if(isset($_POST['submit']) && $_POST['submit']=='Yes'){
+        if(HTTP_POST){
+            $script = '';
+            if(isset($_POST['submit']) && $_POST['submit']=='Yes'){
                 unset($update);
                 $update['avatar'] = '/'.root().'images/no_avatar.png';
                 $this->objSQL->updateRow('users', $update, 'id = '.$uid);
-				$this->objLogin->setSessions($uid);
+                $this->objLogin->setSessions($uid);
                 $script = 'top.change_avatar(\'/'.root().'images/no_avatar.png\');';
             }
             echo '<script> ',$script,' top.myLightWindow.deactivate();</script>';
@@ -61,7 +61,7 @@ switch(strtolower($_GET['action'])){
             msgDie('OK', "The avatar upload was successful.".$avachgr, '', '', '', 0);
         }else{
             $this->objTPL->set_filenames(array(
-            	'body' => 'modules/profile/template/ava_remove.tpl'
+                'body' => 'modules/profile/template/ava_remove.tpl'
             ));
             
                 $this->objTPL->assign_vars(array(
@@ -78,9 +78,9 @@ switch(strtolower($_GET['action'])){
     break;
     
     case 'reset':
-		if(HTTP_POST){
-		    $script = '';
-		    if(isset($_POST['submit']) && $_POST['submit']=='Yes'){
+        if(HTTP_POST){
+            $script = '';
+            if(isset($_POST['submit']) && $_POST['submit']=='Yes'){
                 unset($update);
                 $update['avatar'] = '/'.root().'images/no_avatar.png';
                 $this->objSQL->updateRow('users', $update, 'id = '.$uid);
@@ -93,7 +93,7 @@ switch(strtolower($_GET['action'])){
             msgDie('OK', 'The avatar upload was successful.'.$avachgr, '', '', '', 0);
          }else{
             $this->objTPL->set_filenames(array(
-            	'body' => 'modules/profile/template/ava_remove.tpl'
+                'body' => 'modules/profile/template/ava_remove.tpl'
             ));
             
                 $this->objTPL->assign_vars(array(
@@ -111,7 +111,7 @@ switch(strtolower($_GET['action'])){
     break;
     
     case 'upload':
-		if(HTTP_POST){
+        if(HTTP_POST){
             if($_FILES['avatar']['error']==4){
                 msgdie('FAIL', 'The upload failed. Please try again.','','','',0);
             }
@@ -142,7 +142,7 @@ switch(strtolower($_GET['action'])){
                             msgDie('FAIL', 'The upload failed. Please try again.', '', '', '', 0);
                         }
                     $avachgr = '<script>top.change_avatar(\''.$update['avatar'].'\');top.myLightWindow.deactivate();</script>';
-     				$this->objLogin->setSessions($uid);                   
+                     $this->objLogin->setSessions($uid);                   
                     msgDie('OK', 'The avatar upload was successful.'.$avachgr, '', '', '', 0);
                 }else{
                     msgDie('FAIL', 'The upload failed. Please try again.', '', '', '', 0);
@@ -155,12 +155,12 @@ switch(strtolower($_GET['action'])){
                     if($userava_update===NULL){
                         msgDie('FAIL', 'The upload failed. Please try again.', '', '', '', 0);
                     }
- 				$this->objLogin->setSessions($uid);                   
+                 $this->objLogin->setSessions($uid);                   
                 msgDie('OK', 'The avatar upload was successful.'.$avachgr, '', '', '', 0);
             }
         }else{
             $this->objTPL->set_filenames(array(
-            	'body' => 'modules/profile/template/ava_upload.tpl'
+                'body' => 'modules/profile/template/ava_upload.tpl'
             ));
 
                 $form = 'File: '.$this->objForm->inputbox('file', '', 'avatar', array('class' => 'upload_field', 'extra' => ' size="30"')).

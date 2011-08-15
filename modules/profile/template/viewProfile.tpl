@@ -15,7 +15,7 @@
                     <param name="scale" value="exactfit" />
                     <param name="flashvars" value="text={profile.USERNAME_RAW}" />
                     <embed src="/{ROOT}modules/profile/title.swf" flashvars="text={profile.USERNAME_RAW}" quality="high" pluginspage="http://www.adobe.com/shockwave/download/download.cgi?P1_Prod_Version=ShockwaveFlash" type="application/x-shockwave-flash" height="100" width="100%" bgcolor="#3c3c3c" scale="exactfit"></embed>
-                </object>	    
+                </object>        
             </td>
         </tr>
       <tr>
@@ -29,9 +29,9 @@
             </div>
         </td>
       </tr>
-    </table>		
-	</div>
-	<div class="clear"></div>
+    </table>        
+    </div>
+    <div class="clear"></div>
 </div><br />
 
 
@@ -57,7 +57,7 @@
             </div>
             <div class="clear"></div>
         </div>
-		<!-- BEGIN ABOUT_ME -->
+        <!-- BEGIN ABOUT_ME -->
         <br /><div class="content corners">
             <div class="title corners-top"><h4>{L_ABOUT_ME}</h4></div>
             <div class="padding">
@@ -65,9 +65,9 @@
             </div>
             <div class="clear"></div>
         </div>
-		<!-- END ABOUT_ME -->
+        <!-- END ABOUT_ME -->
 
-		<!-- BEGIN INTERESTS -->
+        <!-- BEGIN INTERESTS -->
         <br /><div class="content corners">
             <div class="title corners-top"><h4>{L_MY_INTERESTS}</h4></div>
             <div class="padding">
@@ -75,7 +75,7 @@
             </div>
             <div class="clear"></div>
         </div>
-		<!-- END INTERESTS -->
+        <!-- END INTERESTS -->
 
         <br /><div class="content corners">
             <div class="title corners-top"><h4>{L_SIGNATURE}</h4></div>
@@ -87,7 +87,7 @@
     </div>
     
     <div class="clear panel content padding" id="panel_recentActivity">
-		{RECENT_ACTIVITY_MSG}
+        {RECENT_ACTIVITY_MSG}
     </div>
     
     <div class="panel content padding" id="panel_comments">{PROFILE_COMMENTS}</div>

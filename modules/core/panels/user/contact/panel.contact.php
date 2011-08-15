@@ -6,7 +6,7 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 $objPage->setTitle(langVar('B_UCP').' > '.langVar('L_CONTACT_INFO'));
 $objPage->addPagecrumb(array( array('url' => $url, 'name' => langVar('L_CONTACT_INFO')) ));
 $objTPL->set_filenames(array(
-	'body' => "modules/core/template/panels/panel.contact.tpl"
+    'body' => "modules/core/template/panels/panel.contact.tpl"
 ));
 
 //grab the user info we need
@@ -14,21 +14,21 @@ $user = $objUser->getUserInfo($uid);
 $uid = $objUser->grab('id');
 
 switch(strtolower($mode)){
-	default:
-		$objPage->addJSFile('?mode=js');
-		$objPage->addCSSFile('/'.root().'modules/profile/contactInfo.css');
-		
-		$objTPL->assign_vars(array(
-			'FORM_START' 	=> $objForm->start('panel', array('method' => 'POST', 'action' => $saveUrl)),
-			'FORM_END'		=> $objForm->finish(),
+    default:
+        $objPage->addJSFile('?mode=js');
+        $objPage->addCSSFile('/'.root().'modules/profile/contactInfo.css');
+        
+        $objTPL->assign_vars(array(
+            'FORM_START'     => $objForm->start('panel', array('method' => 'POST', 'action' => $saveUrl)),
+            'FORM_END'        => $objForm->finish(),
 
-			'SUBMIT'		=> $objForm->button('submit', 'Submit'),
-			'RESET'			=> $objForm->button('reset', 'Reset'),
-		));
+            'SUBMIT'        => $objForm->button('submit', 'Submit'),
+            'RESET'            => $objForm->button('reset', 'Reset'),
+        ));
 
-		//set some security crap
-		$_SESSION['site']['panel']['sessid'] = $sessid = $objUser->mkPassword($uid.time());
-		$_SESSION['site']['panel']['id'] = $uid;
+        //set some security crap
+        $_SESSION['site']['panel']['sessid'] = $sessid = $objUser->mkPassword($uid.time());
+        $_SESSION['site']['panel']['id'] = $uid;
 
         $objTPL->assign_block_vars('msg', array(
             'MSG' => msg('INFO', '<br /><ul><li>To add a new peice of contact information, select it from the list.</li> <li>If you wish to delete something from the list, use the <img src="/'.root().'images/icons/delete.png" title="Delete Me" /> icon next to it.</li> <li>You can also reorder the list simply by dragging the title of the row you wish to move.</li> <li><strong>Please be aware, after you delete something from the list or reorder the list, you still need to save it, so press \'Save\' before leaving this page</strong>.</li></ul>', 'MSG', langVar('L_CONTACT_INFO'))
@@ -37,7 +37,7 @@ switch(strtolower($mode)){
 
         //below will contain a list of settings for the various services/networks etc everyone uses
         $objCore->autoLoadModule('profile', $objProfile);
-		$settings = $objProfile->contactInfoSettings();
+        $settings = $objProfile->contactInfoSettings();
 
         //heres where we set the select box up, we dont use the objForm method cause we want some custom stuff here
         $ar = array();
@@ -87,12 +87,12 @@ $row['val'] = preg_replace('/(![0-9-_.:\/]*)/i', '', $row['val']);
             foreach($form as $k => $v){ $f .= ' form[\''.$k.'\'] = '.$v.';'; }
 
             if(count($hide)){ 
-            	if(count($hide)==1){
-            		$f .= ' $("'.implode('", "', $hide).'").hide();'; 
-            	}else{
-            		$f .= ' $("'.implode('", "', $hide).'").invoke("hide");'; 
-            	}
-			}
+                if(count($hide)==1){
+                    $f .= ' $("'.implode('", "', $hide).'").hide();'; 
+                }else{
+                    $f .= ' $("'.implode('", "', $hide).'").invoke("hide");'; 
+                }
+            }
         }
         $objPage->addJSCode('var form = [];'.$f);
 
@@ -104,15 +104,15 @@ $row['val'] = preg_replace('/(![0-9-_.:\/]*)/i', '', $row['val']);
             'HFORM'          => $hForm,
             'HIDDEN_FIELDS'  => $objForm->inputbox('sessid', 'hidden', $sessid).$objForm->inputbox('id', 'hidden', $uid),
         ));
-	break;
-	
-	case 'save':
-	   unset($update);
-		if (!HTTP_POST && !HTTP_AJAX){
-			hmsgDie('FAIL', 'Error: Cannot verify information.');
-		}
+    break;
+    
+    case 'save':
+       unset($update);
+        if (!HTTP_POST && !HTTP_AJAX){
+            hmsgDie('FAIL', 'Error: Cannot verify information.');
+        }
 
-		//security check 1
+        //security check 1
         if(doArgs('id', false, $_POST) != $_SESSION['site']['panel']['id']){
             hmsgDie('FAIL', 'Error: I cannot remember what you were saving...hmmmm');
         }
@@ -122,7 +122,7 @@ $row['val'] = preg_replace('/(![0-9-_.:\/]*)/i', '', $row['val']);
         }
 
 
-		//Continue with the checks
+        //Continue with the checks
         $update = array(); $contact = array();
         if(is_empty($_POST['form'])){ $update['contact_info'] = ''; }
         foreach($_POST['form'] as $type => $option){
@@ -135,66 +135,66 @@ $row['val'] = preg_replace('/(![0-9-_.:\/]*)/i', '', $row['val']);
 
         $update['contact_info'] = json_encode($contact);
 
-		$noUpdate = true;
-		//if we have stuff to update
-		if(count($update)){
-			//try the update
-			$update = $objUser->updateUserSettings($uid, $update);
-				if(!$update){
-					$_SESSION['site']['panel']['error'] = array($objUser->error());
-					$objPage->redirect($url, 3);
-					exit;
-				}
-			$noUpdate = false;
-		}
+        $noUpdate = true;
+        //if we have stuff to update
+        if(count($update)){
+            //try the update
+            $update = $objUser->updateUserSettings($uid, $update);
+                if(!$update){
+                    $_SESSION['site']['panel']['error'] = array($objUser->error());
+                    $objPage->redirect($url, 3);
+                    exit;
+                }
+            $noUpdate = false;
+        }
 
         $objUser->reSetSessions($uid);
 
-    	unset($_SESSION['site']['panel']);
+        unset($_SESSION['site']['panel']);
         $objPage->redirect($url, 3);
         hmsgDie('OK', implode('<br />', $updateMsg).'<br />'.langVar('L_PRO_UPDATE_SUCCESS'));
-	break;
+    break;
 
 
     case 'js':
     $tplVars = $objPage->getVar('tplVars');
-	header('Content-type: text/javascript');
-	
+    header('Content-type: text/javascript');
+    
     $JS = <<<JS
     var j = 0;
     
 document.observe("dom:loaded", function(){
-	reOrder();
-	
-	$$("option[class*=ico]").each(function(ele){
-		Event.observe(ele, 'click', function(){
-			if($(ele).hasClassName('ico') && $(ele).hasClassName('unique')){
-				$(ele).hide();
-			}
-		});
-	});
+    reOrder();
+    
+    $$("option[class*=ico]").each(function(ele){
+        Event.observe(ele, 'click', function(){
+            if($(ele).hasClassName('ico') && $(ele).hasClassName('unique')){
+                $(ele).hide();
+            }
+        });
+    });
 });
 
 
 function reOrder(){ 
-	Sortable.create('contentTarget', {scroll: window, tag:'div', handle: 'label'});
-	
-	//watch the delete buttons
-	$$("a[id=delete]").each(function(ele){
-		var da = ele.readAttribute('data-mod');
+    Sortable.create('contentTarget', {scroll: window, tag:'div', handle: 'label'});
+    
+    //watch the delete buttons
+    $$("a[id=delete]").each(function(ele){
+        var da = ele.readAttribute('data-mod');
 
-		if(da != 1){
-			Event.observe(ele, 'click', removeRow);
-			ele.writeAttribute('data-mod', '1');
-		}
-	});
+        if(da != 1){
+            Event.observe(ele, 'click', removeRow);
+            ele.writeAttribute('data-mod', '1');
+        }
+    });
 }
 
 function removeRow(e){
-	Event.stop(e);
-	
-	var id = $(this).up('div').identify();
-	
+    Event.stop(e);
+    
+    var id = $(this).up('div').identify();
+    
     Effect.BlindUp(id, { duration: 1.0 });
     setTimeout('$(\''+id+'\').remove();', 2000);
 
@@ -224,10 +224,10 @@ function doMe(){
     $(table).down().addClassName(((j % 2)==0 ? 'row_color2' : 'row_color1')); j++;
     title.update(ele.innerHTML).addClassName(ele.value).addClassName('label');
     field.writeAttribute('name', 'form['+table+']');
-	$(table).show();
+    $(table).show();
     setTimeout(function(){
-    	title.scrollTo();
-    	Effect.SlideDown(table, {duration: 0.5});
+        title.scrollTo();
+        Effect.SlideDown(table, {duration: 0.5});
     }, 500);
 
     //reset it so you can select multiple in succession

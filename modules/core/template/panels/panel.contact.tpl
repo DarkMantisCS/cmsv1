@@ -3,16 +3,16 @@
 {FORM_START}{HIDDEN_FIELDS}
 <div class="content corners">
     <div class="title corners-top iblock">
-		<h4 class="float-left"></h4>
-		<div class="float-right padding">{SELECT}</div>
-	</div>
+        <h4 class="float-left"></h4>
+        <div class="float-right padding">{SELECT}</div>
+    </div>
     <div id="contentTarget" class="padding">
-		{POPULATE_FORM}
-	</div>
+        {POPULATE_FORM}
+    </div>
     <div id="contentTarget" class="padding">
-		{SUBMIT} {RESET}
-	</div>
-	<div class="clear"></div>
+        {SUBMIT} {RESET}
+    </div>
+    <div class="clear"></div>
 </div><br />
 {FORM_END}
 

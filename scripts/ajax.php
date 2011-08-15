@@ -19,49 +19,49 @@ if(!HTTP_AJAX){ die('Failed.'); }
 
 switch($mode){
     case 'grabNewNotifications':
-    	//grab the notifications for the user   	
-    	$notes = $objNotify->getNotifications(false);
-    	$return = null;
-    	if($notes){
-	    	foreach($notes as $note){
-	    	    $return .= 'if(!isset($("notify_'.$note['id'].'"))){ '.$objNotify->outputNotification($note, true).' }';
-	    	}
-    	}
-    	die('<script>'.$return.'</script>');
+        //grab the notifications for the user       
+        $notes = $objNotify->getNotifications(false);
+        $return = null;
+        if($notes){
+            foreach($notes as $note){
+                $return .= 'if(!isset($("notify_'.$note['id'].'"))){ '.$objNotify->outputNotification($note, true).' }';
+            }
+        }
+        die('<script>'.$return.'</script>');
     break;
     
     case 'notificationRead':
-    	if(!HTTP_POST){ die('Fail'); }
-    	
-    	//make sure we have an id
-		$id = doArgs('id', false, $_POST, 'is_number');
-		if(!$id){ die('Fail'); }
+        if(!HTTP_POST){ die('Fail'); }
+        
+        //make sure we have an id
+        $id = doArgs('id', false, $_POST, 'is_number');
+        if(!$id){ die('Fail'); }
 
-		//grab the notification from the db
+        //grab the notification from the db
         $notification = $objSQL->getLine('SELECT * FROM $Pnotifications WHERE id = "%s" ', array($id));
-        	if(is_empty($notification)){ die('Fail'); }
+            if(is_empty($notification)){ die('Fail'); }
 
-		//if the user is the notify author, then update it as read
-		if($notification['uid'] == $objUser->grab('id')){
-			unset($update);
-			$update['read'] = 1;
-			$objSQL->updateRow('notifications', $update, array('id = "%s"', $notification['id']));
-		}
-		
-		die('Done.');
+        //if the user is the notify author, then update it as read
+        if($notification['uid'] == $objUser->grab('id')){
+            unset($update);
+            $update['read'] = 1;
+            $objSQL->updateRow('notifications', $update, array('id = "%s"', $notification['id']));
+        }
+        
+        die('Done.');
     break;
 
-	case 'userAutocomplete':
+    case 'userAutocomplete':
         $vars = $objPage->getVar('tplVars');
-    	$autocomp = $objSQL->escape($_POST['var']);
-    	$users = $objSQL->getTable('SELECT u.username, u.hidden, u.timestamp, o.timestamp AS otimestamp
+        $autocomp = $objSQL->escape($_POST['var']);
+        $users = $objSQL->getTable('SELECT u.username, u.hidden, u.timestamp, o.timestamp AS otimestamp
                                     FROM `$Pusers` u
                                         LEFT JOIN `$Ponline` o 
                                             ON u.id = o.uid
                                         WHERE u.username LIKE "%'.$autocomp.'%" 
                                         ORDER BY otimestamp DESC');
-     	$return = "<ul>\n"; $populated = array();
-    	if(!is_empty($users)){
+         $return = "<ul>\n"; $populated = array();
+        if(!is_empty($users)){
             foreach($users as $user){
                 if(in_array($user['username'], $populated)){ continue; } $populated[] = $user['username'];
                 
@@ -70,11 +70,11 @@ switch($mode){
                 
                 $return .= "\t<li><span class=\"informal\"><img src=\"".str_replace('../', '', $oi)."\" /> </span>".$user['username']."</li>\n";
             }
-        }	
-    	$return .= "</ul>";
-    	
-    	echo $return;
-	break;
+        }    
+        $return .= "</ul>";
+        
+        echo $return;
+    break;
 
 }
 ?>

@@ -12,7 +12,7 @@ foreach($styles as $k => $array){ $return['style_'.$k] = rewrite($array, 'images
 return $return;
 
 function rewrite($array, $dir){
-	global $cmsROOT;
+    global $cmsROOT;
     $nArray = array();
     foreach($array as $s){ $nArray[] = $cmsROOT.$dir.'/'.$s; }
     return $nArray;

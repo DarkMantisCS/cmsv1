@@ -6,10 +6,10 @@ if (!defined('INDEX_CHECK')) die('Error: Cannot access directly.');
 
 class core extends Module{
 
-	function doAction(){
+    function doAction(){
 
 
-	}
+    }
 
 }
 ?>

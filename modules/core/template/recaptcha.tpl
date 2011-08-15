@@ -16,9 +16,9 @@ var RecaptchaOptions = { theme: "custom", lang: "en", custom_theme_widget: "reca
 
 <script>
 window.onload = function() {
-	Recaptcha.focus_response_field();
-	document.getElementById("recaptcha_image").style.width = "100%";
-	var count = "1";
+    Recaptcha.focus_response_field();
+    document.getElementById("recaptcha_image").style.width = "100%";
+    var count = "1";
 }
 </script>
 <style>

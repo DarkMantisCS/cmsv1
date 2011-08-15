@@ -10,7 +10,7 @@
 
 <!-- BEGIN no_menu -->
 <style>
-	section#content{ margin: 15px -5px !important; }
+    section#content{ margin: 15px -5px !important; }
 </style>
 <!-- END no_menu -->
 
@@ -21,64 +21,64 @@
 
 <body>
 <div id="site-wrapper" class="container_12 clearfix">
-	<header id="banner">
-	<!--[if lte IE 7]>
-		<div id="topBar" class="align-center"><div class="boxred">ERROR: You are using an unsupported version of Internet Explorer. This version has been deemed useless. Please switch to an updated version of IE, or consider switching to something that can actually parse a webpage. Like <a href="http://getfirefox.com"><strong>Firefox</strong></a>!</div></div>
-		<div class="clear">&nbsp;</div>
-	<![endif]-->
-	<!-- BEGIN __MSG -->
-		<div id="topBar"><div class="boxred">{__MSG.MESSAGE}</div></div>
-		<div class="clear">&nbsp;</div>
-	<!-- END __MSG -->
-		<div id="topBar">
-			<div class="float-left">{L_WELCOME}
-				<!-- BEGIN IS_ONLINE -->
-				 - <a href="{U_UCP}">{L_UCP}</a>
-				<!-- END IS_ONLINE -->
-				{ACP_LINK}
-			</div>
-			<div class="float-right">
-				<!-- BEGIN IS_ONLINE -->
-				<a href="{U_LOGOUT}">{L_LOGOUT}</a> || 
-				<!-- END IS_ONLINE -->
-				<!-- BEGIN NOT_LOGGED_IN -->
-				<a href="{U_LOGIN}">{L_LOGIN}</a> || 
-				<!-- END NOT_LOGGED_IN -->
-				<span id="clock">{TIME}</span>
-			</div>
-		</div>
-		<div id="logo">&nbsp;</div>
-		
-		<nav><ul>{TPL_MENU}</ul></nav>
-	</header>
+    <header id="banner">
+    <!--[if lte IE 7]>
+        <div id="topBar" class="align-center"><div class="boxred">ERROR: You are using an unsupported version of Internet Explorer. This version has been deemed useless. Please switch to an updated version of IE, or consider switching to something that can actually parse a webpage. Like <a href="http://getfirefox.com"><strong>Firefox</strong></a>!</div></div>
+        <div class="clear">&nbsp;</div>
+    <![endif]-->
+    <!-- BEGIN __MSG -->
+        <div id="topBar"><div class="boxred">{__MSG.MESSAGE}</div></div>
+        <div class="clear">&nbsp;</div>
+    <!-- END __MSG -->
+        <div id="topBar">
+            <div class="float-left">{L_WELCOME}
+                <!-- BEGIN IS_ONLINE -->
+                 - <a href="{U_UCP}">{L_UCP}</a>
+                <!-- END IS_ONLINE -->
+                {ACP_LINK}
+            </div>
+            <div class="float-right">
+                <!-- BEGIN IS_ONLINE -->
+                <a href="{U_LOGOUT}">{L_LOGOUT}</a> || 
+                <!-- END IS_ONLINE -->
+                <!-- BEGIN NOT_LOGGED_IN -->
+                <a href="{U_LOGIN}">{L_LOGIN}</a> || 
+                <!-- END NOT_LOGGED_IN -->
+                <span id="clock">{TIME}</span>
+            </div>
+        </div>
+        <div id="logo">&nbsp;</div>
+        
+        <nav><ul>{TPL_MENU}</ul></nav>
+    </header>
 
-	<nav id="breadcrumbs">
-		<span><strong>{L_BREADCRUMB}</strong> </span><span class="path">{BREADCRUMB}</span>
-	</nav>
+    <nav id="breadcrumbs">
+        <span><strong>{L_BREADCRUMB}</strong> </span><span class="path">{BREADCRUMB}</span>
+    </nav>
 
-	<section id="content" class="grid_12">
-	<!-- BEGIN menu -->
-		<aside id="sidebar" class="grid_3">
-	<!-- END menu -->
-			<!-- BEGIN left_menu -->
-			<div class="sideMenu">
-				<header class="title"><h4>{left_menu.TITLE}</h4></header>
-				<section class="content corners-br">{left_menu.CONTENT}</section>
-			</div>
-			<!-- END left_menu -->
-			<!-- BEGIN right_menu -->
-			<div class="sideMenu">
-				<header class="title"><h4>{right_menu.TITLE}</h4></header>
-				<section class="content corners-br">{right_menu.CONTENT}</section>
-			</div>
-			<!-- END right_menu -->
-	<!-- BEGIN menu -->
-		</aside>
-	<!-- END menu -->
+    <section id="content" class="grid_12">
+    <!-- BEGIN menu -->
+        <aside id="sidebar" class="grid_3">
+    <!-- END menu -->
+            <!-- BEGIN left_menu -->
+            <div class="sideMenu">
+                <header class="title"><h4>{left_menu.TITLE}</h4></header>
+                <section class="content corners-br">{left_menu.CONTENT}</section>
+            </div>
+            <!-- END left_menu -->
+            <!-- BEGIN right_menu -->
+            <div class="sideMenu">
+                <header class="title"><h4>{right_menu.TITLE}</h4></header>
+                <section class="content corners-br">{right_menu.CONTENT}</section>
+            </div>
+            <!-- END right_menu -->
+    <!-- BEGIN menu -->
+        </aside>
+    <!-- END menu -->
 
-		<!-- BEGIN no_menu -->
-		<div id="pageContent" class="grid_12">
-		<!-- END no_menu -->
-		<!-- BEGIN menu -->
-		<div id="pageContent" class="grid_9">
-		<!-- END menu -->
+        <!-- BEGIN no_menu -->
+        <div id="pageContent" class="grid_12">
+        <!-- END no_menu -->
+        <!-- BEGIN menu -->
+        <div id="pageContent" class="grid_9">
+        <!-- END menu -->

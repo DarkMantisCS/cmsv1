@@ -15,12 +15,12 @@ $title = 'Cybershade Installer '.$version;
 //set some vars before we use em, also the header and footer tpls
 $info = NULL; $content = NULL;
 $objTPL->set_filenames(array(
-	'header' => 'install/template/header.tpl',
-	'footer' => 'install/template/footer.tpl',
+    'header' => 'install/template/header.tpl',
+    'footer' => 'install/template/footer.tpl',
 ));
 
 $objTPL->set_filenames(array(
-	'content' => 'install/template/step_'.$mode.'.tpl'
+    'content' => 'install/template/step_'.$mode.'.tpl'
 ));
 
 $steps = array('Checking Compatibility', 'Database Information', 'Administration Setup', 'Website Configuration', 'Save Configuration', 'Install Tables');
@@ -41,74 +41,74 @@ switch($mode){
         $checks[] = array('check'       => '<strong>PHP Settings</strong>', 
                           'setting'     => '<strong>Setting</strong>');
 
-		if(version_compare(PHP_VERSION, '5.2.0', '<=')){
-			$result = '<strong style="color:red">'.$N.'</strong>';
-		}else{
-			$passed['php'] = true;
+        if(version_compare(PHP_VERSION, '5.2.0', '<=')){
+            $result = '<strong style="color:red">'.$N.'</strong>';
+        }else{
+            $passed['php'] = true;
 
-			// We also give feedback on whether we're running in safe mode
-			$result = '<strong style="color:green">'.$Y;
-			if (@ini_get('safe_mode') == '1' || strtolower(@ini_get('safe_mode')) == 'on'){
-				$result .= ', Safe Mode Enabled';
-			}
-			$result .= '</strong>';
-		}
+            // We also give feedback on whether we're running in safe mode
+            $result = '<strong style="color:green">'.$Y;
+            if (@ini_get('safe_mode') == '1' || strtolower(@ini_get('safe_mode')) == 'on'){
+                $result .= ', Safe Mode Enabled';
+            }
+            $result .= '</strong>';
+        }
         $checks[] = array('check'       => 'PHP Version >= 5.0.0', 
                           'setting'     => $result);
                           
-		// Check for sql abilities
-    	if (function_exists('mysql_connect')){
-			$result = '<strong style="color:green">'.$Y.'</strong>';
-		}else{
-			$result = '<strong style="color:red">'.$N.' -- CANNOT CONTINUE</strong>';
-		}
+        // Check for sql abilities
+        if (function_exists('mysql_connect')){
+            $result = '<strong style="color:green">'.$Y.'</strong>';
+        }else{
+            $result = '<strong style="color:red">'.$N.' -- CANNOT CONTINUE</strong>';
+        }
         $checks[] = array('check'       => 'MySQL Support',
                           'setting'     => $result);
         
-		// Check for rewrite abilities
+        // Check for rewrite abilities
         /** Below is commented out till i can figure out wth is goin on and how to fix it
          *         $modules = apache_get_modules();
-         *     	if(in_array('mod_rewrite', $modules)){
-         * 			$result = '<strong style="color:green">Enabled</strong>';
-         * 		}else{
-         * 			$result = '<strong style="color:red">Disabled -- CANNOT CONTINUE</strong>';
-         * 		}
+         *         if(in_array('mod_rewrite', $modules)){
+         *             $result = '<strong style="color:green">Enabled</strong>';
+         *         }else{
+         *             $result = '<strong style="color:red">Disabled -- CANNOT CONTINUE</strong>';
+         *         }
          *         $checks[] = array('check'       => 'Apache Rewrite Module',
          *                           'explain'     => '<b>Required</b> - The CMS uses several Rewrite rules to allow easier access and cleaner URLs for your website. Should this be disabled your website installation will not work as expected.',
          *                           'setting'     => $result);
          */        
          
-		// Check for register_globals being enabled
-		if (@ini_get('register_globals') == '1' || strtolower(@ini_get('register_globals')) == 'on'){
-			$result = '<strong style="color:red">Enabled</strong>';
-		}else{
-			$result = '<strong style="color:green">Disabled</strong>';
-		}
+        // Check for register_globals being enabled
+        if (@ini_get('register_globals') == '1' || strtolower(@ini_get('register_globals')) == 'on'){
+            $result = '<strong style="color:red">Enabled</strong>';
+        }else{
+            $result = '<strong style="color:green">Disabled</strong>';
+        }
         $checks[] = array('check'       => 'register_globals() is disabled', 
                           'explain'     => '<b>Optional</b> - This setting is optional, it is however recommended that register_globals is disabled on your PHP install for security reasons.',
                           'setting'     => $result);
                                                     
-		// Check for url_fopen
-		if (@ini_get('allow_url_fopen') == '1' || strtolower(@ini_get('allow_url_fopen')) == 'on'){
-			$result = '<strong style="color:green">'.$Y.'</strong>';
-		}else{
-			$result = '<strong style="color:red">'.$N.'</strong>';
-		}
+        // Check for url_fopen
+        if (@ini_get('allow_url_fopen') == '1' || strtolower(@ini_get('allow_url_fopen')) == 'on'){
+            $result = '<strong style="color:green">'.$Y.'</strong>';
+        }else{
+            $result = '<strong style="color:red">'.$N.'</strong>';
+        }
         $checks[] = array('check'       => 'allow_url_fopen() is enabled',
                           'explain'     => '<b>Optional</b> - This setting is optional, however certain functions like off-site avatars will not work properly without it.',
                           'setting'     => $result);
                           
-		// Check for getimagesize
-		if(function_exists('gd_info')){
+        // Check for getimagesize
+        if(function_exists('gd_info')){
             $a = gd_info(); $ver = preg_replace('/[[:alpha:][:space:]()]+/', '', $a['GD Version']);
-     		if(version_compare($ver, '2', '>=')){
-    			$result = '<strong style="color:green">'.$Y.'</strong>';
+             if(version_compare($ver, '2', '>=')){
+                $result = '<strong style="color:green">'.$Y.'</strong>';
             }else{
-    			$result = '<strong style="color:red">'.$N.'</strong>';
+                $result = '<strong style="color:red">'.$N.'</strong>';
             }
-		}else{
-			$result = '<strong style="color:red">'.$N.'</strong>';
-		}
+        }else{
+            $result = '<strong style="color:red">'.$N.'</strong>';
+        }
         $checks[] = array('check'       => 'GD >= 2',
                           'explain'     => '<b>Required</b> - This is required for things like the captcha and other image generation to work correctly.',
                           'setting'     => $result);
@@ -119,30 +119,30 @@ switch($mode){
 
         $dirs = array('cache/', 'cache/template/', 'cache/media/', 'images/avatars/');
         foreach($dirs as $dir){
-			$exists = $write = false;
+            $exists = $write = false;
 
-			// Try to create the directory if it does not exist
-			if(!file_exists(cmsROOT.$dir)){
-				@mkdir(cmsROOT.$dir, 0775);
-				@chmod(cmsROOT.$dir, 0775);
-			}
+            // Try to create the directory if it does not exist
+            if(!file_exists(cmsROOT.$dir)){
+                @mkdir(cmsROOT.$dir, 0775);
+                @chmod(cmsROOT.$dir, 0775);
+            }
 
-			// Now really check
-			if(file_exists(cmsROOT.$dir) && is_dir(cmsROOT.$dir)){
-				if(!@is_writable(cmsROOT.$dir)){
-					@chmod(cmsROOT.$dir, 0775);
-				}
-				$exists = true;
-			}
+            // Now really check
+            if(file_exists(cmsROOT.$dir) && is_dir(cmsROOT.$dir)){
+                if(!@is_writable(cmsROOT.$dir)){
+                    @chmod(cmsROOT.$dir, 0775);
+                }
+                $exists = true;
+            }
 
-			// Now check if it is writable by storing a simple file
-			$fp = @fopen(cmsROOT.$dir.'test_lock', 'wb');
-			if($fp !== false){ $write = true; }
-			@fclose($fp);
+            // Now check if it is writable by storing a simple file
+            $fp = @fopen(cmsROOT.$dir.'test_lock', 'wb');
+            if($fp !== false){ $write = true; }
+            @fclose($fp);
 
-			@unlink(cmsROOT.$dir.'test_lock');
-			$exists = ($exists ? '<strong style="color:green">FOUND</strong>' : '<strong style="color:red">NOT FOUND</strong>');
-			$write = ($write 
+            @unlink(cmsROOT.$dir.'test_lock');
+            $exists = ($exists ? '<strong style="color:green">FOUND</strong>' : '<strong style="color:red">NOT FOUND</strong>');
+            $write = ($write 
                         ? ', <strong style="color:green">WRITABLE</strong>' 
                         : ($exists
                             ? ', <strong style="color:red">UNWRITABLE</strong>' 
@@ -157,7 +157,7 @@ switch($mode){
 
         $counter = 0;
         foreach($checks as $check){
-			$objTPL->assign_block_vars('checks', array(
+            $objTPL->assign_block_vars('checks', array(
                 'CHECK'     => $check['check'],
                 'EXPLAIN'   => isset($check['explain']) ? $check['explain'] : NULL,
                 'ROW'       => ($counter++ % 2==0 ? '#202123' : '#3D3E42'),
@@ -191,44 +191,44 @@ switch($mode){
             }
         }
         
-	    $dbList = array();
-	    $dbTests = array('mysql_connect', 'mysqli_connect', 'pg_connect', 'mssql_connect', 'sqlite_open');
-	    foreach($dbTests as $test){
-    		$db = explode('_', $test);
-	    	if(function_exists($test) && is_callable($test) && is_readable(cmsROOT.'core/classes/driver.'.$db[0].'.php')){
-	    		switch($db[0]){
-	    			default: $text = $db[0]; break;
-	
-	    			case 'mysql': $text = 'MySQL'; break;
-	    			case 'mysqli': $text = 'MySQLi'; break;
-	    			case 'sqlite': $text = 'SQLite'; break;
-	    			case 'pg': $text = 'PostgreSQL'; break;
-	    		}
-	    		
-	    		$dbList[$db[0]] = $text;
-	   		}
-    	}
+        $dbList = array();
+        $dbTests = array('mysql_connect', 'mysqli_connect', 'pg_connect', 'mssql_connect', 'sqlite_open');
+        foreach($dbTests as $test){
+            $db = explode('_', $test);
+            if(function_exists($test) && is_callable($test) && is_readable(cmsROOT.'core/classes/driver.'.$db[0].'.php')){
+                switch($db[0]){
+                    default: $text = $db[0]; break;
+    
+                    case 'mysql': $text = 'MySQL'; break;
+                    case 'mysqli': $text = 'MySQLi'; break;
+                    case 'sqlite': $text = 'SQLite'; break;
+                    case 'pg': $text = 'PostgreSQL'; break;
+                }
+                
+                $dbList[$db[0]] = $text;
+               }
+        }
 
-    		$vars = array(
-				'Database Driver'		=> $objForm->select('db_driver', $dbList),    		
-				'Database Server'		=> $objForm->inputbox('db_server', 'input', 'localhost'),
-				'Database Username'		=> $objForm->inputbox('db_uname', 'input', ''),
-    			'Database Password'		=> $objForm->inputbox('db_passwd', 'password', ''),
-    			'Database Name'			=> $objForm->inputbox('db_db', 'input', ''),
-    			'Database Prefix'		=> $objForm->inputbox('db_prefix', 'input', 'cscms_'),
-    		);
-            $objTPL->assign_vars(array(	
+            $vars = array(
+                'Database Driver'        => $objForm->select('db_driver', $dbList),            
+                'Database Server'        => $objForm->inputbox('db_server', 'input', 'localhost'),
+                'Database Username'        => $objForm->inputbox('db_uname', 'input', ''),
+                'Database Password'        => $objForm->inputbox('db_passwd', 'password', ''),
+                'Database Name'            => $objForm->inputbox('db_db', 'input', ''),
+                'Database Prefix'        => $objForm->inputbox('db_prefix', 'input', 'cscms_'),
+            );
+            $objTPL->assign_vars(array(    
                 'FORM_START'    => $objForm->start('databse', array('method' => 'POST', 'action' => '?action=2&try')),
                 'FORM_END'      => $objForm->finish(),
                 'SUBMIT'        => $objForm->button('submit', 'Next'),
             ));
             
-    		foreach($vars as $key => $value){
-    			$objTPL->assign_block_vars('settings', array(
-    				'VALUE' 	=> $key,
-    				'SETTING' 	=> $value,
-    			));
-    		}
+            foreach($vars as $key => $value){
+                $objTPL->assign_block_vars('settings', array(
+                    'VALUE'     => $key,
+                    'SETTING'     => $value,
+                ));
+            }
     break;
     
     case 3:
@@ -270,25 +270,25 @@ switch($mode){
             }
         }
         
-		$vars = array(
-			'Administrator Username'	=> $objForm->inputbox('adm_username', 'input', doArgs('adm_username', 'admin', $_POST)),
-			'Administrator Password'	=> $objForm->inputbox('adm_passwd', 'password', doArgs('adm_passwd', '', $_POST)),
-			'Verify Password'			=> $objForm->inputbox('adm_v_passwd', 'password', doArgs('adm_v_passwd', '', $_POST)),
-			'Administrator Email'		=> $objForm->inputbox('adm_email', 'input', doArgs('adm_email', '', $_POST)),
-		);
+        $vars = array(
+            'Administrator Username'    => $objForm->inputbox('adm_username', 'input', doArgs('adm_username', 'admin', $_POST)),
+            'Administrator Password'    => $objForm->inputbox('adm_passwd', 'password', doArgs('adm_passwd', '', $_POST)),
+            'Verify Password'            => $objForm->inputbox('adm_v_passwd', 'password', doArgs('adm_v_passwd', '', $_POST)),
+            'Administrator Email'        => $objForm->inputbox('adm_email', 'input', doArgs('adm_email', '', $_POST)),
+        );
         
-        $objTPL->assign_vars(array(	
+        $objTPL->assign_vars(array(    
             'FORM_START'    => $objForm->start('databse', array('method' => 'POST', 'action' => '?action=3&try', 'onsubmit'=>'return confirm(\'Only continue if you are happy with the details you provided.\')')),
             'FORM_END'      => $objForm->finish(),
             'SUBMIT'        => $objForm->button('submit', 'Next'),
         ));
         
-		foreach($vars as $key => $value){
-			$objTPL->assign_block_vars('settings', array(
-				'VALUE'				=> $key,
-				'SETTING'			=> $value,
-			));
-		}
+        foreach($vars as $key => $value){
+            $objTPL->assign_block_vars('settings', array(
+                'VALUE'                => $key,
+                'SETTING'            => $value,
+            ));
+        }
     break;
     
     case 4:
@@ -316,42 +316,42 @@ switch($mode){
             }
         }
 
-		$options = array('style' =>'width: 94%;');
-		$vars = array(
-			'Site Title'				    => $objForm->inputbox('title', 'text', $title, $options),
+        $options = array('style' =>'width: 94%;');
+        $vars = array(
+            'Site Title'                    => $objForm->inputbox('title', 'text', $title, $options),
             'Site Slogan'                   => $objForm->inputbox('slogan', 'text', $slogan, $options),
             'Site Description'              => $objForm->textarea('description', $description, array('style' =>'height: 50px;')),
             'Site Keywords'                 => $objForm->textarea('keywords', $keywords, array('style' =>'height: 50px;')),
             'Default Time Format'           => $objForm->inputbox('time', 'text', ($time==NULL ? 'jS F h:ia' : $time), $options),
-		);
-        $objTPL->assign_vars(array(	
+        );
+        $objTPL->assign_vars(array(    
             'FORM_START'    => $objForm->start('siteConfig', array('method' => 'POST', 'action' => '?action=4&try')),
             'FORM_END'      => $objForm->finish(),
             'SUBMIT'        => $objForm->button('submit', 'Next'),
         ));
         
-		foreach($vars as $key => $value){
-			$objTPL->assign_block_vars('settings', array(
-				'VALUE'		=> $key,
-				'SETTING'	=> $value,
-			));
-		}
+        foreach($vars as $key => $value){
+            $objTPL->assign_block_vars('settings', array(
+                'VALUE'        => $key,
+                'SETTING'    => $value,
+            ));
+        }
     break;
     
     case 5:
         $file = cmsROOT.'cache/config.php';
         if(!file_exists($file)){
             $test = fopen($file, 'w');
-    		fwrite($test, 'test');
-    		fclose($test);
+            fwrite($test, 'test');
+            fclose($test);
         }
         if(!is_writable($file)){
             @chmod($file, 0777);
         }
 
     
-    	if(is_writable($file)) {
-    		$open = fopen($file, 'w');
+        if(is_writable($file)) {
+            $open = fopen($file, 'w');
             $_SESSION['db'] = array_map('addslashes', $_SESSION['db']);
             $config = '<?php
 /*======================================================================*\
@@ -360,19 +360,19 @@ switch($mode){
 if(!defined(\'INDEX_CHECK\')){die(\'Error: Cannot access directly.\');}
 
 //some db settings and the like etc
-	$config[\'db\'][\'driver\'] 				= \''.$_SESSION['db']['driver'].'\';
-    $config[\'db\'][\'host\'] 					= \''.$_SESSION['db']['host'].'\';
-    $config[\'db\'][\'username\'] 				= \''.$_SESSION['db']['username'].'\';
-    $config[\'db\'][\'password\'] 				= \''.$_SESSION['db']['password'].'\';
-    $config[\'db\'][\'database\'] 				= \''.$_SESSION['db']['database'].'\';
-    $config[\'db\'][\'prefix\'] 				= \''.$_SESSION['db']['prefix'].'\';
+    $config[\'db\'][\'driver\']                 = \''.$_SESSION['db']['driver'].'\';
+    $config[\'db\'][\'host\']                     = \''.$_SESSION['db']['host'].'\';
+    $config[\'db\'][\'username\']                 = \''.$_SESSION['db']['username'].'\';
+    $config[\'db\'][\'password\']                 = \''.$_SESSION['db']['password'].'\';
+    $config[\'db\'][\'database\']                 = \''.$_SESSION['db']['database'].'\';
+    $config[\'db\'][\'prefix\']                 = \''.$_SESSION['db']['prefix'].'\';
 //the cookie prefix 
     $config[\'db\'][\'ckefix\']                 = \'CMS_\'; 
 
 //some settings for the cron
-    $config[\'cron\'][\'hourly_time\']			= (3600); //1 Hour
-    $config[\'cron\'][\'daily_time\']			= (3600*24); //1 Day
-    $config[\'cron\'][\'weekly_time\']			= (3600*24*7); //1 Week
+    $config[\'cron\'][\'hourly_time\']            = (3600); //1 Hour
+    $config[\'cron\'][\'daily_time\']            = (3600*24); //1 Day
+    $config[\'cron\'][\'weekly_time\']            = (3600*24*7); //1 Week
 
 //some default settings, incase the cms dies before getting  
 //the chance to populate the config array.
@@ -384,14 +384,14 @@ if(!defined(\'INDEX_CHECK\')){die(\'Error: Cannot access directly.\');}
 
 ?>';
 
-    		fwrite($open,$config);
-    		fclose($open);
+            fwrite($open,$config);
+            fclose($open);
             $objTPL->assign_var('MSG', 'Config Written Successfully.');
             $objTPL->assign_var('SUBMIT', $objForm->button('submit', 'Next', array('extra'=>' onclick="window.location=\'?action=6\'"')));
             $_SESSION['allow_config'] = true;
-    	}else{
+        }else{
             $objTPL->assign_var('MSG', 'CONFIG.PHP isnt writable, please chmod it 0777 before continuing. To continue please press Refresh or F5 and RETRY the process');
-    	}
+        }
     break;
     
     case 6:

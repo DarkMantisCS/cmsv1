@@ -2,15 +2,15 @@
 <div id="cat_{forum.ID}" class="content catClear corners">
     <div class="title iblock corners-top{forum.CLASS}">
       <!-- BEGIN expand -->
-    	<div class="float-left catIcon">
+        <div class="float-left catIcon">
             <img src="{forum.EXPAND}" id="img_{forum.ID}" data-mode="{forum.MODE}" name="{forum.ID}" />
         </div>
       <!-- END expand -->
-    	<div class="float-left catName">
-        	<h4>{forum.CAT}</h4>
+        <div class="float-left catName">
+            <h4>{forum.CAT}</h4>
         </div>
     </div>
-	<div id="f_{forum.ID}" style="{forum.DISPLAY}">
+    <div id="f_{forum.ID}" style="{forum.DISPLAY}">
     <table width="100%" border="0" cellspacing="1" cellpadding="5">
     <!-- BEGIN row -->
       <tr class="{forum.row.ROW}">
@@ -29,11 +29,11 @@
       <tr class="{forum.row.ROW}">
         <td>
             {forum.row.DESC}<br />
-			<span class="float-left">
-			<!-- BEGIN counts -->
+            <span class="float-left">
+            <!-- BEGIN counts -->
             <strong>{forum.row.L_TCOUNT}:</strong> {forum.row.T_COUNT} | <strong>{forum.row.T_PCOUNT}:</strong> {forum.row.P_COUNT}
-			<!-- END counts -->
-			&nbsp;</span>
+            <!-- END counts -->
+            &nbsp;</span>
             <span class="float-right">{forum.row.L_MODS} {forum.row.C_MODS}</span>
         </td>
         <td width="40%" data-url="{forum.row.LP_URL}">
@@ -47,7 +47,7 @@
       </tr>
     <!-- END row -->
     </table>
-	</div>
-	<div class="clear"></div>
+    </div>
+    <div class="clear"></div>
 </div>
 <!-- END forum -->

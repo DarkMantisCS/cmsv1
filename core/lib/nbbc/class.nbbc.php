@@ -1855,7 +1855,7 @@ BBCODE_STACK_CLASS => $this->current_class,
 }
 function Parse($string) {
 
-	$string= str_replace(array('&#39;', '&#039;'), array('\'','\''), $string);
+    $string= str_replace(array('&#39;', '&#039;'), array('\'','\''), $string);
 $string = $this->parse_code($string);
 
 $this->lexer = new BBCodeLexer($string, $this->tag_marker);
@@ -1978,31 +1978,31 @@ $result = preg_replace("/[\\x00-\\x09\\x0B-\\x20]+/", " ", $result);
 $result = preg_replace("/(?:[\\x20]*\\n){2,}[\\x20]*/", "\n\n", $result);
 $result = trim($result);
 }
-	$result = preg_replace("_\|\!\!\!\!\|(.*?)\|\!\!\!\!\|_ise", "bbcode::replaced('$1')", $result);
+    $result = preg_replace("_\|\!\!\!\!\|(.*?)\|\!\!\!\!\|_ise", "bbcode::replaced('$1')", $result);
     $result = str_replace(array("<3"), array('&heart;'), $result);
 return $result;
 }
 
 function parse_code($text){
-	$text = preg_replace("_\[code\](.*?)\[\/code\]_ise", "bbcode::replace('$1', 'text')", $text);
-	$text = preg_replace("_\[code=\'(.*?)\'\](.+?)\[\/code\]_ise", "bbcode::replace('$2', '$1')", $text);
-	$text = preg_replace("_\[code=(.*?)\](.+?)\[\/code\]_ise", "bbcode::replace('$2', '$1')", $text);
-	$text = preg_replace("_\[php\](.*?)\[\/php\]_ise", "bbcode::replace('$1', 'php')", $text);
-	$text = preg_replace("_\[script\](.*?)\[\/script\]_ise", "bbcode::replace('$1', 'js')", $text);
+    $text = preg_replace("_\[code\](.*?)\[\/code\]_ise", "bbcode::replace('$1', 'text')", $text);
+    $text = preg_replace("_\[code=\'(.*?)\'\](.+?)\[\/code\]_ise", "bbcode::replace('$2', '$1')", $text);
+    $text = preg_replace("_\[code=(.*?)\](.+?)\[\/code\]_ise", "bbcode::replace('$2', '$1')", $text);
+    $text = preg_replace("_\[php\](.*?)\[\/php\]_ise", "bbcode::replace('$1', 'php')", $text);
+    $text = preg_replace("_\[script\](.*?)\[\/script\]_ise", "bbcode::replace('$1', 'js')", $text);
 
-	return $text;
+    return $text;
 }
 
-	function replace($value, $ext){
-		$counter = count($this->replacements);
-		$this->replacements[$counter] = array($value, $ext);;
-		return "|!!!!|".$counter++."|!!!!|";
-	}
+    function replace($value, $ext){
+        $counter = count($this->replacements);
+        $this->replacements[$counter] = array($value, $ext);;
+        return "|!!!!|".$counter++."|!!!!|";
+    }
 
-	function replaced($value){
-		$str = str_replace('|!!!!|', '', $value);
-		$this->replacements[$str][0] = str_replace('\"', '"', $this->replacements[$str][0]);
-		return DoCode($this->replacements[$str][0], $this->replacements[$str][1]);
-	}
+    function replaced($value){
+        $str = str_replace('|!!!!|', '', $value);
+        $this->replacements[$str][0] = str_replace('\"', '"', $this->replacements[$str][0]);
+        return DoCode($this->replacements[$str][0], $this->replacements[$str][1]);
+    }
 
 }

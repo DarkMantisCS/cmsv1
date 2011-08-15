@@ -9,9 +9,9 @@
 // tabs.js freely distributable under the terms of an MIT-style license.
 
 if (typeof Effect == 'undefined'){
-	throw("tabs.js requires including script.aculo.us' effects.js library!");
+    throw("tabs.js requires including script.aculo.us' effects.js library!");
 }
-	
+    
 var tabset = Class.create();
 
 tabset.prototype = {

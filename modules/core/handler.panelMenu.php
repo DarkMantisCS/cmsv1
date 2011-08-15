@@ -16,7 +16,7 @@ foreach($corePanels as $pTitle => $modePath){
     foreach($panels as $p){
         if(!preg_match('/^([a-zA-Z0-9]*)$/is', $p['name']) || $p['name']=='index'){ continue; }
         if(is_dir($modePath.$p['name']) && is_file($modePath.$p['name'].'/cfg.php')){
-        	include($modePath.$p['name'].'/cfg.php');
+            include($modePath.$p['name'].'/cfg.php');
             $assign .= '<li><a href="/'.root().$pTitle.'/core/'.$p['name'].'/"'.($p['name']==$panel ? ' class="active"' : null).'> '.$mod_name.'</a></li>';
         }
     }
@@ -37,7 +37,7 @@ if(count($config['modules']) && in_array($mode, $array)){
         if(is_dir(cmsROOT.'modules/'.$module['name'].'/') &&
            is_readable(cmsROOT.'modules/'.$module['name'].'/cfg.php') &&
            is_readable(cmsROOT.'modules/'.$module['name'].'/'.$mode.'.'.$module['name'].'.php')){
-            	include(cmsROOT.'modules/'.$module['name'].'/cfg.php');
+                include(cmsROOT.'modules/'.$module['name'].'/cfg.php');
                 $assign .= '<li><a href="/'.root().$mode.'/'.$module['name'].'/">'.$mod_name.'</a></li>';
         }
     }

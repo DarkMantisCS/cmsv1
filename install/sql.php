@@ -5,22 +5,22 @@
 if(!defined('INDEX_CHECK')){die('Error: Cannot access directly.');}
 
 $sql = array();
-$now 			= $objSQL->escape(time());
-$version 		= $objSQL->escape(str_replace('V', '', $version));
-$admUsername 	= $objSQL->escape($_SESSION['adm']['username']);
-$admPasswd 		= $objSQL->escape($objUser->mkPassword($_SESSION['adm']['password']));
-$admEmail 		= $objSQL->escape($_SESSION['adm']['email']);
-$admKey 		= $objSQL->escape(randcode(6));
-$ckeauth 		= $objSQL->escape(randcode(6));
-$dst 			= date('I')==0 ? 1 : 0;
-$timezone 		= 0;
+$now             = $objSQL->escape(time());
+$version         = $objSQL->escape(str_replace('V', '', $version));
+$admUsername     = $objSQL->escape($_SESSION['adm']['username']);
+$admPasswd         = $objSQL->escape($objUser->mkPassword($_SESSION['adm']['password']));
+$admEmail         = $objSQL->escape($_SESSION['adm']['email']);
+$admKey         = $objSQL->escape(randcode(6));
+$ckeauth         = $objSQL->escape(randcode(6));
+$dst             = date('I')==0 ? 1 : 0;
+$timezone         = 0;
 //$userIp = getIP();
 
     $fields = array('title', 'slogan', 'description', 'keywords', 'time');
     foreach($fields as $f){
         if(doArgs($f, false, $_SESSION['POST'][$f])){ 
-        	${$f} = $objSQL->escape($_SESSION['POST'][$f]); continue; 
-		}
+            ${$f} = $objSQL->escape($_SESSION['POST'][$f]); continue; 
+        }
     }
 
 //
@@ -41,55 +41,55 @@ CREATE TABLE IF NOT EXISTS `cs_config` (
 SQL;
 $sql[] = <<<SQL
 INSERT INTO `cs_config` (`array`, `var`, `value`) VALUES
-	('db', 'ckeauth', '{$ckeauth}'),
-	('cms', 'name', 'Cybershade CMS'),
-	
-	('site', 'title', '{$title}'),
-	('site', 'slogan', '{$slogan}'),
-	('site', 'theme', 'default'),
-	('site', 'language', 'en'),
-	('site', 'keywords', '{$keywords}'),
-	('site', 'description', '{$description}'),
-	('site', 'admin_email', '{$_SESSION[adm][email]}'),
-	('site', 'site_closed', '0'),
-	('site', 'closed_msg', 'Administrator has closed this website.'),
-	('site', 'register_verification', '1'),
-	('site', 'index_module', 'forum'),
-	('site', 'registry_update', '1303735825'),
-	('site', 'allow_register', '1'),
-	('site', 'default_pagination', '10'),
-	('site', 'user_group', '3'),
-	('site', 'captcha_pub', '6LeoEcMSAAAAAENceaWHaFaRhpDdH4bBHTAQMp6f'),
-	('site', 'captcha_priv', '6LeoEcMSAAAAAFfgBGpZxJUFBdOqKPRBPpzF7wju'),
-	('site', 'google_analytics', ''),
-	('site', 'theme_override', '1'),
-	('site', 'smilie_pack', 'default'),	
-		
-	('time', 'default_format', '{$time}'),
-	('time', 'dst', '{$dst}'),
-	('time', 'timezone', '{$tz}'),
-	
-	('user', 'username_change', '0'),
-	
-	('login', 'max_login_tries', '8'),
-	('login', 'remember_me', '1'),
-	('login', 'max_whitelist', '5'),
-	('login', 'lockout_time', '15'),	
-	('login', 'ip_lock', '0'),	
-	
-	('rss', 'global_limit', '15'),
-	
-	('ajax', 'settings', 'forum_eip,forum_sortables'),
+    ('db', 'ckeauth', '{$ckeauth}'),
+    ('cms', 'name', 'Cybershade CMS'),
+    
+    ('site', 'title', '{$title}'),
+    ('site', 'slogan', '{$slogan}'),
+    ('site', 'theme', 'default'),
+    ('site', 'language', 'en'),
+    ('site', 'keywords', '{$keywords}'),
+    ('site', 'description', '{$description}'),
+    ('site', 'admin_email', '{$_SESSION[adm][email]}'),
+    ('site', 'site_closed', '0'),
+    ('site', 'closed_msg', 'Administrator has closed this website.'),
+    ('site', 'register_verification', '1'),
+    ('site', 'index_module', 'forum'),
+    ('site', 'registry_update', '1303735825'),
+    ('site', 'allow_register', '1'),
+    ('site', 'default_pagination', '10'),
+    ('site', 'user_group', '3'),
+    ('site', 'captcha_pub', '6LeoEcMSAAAAAENceaWHaFaRhpDdH4bBHTAQMp6f'),
+    ('site', 'captcha_priv', '6LeoEcMSAAAAAFfgBGpZxJUFBdOqKPRBPpzF7wju'),
+    ('site', 'google_analytics', ''),
+    ('site', 'theme_override', '1'),
+    ('site', 'smilie_pack', 'default'),    
+        
+    ('time', 'default_format', '{$time}'),
+    ('time', 'dst', '{$dst}'),
+    ('time', 'timezone', '{$tz}'),
+    
+    ('user', 'username_change', '0'),
+    
+    ('login', 'max_login_tries', '8'),
+    ('login', 'remember_me', '1'),
+    ('login', 'max_whitelist', '5'),
+    ('login', 'lockout_time', '15'),    
+    ('login', 'ip_lock', '0'),    
+    
+    ('rss', 'global_limit', '15'),
+    
+    ('ajax', 'settings', 'forum_eip,forum_sortables'),
 
-	('email', 'E_USER_POSTED', 'Hello {USERNAME},\r\n\r\n{AUTHOR} has posted a reply to [b]{THREAD_NAME}[/b]. This was posted at {TIME}.\r\n\r\nYou can view the topic by visiting the following URL: [url]{THREAD_URL}[/url].\r\n\r\n~{SITE_NAME}'),
-	('email', 'E_LOGIN_ATTEMPTS', 'Hello {USERNAME},\r\n\r\nWe''ve become aware of somebody, if not yourself, trying to login to your account with incorrect details.\r\n\r\nYour account has been locked for security purposes.\r\n\r\nTo Reactivate your account, please click the link below, or copy and paste it into your address bar.\r\n\r\n[url]{URL}[/url]\r\n\r\n~{SITE_NAME}'),
-	
-	('site', 'internetCalls', '0'),
+    ('email', 'E_USER_POSTED', 'Hello {USERNAME},\r\n\r\n{AUTHOR} has posted a reply to [b]{THREAD_NAME}[/b]. This was posted at {TIME}.\r\n\r\nYou can view the topic by visiting the following URL: [url]{THREAD_URL}[/url].\r\n\r\n~{SITE_NAME}'),
+    ('email', 'E_LOGIN_ATTEMPTS', 'Hello {USERNAME},\r\n\r\nWe''ve become aware of somebody, if not yourself, trying to login to your account with incorrect details.\r\n\r\nYour account has been locked for security purposes.\r\n\r\nTo Reactivate your account, please click the link below, or copy and paste it into your address bar.\r\n\r\n[url]{URL}[/url]\r\n\r\n~{SITE_NAME}'),
+    
+    ('site', 'internetCalls', '0'),
 
-	('forum', 'news_category', '2'),
-	('forum', 'sortable_categories', '0'),
-	('forum', 'guest_restriction', '0'),
-	('forum', 'post_edit_time', '3600');
+    ('forum', 'news_category', '2'),
+    ('forum', 'sortable_categories', '0'),
+    ('forum', 'guest_restriction', '0'),
+    ('forum', 'post_edit_time', '3600');
 SQL;
 
 //--Logs & Error Tables
@@ -157,10 +157,10 @@ CREATE TABLE IF NOT EXISTS `cs_groups` (
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin ;
 SQL;
 $sql[] = <<<SQL
-INSERT INTO `cs_groups` (`id`, 	`type`, `name`, 	`description`, 			`moderator`, `single_user_group`, 	`color`, 	`order`) VALUES
-							(1, 	1, 		'Admin', 	'Site Administrator', 		1, 				1, 				'#ff0000', 	1),
-							(2, 	1, 		'Mods', 	'Site Moderator', 			1, 				0, 				'#146eca', 	3),
-							(3, 	0, 		'Users', 	'Registered User',			1, 				0, 				'#b7b7b7', 	10);
+INSERT INTO `cs_groups` (`id`,     `type`, `name`,     `description`,             `moderator`, `single_user_group`,     `color`,     `order`) VALUES
+                            (1,     1,         'Admin',     'Site Administrator',         1,                 1,                 '#ff0000',     1),
+                            (2,     1,         'Mods',     'Site Moderator',             1,                 0,                 '#146eca',     3),
+                            (3,     0,         'Users',     'Registered User',            1,                 0,                 '#b7b7b7',     10);
 
 SQL;
 
@@ -202,15 +202,15 @@ CREATE TABLE IF NOT EXISTS `cs_menus` (
 SQL;
 $sql[] = <<<SQL
 INSERT INTO `cs_menus` (`id`, `menu_id`, `link_value`, `link_name`, `link_color`, `blank`, `order`, `perms`, `external`) VALUES
-	(1, 'menu_mm', 'index.php', 'Site home', NULL, 0, 1, 0, 0),
-	(2, 'menu_mm', 'admin/', 'Admin Panel', '#FF0000', 0, 10, 3, 0),
-	(3, 'menu_mm', 'modules/forum/', 'Forum', NULL, 0, 2, 0, 0),
-	(4, 'menu_mm', 'modules/pm/', 'Private Messages', NULL, 0, 3, 1, 0),
-	(5, 'menu_mm', 'user/', 'User Control Panel', NULL, 0, 4, 1, 0),
-	(6, 'menu_mm', 'mod/', 'Moderator Panel', NULL, 0, 9, 3, 0),
-	(7, 'main_nav', 'index.php', 'Site Home', NULL, 0, 1, 0, 0),
-	(8, 'main_nav', 'modules/profile/view/', 'Profile', NULL, 0, 2, 1, 0),
-	(9, 'main_nav', 'modules/forum/', 'Forum', NULL, 0, 3, 0, 0);
+    (1, 'menu_mm', 'index.php', 'Site home', NULL, 0, 1, 0, 0),
+    (2, 'menu_mm', 'admin/', 'Admin Panel', '#FF0000', 0, 10, 3, 0),
+    (3, 'menu_mm', 'modules/forum/', 'Forum', NULL, 0, 2, 0, 0),
+    (4, 'menu_mm', 'modules/pm/', 'Private Messages', NULL, 0, 3, 1, 0),
+    (5, 'menu_mm', 'user/', 'User Control Panel', NULL, 0, 4, 1, 0),
+    (6, 'menu_mm', 'mod/', 'Moderator Panel', NULL, 0, 9, 3, 0),
+    (7, 'main_nav', 'index.php', 'Site Home', NULL, 0, 1, 0, 0),
+    (8, 'main_nav', 'modules/profile/view/', 'Profile', NULL, 0, 2, 1, 0),
+    (9, 'main_nav', 'modules/forum/', 'Forum', NULL, 0, 3, 0, 0);
 SQL;
 
 $sql[] = <<<SQL
@@ -253,14 +253,14 @@ CREATE TABLE IF NOT EXISTS `cs_menu_setups` (
 SQL;
 $sql[] = <<<SQL
 INSERT INTO `cs_menu_setups` (`module`, `page_id`, `menu_id`, `params`, `order`) VALUES
-    ('core', 	'default',  'jv1h9w6m2y', 'menu_name=mm\r\nmenu_title=Main Menu', 1),
-	('core', 	'default',  'x91z6yvmrw', 'menu_title=m_affiliates\r\nlimit=6\r\nperRow=2', 3),
-	('core', 	'default',  'ndxhzj9w54', 'menu_title=m_wio', 4),
-	('core', 	'default',  '9rgtdk2zv8', 'menu_title=m_login', 2),
-    ('forum',	'default',  'jv1h9w6m2y', 'menu_name=mm\r\nmenu_title=Main Menu', 1),
-    ('forum',	'default',  'n4fym8r9gd', 'menu_title=m_latest_post\r\nlimit=5', 3),
-    ('forum',	'default',  'ndxhzj9w54', 'menu_title=m_wio', 4),
-    ('forum', 	'default',  '343fwfwr34', 'menu_title=m_top_user\r\nlimit=5', 2);
+    ('core',     'default',  'jv1h9w6m2y', 'menu_name=mm\r\nmenu_title=Main Menu', 1),
+    ('core',     'default',  'x91z6yvmrw', 'menu_title=m_affiliates\r\nlimit=6\r\nperRow=2', 3),
+    ('core',     'default',  'ndxhzj9w54', 'menu_title=m_wio', 4),
+    ('core',     'default',  '9rgtdk2zv8', 'menu_title=m_login', 2),
+    ('forum',    'default',  'jv1h9w6m2y', 'menu_name=mm\r\nmenu_title=Main Menu', 1),
+    ('forum',    'default',  'n4fym8r9gd', 'menu_title=m_latest_post\r\nlimit=5', 3),
+    ('forum',    'default',  'ndxhzj9w54', 'menu_title=m_wio', 4),
+    ('forum',     'default',  '343fwfwr34', 'menu_title=m_top_user\r\nlimit=5', 2);
 SQL;
 
 /*--Affiliate System
@@ -520,7 +520,7 @@ CREATE TABLE IF NOT EXISTS `cs_forum_posts` (
 SQL;
 $sql[] = <<<SQL
 INSERT INTO `cs_forum_posts` (`thread_id`, `author`, `post`, `timestamp`, `poster_ip`, `edited`, `edited_uid`) VALUES
-	(1, 1, 'Welcome to Cybershade CMS. Install seems to have worked so you can reorder the forum from the admin panel.', {$now}, '{$userIp}', 0, 0);
+    (1, 1, 'Welcome to Cybershade CMS. Install seems to have worked so you can reorder the forum from the admin panel.', {$now}, '{$userIp}', 0, 0);
 SQL;
 
 $sql[] = <<<SQL
@@ -683,7 +683,7 @@ CREATE TABLE IF NOT EXISTS `cs_user_extras` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 SQL;
 $sql[] = <<<SQL
-	INSERT INTO `cs_user_extras` (`uid`) VALUES (1);
+    INSERT INTO `cs_user_extras` (`uid`) VALUES (1);
 SQL;
 
 ?>

@@ -1,11 +1,11 @@
 {FORM_START}
 <div class="content corners">
     <div class="title corners-top iblock">
-		<h4 class="float-left">{FORM_TITLE}</h4>
-		<div class="float-right padding">{FORM_SUBMIT} {FORM_RESET} <img alt="spinner" id="spinner" src="/{ROOT}images/ajax-loader.gif" style="display:none;" /> </div>
-	</div>
-	<div>
-		{HIDDEN}
+        <h4 class="float-left">{FORM_TITLE}</h4>
+        <div class="float-right padding">{FORM_SUBMIT} {FORM_RESET} <img alt="spinner" id="spinner" src="/{ROOT}images/ajax-loader.gif" style="display:none;" /> </div>
+    </div>
+    <div>
+        {HIDDEN}
         <table width="100%" border="0" cellspacing="0" cellpadding="5">
         <!-- BEGIN msg -->
           <tr>
@@ -16,8 +16,8 @@
           <tr>
             <td colspan="2" class="boxred">{_form_error.ERROR_MSG}</td>
           </tr>
-		<!-- END _form_error -->
-		<!-- BEGIN _form_row -->
+        <!-- END _form_error -->
+        <!-- BEGIN _form_row -->
             <!-- BEGIN _header -->
               <tr>
                 <td colspan="2" class="title" valign="middle">{_form_row._header.TITLE}</td>
@@ -29,7 +29,7 @@
                     <!-- BEGIN label -->
                     <label for="{_form_row._field.L_LABELFOR}">
                     <!-- END label -->
-                        <strong>{_form_row._field.L_LABEL}:</strong>		
+                        <strong>{_form_row._field.L_LABEL}:</strong>        
                         <!-- BEGIN _desc -->
                         <br /><small class="grid_3">{_form_row._field.F_INFO}</small>
                         <!-- END _desc -->
@@ -43,8 +43,8 @@
         <!-- END _form_row -->
         </table>
         <div class="clear"></div>
-		<div class="float-right padding">{FORM_SUBMIT} {FORM_RESET}</div>
-		<div class="clear"></div>
-	</div>
+        <div class="float-right padding">{FORM_SUBMIT} {FORM_RESET}</div>
+        <div class="clear"></div>
+    </div>
 </div><br />
 {FORM_END}

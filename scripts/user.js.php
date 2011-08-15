@@ -16,12 +16,12 @@ $vars = $objPage->getVar('tplVars');
 //notifications
 $notifications = null;
 if(User::$IS_ONLINE){
-	$notes = $objNotify->getNotifications(false);
-	if($notes){
-		foreach($notes as $note){
-		    $notifications .= $objNotify->outputNotification($note, true);
-		}
-	}
+    $notes = $objNotify->getNotifications(false);
+    if($notes){
+        foreach($notes as $note){
+            $notifications .= $objNotify->outputNotification($note, true);
+        }
+    }
 }
 ?>
 function growl(message, header, sticky){
@@ -43,61 +43,61 @@ function showNotification(id, message, header, sticky){
 }
 
 var avatarMenu = [
-	{ name: "Avatar Options", className: "title", disabled: true },
-	{ name: "Remove", className: "ava_remove", callback: function(){ console.log(this); } },
-	{ name: "Upload New", className: "ava_upload", callback: function(){ console.log(this); } },
-	{ name: "Off Link New", className: "ava_offlink", callback: function(){ console.log(this); } },
-	{ separator: true },
-	{ name: "More User Preferences", className: "title", callback: function(){ document.location = "/"+root+"user/"; } }
+    { name: "Avatar Options", className: "title", disabled: true },
+    { name: "Remove", className: "ava_remove", callback: function(){ console.log(this); } },
+    { name: "Upload New", className: "ava_upload", callback: function(){ console.log(this); } },
+    { name: "Off Link New", className: "ava_offlink", callback: function(){ console.log(this); } },
+    { separator: true },
+    { name: "More User Preferences", className: "title", callback: function(){ document.location = "/"+root+"user/"; } }
 ];
 
 function usernameAutocomplete(input){
-	new Ajax.Autocompleter(input, "user_autocomplete", "/"+cmsROOT+"scripts/ajax.php?action=userAutocomplete", {
-	    paramName: "var", 
-	    height: "20", 
-	    width: "200", 
-	    tokens: ", " 
-	});
+    new Ajax.Autocompleter(input, "user_autocomplete", "/"+cmsROOT+"scripts/ajax.php?action=userAutocomplete", {
+        paramName: "var", 
+        height: "20", 
+        width: "200", 
+        tokens: ", " 
+    });
 }
 
 document.observe('dom:loaded', function(){
-	//setup growl (notifications)
-	growler = new k.Growler({location: 'nu'});
-	
-	
-	//input autocomplete
-	if($("user_autocomplete")){ usernameAutocomplete($("user_autocomplete").readAttribute("data-input")); }
-	
-	//setup notifications
-	if(User.IS_ONLINE){
-		if($("notificationGrabber")){
-		    new Ajax.PeriodicalUpdater('notificationGrabber', '/'+cmsROOT+'scripts/ajax.php?action=grabNewNotifications', {
-		        method: "post", frequency: 5, decay: 3, evalScripts: true
-		    });
-		}
-		<?php echo $notifications; ?>
-	}
-	
-	//context menu on the users own avatar frames
-	new Proto.Menu({
-	    selector: "#"+User.username+"_avatar",
-	    className: "menu cms",
-	    menuItems: avatarMenu
-	});
+    //setup growl (notifications)
+    growler = new k.Growler({location: 'nu'});
+    
+    
+    //input autocomplete
+    if($("user_autocomplete")){ usernameAutocomplete($("user_autocomplete").readAttribute("data-input")); }
+    
+    //setup notifications
+    if(User.IS_ONLINE){
+        if($("notificationGrabber")){
+            new Ajax.PeriodicalUpdater('notificationGrabber', '/'+cmsROOT+'scripts/ajax.php?action=grabNewNotifications', {
+                method: "post", frequency: 5, decay: 3, evalScripts: true
+            });
+        }
+        <?php echo $notifications; ?>
+    }
+    
+    //context menu on the users own avatar frames
+    new Proto.Menu({
+        selector: "#"+User.username+"_avatar",
+        className: "menu cms",
+        menuItems: avatarMenu
+    });
 
-	$$("img[class*=avatar][data-avatar]:not([data-avatar~="+User.username+"])").each(function (ava){
-		var user = ava.readAttribute("data-avatar");
+    $$("img[class*=avatar][data-avatar]:not([data-avatar~="+User.username+"])").each(function (ava){
+        var user = ava.readAttribute("data-avatar");
 
-		new Proto.Menu({
-			selector: "#"+user+"_avatar",
-			className: "menu cms",
-			menuItems: [
-				{ name: user+" Avatar Options", className: "title", disabled: true },
-				{ name: "Remove Avatar", className: "ava_reset", callback: function(){
-					inWindow("/"+cmsROOT+"modules/profile/avatar/?action=reset&username="+user, "Reset Avatar", 400, 100);
-				}}
-			]
-		});
-	});
+        new Proto.Menu({
+            selector: "#"+user+"_avatar",
+            className: "menu cms",
+            menuItems: [
+                { name: user+" Avatar Options", className: "title", disabled: true },
+                { name: "Remove Avatar", className: "ava_reset", callback: function(){
+                    inWindow("/"+cmsROOT+"modules/profile/avatar/?action=reset&username="+user, "Reset Avatar", 400, 100);
+                }}
+            ]
+        });
+    });
 
 });

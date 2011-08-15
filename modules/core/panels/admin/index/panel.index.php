@@ -7,9 +7,9 @@ if(!defined('PANEL_CHECK')){ die('Error: Cannot include panel from current locat
 $objPage->setTitle(langVar('B_ACP').' > '.langVar('L_OVERVIEW'));
 $objPage->addPagecrumb(array( array('url' => $url, 'name' => langVar('L_OVERVIEW')) ));
 $objTPL->set_filenames(array(
-	'body'  => 'modules/core/template/panels/panel.admin_overview.tpl',
-	#'wio'   => 'modules/core/user/sessions/template/sessions.tpl',
-	'stats' => 'modules/core/template/panels/panel.stats.tpl',
+    'body'  => 'modules/core/template/panels/panel.admin_overview.tpl',
+    #'wio'   => 'modules/core/user/sessions/template/sessions.tpl',
+    'stats' => 'modules/core/template/panels/panel.stats.tpl',
 ));
 
 $mode = doArgs('mode', false, $_GET);
@@ -20,20 +20,20 @@ $objTPL->assign_vars(array(
 
 //if we have been asked to kill a user session
 if($mode == 'sessionKill'){
-	$id = doArgs('id', false, $_GET, 'is_number');
+    $id = doArgs('id', false, $_GET, 'is_number');
 
-	//and the id isnt false
-	if($id){
-		//verify the id actually exists
-		$query = $objSQL->getLine('SELECT * FROM `$Ponline` WHERE id ="%d" LIMIT 1;', $id);
-		if($query){
-			//and set it to kill, the CMS will do the rest
-			unset($update);
-			$update['mode'] = 'kill';
+    //and the id isnt false
+    if($id){
+        //verify the id actually exists
+        $query = $objSQL->getLine('SELECT * FROM `$Ponline` WHERE id ="%d" LIMIT 1;', $id);
+        if($query){
+            //and set it to kill, the CMS will do the rest
+            unset($update);
+            $update['mode'] = 'kill';
 
-			$objSQL->updateRow('online', $update, array('id ="%d"', $query['id']));
-		}
-	}
+            $objSQL->updateRow('online', $update, array('id ="%d"', $query['id']));
+        }
+    }
 }
 
 //

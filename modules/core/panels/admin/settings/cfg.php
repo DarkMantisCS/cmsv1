@@ -4,11 +4,11 @@
 \*======================================================================*/
 if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 
-$mod_name		 = 'Core Settings';
-$mod_version	 = '1.0';
-$mod_desc		 = 'Core Site Settings';
-$mod_dir		 = './modules/core/panels/admin/settings/';
-$mod_author		 = 'xLink';
-$mod_url		 = 'http://www.cybershade.org';
+$mod_name         = 'Core Settings';
+$mod_version     = '1.0';
+$mod_desc         = 'Core Site Settings';
+$mod_dir         = './modules/core/panels/admin/settings/';
+$mod_author         = 'xLink';
+$mod_url         = 'http://www.cybershade.org';
 
 ?>

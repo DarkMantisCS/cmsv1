@@ -13,11 +13,11 @@
         {stats.LEGEND}
         <hr size="1" style="color: rgb(10, 10, 10);" />
         <strong>{stats.L_THREADS}</strong>: {stats.C_THREADS} | 
-		<strong>{stats.L_POSTS}</strong>: {stats.C_POSTS} | 
-		<strong>{stats.L_USERS}</strong>: {stats.C_USERS} | 
-		<strong>{stats.L_NEWUSER}</strong>: {stats.C_NEWUSER}
-	</div>
-	<div class="clear"></div>
+        <strong>{stats.L_POSTS}</strong>: {stats.C_POSTS} | 
+        <strong>{stats.L_USERS}</strong>: {stats.C_USERS} | 
+        <strong>{stats.L_NEWUSER}</strong>: {stats.C_NEWUSER}
+    </div>
+    <div class="clear"></div>
 </div>
 <!-- END stats -->
 

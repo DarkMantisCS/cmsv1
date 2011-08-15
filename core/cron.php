@@ -9,54 +9,54 @@ if(defined('NO_DB')){ return; }
 
     //set hourly cron to exec, run every 1 hour
     $crons = array(
-		'hourly' 	=> $objCore->config('cron', 'hourly_time'),
-		'daily' 	=> $objCore->config('cron', 'daily_time'),
-		'weekly' 	=> $objCore->config('cron', 'weekly_time'),
-	);
+        'hourly'     => $objCore->config('cron', 'hourly_time'),
+        'daily'     => $objCore->config('cron', 'daily_time'),
+        'weekly'     => $objCore->config('cron', 'weekly_time'),
+    );
 
-	//loop thru each of the crons and set em to go if needed
-	foreach($crons as $name => $time){
-		$name = $name.'_cron'; ${$name} = false;
-	    if((time()-$time) > $objCore->config('statistics', $name)){
-	        $objSQL->updateRow('statistics', array('value' => time()), array('variable = "%s"', $name));
-	        ${$name} = true;
-	    }
-	}
+    //loop thru each of the crons and set em to go if needed
+    foreach($crons as $name => $time){
+        $name = $name.'_cron'; ${$name} = false;
+        if((time()-$time) > $objCore->config('statistics', $name)){
+            $objSQL->updateRow('statistics', array('value' => time()), array('variable = "%s"', $name));
+            ${$name} = true;
+        }
+    }
 
 
 //
 //--Start the CRONs
 //
-	//regenerate the statistics cache if any of them are run
-	if($hourly_cron || $daily_cron || $weekly_cron){
-		$objCache->generate_statistics_cache();
-	}
+    //regenerate the statistics cache if any of them are run
+    if($hourly_cron || $daily_cron || $weekly_cron){
+        $objCache->generate_statistics_cache();
+    }
 
-	//do hourly cron
-	if($hourly_cron){
-	$objSQL->recordMessage('Hourly CRON is running', 'INFO');
+    //do hourly cron
+    if($hourly_cron){
+    $objSQL->recordMessage('Hourly CRON is running', 'INFO');
 
-		//update the user table with last active timestamp from online table
-		$objSQL->query(
-			'UPDATE `$Pusers` u SET u.last_active =
-				(SELECT o.timestamp
-					FROM `$Ponline` o
-					WHERE o.uid = u.id)
-			WHERE EXISTS
-				(SELECT oo.timestamp
-					FROM `$Ponline` oo
-					WHERE oo.uid = u.id)'
-		);
+        //update the user table with last active timestamp from online table
+        $objSQL->query(
+            'UPDATE `$Pusers` u SET u.last_active =
+                (SELECT o.timestamp
+                    FROM `$Ponline` o
+                    WHERE o.uid = u.id)
+            WHERE EXISTS
+                (SELECT oo.timestamp
+                    FROM `$Ponline` oo
+                    WHERE oo.uid = u.id)'
+        );
 
-		//remove the inactive ones..atm 20 mins == inactive
-	    $objSQL->deleteRow('online', 'timestamp < '.$objTime->mod_time(time(), 0, 20, 0, 'TAKE'));
+        //remove the inactive ones..atm 20 mins == inactive
+        $objSQL->deleteRow('online', 'timestamp < '.$objTime->mod_time(time(), 0, 20, 0, 'TAKE'));
 
-	$objPlugins->hook('CMSCron_hourly');
-	}
+    $objPlugins->hook('CMSCron_hourly');
+    }
 
-	//do daily cron
-	if($daily_cron){
-	$objSQL->recordMessage('Daily CRON is running', 'INFO');
+    //do daily cron
+    if($daily_cron){
+    $objSQL->recordMessage('Daily CRON is running', 'INFO');
 
         //VV Update Checker
             $errstr = NULL; $errno = 0; $showNew = true;
@@ -77,31 +77,31 @@ if(defined('NO_DB')){ return; }
 
         $objCache->regenerateCache('group_subscriptions');
 
-	$objPlugins->hook('CMSCron_daily');
-	}
+    $objPlugins->hook('CMSCron_daily');
+    }
 
-	//do weekly cron
-	if($weekly_cron){
-	$objSQL->recordMessage('Weekly CRON is running', 'INFO');
+    //do weekly cron
+    if($weekly_cron){
+    $objSQL->recordMessage('Weekly CRON is running', 'INFO');
 
-		//remove a few caches (dw they will regenerate :P)
-		$objCache->regenerateCache('config');
-		$objCache->regenerateCache('groups');
+        //remove a few caches (dw they will regenerate :P)
+        $objCache->regenerateCache('config');
+        $objCache->regenerateCache('groups');
 
-		//Optimise all of the tables in the DB
-		$alltables = $objSQL->getTable('SHOW TABLES');
-		$tables = '';
-		$counter = count($alltables);
-		$x = 0;
-		foreach($alltables as $table){
-			foreach ($table as $tablename){
-				$tables .= '`'.$tablename.'`'.($x++==$counter-1 ? '' : ', ');
-			}
-		}
-		$objSQL->query('OPTIMIZE TABLE '.$tables);
+        //Optimise all of the tables in the DB
+        $alltables = $objSQL->getTable('SHOW TABLES');
+        $tables = '';
+        $counter = count($alltables);
+        $x = 0;
+        foreach($alltables as $table){
+            foreach ($table as $tablename){
+                $tables .= '`'.$tablename.'`'.($x++==$counter-1 ? '' : ', ');
+            }
+        }
+        $objSQL->query('OPTIMIZE TABLE '.$tables);
 
 
-	$objPlugins->hook('CMSCron_weekly');
-	}
+    $objPlugins->hook('CMSCron_weekly');
+    }
 
 ?>

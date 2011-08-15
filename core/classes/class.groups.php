@@ -16,31 +16,31 @@ class groups extends coreClass {
     /**
      * Returns information on a group
      *
-     * @version	1.0
+     * @version    1.0
      * @since   1.0.0
      * @author  xLink
      *
-     * @param   int $gid 	Group ID
+     * @param   int $gid     Group ID
      *
      * @return  array
      */
     public function getGroup($gid){
-    	//check to make sure the args are right
+        //check to make sure the args are right
         if(!is_number($gid)){
-        	$this->setError('$gid is not valid');
-			return false;
-		}
+            $this->setError('$gid is not valid');
+            return false;
+        }
 
-		//if this particular one is cached already we shall just return it
+        //if this particular one is cached already we shall just return it
         if(isset($this->group[$gid])){
-        	return $this->group[$gid];
-		}
+            return $this->group[$gid];
+        }
 
         $this->group[$gid] = $this->objSQL->getLine('SELECT id, name, moderator, single_user_group FROM `$Pgroups` WHERE id = "%s" LIMIT 1;', array($gid));
             if(is_empty($this->group[$gid])){
-            	$this->setError('Cannot query group');
-				return false;
-			}
+                $this->setError('Cannot query group');
+                return false;
+            }
 
         return $this->group[$gid];
     }
@@ -49,13 +49,13 @@ class groups extends coreClass {
     /**
      * Joins a user to a specific group
      *
-     * @version	1.0
+     * @version    1.0
      * @since   1.1.0
      * @author  xLink
      *
-     * @param   int $uid 		User's ID
-     * @param   int $gid 		Group ID
-     * @param   int $pending 	Whether the user will be accessable to the group
+     * @param   int $uid         User's ID
+     * @param   int $gid         Group ID
+     * @param   int $pending     Whether the user will be accessable to the group
      *
      * @return  bool
      */
@@ -79,11 +79,11 @@ class groups extends coreClass {
 
         $this->objSQL->insertRow('group_subs', $insert);
             if(!mysql_affected_rows()){
-            	$this->setError('Failed to add user to group: '.$this->objSQL->error());
-				return false;
-			}
+                $this->setError('Failed to add user to group: '.$this->objSQL->error());
+                return false;
+            }
 
-		$args = func_get_args();
+        $args = func_get_args();
         $this->objPlugins->hook('CMSGroups_afterJoin', $args);
         unset($insert);
 
@@ -93,12 +93,12 @@ class groups extends coreClass {
     /**
      * Removes a user from a group
      *
-     * @version	1.0
+     * @version    1.0
      * @since   1.1.0
      * @author  xLink
      *
-     * @param   int $uid 	User's ID
-     * @param   int $gid 	Group ID
+     * @param   int $uid     User's ID
+     * @param   int $gid     Group ID
      *
      * @return  bool
      */
@@ -111,9 +111,9 @@ class groups extends coreClass {
                 'User Groups: Removed '.$this->objUser->profile($uid, RAW).' from '.$gid);
 
             if(!mysql_affected_rows()){
-            	$this->setError('Failed to remove user from group: '.$this->objSQL->error());
-				return false;
-			}
+                $this->setError('Failed to remove user from group: '.$this->objSQL->error());
+                return false;
+            }
 
         $this->objPlugins->hook('CMSGroups_leave', func_get_args());
 
@@ -123,12 +123,12 @@ class groups extends coreClass {
     /**
      * Assign a user Moderator status over a group
      *
-     * @version	1.0
+     * @version    1.0
      * @since   1.1.0
      * @author  xLink
      *
-     * @param   int $uid 	User's ID
-     * @param   int $gid 	Group ID
+     * @param   int $uid     User's ID
+     * @param   int $gid     Group ID
      *
      * @return  bool
      */
@@ -144,8 +144,8 @@ class groups extends coreClass {
         //make sure old moderator is a subscriber
         $oldModerator = $this->objSQL->getLine('SELECT * FROM `$Pgroup_subs` WHERE gid = "%s" AND uid = "%s" LIMIT 1', array($gid, $group['moderator']));
             if(is_empty($oldModerator)){
-            	$this->joinGroup($group['moderator'], $gid, 0);
-			}
+                $this->joinGroup($group['moderator'], $gid, 0);
+            }
 
         //make $uid new moderator
         if($group['moderator'] != $uid){
@@ -167,12 +167,12 @@ class groups extends coreClass {
     /**
      * Toggles the pending status of a user in a group
      *
-     * @version	1.0
+     * @version    1.0
      * @since   1.1.0
      * @author  xLink
      *
-     * @param   int $uid 	User's ID
-     * @param   int $gid 	Group ID
+     * @param   int $uid     User's ID
+     * @param   int $gid     Group ID
      *
      * @return  bool
      */
@@ -186,9 +186,9 @@ class groups extends coreClass {
         //grab the necesary row
         $subRow = $this->objSQL->getLine('SELECT uid, gid, pending FROM `$Pgroup_subs` WHERE gid = "%s" AND uid = "%s" LIMIT 1', array($gid, $uid));
             if(is_empty($subRow)){
-            	$this->setError('User is not in group');
-				return false;
-			}
+                $this->setError('User is not in group');
+                return false;
+            }
 
         //update the pending status
         unset($update);
@@ -196,9 +196,9 @@ class groups extends coreClass {
 
         $this->objSQL->updateRow('group_subs', $update, array('gid = "%s" AND uid = "%s"', $gid, $uid));
             if(!mysql_affected_rows()){
-            	$this->setError('Updating pending status failed');
-				return false;
-			}
+                $this->setError('Updating pending status failed');
+                return false;
+            }
 
         return true;
     }
@@ -206,13 +206,13 @@ class groups extends coreClass {
     /**
      * Determine whether user is in a group
      *
-     * @version	1.0
+     * @version    1.0
      * @since   1.1.0
      * @author  xLink
      *
-     * @param   int $uid 		User's ID
-     * @param   int $gid 		Group ID
-     * @param   array $query 	Group Query
+     * @param   int $uid         User's ID
+     * @param   int $gid         Group ID
+     * @param   array $query     Group Query
      *
      * @return  bool
      */
@@ -223,18 +223,18 @@ class groups extends coreClass {
 
         //get group
         if(is_empty($query)){
-	        $query = $this->objSQL->getTable(
-				'SELECT ug.uid, g.type, g.moderator
+            $query = $this->objSQL->getTable(
+                'SELECT ug.uid, g.type, g.moderator
                     FROM `$Pgroups` g, `$Pgroup_subs` ug
                     WHERE g.id = %s
                         AND g.type != %s
                         AND ug.gid = g.id',
-	        	array($gid, GROUP_HIDDEN)
-			);
-	            if(is_empty($query)){
-	            	$this->setError('No group for ID: '.$gid);
-					return false;
-				}
+                array($gid, GROUP_HIDDEN)
+            );
+                if(is_empty($query)){
+                    $this->setError('No group for ID: '.$gid);
+                    return false;
+                }
         }
 
         //test to see if user is in group and return accordingly
@@ -248,11 +248,11 @@ class groups extends coreClass {
     /**
      * Returns an array of user id in said group according to whether they are $pending
      *
-     * @version	1.0
+     * @version    1.0
      * @since   1.1.0
      * @author  xLink
      *
-     * @param   int $uid 		User's ID
+     * @param   int $uid         User's ID
      * @param   int $pending
      *
      * @return  array
@@ -263,16 +263,16 @@ class groups extends coreClass {
 
         //get group
         $query = $this->objSQL->getTable(
-			'SELECT ug.uid, ug.pending, g.type, g.moderator
-	            FROM `$Pgroups` g, `$Pgroup_subs` ug
-	            WHERE g.id = %s
-	                AND ug.gid = g.id',
-	        array($gid)
-		);
+            'SELECT ug.uid, ug.pending, g.type, g.moderator
+                FROM `$Pgroups` g, `$Pgroup_subs` ug
+                WHERE g.id = %s
+                    AND ug.gid = g.id',
+            array($gid)
+        );
             if(is_empty($query)){
-            	$this->setError('No group for ID: '.$gid);
-				return false;
-			}
+                $this->setError('No group for ID: '.$gid);
+                return false;
+            }
 
         //create an array of uid's in group according to $pending
         $users = array();

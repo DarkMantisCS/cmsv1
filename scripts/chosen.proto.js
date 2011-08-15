@@ -76,7 +76,7 @@
         
         this.search_field.setStyle({"width": sf_width + "px"});
         if(empty(this.options.search) || this.options.search=='false'){
-	        [this.search_field, this.search_field.up()].invoke('addClassName', 'nosearch');
+            [this.search_field, this.search_field.up()].invoke('addClassName', 'nosearch');
         }
       }
       

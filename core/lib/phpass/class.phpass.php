@@ -11,7 +11,7 @@
 #
 # The homepage URL for this framework is:
 #
-#	http://www.openwall.com/phpass/
+#    http://www.openwall.com/phpass/
 #
 # Please be sure to update the Version line if you edit this file in any way.
 # It is suggested that you leave the main version number intact, but indicate
@@ -42,20 +42,20 @@ class phpass
 
         $this->portable_hashes = $portable_hashes;
 
-		$this->random_state = microtime();
-		if (function_exists('getmypid')){
-			$this->random_state .= getmypid();
-		}	
-	}
+        $this->random_state = microtime();
+        if (function_exists('getmypid')){
+            $this->random_state .= getmypid();
+        }    
+    }
 
     private function get_random_bytes($count)
     {
-		$output = '';
-		if (is_readable('/dev/urandom') &&
-		    ($fh = @fopen('/dev/urandom', 'rb'))) {
-			$output = fread($fh, $count);
-			fclose($fh);
-		}
+        $output = '';
+        if (is_readable('/dev/urandom') &&
+            ($fh = @fopen('/dev/urandom', 'rb'))) {
+            $output = fread($fh, $count);
+            fclose($fh);
+        }
 
         if (strlen($output) < $count) {
             $output = '';
@@ -180,7 +180,7 @@ class phpass
         # has the 4 unused bits set to non-zero, we do not want to take
         # chances and we also do not want to waste an additional byte
         # of entropy.
-	$itoa64 = './ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    $itoa64 = './ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
         $output = '$2a$';
         $output .= chr(ord('0') + $this->iteration_count_log2 / 10);

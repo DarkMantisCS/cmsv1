@@ -22,18 +22,18 @@ if(isset($url[1])){
 }
 #echo dump($_GET);
 
-$mode   = doArgs('__mode', 	 null, $_GET);
+$mode   = doArgs('__mode',      null, $_GET);
 $module = doArgs('__module', 'core', $_GET);
 $action = doArgs('__action', null, $_GET);
 $extra  = doArgs('__extra', null, $_GET);
 
 if(false){
-	echo dump($mode) . dump($module) . dump($action) . dump($extra);
+    echo dump($mode) . dump($module) . dump($action) . dump($extra);
 }
 
 //user isnt even logged in lets 404 them
 if(!User::$IS_ONLINE){
-	$objCore->throwHTTP(404);
+    $objCore->throwHTTP(404);
 }
 
 //make sure they are getting at the right panel
@@ -43,14 +43,14 @@ if(!in_array($mode, $checkMode)){
 }
 
 $objPage->addPagecrumb(array(
-	array('url' => '/'.root().$mode.'/', 'name' => ucwords($mode).' Control Panel')
+    array('url' => '/'.root().$mode.'/', 'name' => ucwords($mode).' Control Panel')
 ));
 
 //check for admin panel
 if($mode == 'admin' && $objUser->grab('userlevel') == ADMIN){
 
     if(LOCALHOST){
-    	$_SESSION['acp']['adminAuth'] = true;
+        $_SESSION['acp']['adminAuth'] = true;
     }
 
     //check to see if theyre authed
@@ -62,7 +62,7 @@ if($mode == 'admin' && $objUser->grab('userlevel') == ADMIN){
 
     //we also need to update the timestamp
     $_SESSION['acp']['adminTimeout'] = time();
-	$objPage->setVar('acpMode', true);
+    $objPage->setVar('acpMode', true);
 }
 
 if($mode == 'mod' && !User::$IS_MOD){
@@ -77,32 +77,32 @@ if($mode == 'user' && !User::$IS_ONLINE){
 
 //if the desktop files are there then we'll load that and we need to switch to alt mode :D
 if(is_dir($objPage->acpThemeROOT) && $mode == 'admin'){
-	if(!empty($module) && $objCore->loadModule('core', true, $mode)){
-	    $objModule = new core($objCore);
-	    $objModule->doAction(($module=='core' ? '' : $module));
-	}else{
-	    $objCore->throwHTTP(404);
-	}
+    if(!empty($module) && $objCore->loadModule('core', true, $mode)){
+        $objModule = new core($objCore);
+        $objModule->doAction(($module=='core' ? '' : $module));
+    }else{
+        $objCore->throwHTTP(404);
+    }
 
 //else we stick to sensible mode
 }else{
-	//if we are tryin to load a core panel..
-	if(strtolower($module)=='core'){
-	    require(cmsROOT.'modules/core/handler.panels.php');
-	}else{
-	    if(!empty($module) && $objPage->loadModule($module, true, $mode)){
-	        $objModule = new $module($objCore);
-	        $objModule->doAction($action);
-		}else{
-		    $objCore->throwHTTP(404);
-		}
-	}
+    //if we are tryin to load a core panel..
+    if(strtolower($module)=='core'){
+        require(cmsROOT.'modules/core/handler.panels.php');
+    }else{
+        if(!empty($module) && $objPage->loadModule($module, true, $mode)){
+            $objModule = new $module($objCore);
+            $objModule->doAction($action);
+        }else{
+            $objCore->throwHTTP(404);
+        }
+    }
 }
 
 //check if we need to force simple mode
 $doSimple = false;
 if(isset($_GET['ajax']) || HTTP_AJAX || $objPage->getVar('tplMode')){
-	$doSimple = true;
+    $doSimple = true;
 }
 
 $objPage->showHeader($doSimple);
