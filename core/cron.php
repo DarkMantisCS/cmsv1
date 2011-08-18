@@ -9,9 +9,9 @@ if(defined('NO_DB')){ return; }
 
     //set hourly cron to exec, run every 1 hour
     $crons = array(
-        'hourly'     => $objCore->config('cron', 'hourly_time'),
+        'hourly'    => $objCore->config('cron', 'hourly_time'),
         'daily'     => $objCore->config('cron', 'daily_time'),
-        'weekly'     => $objCore->config('cron', 'weekly_time'),
+        'weekly'    => $objCore->config('cron', 'weekly_time'),
     );
 
     //loop thru each of the crons and set em to go if needed
@@ -39,13 +39,13 @@ if(defined('NO_DB')){ return; }
         //update the user table with last active timestamp from online table
         $objSQL->query(
             'UPDATE `$Pusers` u SET u.last_active =
-                (SELECT o.timestamp
-                    FROM `$Ponline` o
-                    WHERE o.uid = u.id)
+                (SELECT online.timestamp
+                    FROM `$Ponline`
+                    WHERE online.uid = u.id)
             WHERE EXISTS
-                (SELECT oo.timestamp
-                    FROM `$Ponline` oo
-                    WHERE oo.uid = u.id)'
+                (SELECT online.timestamp
+                    FROM `$Ponline`
+                    WHERE online.uid = u.id)'
         );
 
         //remove the inactive ones..atm 20 mins == inactive
@@ -59,12 +59,11 @@ if(defined('NO_DB')){ return; }
     $objSQL->recordMessage('Daily CRON is running', 'INFO');
 
         //VV Update Checker
-            $errstr = NULL; $errno = 0; $showNew = true;
+            $errstr = NULL; $errno = 0;
             $updateAvalible = false;
 
             $info = get_remote_file('www.cybershade.org', '/', 'checkxml.php?action=cmsVersion', $errstr, $errno, 80, 5);
-            if(is_empty($info)){ $showNew = false; }
-            if($showNew){
+            if(!is_empty($info)){
                 //try and parse the xml back from the server
                 $xml = @simplexml_load_string($info);
 
@@ -72,7 +71,7 @@ if(defined('NO_DB')){ return; }
                 $updateAvalible =  (version_compare($xml->version, cmsVERSION, '>') ? true : false );
                 if($updateAvalible && $xml->updateType==1){ touch(cmsROOT.'killCMS'); }
             }
-        unset($errstr, $errno, $showNew, $updateAvalible, $info, $xml);
+        unset($errstr, $errno, $updateAvalible, $info, $xml);
         //^^ Update Checker
 
         $objCache->regenerateCache('group_subscriptions');

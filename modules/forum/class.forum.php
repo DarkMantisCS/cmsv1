@@ -13,11 +13,11 @@ class forum extends Module{
         $vars = $this->objPage->getVar('tplVars');
 
         $this->objTPL->assign_vars(array(
-            'I_NO_POSTS'        => $vars['IMG_posts_old'],         'L_NO_POSTS'            => langVar('I_NO_POSTS'),
-            'I_NEW_POSTS'        => $vars['IMG_posts_new'],         'L_NEW_POSTS'        => langVar('I_NEW_POSTS'),
-            'I_LOCKED'            => $vars['IMG_locked'],              'L_LOCKED'            => langVar('I_LOCKED'),
-            'I_ANNOUNCEMENT'    => $vars['IMG_announcement_old'],  'L_ANNOUNCEMENT'        => langVar('I_ANNOUNCEMENT'),
-            'I_STICKY'            => $vars['IMG_sticky_old'],          'L_STICKY'            => langVar('I_STICKY'),
+            'I_NO_POSTS'        => $vars['IMG_posts_old'],          'L_NO_POSTS'        => langVar('I_NO_POSTS'),
+            'I_NEW_POSTS'       => $vars['IMG_posts_new'],          'L_NEW_POSTS'       => langVar('I_NEW_POSTS'),
+            'I_LOCKED'          => $vars['IMG_locked'],             'L_LOCKED'          => langVar('I_LOCKED'),
+            'I_ANNOUNCEMENT'    => $vars['IMG_announcement_old'],   'L_ANNOUNCEMENT'    => langVar('I_ANNOUNCEMENT'),
+            'I_STICKY'          => $vars['IMG_sticky_old'],         'L_STICKY'          => langVar('I_STICKY'),
         ));
 
 
@@ -176,13 +176,13 @@ class forum extends Module{
                     
                     $this->objTPL->assign_block_vars('thread', array(
                         'ID'        => $thread['id'],
-                        'ROW'        => $count++%2==1 ? 'row_color2' : 'row_color1',
+                        'ROW'       => $count++%2==1 ? 'row_color2' : 'row_color1',
                         'POSTED'    => langVar('L_NEWS_POSTED_ON', $author, $this->objTime->mk_time($thread['posted'])),
                         
                         'AVATAR'    => $this->objUser->parseAvatar($thread['author'], 64),
                         'AUTHOR'    => $author,
-                        'TITLE'        => '<a href="'.$threadURL.'">'.$title.'</a>',
-                        'POST'        => contentParse($thread['post']),
+                        'TITLE'     => '<a href="'.$threadURL.'">'.$title.'</a>',
+                        'POST'      => contentParse($thread['post']),
                         'COMMENTS'  => '<a href="'.$threadURL.'.html">'.langVar('L_COMMENTS', ($thread['replies']-1)).'</a>',
                     ));
                 }
@@ -344,19 +344,21 @@ class forum extends Module{
 
                 //just the cat headers
                 $this->objTPL->assign_block_vars('forum', array(
-                    'ROW'            => $row_color,
+                    'ROW'           => $row_color,
 
                     'ID'            => $cat['id'],
-                    'CAT'            => (!is_empty($title) ? $title : $cat['title']),
-                    'THREADS'        => langVar('L_THREADS'),
-                    'POSTS'            => langVar('L_POSTS'),
-                    'LASTPOST'        => langVar('L_LASTPOST'),
+                    'CAT'           => (!is_empty($title) ? $title : $cat['title']),
+                    'THREADS'       => langVar('L_THREADS'),
+                    'POSTS'         => langVar('L_POSTS'),
+                    'LASTPOST'      => langVar('L_LASTPOST'),
 
                     /* Sortable Cats */
-                    'EXPAND'        => (User::$IS_ONLINE && $index ? ($cat['_display']==1 ? $vars['IMG_retract'] : $vars['IMG_expand']) : '/'.root().'images/spacer.gif'),
+                    'EXPAND'        => (User::$IS_ONLINE && $index 
+                                            ? ($cat['_display']==1 ? $vars['IMG_retract'] : $vars['IMG_expand']) 
+                                            : '/'.root().'images/spacer.gif'),
                     'DISPLAY'       => (User::$IS_ONLINE && $index ? ($cat['_display']==1 ? null : 'display:none;') : null),
                     'MODE'          => (User::$IS_ONLINE && $index ? ($cat['_display']==1 ? '1' : '0') : '1'),
-                    'CLASS'            => (User::$IS_ONLINE && $index ? ' cat_handle' : ''),
+                    'CLASS'         => (User::$IS_ONLINE && $index ? ' cat_handle' : ''),
                     /* Sortable Cats */
                 ));
 
@@ -391,8 +393,8 @@ class forum extends Module{
 
                     switch($post['mode']){
                         case 1:     $ico = 'IMG_announcement'.$icon_status; break;
-                        case 2:     $ico = 'IMG_sticky'.$icon_status;         break;
-                        default:     $ico = 'IMG_posts'.$icon_status;         break;
+                        case 2:     $ico = 'IMG_sticky'.$icon_status;       break;
+                        default:    $ico = 'IMG_posts'.$icon_status;        break;
                     }
 
                     //sort though the last post stuff :D
@@ -406,33 +408,33 @@ class forum extends Module{
                     $last_post   = '/'.root().Page::$THEME_ROOT.'buttons/goto_reply.gif';
 
                     $this->objTPL->assign_block_vars('forum.row', array(
-                        'ROWSPAN'       =>  !is_empty($grandChildren) ? 2 : 1,
+                        'ROWSPAN'       => !is_empty($grandChildren) ? 2 : 1,
 
-                        'ID'            =>  $child['id'],
-                        'CAT_ICO'        =>    $vars[$ico],
-                        'URL'            =>    '/'.root().'modules/forum/'.seo($child['title']).'-'.$child['id'].'/',
-                        'ROW'            =>    $row_color,
-                        'CAT'            =>    secureMe($child['title']),
-                        'DESC'            =>    (isset($child['desc']) && !is_empty($child['desc'])) ? contentParse($child['desc']) : '',
+                        'ID'            => $child['id'],
+                        'CAT_ICO'       => $vars[$ico],
+                        'URL'           => '/'.root().'modules/forum/'.seo($child['title']).'-'.$child['id'].'/',
+                        'ROW'           => $row_color,
+                        'CAT'           => secureMe($child['title']),
+                        'DESC'          => (isset($child['desc']) && !is_empty($child['desc'])) ? contentParse($child['desc']) : '',
 
-                        'L_TCOUNT'        =>    langVar('L_THREADS'),
-                        'T_PCOUNT'        =>     langVar('L_POSTS'),
-                        'T_COUNT'        =>    $this->modCat($child, 'thread'),
-                        'P_COUNT'        =>     $this->modCat($child, 'post'),
+                        'L_TCOUNT'      => langVar('L_THREADS'),
+                        'T_PCOUNT'      => langVar('L_POSTS'),
+                        'T_COUNT'       => $this->modCat($child, 'thread'),
+                        'P_COUNT'       => $this->modCat($child, 'post'),
 
-                        'LP_AUTHOR'        =>     $last_author,
-                        'LP_URL'        =>    !is_empty($last_title)
+                        'LP_AUTHOR'     => $last_author,
+                        'LP_URL'        => !is_empty($last_title)
                                                 ? '/'.root().'modules/forum/thread/'.seo($lastThread['thread_name']).'-'.$lastThread['last_post'].'.html'
                                                 : null,
-                        'LP_TITLE'      =>  !is_empty($last_title) ? secureMe($last_title) : null,
-                        'LP_TIME'       =>  !is_empty($last_title) ? $this->objTime->mk_time($lastThread['post_time']) : null,
-                        'LP_REPLY_URL'    =>    !is_empty($last_title)
+                        'LP_TITLE'      => !is_empty($last_title) ? secureMe($last_title) : null,
+                        'LP_TIME'       => !is_empty($last_title) ? $this->objTime->mk_time($lastThread['post_time']) : null,
+                        'LP_REPLY_URL'  => !is_empty($last_title)
                                                 ? '/'.root().'modules/forum/thread/'.seo($lastThread['thread_name']).'-'.$lastThread['last_post'].'.html?mode=last_page'
                                                 : null,
-                        'LP_REPLY_IMG'  =>  !is_empty($last_title) ? '<img src="'.$last_post.'" alt="" />' : null,
+                        'LP_REPLY_IMG'  => !is_empty($last_title) ? '<img src="'.$last_post.'" alt="" />' : null,
 
-                        'L_MODS'        =>  is_array($forum_moderators[$child['id']]) ? langVar('MODS') : null,
-                        'C_MODS'        =>  is_array($forum_moderators[$child['id']]) ? implode(', ', $forum_moderators[$child['id']]) : null,
+                        'L_MODS'        => is_array($forum_moderators[$child['id']]) ? langVar('MODS') : null,
+                        'C_MODS'        => is_array($forum_moderators[$child['id']]) ? implode(', ', $forum_moderators[$child['id']]) : null,
                     ));
 
                     if($child['postcounts']){
@@ -443,8 +445,8 @@ class forum extends Module{
                     if(!is_empty($grandChildren)){
                         //assign this so we can see the subs
                         $this->objTPL->assign_block_vars('forum.row.subs', array(
-                            'ID'            =>  $child['id'],
-                            'ROW'            =>    $row_color,
+                            'ID'    => $child['id'],
+                            'ROW'   => $row_color,
                         ));
 
                         foreach($grandChildren as $child){
@@ -461,10 +463,10 @@ class forum extends Module{
                             }
 
                             $this->objTPL->assign_block_vars('forum.row.subs.cats', array(
-                                'URL'       =>  '/'.root().'modules/forum/'.seo($child['title']).'-'.$child['id'].'/',
-                                'ID'        =>  $child['id'],
-                                'NAME'      =>  secureMe($child['title']),
-                                'IMG'       =>  $vars[$ico],
+                                'URL'   => '/'.root().'modules/forum/'.seo($child['title']).'-'.$child['id'].'/',
+                                'ID'    => $child['id'],
+                                'NAME'  => secureMe($child['title']),
+                                'IMG'   => $vars[$ico],
                             ));
                         }
                     }
@@ -547,16 +549,16 @@ class forum extends Module{
             array($this->objTime->mod_time(time(), 0, 0, 24, 'MINUS'))
         );
 
+        $users24 = array();
         if(!is_empty($user24)){
-            $users24 = array();
             foreach($user24 as $u){ $users24[] = $this->objUser->profile($u['id']); }
         }else{
-            $users24 = array(langVar('M_NOONE24'));
+            $users24 = langVar('L_NOONE24');
         }
 
+        //grab the groups and output em into a key
         global $config;
 
-        //grab the groups and output em into a key
         $key = '';
         if($config['groups']){
 
@@ -571,7 +573,7 @@ class forum extends Module{
             $add = ' | '; $group_count = count($groups); $counter = 1;
               foreach($groups as $group){
                 if($group_count == ($counter)){ $add = ''; }
-                $key .= '<font style="color: '.$group['color'].'" class="username '.strtolower($group['name']).'" title="'.$group['description'].'">'.$group['name'].'</font>'.$add;
+                $key .= '<span style="color: '.$group['color'].'" class="username '.strtolower($group['name']).'" title="'.$group['description'].'">'.$group['name'].'</span>'.$add;
 
                 $counter++;
             }
@@ -580,14 +582,17 @@ class forum extends Module{
         //grab the currently online users
         $userO = $this->objSQL->getTable(
             'SELECT * FROM `$Ponline` WHERE timestamp >= %s',
-            $this->objTime->mod_time(time(), 0, 20, 0, 'MINUS')
+            array($this->objTime->mod_time(time(), 0, 20, 0, 'MINUS'))
         );
 
-        $usersO = 0; $guestsO = 0;
+        $usersO = 0; $guestsO = 0; $users = array();
         if(count($userO)){
             foreach($userO as $u){
-                if($u['uid']==0){   $guestsO++; continue;   }
-                if($u['uid']!=0){   $usersO++;  continue;   }
+                if($u['uid']==0){   
+                    $guestsO++;
+                }else{
+                    $usersO++; $users[] = $this->objUser->profile($u['uid']);
+                }
             }
         }
 
@@ -598,22 +603,24 @@ class forum extends Module{
         $last_user      = $this->objSQL->getLine('SELECT id FROM `$Pusers` WHERE active = 1 ORDER BY id DESC');
 
         $this->objTPL->assign_block_vars('stats', array(
-            'L_STATS'            => langVar('L_STATS'),
+            'L_STATS'           => langVar('L_STATS'),
 
-            'L_THREADS'            => langVar('L_TOT_THREADS'),
-            'C_THREADS'            => $total_topics,
+            'L_THREADS'         => langVar('L_TOT_THREADS'),
+            'C_THREADS'         => $total_topics,
 
-            'L_POSTS'            => langVar('L_TOT_POSTS'),
-            'C_POSTS'            => $total_posts,
+            'L_POSTS'           => langVar('L_TOT_POSTS'),
+            'C_POSTS'           => $total_posts,
 
-            'L_USERS'            => langVar('L_TOT_MEMBERS'),
-            'C_USERS'            => $total_users,
+            'L_USERS'           => langVar('L_TOT_MEMBERS'),
+            'C_USERS'           => $total_users,
 
-            'L_NEWUSER'            => langVar('L_NEW_MEMBER'),
-            'C_NEWUSER'            => $this->objUser->profile($last_user['id']),
+            'L_NEWUSER'         => langVar('L_NEW_MEMBER'),
+            'C_NEWUSER'         => $this->objUser->profile($last_user['id']),
 
-            'L_TOTAL_USERS'        => langVar('L_USERSONOFF', $usersO, $guestsO),
-            'USER24'            => langVar('L_USERSONLINE24', count($users24), implode(', ', $users24)),
+            'L_TOTAL_USERS'     => langVar('L_USERSONOFF', $usersO, $guestsO, implode(', ', $users)),
+            'USER24'            => is_array($users24) && !is_empty($users24)
+                                        ? langVar('L_USERSONLINE24', count($users24), implode(', ', $users24))
+                                        : langVar('L_USERSONLINE24', 0, $users24),
 
             'LEGEND'            => langVar('L_LEGEND', $key),
         ));

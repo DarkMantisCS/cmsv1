@@ -494,18 +494,18 @@ class page extends coreClass{
         //get some stuff from the config so they can be called in the template
         $array = array(
             'SITE_TITLE'    => $this->config('site', 'title'),
-            'CMS_VERSION'    => cmsVERSION,
+            'CMS_VERSION'   => cmsVERSION,
 
             //some template stuff
             'PAGE_TITLE'    => $this->getVar('pageTitle'),
-            '_META'            => $meta,
+            '_META'         => $meta,
 
-            'L_BREADCRUMB'    => langVar('L_BREADCRUMB'),
+            'L_BREADCRUMB'  => langVar('L_BREADCRUMB'),
             'BREADCRUMB'    => $this->showPagecrumbs().'<span id="ajaxcrumb">&nbsp;</span>',
 
             '_JS_FOOTER'    => $js . $notifications,
             '_JS_HEADER'    => $headerJs,
-            '_CSS'            => $css,
+            '_CSS'          => $css,
         );
 
     //
@@ -590,7 +590,7 @@ class page extends coreClass{
         }
 
         //check for admin privs and file(debug) existing in the root
-        #if(User::$IS_ADMIN && !file_exists('debug')){
+        if(User::$IS_ADMIN && !file_exists('debug')){
             //if the debug happened..
             if($this->objSQL->debug){
                 //output some debug vars
@@ -634,7 +634,7 @@ class page extends coreClass{
             Next Daily CRON ->  '.$this->objTime->mk_time($this->config('statistics', 'daily_cron')+$this->config('site', 'daily_time')).'<br />
             Next Weekly CRON -> '.$this->objTime->mk_time($this->config('statistics', 'weekly_cron')+$this->config('site', 'weekly_time')).'<br />
             Current Time:       '.$this->objTime->mk_time(time());
-        #}
+        }
 
         $footerVars = array();
         $this->timer = isset($START_CMS_LOAD) ? $START_CMS_LOAD : microtime(true);

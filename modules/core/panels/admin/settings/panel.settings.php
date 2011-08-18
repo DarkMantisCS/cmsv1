@@ -11,8 +11,7 @@ $objTPL->set_filenames(array(
     'dateformat'   => 'modules/core/template/dateFormat.tpl',
 ));
 
-
-$objTPL->assign_vars(array( 'ADMIN_MODE' => langVar('L_CORE_SETTINGS')));
+$objTPL->assign_vars(array('ADMIN_MODE' => langVar('L_CORE_SETTINGS')));
 
 switch(strtolower($mode)){
     default:
@@ -92,55 +91,55 @@ switch(strtolower($mode)){
 
         include($path.'/cfg.php');
         $objForm->outputForm(array(
-            'FORM_START'     => $objForm->start('panel', array('method' => 'POST', 'action' => $saveUrl)),
-            'FORM_END'         => $objForm->finish(),
+            'FORM_START'    => $objForm->start('panel', array('method' => 'POST', 'action' => $saveUrl)),
+            'FORM_END'      => $objForm->finish(),
 
-            'FORM_TITLE'     => $mod_name,
-            'FORM_SUBMIT'    => $objForm->button('submit', 'Submit'),
-            'FORM_RESET'     => $objForm->button('reset', 'Reset'),
+            'FORM_TITLE'    => $mod_name,
+            'FORM_SUBMIT'   => $objForm->button('submit', 'Submit'),
+            'FORM_RESET'    => $objForm->button('reset', 'Reset'),
 
-            'HIDDEN'         => $objForm->inputbox('sessid', 'hidden', $sessid).$objForm->inputbox('id', 'hidden', $uid),
+            'HIDDEN'        => $objForm->inputbox('sessid', 'hidden', $sessid).$objForm->inputbox('id', 'hidden', $uid),
         ),
         array(
             'field' => array(
-                langVar('L_SITE_CONFIG')    => '_header_',
+                langVar('L_SITE_CONFIG')        => '_header_',
                     langVar('L_SITE_TITLE')     => $objForm->inputbox('title', 'text', $objCore->config('site', 'title')),
-                    langVar('L_SITE_SLOGAN')     => $objForm->inputbox('slogan', 'text', $objCore->config('site', 'slogan')),
-                    langVar('L_ADMIN_EMAIL')     => $objForm->inputbox('admin_email', 'text', $objCore->config('site', 'admin_email')),
+                    langVar('L_SITE_SLOGAN')    => $objForm->inputbox('slogan', 'text', $objCore->config('site', 'slogan')),
+                    langVar('L_ADMIN_EMAIL')    => $objForm->inputbox('admin_email', 'text', $objCore->config('site', 'admin_email')),
                     langVar('L_GANALYTICS')     => $objForm->inputbox('google_analytics', 'input', $objCore->config('site', 'google_analytics')),
 
-                langVar('L_CUSTOMIZE')        => '_header_',
-                    langVar('L_INDEX_MODULE')     => $objForm->select('index_module', $defaultModule,
+                langVar('L_CUSTOMIZE')          => '_header_',
+                    langVar('L_INDEX_MODULE')   => $objForm->select('index_module', $defaultModule,
                                                     array('disabled' => $tzDisable, 'selected' => $objCore->config('site', 'index_module'))),
-                    langVar('L_DEF_LANG')         => $objForm->select('language', $languages,
+                    langVar('L_DEF_LANG')       => $objForm->select('language', $languages,
                                                     array('selected' => $objCore->config('site', 'language'))),
-                    langVar('L_DEF_THEME')         => $objForm->select('theme', $tpl,
+                    langVar('L_DEF_THEME')      => $objForm->select('theme', $tpl,
                                                     array('selected' => $objCore->config('site', 'theme'))),
                     langVar('L_THEME_OVERRIDE') => $objForm->radio('theme_override', $yn, $objCore->config('site', 'theme_override')),
-                    langVar('L_SITE_TZ')         => $timezone,
-                    langVar('L_DST')             => $objForm->radio('dst', $yn, $objCore->config('time', 'dst')),
+                    langVar('L_SITE_TZ')        => $timezone,
+                    langVar('L_DST')            => $objForm->radio('dst', $yn, $objCore->config('time', 'dst')),
                     langVar('L_DEF_DATE_FORMAT')=> $objForm->inputbox('default_format', 'input', $objCore->config('time', 'default_format')),
                     
-                langVar('L_REG_LOGIN')        => '_header_',
-                    langVar('L_USERNAME_EDIT')     => $objForm->radio('username_change', $yn, $objCore->config('user', 'username_change')),
+                langVar('L_REG_LOGIN')          => '_header_',
+                    langVar('L_USERNAME_EDIT')  => $objForm->radio('username_change', $yn, $objCore->config('user', 'username_change')),
                     langVar('L_ALLOW_REGISTER') => $objForm->radio('allow_register', $yn, $objCore->config('site', 'allow_register')),
                     langVar('L_EMAIL_ACTIVATE') => $objForm->radio('register_verification', $yn, $objCore->config('site', 'register_verification')),
                     langVar('L_MAX_LOGIN_TRIES')=> $objForm->select('max_login_tries',
                                                     range($objCore->config('login', 'max_login_tries')-5, $objCore->config('login', 'max_login_tries')+5),
                                                     array('selected' => $objCore->config('login', 'max_login_tries'), 'noKeys'=>true)),
-                    langVar('L_REMME')             => $objForm->radio('remember_me', $yn, $objCore->config('login', 'remember_me')),
+                    langVar('L_REMME')          => $objForm->radio('remember_me', $yn, $objCore->config('login', 'remember_me')),
 
             ),
             'desc' => array(
-                    langVar('L_INDEX_MODULE')         => langVar('L_DESC_IMODULE'),
-                    langVar('L_SITE_TZ')             => langVar('L_DESC_SITE_TZ'),
-                    langVar('L_DEF_DATE_FORMAT')     => langVar('L_DESC_DEF_DATE'),
-                    langVar('L_DEF_THEME')             => langVar('L_DESC_DEF_THEME'),
+                    langVar('L_INDEX_MODULE')       => langVar('L_DESC_IMODULE'),
+                    langVar('L_SITE_TZ')            => langVar('L_DESC_SITE_TZ'),
+                    langVar('L_DEF_DATE_FORMAT')    => langVar('L_DESC_DEF_DATE'),
+                    langVar('L_DEF_THEME')          => langVar('L_DESC_DEF_THEME'),
                     langVar('L_THEME_OVERRIDE')     => langVar('L_DESC_THEME_OVERRIDE'),
                     langVar('L_ALLOW_REGISTER')     => langVar('L_DESC_ALLOW_REGISTER'),
                     langVar('L_EMAIL_ACTIVATE')     => langVar('L_DESC_EMAIL_ACTIVATE'),
                     langVar('L_MAX_LOGIN_TRIES')    => langVar('L_DESC_MAX_LOGIN'),
-                    langVar('L_REMME')                => langVar('L_DESC_REMME'),
+                    langVar('L_REMME')              => langVar('L_DESC_REMME'),
                     langVar('L_GANALYTICS')         => langVar('L_DESC_GANALYTICS'),
             ),
             'errors' => $_SESSION['site']['panel']['error'],
@@ -171,9 +170,9 @@ switch(strtolower($mode)){
             'site' => array(
                 'title', 'slogan', 'admin_email', 'index_module', 'language', 'theme', 'theme_override', 'allow_register', 'register_verification', 'google_analytics'
             ),
-            'time'     => array('dst', 'timezone', 'default_format'),
+            'time'  => array('dst', 'timezone', 'default_format'),
             'login' => array('max_login_tries', 'remember_me'),
-            'user'     => array('username_change'),
+            'user'  => array('username_change'),
         );
 
         //do a loop through

@@ -52,10 +52,10 @@ function inWindow(url, title, width, height){
     }
 
       myLightWindow.activateWindow({
-           href:     url,
-           title:     title,
-           width:     width > window.viewport.width ?  window.viewport.width : width,
-           height:     height > window.viewport.height ? window.viewport.height : height
+           href:    url,
+           title:   title,
+           width:   width > window.viewport.width ?  window.viewport.width : width,
+           height:  height > window.viewport.height ? window.viewport.height : height
       });
     return false;
 }
@@ -181,8 +181,8 @@ function spinnerMove(e){
 
 //keep a div updated at the mouse pointed, this will be shown if we fire an ajax event
 Ajax.Responders.register({
-    onCreate: function(){ $('spinner_').show(); Event.observe(document, 'mousemove', spinnerMove); },
-    onComplete: function(){ $('spinner_').hide(); Event.stopObserving(document, 'mousemove', spinnerMove); },
+    onCreate: function(){ $('spinner_').show(); },
+    onComplete: function(){ $('spinner_').hide(); },
 });
 
 document.observe('dom:loaded', function(){
@@ -196,6 +196,7 @@ document.observe('dom:loaded', function(){
         //}
     });
     updateDimensions();
+    Event.observe(document, 'mousemove', spinnerMove);
 
     if($('clock')){ updateClock(); }
 });

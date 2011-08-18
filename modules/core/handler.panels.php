@@ -5,7 +5,7 @@
 if(!defined('INDEX_CHECK')){die('Error: Cannot access directly.');}
 define('PANEL_CHECK', 1);
 
-$objPage->addJSFile('/'.root().'scripts/panels-min.js');
+#$objPage->addJSFile('/'.root().'scripts/panels-min.js');
 $objPage->addCSSFile('/'.root().'images/panels-min.css');
 $panels = array('admin', 'mod', 'user');
 switch($mode){

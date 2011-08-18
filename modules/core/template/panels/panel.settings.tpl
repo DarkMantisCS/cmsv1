@@ -2,7 +2,7 @@
 <div class="content corners">
     <div class="title corners-top iblock">
         <h4 class="float-left">{FORM_TITLE}</h4>
-        <div class="float-right padding">{FORM_SUBMIT} {FORM_RESET} <img alt="spinner" id="spinner" src="/{ROOT}images/ajax-loader.gif" style="display:none;" /> </div>
+        <div class="float-right padding">{FORM_SUBMIT} {FORM_RESET}</div>
     </div>
     <div>
         {HIDDEN}

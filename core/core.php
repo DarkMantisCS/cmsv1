@@ -370,7 +370,7 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 
     //if site is closed, make it so, kill debug, no menu is needed, 'cmsCLOSED' can be used as a bypass
     if (($objCore->config('site', 'site_closed') == 1) && (!defined('cmsCLOSED'))){
-        if(!User::$IS_ADMIN){
+        if($objUser->grab('userlevel') != ADMIN){
             $objSQL->debug = false;
             $objPage->setMenu(false);
             $objPage->setTitle('DISABLED');

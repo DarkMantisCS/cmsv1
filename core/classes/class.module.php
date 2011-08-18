@@ -26,19 +26,19 @@ class Module extends coreClass {
         $this->modConf['extra']  = doArgs('__extra', null, $_GET);
         
         //global the classes for this module
-        $this->objPage         = $objCore->objPage;
-        $this->objSQL         = $objCore->objSQL;
-        $this->objTPL         = $objCore->objTPL;
-        $this->objUser         = $objCore->objUser;
-        $this->objTime         = $objCore->objTime;
-        $this->objForm         = $objCore->objForm;
+        $this->objPage      = $objCore->objPage;
+        $this->objSQL       = $objCore->objSQL;
+        $this->objTPL       = $objCore->objTPL;
+        $this->objUser      = $objCore->objUser;
+        $this->objTime      = $objCore->objTime;
+        $this->objForm      = $objCore->objForm;
         $this->objLogin     = $objCore->objLogin;
-        $this->objPlugins    = $objCore->objPlugins;
-        $this->objCache        = $objCore->objCache;
+        $this->objPlugins   = $objCore->objPlugins;
+        $this->objCache     = $objCore->objCache;
         $this->objGroups    = $objCore->objGroups;
         
         $this->objNotify    = $objCore->objNotify;
-        $this->objComments     = $objCore->objComments;
+        $this->objComments  = $objCore->objComments;
         
         if(isset($_GET['ajax'])) {
             $this->objPage->setVar('simpleTpl', true);
@@ -64,10 +64,12 @@ class Module extends coreClass {
         //specify some deafult actions
         if(preg_match('/images\/(.*?)/i', str_replace($this->modConf['extra'], '', $this->modConf['action']))) {
             $imagesTypes = array('jpg', 'gif', 'png', 'jpeg', 'jfif', 'jpe', 'bmp', 'ico', 'tif', 'tiff');
-            if(in_array($this->modConf['ext'], $imagesTypes) && is_readable(cmsROOT . 'modules/' . $this->modConf['module'] . '/images/' . $this->modConf['filename'])) {
-                header('Content-Type: image/' . $this->modConf['ext']);
-                include (cmsROOT . 'modules/' . $this->modConf['module'] . '/images/' . $this->modConf['filename']);
-                exit;
+            if(in_array($this->modConf['ext'], $imagesTypes) && 
+                is_readable(cmsROOT . 'modules/' . $this->modConf['module'] . '/images/' . $this->modConf['filename'])) {
+                    
+                    header('Content-Type: image/' . $this->modConf['ext']);
+                    include (cmsROOT . 'modules/' . $this->modConf['module'] . '/images/' . $this->modConf['filename']);
+                    exit;
             } else {
                 $this->throwHTTP('404');
             }
@@ -96,13 +98,13 @@ class Module extends coreClass {
     /**
      * Check if a module exists in the file structure
      *
-     * @version    1.0
+     * @version 1.0
      * @since   1.0.0
      * @author  Jesus
      *
-     * @param     string     $moduleName
+     * @param   string     $moduleName
      *
-     * @return     bool
+     * @return  bool
      */
     public function moduleExists($moduleName) {
         if(is_empty($moduleName) || !is_dir(cmsROOT . 'modules/' . $moduleName)) {
@@ -120,13 +122,13 @@ class Module extends coreClass {
     /**
      * Get the list of modules from the database
      *
-     * @version    1.0
+     * @version 1.0
      * @since   1.0.0
      * @author  Jesus
      *
-     * @param     string     $moduleName
+     * @param   string     $moduleName
      *
-     * @return     bool
+     * @return  bool
      */
     private function getModuleListCache($moduleName){
         // Check the argument is valid
@@ -135,7 +137,7 @@ class Module extends coreClass {
         }
 
         // If the result already exists, then gogo fetch.
-        if(!isset($this->modules[$moduleName])){
+        if(isset($this->modules[$moduleName])){
             return true;
         } else {
             // Else query the database and find it
@@ -153,13 +155,13 @@ class Module extends coreClass {
     /**
      * Check if a module is installed or not
      *
-     * @version    1.0
+     * @version 1.0
      * @since   1.0.0
      * @author  Jesus
      *
-     * @param     string     $moduleName
+     * @param   string     $moduleName
      *
-     * @return     bool
+     * @return  bool
      */
     public function moduleInstalled($moduleName){
         $this->getModuleListCache($moduleName);
@@ -179,13 +181,13 @@ class Module extends coreClass {
     /**
      * Gets relevent data from a module
      *
-     * @version    1.0
+     * @version 1.0
      * @since   1.0.0
      * @author  Jesus
      *
-     * @param     array
+     * @param   array
      *
-     * @return     bool
+     * @return  bool
      */
     public function getModuleData($moduleName){
         $this->getModuleListCache($moduleName);
