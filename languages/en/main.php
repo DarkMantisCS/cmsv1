@@ -194,6 +194,17 @@ $_lang['L_DISABLE_MSG']         = 'Disable Message';
 //ACP: Module Management
 $_lang['L_MOD_MANAGE']          = 'Module Management';
 
+//ACP: file registry
+$_lang['L_FILE_REG']            = 'File Registry';
+$_lang['L_DELETED']             = 'Deleted';
+$_lang['L_OK']                  = 'Ok';
+$_lang['L_FC_CHANGED']          = 'Changed %s ago';
+$_lang['L_FILENAME']            = 'Filename';
+$_lang['L_FILE_STATUS']         = 'File Status';
+$_lang['L_CHECK_FH']            = 'Check File Hashes';
+$_lang['L_UPDATE_FH']           = 'Update File Hashes';
+$_lang['L_CHANGED_ONLY']        = 'Show Changed Files Only';
+
 //Time Stuff
 $_lang['DATETIME']['Sunday']    = 'Sunday';
 $_lang['DATETIME']['Monday']    = 'Monday';

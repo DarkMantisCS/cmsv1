@@ -63,7 +63,7 @@ class Captcha extends coreClass{
 
     function getHtml($use_ssl = false){
         if(is_empty($this->public_key))
-            die('To use reCAPTCHA you must get an API key from <a href="http://recaptcha.net/api/getkey">http://recaptcha.net/api/getkey</a>');
+            die('To use reCAPTCHA you must get an API key from <a href="https://www.google.com/recaptcha/admin/create">https://www.google.com/recaptcha/admin/create</a>');
 
         if($use_ssl){
             $server = $this->recaptcha_api_secure_server;
@@ -90,7 +90,7 @@ class Captcha extends coreClass{
 
     function checkAnswer($remoteip, $challenge, $response, $extra_params = array()){
         if($this->private_key == null || $this->private_key == '')
-            die('To use reCAPTCHA you must get an API key from <a href="http://recaptcha.net/api/getkey">http://recaptcha.net/api/getkey</a>');
+            die('To use reCAPTCHA you must get an API key from <a href="https://www.google.com/recaptcha/admin/create">https://www.google.com/recaptcha/admin/create</a>');
 
         if($remoteip == null || $remoteip == '')
             die('Your IP could not be determined. Script Terminated.');
@@ -135,7 +135,7 @@ class Captcha extends coreClass{
     }
 
     function getSignupUrl($domain = null, $appname = null) {
-        return "http://recaptcha.net/api/getkey?".$this->captcha_encode(array('domain' => $domain, 'app' => $appname));
+        return "https://www.google.com/recaptcha/admin/create?".$this->captcha_encode(array('domain' => $domain, 'app' => $appname));
     }
 }
 ?>

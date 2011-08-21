@@ -20,7 +20,7 @@ switch(strtolower($mode)){
         $_SESSION['site']['acp_edit']['id'] = $uid;
 
         $objTPL->assign_block_vars('msg', array(
-            'MSG' => msg('INFO', 'You need to visit <a href="http://recaptcha.net/api/getkey">http://recaptcha.net/api/getkey</a> to get these keys. Without a set of valid keys the Captcha will be disabled on this website. Your website will be vulnerable to spam bot attacks.', 'return')
+            'MSG' => msg('INFO', 'You need to visit <a href="https://www.google.com/recaptcha/admin/create">https://www.google.com/recaptcha/admin/create</a> to get these keys. Without a set of valid keys the Captcha will be disabled on this website. Your website will be vulnerable to spam bot attacks.', 'return')
         ));
 
         $objForm->outputForm(array(

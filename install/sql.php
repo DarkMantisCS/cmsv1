@@ -8,12 +8,12 @@ $sql = array();
 $now             = $objSQL->escape(time());
 $version         = $objSQL->escape(str_replace('V', '', $version));
 $admUsername     = $objSQL->escape($_SESSION['adm']['username']);
-$admPasswd         = $objSQL->escape($objUser->mkPassword($_SESSION['adm']['password']));
-$admEmail         = $objSQL->escape($_SESSION['adm']['email']);
-$admKey         = $objSQL->escape(randcode(6));
+$admPasswd       = $objSQL->escape($objUser->mkPassword($_SESSION['adm']['password']));
+$admEmail        = $objSQL->escape($_SESSION['adm']['email']);
+$admKey          = $objSQL->escape(randcode(6));
 $ckeauth         = $objSQL->escape(randcode(6));
 $dst             = date('I')==0 ? 1 : 0;
-$timezone         = 0;
+$timezone        = 0;
 //$userIp = getIP();
 
     $fields = array('title', 'slogan', 'description', 'keywords', 'time');

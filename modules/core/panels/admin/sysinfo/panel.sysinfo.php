@@ -77,8 +77,9 @@ $objTPL->set_filenames(array(
     'SELECT * FROM `$Pconfig`
     WHERE array NOT IN("cms", "db", "email")
         AND var NOT IN("analytics", "registry_update")
-        AND var NOT LIKE "%captcha_%"
-    ORDER BY array, var ASC'
+        AND var NOT LIKE "%s"
+    ORDER BY array, var ASC',
+    '%captcha_%'
 )).'';
 
     //and output
