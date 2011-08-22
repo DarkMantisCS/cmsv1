@@ -78,7 +78,7 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
      */
     function doArgs($key, $default, $args, $callback=null){
         $extra = true; //set this to true so the end result will work
-        
+
         //if we have a callback then exec
         if(is_empty($callback)){
             //test and return a value
@@ -829,13 +829,13 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
      *         127.0.0.1 would verify against 127.0.0.* but not *.*.*.2
      *
      * @version 1.0
-     * @since     1.0.0
-     * @author    Jesus
+     * @since   1.0.0
+     * @author  Jesus
      *
-     * @param     string     $range    Range to check the IP against
-     * @param    string    $ip        IP to check
+     * @param   string  $range      Range to check the IP against
+     * @param   string  $ip         IP to check
      *
-     * @return    bool
+     * @return  bool
      */
     function checkIPRange($range, $ip){
         $range = explode('.', $range);
@@ -1151,7 +1151,7 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
      */
     function doImage($content) {
         global $objBBCode;
-	
+
         $content = trim($objBBCode->UnHTMLEncode(strip_tags($content)));
         if (preg_match("/\\.(?:gif|jpeg|jpg|jpe|png)$/", $content)) {
             if (preg_match("/^[a-zA-Z0-9_][^:]+$/", $content)) {

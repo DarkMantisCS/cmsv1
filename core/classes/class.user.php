@@ -20,13 +20,13 @@ class user extends coreClass{
     /**
      * Sets the current user to online
      *
-     * @version    1.0
+     * @version 1.0
      * @since   1.0.0
-     * @author     xLink
+     * @author  xLink
      *
-     * @param     bool $value
+     * @param   bool $value
      *
-     * @return     bool
+     * @return  bool
      */
     public function setIsOnline($value=true){
         return self::$IS_ONLINE = $value;
@@ -36,9 +36,9 @@ class user extends coreClass{
      * Returns the status of the current user
      * Note: This function is depreciated, it has been left here purely for old code.
      *
-     * @deprecated     true
+     * @deprecated  true
      *
-     * @return         bool
+     * @return      bool
      */
     public function is_online(){ return self::$IS_ONLINE; }
 
@@ -46,14 +46,14 @@ class user extends coreClass{
     /**
      * Defines global CMS permissions
      *
-     * @version    1.0
+     * @version 1.0
      * @since   1.0.0
-     * @author     xLink
+     * @author  xLink
      */
     public function initPerms(){
-        self::$IS_USER         = $this->checkPermissions($this->grab('id'), USER);
+        self::$IS_USER      = $this->checkPermissions($this->grab('id'), USER);
         self::$IS_ADMIN     = $this->checkPermissions($this->grab('id'), ADMIN);
-        self::$IS_MOD         = $this->checkPermissions($this->grab('id'), MOD);
+        self::$IS_MOD       = $this->checkPermissions($this->grab('id'), MOD);
     }
 
     /**
@@ -61,17 +61,17 @@ class user extends coreClass{
      *
      * @version 1.1
      * @since   1.0.0
-     * @author    Jesus
+     * @author  Jesus
      *
-     * @param    array $userInfo   Array of the users details.
+     * @param   array $userInfo   Array of the users details.
      *
      * @return  bool
      */
     public function register(array $userInfo){
         //Check all the args are good and valid
-        $userInfo['username']         = doArgs('username',     false,     $userInfo);
-        $userInfo['password']         = doArgs('password',     false,     $userInfo);
-        $userInfo['email']             = doArgs('email',         false,     $userInfo);
+        $userInfo['username']   = doArgs('username',    false,  $userInfo);
+        $userInfo['password']   = doArgs('password',    false,  $userInfo);
+        $userInfo['email']      = doArgs('email',       false,  $userInfo);
 
         //if we have a false, in the above array, we has a problem
         if(in_array(false, $userInfo)){
@@ -80,14 +80,14 @@ class user extends coreClass{
         }
 
         //add some extra stuff in before we submit it
-        $userInfo['password']         = $this->mkPassword($userInfo['password']);
-        $userInfo['register_date']     = time();
-        $userInfo['usercode']         = substr(md5(time()), 0, 6);
-        $userInfo['primary_group']     = $this->config('site', 'user_group');
-        $userInfo['theme']             = $this->config('site', 'theme');
+        $userInfo['password']       = $this->mkPassword($userInfo['password']);
+        $userInfo['register_date']  = time();
+        $userInfo['usercode']       = substr(md5(time()), 0, 6);
+        $userInfo['primary_group']  = $this->config('site', 'user_group');
+        $userInfo['theme']          = $this->config('site', 'theme');
 
         //active needs to be the opposite of whatever 'register_verification' is...
-        $userInfo['active']            = !$this->config('site', 'register_verification');
+        $userInfo['active']         = !$this->config('site', 'register_verification');
 
         //Implement a hook before a users' registration has completed
         $this->objPlugins->hook('CMSUser_Before_Registered', $userInfo);
@@ -128,9 +128,9 @@ class user extends coreClass{
      *
      * @version 2.0
      * @since   1.0.0
-     * @author    xLink
+     * @author  xLink
      *
-     * @param    string $setting
+     * @param   string $setting
      *
      * @return  mixed
      */
@@ -145,12 +145,12 @@ class user extends coreClass{
      *
      * @version 1.2
      * @since   1.0.0
-     * @author    xLink
+     * @author  xLink
      *
-     * @param    string $uid        Either Username of UserID
-     * @param    string $field    Name of the field wanted or * for all
+     * @param   string $uid         Either Username of UserID
+     * @param   string $field       Name of the field wanted or * for all
      *
-     * @return  mixed            Field requested or whole user information.
+     * @return  mixed               Field requested or whole user information.
      */
     public function getUserInfo($uid, $field='*'){
         //we need to populate the query
@@ -166,7 +166,7 @@ class user extends coreClass{
                     'LEFT JOIN `$Ponline` o '.
                         'ON u.id = o.uid '.
                 'WHERE '.$user.' '.
-                'LIMIT 1;', 
+                'LIMIT 1;',
                 array($uid)
             );
                 if(!count($info)){
@@ -204,9 +204,9 @@ class user extends coreClass{
      *
      * @version 1.0
      * @since   1.0.0
-     * @author    xLink
+     * @author  xLink
      *
-     * @param    mixed $uid     Username used to retreive the UID
+     * @param   mixed $uid     Username used to retreive the UID
      *
      * @return  bool
      */
@@ -258,15 +258,15 @@ class user extends coreClass{
      *
      * @version 1.0
      * @since   1.0.0
-     * @author    xLink
+     * @author  xLink
      *
      * @return  bool    True on Successful Update
      */
     public function updateLocation(){
         // generate the array for the db update
-        $update['timestamp']     = time();
+        $update['timestamp']    = time();
         $update['location']     = secureMe(doArgs('REQUEST_URI', 'null', $_SERVER));
-        $update['referer']         = secureMe(doArgs('HTTP_REFERER', 'null', $_SERVER));
+        $update['referer']      = secureMe(doArgs('HTTP_REFERER', 'null', $_SERVER));
 
         //force the location system to ignore js and css files, these like to be the entry in the database which isnt useful
         if(preg_match('/(scripts|styles|js|css|xml)/sm', $update['location'])) {
@@ -287,7 +287,7 @@ class user extends coreClass{
      *
      * @version 2.0
      * @since   1.0.0
-     * @author    Jesus
+     * @author  Jesus
      *
      * @param   string $password
      * @param   string $hash
@@ -310,7 +310,7 @@ class user extends coreClass{
      *
      * @version 1.0
      * @since   1.0.0
-     * @author    Jesus
+     * @author  Jesus
      *
      * @param   string $password
      * @param   string $hash
@@ -334,12 +334,12 @@ class user extends coreClass{
      *
      * @version 1.0
      * @since   1.0.0
-     * @author    xLink
+     * @author  xLink
      *
-     * @param    mixed     $uid             Username or UID.
-     * @param    array     $settings         An array of settings, (columnName => value).
+     * @param   mixed     $uid          Username or UID.
+     * @param   array     $settings     An array of settings, (columnName => value).
      *
-     * @return  bool                     True if settings were fully updated, False if they wasnt.
+     * @return  bool                    True if settings were fully updated, False if they wasnt.
      */
     public function updateUserSettings($uid, array $setting, $log=false){
         unset($setting['id'], $setting['uid']);
@@ -413,11 +413,11 @@ class user extends coreClass{
      *
      * @version 1.0
      * @since   0.8.0
-     * @author     xLink
+     * @author  xLink
      *
-     * @param     $username
+     * @param   $username
      *
-     * @return     bool
+     * @return  bool
      */
     public function validateUsername($username, $existCheck=false){
         if(strlen($username) > 25 || strlen($username) < 2){
@@ -441,11 +441,11 @@ class user extends coreClass{
      *
      * @version 1.0
      * @since   1.0.0
-     * @author     xLink
+     * @author  xLink
      *
-     * @param     $email
+     * @param   $email
      *
-     * @return     bool
+     * @return  bool
      */
     public function validateEmail($email) {
         global $objBBCode;
@@ -464,17 +464,17 @@ class user extends coreClass{
      *
      * @version 1.0
      * @since   1.0.0
-     * @author    xLink
+     * @author  xLink
      *
-     * @param    mixed $uid         Username or UID.
+     * @param   mixed $uid      Username or UID.
      *
-     * @return  mixed             IP address of user.
+     * @return  mixed           IP address of user.
      */
     public static function getIP(){
-        if         ($_SERVER['HTTP_X_FORWARDED_FOR']){ $ip = $_SERVER['HTTP_X_FORWARDED_FOR']; }
+        if      ($_SERVER['HTTP_X_FORWARDED_FOR']){ $ip = $_SERVER['HTTP_X_FORWARDED_FOR']; }
         else if ($_SERVER['HTTP_X_FORWARDED']){     $ip = $_SERVER['HTTP_X_FORWARDED']; }
-        else if ($_SERVER['HTTP_FORWARDED_FOR']){     $ip = $_SERVER['HTTP_FORWARDED_FOR']; }
-        else{                                        $ip = $_SERVER['REMOTE_ADDR']; }
+        else if ($_SERVER['HTTP_FORWARDED_FOR']){   $ip = $_SERVER['HTTP_FORWARDED_FOR']; }
+        else{                                       $ip = $_SERVER['REMOTE_ADDR']; }
 
         return $ip;
     }
@@ -484,7 +484,7 @@ class user extends coreClass{
      *
      * @version 2.0
      * @since   1.0.0
-     * @author    xLink
+     * @author  xLink
      */
     public function tracker(){
 
@@ -632,7 +632,7 @@ class user extends coreClass{
      *
      * @version 1.0
      * @since   1.0.0
-     * @author    xLink
+     * @author  xLink
      */
     public function newKey(){
         //grab the old key before we overwrite it
@@ -650,11 +650,11 @@ class user extends coreClass{
      *
      * @version 1.0
      * @since   1.0.0
-     * @author    xLink
+     * @author  xLink
      *
-     * @param     string $log
+     * @param   string $log
      *
-     * @return     bool
+     * @return  bool
      */
     public function newOnlineSession($log=NULL){
         $insert['uid']           = $this->grab('id');
@@ -679,16 +679,17 @@ class user extends coreClass{
      *
      * @version 2.0
      * @since   0.8.0
+     * @author  Jesus
      *
-     * @param     mixed    $uid             Username or UserID
-     * @param    string     $password        Plaintext version of the password.
+     * @param   mixed   $uid        Username or UserID
+     * @param   string  $password   Plaintext version of the password.
      *
      * @return  bool
      */
     public function setPassword($uid, $password, $log=NULL){
-        $array['password']             = $this->mkPassword($password);
-        $array['password_update']     = 0;
-        $array['login_attempts']     = 0;
+        $array['password']          = $this->mkPassword($password);
+        $array['password_update']   = 0;
+        $array['login_attempts']    = 0;
 
         $this->objPlugins->hook('CMSCore_prePasswordChanged', $array);
 
@@ -705,15 +706,16 @@ class user extends coreClass{
      *
      * @version 1.0
      * @since   1.0.0
+     * @author  Jesus
      *
-     * @param     mixed    $uid         Username or UserID
-     * @param    string     $pin        Plaintext version of the PIN.
+     * @param   mixed   $uid    Username or UserID
+     * @param   string  $pin    Plaintext version of the PIN.
      *
      * @return  bool
      */
     public function setPIN($uid, $pin, $log=NULL){
-        $array['pin']             = md5($pin.$this->config('db', 'ckeauth'));
-        $array['pin_attempts']     = 0;
+        $array['pin']           = md5($pin.$this->config('db', 'ckeauth'));
+        $array['pin_attempts']  = 0;
 
         $this->objPlugins->hook('CMSCore_prePinChanged', $array);
 
@@ -731,12 +733,12 @@ class user extends coreClass{
      *
      * @version 1.0
      * @since   1.0.0
-     * @author    Jesus
+     * @author  Jesus
      *
-     * @param     mixed    $uid             Username or UserID
-     * @param     string     $autoLogin
+     * @param   mixed   $uid        Username or UserID
+     * @param   string  $autoLogin
      *
-     * @return     bool
+     * @return  bool
      */
     public function setSessions($uid, $autoLogin=false){
 
@@ -752,7 +754,7 @@ class user extends coreClass{
         $_SESSION['user'] = $userInfo;
         $_SESSION['user']['last_active'] = $timestamp;
         $_SESSION['user']['userkey'] = $this->newKey();
-        session_regenerate_id(true);
+        #session_regenerate_id(true);
 
         //if we are auto logging in, then update last_active
         if($autoLogin){
@@ -769,9 +771,9 @@ class user extends coreClass{
      *
      * @version 1.0
      * @since   1.0.0
-     * @author    Jesus
+     * @author  Jesus
      *
-     * @param     int     $uid     UserID
+     * @param   int     $uid    UserID
      */
     public function reSetSessions($uid){
         if($uid == $this->grab('id')){
@@ -788,11 +790,11 @@ class user extends coreClass{
      *
      * @version 1.0
      * @since   1.0.0
-     * @author    xLink
+     * @author  xLink
      *
-     * @param     string    $setting
+     * @param   string   $setting
      *
-     * @return     mixed
+     * @return  mixed
      */
     function ajaxSettings($setting){
         //grab the setting arsenal
@@ -818,14 +820,14 @@ class user extends coreClass{
      *
      * @version 1.0
      * @since   1.0.0
-     * @author    xLink
+     * @author  xLink
      *
-     * @param     int     $uid     UserID
-     * @param     bool    $state    true to activate the user,
-     *                             false to deactivate the user,
-     *                             null to toggle it
+     * @param   int     $uid        UserID
+     * @param   bool    $state      true to activate the user,
+     *                                  false to deactivate the user,
+     *                                  null to toggle it
      *
-     * @return     bool
+     * @return  bool
      */
     public function toggleActivation($uid, $state=null){
         //if nothing was given, grab the current state
@@ -872,14 +874,14 @@ class user extends coreClass{
      *
      * @version 1.0
      * @since   1.0.0
-     * @author    xLink
+     * @author  xLink
      *
-     * @param     int     $uid     UserID
-     * @param     bool    $state    true to ban the user,
-     *                             false to unban the user,
-     *                             null to toggle it
+     * @param   int     $uid    UserID
+     * @param   bool    $state  true to ban the user,
+     *                              false to unban the user,
+     *                              null to toggle it
      *
-     * @return     bool
+     * @return  bool
      */
     public function toggleBan($uid, $state=null){
         //if nothing was given, grab the current state
@@ -922,12 +924,12 @@ class user extends coreClass{
      *
      * @version 1.0
      * @since   1.0.0
-     * @author    xLink
+     * @author  xLink
      *
-     * @param     int     $uid     UserID
-     * @param     int        $mode    LINK, RAW, NO_LINK, RETURN_USER
+     * @param   int     $uid     UserID
+     * @param   int     $mode    LINK, RAW, NO_LINK, RETURN_USER
      *
-     * @return     bool    True/False on successful check, -1 on unknown group
+     * @return  bool    True/False on successful check, -1 on unknown group
      */
     public function profile($uid, $mode=LINK) {
         //check if the user has a UID of 0
@@ -1004,13 +1006,13 @@ class user extends coreClass{
      *
      * @version 1.0
      * @since   1.0.0
-     * @author    xLink
+     * @author  xLink
      *
-     * @param     array     $user     An array containing all the user information
-     * @param     array    $group    An array with the group information
-     * @param     int        $mode    LINK, RAW, NO_LINK, RETURN_USER
+     * @param   array   $user   An array containing all the user information
+     * @param   array   $group  An array with the group information
+     * @param   int     $mode   LINK, RAW, NO_LINK, RETURN_USER
      *
-     * @return     string
+     * @return  string
      */
     protected function _profile_processor($user, $group=null, $mode=0){
         $user = (is_array($user) ? $user['username'] : $user);
@@ -1032,9 +1034,9 @@ class user extends coreClass{
             case LINK:          $return = $user_link;       break;
 
             case RETURN_USER:
-            case NO_LINK:         $return = $user_no_link;      break;
+            case NO_LINK:       $return = $user_no_link;    break;
 
-            case RAW:             $return = $raw;                break;
+            case RAW:           $return = $raw;             break;
             case 4:             $return = $uid;             break;
         }
 
@@ -1046,12 +1048,12 @@ class user extends coreClass{
      *
      * @version 1.0
      * @since   1.0.0
-     * @author    xLink
+     * @author  xLink
      *
-     * @param    int     $uid
-     * @param    int     $size
+     * @param   int     $uid
+     * @param   int     $size
      *
-     * @return  string              HTML of the parsed avatar.
+     * @return  string  HTML of the parsed avatar.
      */
     public function parseAvatar($uid, $size=100){
         $defaultAvatar = '/'.root().'images/no_avatar.png';
@@ -1079,12 +1081,12 @@ class user extends coreClass{
      *
      * @version 2.0
      * @since   0.7.0
-     * @author    xLink
+     * @author  xLink
      *
-     * @param    int     $timestamp        The timestamp of the user
-     * @param    bool     $hidden            Whether or not the user should be hidden
+     * @param   int     $timestamp  The timestamp of the user
+     * @param   bool    $hidden     Whether or not the user should be hidden
      *
-     * @return  string                  The Online, Offline or Hidden Indicator in HTML.
+     * @return  string              The Online, Offline or Hidden Indicator in HTML.
      */
     function onlineIndicator($uid=0, $returnType='img'){
         $vars = $this->objPage->getVar('tplVars');
@@ -1122,12 +1124,12 @@ class user extends coreClass{
      *
      * @version 1.0
      * @since   1.0.0
-     * @author    xLink
+     * @author  xLink
      *
-     * @param     int     $uid     UserID
-     * @param     int        $group    GUEST, USER, MOD, or ADMIN
+     * @param   int     $uid        UserID
+     * @param   int     $group      GUEST, USER, MOD, or ADMIN
      *
-     * @return     bool    True/False on successful check, -1 on unknown group
+     * @return  bool    True/False on successful check, -1 on unknown group
      */
     public function checkUserAuth($type, $key, $u_access, $is_admin){
         $auth_user = 0;
@@ -1153,12 +1155,12 @@ class user extends coreClass{
      *
      * @version 1.0
      * @since   1.0.0
-     * @author    xLink
+     * @author  xLink
      *
-     * @param     int     $uid     UserID
-     * @param     int        $group    GUEST, USER, MOD, or ADMIN
+     * @param   int     $uid        UserID
+     * @param   int     $group      GUEST, USER, MOD, or ADMIN
      *
-     * @return     bool    True/False on successful check, -1 on unknown group
+     * @return  bool    True/False on successful check, -1 on unknown group
      */
     public function checkPermissions($uid, $group=0) {
         $group = (int)$group;

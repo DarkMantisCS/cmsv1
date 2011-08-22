@@ -8,24 +8,24 @@ if(!defined('INDEX_CHECK')){die('Error: Cannot access directly.');}
  * Handles logging in and out for the user, and admin control panel
  *
  * @version 2.0
- * @since     1.0.0
- * @author     Jesus
+ * @since   1.0.0
+ * @author  Jesus
  */
 class login extends coreClass{
 
     /**
      * Returns the online row for the current user logged in or not.
      *
-     * @version    1.0
-     * @since     1.0.0
-     * @author     Jesus
+     * @version 1.0
+     * @since   1.0.0
+     * @author  Jesus
      *
-     * @return     array
+     * @return  array
      */
     public function onlineData(){
         if(isset($this->onlineData)){ return $this->onlineData; }
 
-        $query = 'SELECT `id`, `uid`, `username`, `ip_address`, `timestamp`, `location`, 
+        $query = 'SELECT `id`, `uid`, `username`, `ip_address`, `timestamp`, `location`,
                     `referer`, `language`, `useragent`, `login_attempts`, `login_time`, `userkey`, `mode`
                         FROM `$Ponline` WHERE userkey="%s"';
         return $this->onlineData = $this->objSQL->getLine($query, array($_SESSION['user']['userkey']));
@@ -34,13 +34,13 @@ class login extends coreClass{
     /**
      * Checks whether the user has exceeded the login quota
      *
-     * @version    1.0
-     * @since     1.0.0
-     * @author     Jesus
+     * @version 1.0
+     * @since   1.0.0
+     * @author  Jesus
      *
-     * @param     bool    $dontUpdate
+     * @param   bool    $dontUpdate
      *
-     * @return     bool
+     * @return  bool
      */
     public function attemptsCheck($dontUpdate=false){
         if($this->onlineData['login_time'] >= time()){
@@ -72,11 +72,11 @@ class login extends coreClass{
     /**
      * Returns the active flag of the account
      *
-     * @version    1.0
-     * @since     1.0.0
-     * @author     Jesus
+     * @version 1.0
+     * @since   1.0.0
+     * @author  Jesus
      *
-     * @return     bool
+     * @return  bool
      */
     public function activeCheck(){
         return (bool)$this->userData['active'];
@@ -85,11 +85,11 @@ class login extends coreClass{
     /**
      * Returns the ban flag of the account
      *
-     * @version    1.0
-     * @since     1.0.0
-     * @author     Jesus
+     * @version 1.0
+     * @since   1.0.0
+     * @author  Jesus
      *
-     * @return     bool
+     * @return  bool
      */
     public function banCheck(){
         return !(bool)$this->userData['banned'];
@@ -98,11 +98,11 @@ class login extends coreClass{
     /**
      * Verifies the PIN with what’s in the user row
      *
-     * @version    1.0
-     * @since     1.0.0
-     * @author     Jesus
+     * @version 1.0
+     * @since   1.0.0
+     * @author  Jesus
      *
-     * @return     bool
+     * @return  bool
      */
     public function verifyPin(){
         return (isset($_POST['pin']) && md5($_POST['pin'].$this->config('db', 'ckeauth')) == $this->userData['pin'] ? true : false);
@@ -111,9 +111,9 @@ class login extends coreClass{
     /**
      * Updates the login attempts for the user
      *
-     * @version    1.0
-     * @since     1.0.0
-     * @author     Jesus
+     * @version 1.0
+     * @since   1.0.0
+     * @author  Jesus
      */
     public function updateLoginAttempts(){
         if(!is_empty($this->userData)){
@@ -121,35 +121,43 @@ class login extends coreClass{
         }
 
         $query = 'UPDATE `$Ponline` SET login_attempts = (login_attempts + 1) WHERE userkey = "%s"';
-        $this->objSQL->query($query, array($_SESSION['user']['userkey']), 'Online System: '.USER::getIP().' failed to login to '.$this->userData['username'].'\'s account.');
+        $this->objSQL->query(
+            $query,
+            array($_SESSION['user']['userkey']),
+            'Online System: '.USER::getIP().' failed to login to '.$this->userData['username'].'\'s account.'
+        );
     }
 
     /**
      * Updates the login attempts for Admin panel
      *
-     * @version    1.0
-     * @since     1.0.0
-     * @author     Jesus
+     * @version 1.0
+     * @since   1.0.0
+     * @author  Jesus
      *
-     * @return     int
+     * @return  int
      */
     public function updateACPAttempts(){
         if(!is_empty($this->userData)){
-            $this->objSQL->updateRow('users', array('pin_attempts' => $this->userData['pin_attempts']+1), array('id = "%s"', $this->userData['id']),
-            'Online System: '.$this->userData['username'].' attemped to authenticate as administrator.');
+            $this->objSQL->updateRow(
+                'users',
+                array('pin_attempts' => $this->userData['pin_attempts']+1),
+                array('id = "%s"', $this->userData['id']),
+                'Online System: '.$this->userData['username'].' attemped to authenticate as administrator.'
+            );
         }
 
         if(($this->userData['pin_attempts']+1) == 4){
             unset($update);
-            $update['active'] = '0';
-            $update['banned'] = '1';
+            $update['active']       = '0';
+            $update['banned']       = '1';
             $update['pin_attempts'] = '0';
 
             $this->objSQL->updateRow('users', $update, array('id = "%s"', $this->userData['id']),
                 'Online System: Logged '.$this->userData['username'].' out as a security measure. 3 Wrong Authentication attempts for ACP.');
 
             $this->objSQL->updateRow('online', array(
-                'login_time'         => $this->objTime->mod_time(time(), 0, 15),
+                'login_time'        => $this->objTime->mod_time(time(), 0, 15),
                 'login_attempts'    => '0'
             ), 'userkey = "'.$_SESSION['user']['userkey'].'"');
 
@@ -162,13 +170,13 @@ class login extends coreClass{
     /**
      * Makes sure all information is valid and logs the user in if needed
      *
-     * @version    1.5
-     * @since     1.0.0
-     * @author     xLink
+     * @version 1.5
+     * @since   1.0.0
+     * @author  xLink
      *
-     * @param     bool $ajax
+     * @param   bool $ajax
      *
-     * @return     bool
+     * @return  bool
      */
     public function doLogin($ajax=false){
         $acpCheck = isset($_SESSION['acp']['doAdminCheck']) ? true : false;
@@ -206,13 +214,13 @@ class login extends coreClass{
 
         //no need to run these if we are in acp mode
         if($acpCheck === FALSE){
-            if(!$this->whiteListCheck()){    $this->doError('0x04', $ajax); }
-            if(!$this->activeCheck()){        $this->doError('0x05', $ajax); }
-            if(!$this->banCheck()){            $this->doError('0x06', $ajax); }
+            if(!$this->whiteListCheck()){   $this->doError('0x04', $ajax); }
+            if(!$this->activeCheck()){      $this->doError('0x05', $ajax); }
+            if(!$this->banCheck()){         $this->doError('0x06', $ajax); }
         }
 
         //update their quota
-        if(!$this->attemptsCheck()){           $this->doError('0x03', $ajax); }
+        if(!$this->attemptsCheck()){        $this->doError('0x03', $ajax); }
 
         //make sure the password is valid
         if(!$this->objUser->checkPassword($password, $this->userData['password'])){
@@ -274,8 +282,8 @@ class login extends coreClass{
                 $this->objUser->updateUserSettings($this->userData['id'], array('autologin'=>1));
 
                 $cookieArray = array(
-                    'uData'        => $uniqueKey,
-                    'uIP'        => User::getIP(),
+                    'uData'     => $uniqueKey,
+                    'uIP'       => User::getIP(),
                     'uAgent'    => md5($_SERVER['HTTP_USER_AGENT'].$this->config('db', 'ckeauth'))
                 );
 
@@ -300,7 +308,7 @@ class login extends coreClass{
      *
      * @version 1.0
      * @since   1.0.0
-     * @author    Jesus
+     * @author  Jesus
      *
      * @return  bool
      */
@@ -416,12 +424,12 @@ class login extends coreClass{
     /**
      * Turns error codes in to human readable errors
      *
-     * @version    1.0
-     * @since     1.0.0
-     * @author     Jesus
+     * @version 1.0
+     * @since   1.0.0
+     * @author  Jesus
      *
-     * @param     mixed     $errCode
-     * @param     bool     $ajax
+     * @param   mixed     $errCode
+     * @param   bool     $ajax
      */
     function doError($errCode, $ajax=false){
         $acpCheck = isset($_SESSION['acp']['doAdminCheck']) ? true : false;
@@ -432,7 +440,8 @@ class login extends coreClass{
             break;
 
             case '0x0':
-                $L_ERROR = '('.$errCode.') I Can\'t seem to find the issue, Please contact a system administrator or <a href="mailto:'. $this->config('site', 'admin_email') .'">Email The Site Admin</a>';
+                $L_ERROR = '('.$errCode.') I Can\'t seem to find the issue, Please contact a system administrator or <a href="mailto:'.
+                                $this->config('site', 'admin_email') .'">Email The Site Admin</a>';
             break;
 
             case '0x1':
@@ -503,11 +512,11 @@ class login extends coreClass{
     /**
      * Logs the user out
      *
-     * @version    1.0
-     * @since     1.0.0
-     * @author     Jesus
+     * @version 1.0
+     * @since   1.0.0
+     * @author  Jesus
      *
-     * @param     string $check    The user code to verify
+     * @param   string $check    The user code to verify
      */
     public function logout($check){
         if(!is_empty($check) && $check == $this->objUser->grab('usercode')){
@@ -537,20 +546,20 @@ class login extends coreClass{
     /**
      * Checks the whitelist associated with an account
      *
-     * @version    1.0
-     * @since     1.0.0
-     * @author     Jesus
+     * @version 1.2
+     * @since   1.0.0
+     * @author  Jesus
      *
-     * @return     bool
+     * @return  bool
      */
     public function whiteListCheck(){
         if(!$this->userData['whitelist'] || is_empty($this->userData['whitelisted_ips'])){
             return true;
         }
 
-        $whitelist     = unserialize($this->userData['whitelisted_ips']);
-        $wrong         = 0;
         $ip         = USER::getIP();
+        $whitelist  = json_decode($this->userData['whitelisted_ips']);
+            if(!is_array($whitelist) || is_empty($whitelist)){ return true; }
 
         foreach($whitelist as $range){
             if(checkIPRange($range, $ip)){

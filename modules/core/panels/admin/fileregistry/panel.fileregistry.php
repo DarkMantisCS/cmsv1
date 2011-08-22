@@ -46,9 +46,9 @@ switch($mode){
         $i = 0;
     	foreach($query as $row){
             $current_hash = -1;
-    		if(is_file($row['filename'])){
+            if(is_file($row['filename'])){
                 $current_hash = @filesize($row['filename']) . '-' . count(@file($row['filename'])) . '-' . sha1(file_get_contents($row['filename']));
-    		}
+            }
 
     		if($current_hash == '-1'){
     			$filestatus = langVar('L_DELETED');
@@ -66,9 +66,9 @@ switch($mode){
     		$path_cleaned = str_replace('./', '', $row['filename']);
     		if($show === true){
     			$objTPL->assign_block_vars('filestructure', array(
-    				'FNAME'			=> '<a href="/'.root().$path_cleaned.'">'.$path_cleaned.'</a>',
-    				'STATUS'		=> '<font color="'.$color.'">'.$filestatus.'</font>',
-                    'ROW'           => ($i++%2 ? 'row_color2' : 'row_color1'),
+    				'FNAME'		=> '<a href="/'.root().$path_cleaned.'">'.$path_cleaned.'</a>',
+    				'STATUS'	=> '<font color="'.$color.'">'.$filestatus.'</font>',
+                    'ROW'       => ($i++%2 ? 'row_color2' : 'row_color1'),
     			));
     		}
     	}

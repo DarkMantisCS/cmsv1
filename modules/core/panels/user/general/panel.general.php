@@ -74,29 +74,29 @@ switch(strtolower($mode)){
         $yn = array(1=>langVar('L_YES'), 0=>langVar('L_NO'));
 
         $objForm->outputForm(array(
-            'FORM_START'     => $objForm->start('panel', array('method' => 'POST', 'action' => $saveUrl)),
-            'FORM_END'         => $objForm->finish(),
+            'FORM_START'    => $objForm->start('panel', array('method' => 'POST', 'action' => $saveUrl)),
+            'FORM_END'      => $objForm->finish(),
 
-            'FORM_TITLE'     => langVar('L_WEBSITE_PANEL'),
-            'FORM_SUBMIT'    => $objForm->button('submit', 'Submit'),
-            'FORM_RESET'     => $objForm->button('reset', 'Reset'),
+            'FORM_TITLE'    => langVar('L_WEBSITE_PANEL'),
+            'FORM_SUBMIT'   => $objForm->button('submit', 'Submit'),
+            'FORM_RESET'    => $objForm->button('reset', 'Reset'),
 
-            'HIDDEN'         => $objForm->inputbox('sessid', 'hidden', $sessid).$objForm->inputbox('id', 'hidden', $uid),
+            'HIDDEN'        => $objForm->inputbox('sessid', 'hidden', $sessid).$objForm->inputbox('id', 'hidden', $uid),
         ),
         array(
             'field' => array(
-                langVar('L_ACCOUNT_PANEL')         => '_header_',
+                langVar('L_ACCOUNT_PANEL')      => '_header_',
                 langVar('L_SEX')                => $objForm->radio('sex', array(0=>langVar('L_SEX_U'), 1=>langVar('L_SEX_M'), 2=>langVar('L_SEX_F')), $user['sex']),
-                langVar('L_PRIV_EMAIL')            => $objForm->radio('show_email', $yn, $user['show_email']),
+                langVar('L_PRIV_EMAIL')         => $objForm->radio('show_email', $yn, $user['show_email']),
 
-                langVar('L_SITE_SETTINGS')         => '_header_',
-                langVar('L_TIMEZONE')            => $timezone,
-                langVar('L_USER_COLORING')        => $sMembers,
-                langVar('L_SITE_TEMPLATE')        => $objForm->select('theme', $tpl, array('selected'=>$user['theme'])),
+                langVar('L_SITE_SETTINGS')      => '_header_',
+                langVar('L_TIMEZONE')           => $timezone,
+                langVar('L_USER_COLORING')      => $sMembers,
+                langVar('L_SITE_TEMPLATE')      => $objForm->select('theme', $tpl, array('selected'=>$user['theme'])),
 
-                langVar('L_FORUM_SETTINGS')        => '_header_',
-                langVar('L_QUICK_REPLIES')        => $objForm->radio('quick_reply', $yn, $user['forum_quickreply']),
-                langVar('L_AUTO_WATCH')            => $objForm->radio('auto_watch', $yn, $user['forum_autowatch']),
+                langVar('L_FORUM_SETTINGS')     => '_header_',
+                langVar('L_QUICK_REPLIES')      => $objForm->radio('quick_reply', $yn, $user['forum_quickreply']),
+                langVar('L_AUTO_WATCH')         => $objForm->radio('auto_watch', $yn, $user['forum_autowatch']),
             ),
             'desc' => array(
                 langVar('L_EMAIL') => $email,

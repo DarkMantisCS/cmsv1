@@ -132,7 +132,7 @@ $_lang['L_AUTO_WATCH']          = 'Auto Watch Threads';
 $_lang['L_TIMEZONE']            = 'Timezone';
 $_lang['L_QUICK_REPLIES']       = 'Quick Replies';
 
-//UCP global langvars
+//UCP: global langvars
 $_lang['L_PRO_UPDATE_SUCCESS']  = 'Profile update was successful.';
 $_lang['L_REQUIRED_INFO']       = 'Required Information';
 $_lang['L_NO_CHANGES']          = 'There are no changes to be made.';
@@ -145,6 +145,13 @@ $_lang['L_DISABLED']            = 'Disabled';
 
 //UCP: contact info
 $_lang['L_CONTACT_INFO']        = 'Contact Information';
+
+//UCP: whitelist panel
+$_lang['L_WHITELIST_PANEL']     = 'Whitelist Settings';
+
+$_lang['L_IPRANGE']             = 'IP Range %d';
+$_lang['L_NEWRANGE']            = 'New Range';
+$_lang['L_IPRANGE_DESC']        = '<br /><ul><li>Please Denote IP Ranges in the following manner: 255.255.255.*</li><li>An IP Range can contain 4 Subnet Masks, and therefore 4 groups of numbers / astrix\'s</li><li><strong>Note:</strong> For security purposes, you cannot add *.*.*.* as a valid Range as this is the same as disabling this setting.</li></ul>';
 
 //ACP: core settings
 $_lang['L_SITE_CONFIG']         = 'Website Configuration';
