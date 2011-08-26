@@ -7,9 +7,9 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 /**
  * Group Class designed to allow easier access to expand on the group system implemented
  *
- * @version     1.0
- * @since         1.0.0
- * @author         xLink
+ * @version 1.0
+ * @since   1.0.0
+ * @author  xLink
  */
 class coreClass{
 
@@ -18,11 +18,11 @@ class coreClass{
     /**
      * Autoloads the $classes
      *
-     * @version    1.0
-     * @since     1.0.0
-     * @author     xLink
+     * @version 1.0
+     * @since   1.0.0
+     * @author  xLink
      *
-     * @param     bool     $classes
+     * @param   bool  $classes
      */
     final public function setup($classes=false){
         if(!is_array($classes)){ return false; }
@@ -36,9 +36,9 @@ class coreClass{
 
                 //explode the filename, so we dont get interference pre-filename
                 $fileName = explode('/', $path[0]);
-                
+
                 //grab the class name from the file and make sure it exists before continuing
-                $fileName = explode('.', end($fileName)); $class = $fileName[1]; 
+                $fileName = explode('.', end($fileName)); $class = $fileName[1];
                     if($fileName[0] == 'driver'){ $class = 'driver_'.$class; }
                     if(!class_exists($class)){ continue; }
 
@@ -73,12 +73,12 @@ class coreClass{
     /**
      * Sets a variable with a value
      *
-     * @version    1.0
-     * @since     1.0.0
-     * @author     xLink
+     * @version 1.0
+     * @since   1.0.0
+     * @author  xLink
      *
-     * @param     string     $var
-     * @param     mixed    $value
+     * @param   string  $var
+     * @param   mixed   $value
      */
     public function setVar($var, $value){
         $this->$var = $value;
@@ -87,11 +87,11 @@ class coreClass{
     /**
      * Sets multiple variables with values
      *
-     * @version    1.0
-     * @since     1.0.0
-     * @author     xLink
+     * @version 1.0
+     * @since   1.0.0
+     * @author  xLink
      *
-     * @param     array     $array
+     * @param   array $array
      */
     public function setVars($array){
         if(!is_array($array)){ return false; }
@@ -105,13 +105,13 @@ class coreClass{
     /**
      * Returns a var's value
      *
-     * @version    1.0
-     * @since     1.0.0
-     * @author     xLink
+     * @version 1.0
+     * @since   1.0.0
+     * @author  xLink
      *
-     * @param     string     $var
+     * @param   string  $var
      *
-     * @return     mixed
+     * @return  mixed
      */
     public function getVar($var){
         return (isset($this->$var) ? $this->$var : false);
@@ -121,15 +121,15 @@ class coreClass{
     /**
      * Returns a config variable
      *
-     * @version    1.0
-     * @since     1.0.0
-     * @author     xLink
+     * @version 1.0
+     * @since   1.0.0
+     * @author  xLink
      *
-     * @param     string     $array
-     * @param     string     $setting
-     * @param     mixed     $default
+     * @param   string  $array
+     * @param   string  $setting
+     * @param   mixed   $default
      *
-     * @return     mixed
+     * @return  mixed
      */
     public function config($array, $setting, $default=null){
         global $config;
@@ -140,9 +140,9 @@ class coreClass{
     /**
      * Returns the last error set.
      *
-     * @version    1.0
-     * @since     1.0.0
-     * @author     xLink
+     * @version 1.0
+     * @since   1.0.0
+     * @author  xLink
      *
      * @return  string
      */
@@ -153,11 +153,11 @@ class coreClass{
     /**
      * Allows for an error to be set just before returning false
      *
-     * @version    1.0
-     * @since     1.0.0
-     * @author     xLink
+     * @version 1.0
+     * @since   1.0.0
+     * @author  xLink
      *
-     * @param     string $msg
+     * @param   string $msg
      */
     public function setError($msg){
         $this->_error = (string)$msg;
@@ -166,11 +166,11 @@ class coreClass{
     /**
      * Returns the name of the class this var an instance of
      *
-     * @version    1.0
-     * @since     1.0.0
-     * @author     xLink
+     * @version 1.0
+     * @since   1.0.0
+     * @author  xLink
      *
-     * @return     string
+     * @return  string
      */
     public function name(){
         return get_class($this);
@@ -180,10 +180,10 @@ class coreClass{
      * Throws a HTTP Error Code and a pretty CMS Page
      *
      * @version 1.0
-     * @since     1.0.0
-     * @author     xLink
+     * @since   1.0.0
+     * @author  xLink
      *
-     * @param     int    $error
+     * @param   int    $error
      */
     public function throwHTTP($error=000){
         $msg = NULL;
@@ -234,14 +234,14 @@ class coreClass{
     /**
      * Loads a module and its languagefile with the name from the parameter $module
      *
-     * @version    2.0
+     * @version 2.0
      * @since   0.8.0
-     * @author     xLink
+     * @author  xLink
      *
-     * @param     string     $module         The name of the module to be loaded
-     * @param   bool     $languageFile   Defines weather the language file accociated with the module should be loaded.
+     * @param   string  $module         The name of the module to be loaded
+     * @param   bool    $languageFile   Defines weather the language file accociated with the module should be loaded.
      *
-     * @return     bool
+     * @return  bool
      */
     function loadModule($module, $languageFile=false, $mode='class'){
         if($mode===NULL){ $mode = 'class'; }
@@ -307,37 +307,36 @@ class coreClass{
     /**
      * Loads in a instance of the requested module
      *
-     * @version    2.0
+     * @version 2.0
      * @since   0.8.0
-     * @author     xLink
+     * @author  xLink
      *
-     * @param     string     $module        Module name
-     * @param    var        $returnVar     Variable you want the module to be loaded into
-     * @param    string     $mode        class, admin, mod, user
+     * @param   string  $module      Module name
+     * @param   var     $returnVar   Variable you want the module to be loaded into
+     * @param   string  $mode        class, admin, mod, user
      */
     function autoLoadModule($module, &$returnVar, $mode='class'){
         global $objCore;
 
         $objCore->objSQL->recordMessage('Loading Module: '.$module, 'INFO');
 
-        $objModule = new Module($objCore);
-        if(!$objModule->moduleExists($module)){
-            $returnVar = msg('FAIL', 'Error loading module file "'.$module.'"', 'return');
+        if(!$this->moduleExists($module)){
+            hmsgDie('FAIL', 'Error loading module file "'.$module.'"');
             return;
         }
 
         $file = cmsROOT.'modules/'.$module.'/'.$mode.'.'.$module.'.php';
         if(!is_readable($file)){
-            $returnVar = hmsgDie('FAIL', 'Error loading module file "'.$module.'"');
+            hmsgDie('FAIL', 'Error loading module file "'.$module.'"');
             return;
         }
 
         $fileData = file_get_contents($file);
-        $newModule = $module.'_'.substr(md5(time()), 0, 6);
+        $newModule = $module.'_'.substr(md5(microtime()), 0, 6);
         $fileData = preg_replace("/(class[\s])$module([\s]extends[\s]module{)/i", '\\1'.$newModule.'\\2', $fileData);
         $success = eval('?>'.$fileData.'<?php ');
-            if ($success === false){
-                $returnVar = msg('FAIL', 'Error: There was a syntax error in the class."'.$module.'".php file. Loading Halted.', 'return');
+            if($success === false){
+                hmsgdie('FAIL', 'Error: There was a syntax error in the class."'.$module.'".php file. Loading Halted.');
                 return;
             }
 

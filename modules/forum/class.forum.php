@@ -143,8 +143,8 @@ class forum extends Module{
      * Function to output content directly to the index.php page
      *
      * @version 2.0
-     * @since     1.0.0
-     * @autor     xLink
+     * @since   1.0.0
+     * @autor   xLink
      */
     public function showMain(){
         $this->objTPL->set_filenames(array(
@@ -158,8 +158,8 @@ class forum extends Module{
                         ON p.id = t.first_post_id
                     WHERE t.cat_id ="%d"
                     GROUP BY t.id
-                    ORDER BY t.timestamp DESC 
-                    LIMIT 4',                
+                    ORDER BY t.timestamp DESC
+                    LIMIT 4',
                 array($this->config('forum', 'news_category'))
             );
 
@@ -173,12 +173,12 @@ class forum extends Module{
                     $title = secureMe(doArgs('subject', null, $thread));
                     $author = $this->objUser->profile($thread['author']);
                     $threadURL = $this->generateThreadURL($thread);
-                    
+
                     $this->objTPL->assign_block_vars('thread', array(
                         'ID'        => $thread['id'],
                         'ROW'       => $count++%2==1 ? 'row_color2' : 'row_color1',
                         'POSTED'    => langVar('L_NEWS_POSTED_ON', $author, $this->objTime->mk_time($thread['posted'])),
-                        
+
                         'AVATAR'    => $this->objUser->parseAvatar($thread['author'], 64),
                         'AUTHOR'    => $author,
                         'TITLE'     => '<a href="'.$threadURL.'">'.$title.'</a>',
@@ -194,12 +194,12 @@ class forum extends Module{
      * Returns sql about a specific forum
      *
      * @version 1.0
-     * @since     1.0.0
-     * @autor     xLink
+     * @since   1.0.0
+     * @autor   xLink
      *
-     * @param     int     $id
+     * @param   int     $id
      *
-     * @return     array
+     * @return  array
      */
     public function getForumInfo($id=0, $subs=false){
 
@@ -283,14 +283,14 @@ class forum extends Module{
      * Ouputs categories into a template and returns the contents
      *
      * @version 1.0
-     * @since     1.0.0
-     * @autor     xLink
+     * @since   1.0.0
+     * @autor   xLink
      *
-     * @param     array    $categories        Array of categories to output -parents only-
-     * @param    bool     $index            Determine if we are on the index, for sortable cats
-     * @param     string     $title            The title to give to the block
+     * @param   array   $categories     Array of categories to output -parents only-
+     * @param   bool    $index          Determine if we are on the index, for sortable cats
+     * @param   string  $title          The title to give to the block
      *
-     * @return     string
+     * @return  string
      */
     public function outputCats($categories, $index=false, $title=null){
         $vars = $this->objPage->getVar('tplVars');
@@ -353,8 +353,8 @@ class forum extends Module{
                     'LASTPOST'      => langVar('L_LASTPOST'),
 
                     /* Sortable Cats */
-                    'EXPAND'        => (User::$IS_ONLINE && $index 
-                                            ? ($cat['_display']==1 ? $vars['IMG_retract'] : $vars['IMG_expand']) 
+                    'EXPAND'        => (User::$IS_ONLINE && $index
+                                            ? ($cat['_display']==1 ? $vars['IMG_retract'] : $vars['IMG_expand'])
                                             : '/'.root().'images/spacer.gif'),
                     'DISPLAY'       => (User::$IS_ONLINE && $index ? ($cat['_display']==1 ? null : 'display:none;') : null),
                     'MODE'          => (User::$IS_ONLINE && $index ? ($cat['_display']==1 ? '1' : '0') : '1'),
@@ -484,9 +484,9 @@ class forum extends Module{
     /**
      * Shows outputs the first level of forums with sub forums and threads
      *
-     * @version    2.0
+     * @version 2.0
      * @since   1.0.0
-     * @author    xLink
+     * @author  xLink
      */
     public function showIndex(){
         $vars = $this->objPage->getVar('tplVars');
@@ -588,7 +588,7 @@ class forum extends Module{
         $usersO = 0; $guestsO = 0; $users = array();
         if(count($userO)){
             foreach($userO as $u){
-                if($u['uid']==0){   
+                if($u['uid']==0){
                     $guestsO++;
                 }else{
                     $usersO++; $users[] = $this->objUser->profile($u['uid']);
@@ -632,11 +632,11 @@ class forum extends Module{
     /**
      * Outputs threads for a category, and sub categories if necessary
      *
-     * @version    1.3
+     * @version 1.3
      * @since   0.8.0
-     * @author     xLink
+     * @author  xLink
      *
-     * @param     int     $id        ID of the category to start from
+     * @param   int     $id ID of the category to start from
      */
     public function viewCat($id){
         //init some generally used vars
@@ -713,11 +713,11 @@ class forum extends Module{
 
             //output the header
             $this->objTPL->assign_block_vars('threads', array(
-                'CAT'                => secureMe($cat['title']),
+                'CAT'               => secureMe($cat['title']),
                 'L_THREAD_TITLE'    => langVar('L_THREAD_TITLE'),
-                'L_AUTHOR'            => langVar('L_AUTHOR'),
-                'L_VIEWS'            => langVar('L_VIEWS'),
-                'L_REPLIES'            => langVar('L_POSTS'),
+                'L_AUTHOR'          => langVar('L_AUTHOR'),
+                'L_VIEWS'           => langVar('L_VIEWS'),
+                'L_REPLIES'         => langVar('L_POSTS'),
                 'L_LASTPOST'        => langVar('L_LASTPOST'),
             ));
 
@@ -782,19 +782,19 @@ class forum extends Module{
                     //output the thread info to the template
                     $this->objTPL->assign_block_vars('threads.row', array(
                         'ID'            => 'thread_'.$thread['id'],
-                        'ICON'            => $vars[$ico],
-                        'URL'            => $threadUrl,
-                        'CLASS'            => $count%2 ? 'row_color1' : 'row_color2',
+                        'ICON'          => $vars[$ico],
+                        'URL'           => $threadUrl,
+                        'CLASS'         => $count%2 ? 'row_color1' : 'row_color2',
 
-                        'TITLE'            => $title,
+                        'TITLE'         => $title,
                         'AUTHOR'        => $this->objUser->profile($thread['author']),
-                        'VIEWS'            => $thread['views'],
-                        'REPLIES'        => $thread['replies'],
+                        'VIEWS'         => $thread['views'],
+                        'REPLIES'       => $thread['replies'],
 
-                        'LP_AUTHOR'        => $thread['replies'] ? $this->objUser->profile($thread['last_uid']) : null,
+                        'LP_AUTHOR'     => $thread['replies'] ? $this->objUser->profile($thread['last_uid']) : null,
                         'LP_URL'        => $thread['replies'] ? $this->generateThreadURL($thread).'?mode=last_page' : null,
-                        'LP_TIME'        => $thread['replies'] ? $this->objTime->mk_time($thread['last_timestamp']) : langVar('L_NO_REPLYS'),
-                        'LP_REPLY'        => $thread['replies'] ? '<a href="'.$threadUrl.'?mode=last_page"><img src="'.$lp_icon.'" /></a>' : '',
+                        'LP_TIME'       => $thread['replies'] ? $this->objTime->mk_time($thread['last_timestamp']) : langVar('L_NO_REPLYS'),
+                        'LP_REPLY'      => $thread['replies'] ? '<a href="'.$threadUrl.'?mode=last_page"><img src="'.$lp_icon.'" /></a>' : '',
                     ));
 
                     if($thread['replies'] > 10){
@@ -816,10 +816,10 @@ class forum extends Module{
      * Allows a user to view a thread
      *
      * @version 2.0
-     * @since     1.0.0
-     * @author     xLink
+     * @since   1.0.0
+     * @author  xLink
      *
-     * @param     int         $id
+     * @param   int         $id
      */
     public function viewThread($id){
         $vars = $this->objPage->getVar('tplVars');
@@ -960,8 +960,8 @@ class forum extends Module{
                                            $this->objForm->inputbox('id', 'hidden', $id).
                                            $this->objForm->inputbox('quick_reply', 'hidden', 'true'),
 
-                    'L_QUICK_REPLY'        => langVar('L_QUICK_REPLY'),
-                    'F_QUICK_REPLY'        => $this->objForm->textarea('post', '', array(
+                    'L_QUICK_REPLY'     => langVar('L_QUICK_REPLY'),
+                    'F_QUICK_REPLY'     => $this->objForm->textarea('post', '', array(
                                                 'extra'=> ' tabindex="2"',
                                                 'style'=> 'width:100%;height:50px;border:0;padding:0;',
                                                 'placeholder'=> langVar('L_QR_PLACEHOLDER')
@@ -996,7 +996,7 @@ class forum extends Module{
             $this->objTPL->assign_block_vars('reply', array(
                 'URL'   => $threadUrl.'?mode=unlock',
                 'TEXT'  => langVar('L_THREAD_LOCKED'),
-                'IMG'    => $thread['locked']==1 ? '<img src="'.$vars['FIMG_locked'].'" />' : NULL,
+                'IMG'   => $thread['locked']==1 ? '<img src="'.$vars['FIMG_locked'].'" />' : NULL,
             ));
         }
 
@@ -1009,11 +1009,11 @@ class forum extends Module{
      * Outputs threads
      *
      * @version 2.0
-     * @since     1.0.0
-     * @author     xLink
+     * @since   1.0.0
+     * @author  xLink
      *
-     * @param     array     $posts
-     * @param    array    $thread
+     * @param   array     $posts
+     * @param   array    $thread
      */
     public function outputPosts($posts, $thread){
         $vars = $this->objPage->getVar('tplVars');
@@ -1064,29 +1064,29 @@ class forum extends Module{
             $tplvars = array(
                 'ID'            => $post['id'],
 
-                'USERNAME'        => strtolower($author['profile']),
+                'USERNAME'      => strtolower($author['profile']),
                 'AUTHOR'        => $this->objUser->profile($author['id']),
-                'AUTHOR_IO'        => $this->objUser->onlineIndicator($author['id']),
+                'AUTHOR_IO'     => $this->objUser->onlineIndicator($author['id']),
 
-                'L_USERLEVEL'    => langVar('LEVEL'),
-                'USERLEVEL'        => $author['level'],
-                'TIME'            => langVar('L_POSTED_ON', $this->objTime->mk_time($post['timestamp'], 'dS M y @ h:s a')),
+                'L_USERLEVEL'   => langVar('LEVEL'),
+                'USERLEVEL'     => $author['level'],
+                'TIME'          => langVar('L_POSTED_ON', $this->objTime->mk_time($post['timestamp'], 'dS M y @ h:s a')),
                 'AVATAR'        => $this->objUser->parseAvatar($author['id'], 100),
-                'POST'            => contentParse($post['post']),
+                'POST'          => contentParse($post['post']),
                 'EDITED'        => $post['edited']>0
                                      ? langVar('L_EDITED', $post['edited'], $this->objUser->profile($post['edited_uid']))
                                      : null,
 
-                'ROW'            => $count%2==1 ? 'row_color2' : 'row_color1',
+                'ROW'           => $count%2==1 ? 'row_color2' : 'row_color1',
                 'ALTROW'        => $count%2==1 ? 'row_color1' : 'row_color2',
             );
 
             if(doArgs('mode', false, $_GET) != 'reply'){
                 $tplvars += array(
-                    'USERTITLE'        => secureMe(doArgs('title', null, $author)),
-                    'SIGNATURE'        => contentParse(doArgs('signature', '&nbsp;', $author)),
-                    'POSTCOUNT'        => langVar('L_POST_COUNT', $postCounts[$author['id']]),
-                    'LOCATION'        => !is_empty($location) ? langVar('L_LOCATION', $location) : null,
+                    'USERTITLE'     => secureMe(doArgs('title', null, $author)),
+                    'SIGNATURE'     => contentParse(doArgs('signature', '&nbsp;', $author)),
+                    'POSTCOUNT'     => langVar('L_POST_COUNT', $postCounts[$author['id']]),
+                    'LOCATION'      => !is_empty($location) ? langVar('L_LOCATION', $location) : null,
                     'IP'            => (User::$IS_MOD || $threadAuth['auth_mod'])
                                          ? langVar('L_USERS_IP', $post['poster_ip'])
                                          : null,
@@ -1117,8 +1117,8 @@ class forum extends Module{
 
                         if($threadAuth['auth_del'] && !$first_post){
                             $this->objTPL->assign_block_vars('thread.del', array(
-                                'URL'    => $threadUrl.'?mode=rm&postid='.$post['id'],
-                                'IMG'    => $vars['FIMG_post_del'],
+                                'URL'   => $threadUrl.'?mode=rm&postid='.$post['id'],
+                                'IMG'   => $vars['FIMG_post_del'],
                                 'TEXT'  => langVar('L_DELETE'),
                             ));
                         }
@@ -1127,27 +1127,27 @@ class forum extends Module{
                                 'EXTRA' => $this->objUser->ajaxSettings('forum_eip')
                                                 ? ' id="post_'.$post['id'].'" class="editBtn"'
                                                 : null,
-                                'URL'    => $threadUrl.'?mode=edit&postid='.$post['id'],
-                                'IMG'    => $vars['FIMG_post_edit'],
+                                'URL'   => $threadUrl.'?mode=edit&postid='.$post['id'],
+                                'IMG'   => $vars['FIMG_post_edit'],
                                 'TEXT'  => langVar('L_EDIT'),
                             ));
                         }
                 }
                 if(User::$IS_ONLINE){
                     $this->objTPL->assign_block_vars('thread.quote', array(
-                        'URL'       => $threadUrl.'?mode=reply&q='.$post['id'],
-                        'IMG'       => $vars['FIMG_post_quote'],
-                        'TEXT'      => langVar('L_QUOTE'),
+                        'URL'   => $threadUrl.'?mode=reply&q='.$post['id'],
+                        'IMG'   => $vars['FIMG_post_quote'],
+                        'TEXT'  => langVar('L_QUOTE'),
                     ));
                 }
             }else{
                 //this version will give us a clickable link that will insert the post in a quote straight into our post we are writing
                 if(User::$IS_ONLINE){
                     $this->objTPL->assign_block_vars('thread.quote', array(
-                        'EXTRA'     => 'onclick="quotePost(\''.$post['id'].'\'); return false;"',
-                        'URL'       => '#',
-                        'IMG'       => $vars['FIMG_post_quote'],
-                        'TEXT'      => langVar('L_QUOTE'),
+                        'EXTRA' => 'onclick="quotePost(\''.$post['id'].'\'); return false;"',
+                        'URL'   => '#',
+                        'IMG'   => $vars['FIMG_post_quote'],
+                        'TEXT'  => langVar('L_QUOTE'),
                     ));
                 }
             }
@@ -1159,26 +1159,26 @@ class forum extends Module{
         if(User::$IS_MOD || $threadAuth['auth_mod']){
             if($threadAuth['auth_move']){
                 $this->objTPL->assign_block_vars('move', array(
-                    'URL'       => $threadUrl.'?mode=move',
-                    'IMG'        => $vars['FIMG_post_move'],
-                    'AJAX'      => ' onclick="return moveThread('.$id.');"',
-                    'TEXT'      => langVar('F_MOVE'),
+                    'URL'   => $threadUrl.'?mode=move',
+                    'IMG'   => $vars['FIMG_post_move'],
+                    'AJAX'  => ' onclick="return moveThread('.$id.');"',
+                    'TEXT'  => langVar('F_MOVE'),
                 ));
             }
             $this->objTPL->assign_block_vars('locked', array(
-                'URL'            =>        $threadUrl.'?mode='.($thread['locked']==1 ? 'unlock' : 'lock'),
-                'IMG'            =>        isset($thread['locked'])&&$thread['locked']==1
-                                            ? $vars['FIMG_locked']
-                                            : $vars['FIMG_unlocked'],
-                'TEXT'            =>        isset($thread['locked'])&&$thread['locked']==1
-                                            ? langVar('F_UNLOCK')
-                                            : langVar('F_LOCK'),
+                'URL'   => $threadUrl.'?mode='.($thread['locked']==1 ? 'unlock' : 'lock'),
+                'IMG'   => isset($thread['locked'])&&$thread['locked']==1
+                                ? $vars['FIMG_locked']
+                                : $vars['FIMG_unlocked'],
+                'TEXT'  => isset($thread['locked'])&&$thread['locked']==1
+                                ? langVar('F_UNLOCK')
+                                : langVar('F_LOCK'),
             ));
             if($threadAuth['auth_del']){
                 $this->objTPL->assign_block_vars('del', array(
-                    'URL'            =>        $threadUrl.'?mode=rm',
-                    'IMG'            =>        $vars['FIMG_post_del'],
-                    'TEXT'          =>      langVar('F_DELETE'),
+                    'URL'   => $threadUrl.'?mode=rm',
+                    'IMG'   => $vars['FIMG_post_del'],
+                    'TEXT'  => langVar('F_DELETE'),
                 ));
             }
         }
@@ -1192,10 +1192,10 @@ class forum extends Module{
      * Allows posting of threads to the Forum
      *
      * @version 2.0
-     * @since     1.0.0
-     * @author     xLink
+     * @since   1.0.0
+     * @author  xLink
      *
-     * @param     int         $id
+     * @param   int         $id
      */
     public function postThread($id){
         $category = $this->getForumInfo($id);
@@ -1306,10 +1306,10 @@ class forum extends Module{
                 'ID'            => $this->objForm->inputbox('id', 'hidden', $id).
                                     $this->objForm->inputbox('sessid', 'hidden', $sessid),
 
-                'L_TITLE'        => langVar('L_TITLE').':',
-                'F_TITLE'        => $this->objForm->inputbox('title', 'input', '', array('extra'=> 'tabindex="1"', 'style'=> 'width:99%')),
+                'L_TITLE'       => langVar('L_TITLE').':',
+                'F_TITLE'       => $this->objForm->inputbox('title', 'input', '', array('extra'=> 'tabindex="1"', 'style'=> 'width:99%')),
 
-                'L_POST_BODY'    => langVar('L_POST_BODY').':',
+                'L_POST_BODY'   => langVar('L_POST_BODY').':',
                 'F_POST'        => $this->objForm->textarea('post', '', array('extra'=> 'tabindex="2" rows="3"', 'style'=> 'height:350px;width:99%;')),
 
                 'POST_MODE'     => $postMode,
@@ -1350,12 +1350,12 @@ class forum extends Module{
 
             //generate the sql for the topics table....Part 1
             unset($thread);
-            $thread['mode']            = doArgs('type', false, $_POST, 'is_number') && ($catAuth['auth_mod'] || User::$IS_MOD) ? $_POST['type'] : 0;
-            $thread['cat_id']        = $id;
-            $thread['author']        = $uid;
-            $thread['locked']        = isset($_POST['autolock']) && ($catAuth['auth_mod'] || User::$IS_MOD) ? 1 : 0;
-            $thread['subject']        = secureMe($_POST['title']);
-            $thread['last_uid']        = $uid;
+            $thread['mode']         = doArgs('type', false, $_POST, 'is_number') && ($catAuth['auth_mod'] || User::$IS_MOD) ? $_POST['type'] : 0;
+            $thread['cat_id']       = $id;
+            $thread['author']       = $uid;
+            $thread['locked']       = isset($_POST['autolock']) && ($catAuth['auth_mod'] || User::$IS_MOD) ? 1 : 0;
+            $thread['subject']      = secureMe($_POST['title']);
+            $thread['last_uid']     = $uid;
             $thread['timestamp']    = time();
 
                 $thread['id'] = $this->objSQL->getAI('forum_threads');
@@ -1370,11 +1370,11 @@ class forum extends Module{
 
             //and now to generate the sql for the actual post table ;D...part 2
             unset($post);
-            $post['post']        = secureMe($_POST['post']);
-            $post['author']        = $uid;
-            $post['timestamp']    = time();
-            $post['thread_id']    = $topic_insert;
-            $post['poster_ip']    = User::getIP();
+            $post['post']       = secureMe($_POST['post']);
+            $post['author']     = $uid;
+            $post['timestamp']  = time();
+            $post['thread_id']  = $topic_insert;
+            $post['poster_ip']  = User::getIP();
 
                 $post_insert = $this->objSQL->insertRow('forum_posts', $post);
                     if(!$post_insert){
@@ -1398,7 +1398,7 @@ class forum extends Module{
             if(isset($_POST['watch_topic'])){
                 unset($array);
                 $array['user_id'] = $_uid;
-                $array['thread_id']    = $topic_insert;
+                $array['thread_id'] = $topic_insert;
 
                     $this->objSQL->insertRow('forum_watch', $array);
             }
@@ -1413,10 +1413,10 @@ class forum extends Module{
      * Allows static reply to a thread
      *
      * @version 2.0
-     * @since     1.0.0
-     * @author     xLink
+     * @since   1.0.0
+     * @author  xLink
      *
-     * @param     int         $id
+     * @param   int         $id
      */
     public function postReply($id){
         //grab the required thread so we got something to work with..
@@ -1527,10 +1527,10 @@ class forum extends Module{
                 'ID'            => $this->objForm->inputbox('id', 'hidden', $id).
                                     $this->objForm->inputbox('sessid', 'hidden', $sessid),
 
-                'L_TITLE'        => langVar('L_TITLE').':',
-                'F_TITLE'        => $this->objForm->inputbox('title', 'input', '', array('extra'=> 'tabindex="1"', 'style'=> 'width:99%')),
+                'L_TITLE'       => langVar('L_TITLE').':',
+                'F_TITLE'       => $this->objForm->inputbox('title', 'input', '', array('extra'=> 'tabindex="1"', 'style'=> 'width:99%')),
 
-                'L_POST_BODY'    => langVar('L_POST_BODY').':',
+                'L_POST_BODY'   => langVar('L_POST_BODY').':',
                 'F_POST'        => $this->objForm->textarea('post', $msg, array('extra'=> 'tabindex="2" rows="3"', 'style'=> 'height:350px;width:99%;')),
 
                 'WATCH_TOPIC'   => $this->objForm->checkbox('watch_thread', '', true). langVar('L_WATCH_THREAD'),
@@ -1580,11 +1580,11 @@ class forum extends Module{
 
             //generate the post
             unset($post);
-            $post['post']        = secureMe($_POST['post']);
-            $post['author']        = $uid;
-            $post['timestamp']    = time();
-            $post['thread_id']    = $thread['id'];
-            $post['poster_ip']    = User::getIP();
+            $post['post']           = secureMe($_POST['post']);
+            $post['author']         = $uid;
+            $post['timestamp']      = time();
+            $post['thread_id']      = $thread['id'];
+            $post['poster_ip']      = User::getIP();
 
                 $post_insert = $this->objSQL->insertRow('forum_posts', $post);
                     if(!$post_insert){
@@ -1614,9 +1614,9 @@ class forum extends Module{
 
             //do the notifications
             $info = array(
-                'timestamp' => time(),
-                'content_id' => $thread_id,
-                'thread_id' => $thread['id'],
+                'timestamp'     => time(),
+                'content_id'    => $thread_id,
+                'thread_id'     => $thread['id'],
             );
             $this->notify($id, $thread, $info);
 
@@ -1629,10 +1629,10 @@ class forum extends Module{
      * Allows quick reply
      *
      * @version 2.0
-     * @since     1.0.0
-     * @author     xLink
+     * @since   1.0.0
+     * @author  xLink
      *
-     * @param     int         $id
+     * @param   int         $id
      */
     public function postQuickReply($id){
         //grab the required thread so we got something to work with..
@@ -1762,7 +1762,7 @@ class forum extends Module{
                     echo '<script>document.location= "'.$this->generateThreadURL($thread).'?mode=last_page";</script>';
                     exit;
                 }
-                
+
                 $post['id'] = $post_insert;
                 echo $this->outputPosts(array($post), $thread);
                 exit;
@@ -1775,10 +1775,10 @@ class forum extends Module{
      * Allows a user to edit post if conditions are right
      *
      * @version 2.0
-     * @since     1.0.0
-     * @author     xLink
+     * @since   1.0.0
+     * @author  xLink
      *
-     * @param     int         $id
+     * @param   int         $id
      */
     public function editPost($id){
         //grab the post were reffering to
@@ -1906,10 +1906,10 @@ class forum extends Module{
                 'ID'            => $this->objForm->inputbox('id', 'hidden', $id).
                                     $this->objForm->inputbox('sessid', 'hidden', $sessid),
 
-                'L_TITLE'        => langVar('L_TITLE').':',
-                'F_TITLE'        => $this->objForm->inputbox('title', 'input', $thread['subject'], array('extra'=> 'tabindex="1"', 'style'=> 'width:99%')),
+                'L_TITLE'       => langVar('L_TITLE').':',
+                'F_TITLE'       => $this->objForm->inputbox('title', 'input', $thread['subject'], array('extra'=> 'tabindex="1"', 'style'=> 'width:99%')),
 
-                'L_POST_BODY'    => langVar('L_POST_BODY').':',
+                'L_POST_BODY'   => langVar('L_POST_BODY').':',
                 'F_POST'        => $this->objForm->textarea('post', $post['post'], array('extra'=> 'tabindex="2" rows="3"', 'style'=> 'height:350px;width:99%;')),
 
                 'POST_MODE'     => $postMode,
@@ -1962,13 +1962,13 @@ class forum extends Module{
     /**
      * Deletes a thread from the forum
      *
-     * @version    3.0
+     * @version 3.0
      * @since   0.8.0
-     * @author     xLink
+     * @author  xLink
      *
-     * @param     int     $id
+     * @param   int     $id
      *
-     * @return     bool
+     * @return  bool
      */
     function delThread($id){
         if(!isset($id) || !is_number($id)){
@@ -2038,13 +2038,13 @@ class forum extends Module{
     /**
      * Deletes a reply from a thread
      *
-     * @version    3.0
+     * @version 3.0
      * @since   0.8.0
-     * @author     xLink
+     * @author  xLink
      *
-     * @param     int     $id
+     * @param   int     $id
      *
-     * @return     bool
+     * @return  bool
      */
     function delReply($id){
             //grab the post
@@ -2096,19 +2096,12 @@ class forum extends Module{
         }
     }
 
-
-
-
-
-
-
-
     /**
      * Keeps tracking topics upto date
      *
      * @version 1.0
-     * @since     1.0.0
-     * @author     xLink
+     * @since   1.0.0
+     * @author  xLink
      */
     private function forumTrackerInit(){
         //if they arn't logged in return, no need to continue
@@ -2130,7 +2123,7 @@ class forum extends Module{
                 FROM `$Pforum_threads` t
                 LEFT JOIN `$Pforum_posts` p
                     ON t.id = p.thread_id
-                    
+
                   WHERE p.timestamp >= "%s"
                 GROUP BY t.id',
             array($this->objUser->grab('last_visit'))
@@ -2169,12 +2162,12 @@ class forum extends Module{
      * Retreives breadcrumb info for sub categories.
      *
      * @version 2.0
-     * @since     1.0.0
-     * @author     xLink
+     * @since   1.0.0
+     * @author  xLink
      *
-     * @param     int        $threadId
-     * @param     array    $thread
-     * @param    array    $postInfo
+     * @param   int     $threadId
+     * @param   array   $thread
+     * @param   array   $postInfo
      */
     private function notify($threadId, $thread, $postInfo){
         $users2Notify = array(); $uid = $this->objUser->grab('id');
@@ -2209,10 +2202,10 @@ class forum extends Module{
             ));
 
         $vars = array(
-            'AUTHOR'         => $uid,
-            'THREAD_NAME'     => $thread['subject'],
-            'TIME'             => $postInfo['posted'],
-            'THREAD_URL'     => $postInfo['thread_url'],
+            'AUTHOR'        => $uid,
+            'THREAD_NAME'   => $thread['subject'],
+            'TIME'          => $postInfo['posted'],
+            'THREAD_URL'    => $postInfo['thread_url'],
         );
 
         $nl = "\n";
@@ -2238,10 +2231,8 @@ class forum extends Module{
      * Outputs a parsed post
      *
      * @version 2.0
-     * @since     1.0.0
-     * @author     xLink
-     *
-     * @return     string
+     * @since   1.0.0
+     * @author  xLink
      */
     public function preview(){
         if(!doArgs('post_val', false, $_POST)){ die(); }
@@ -2263,12 +2254,12 @@ class forum extends Module{
      * Sets up some select boxes for the forums post page.
      *
      * @version 1.0
-     * @since     1.0.0
-     * @author     xLink
+     * @since   1.0.0
+     * @author  xLink
      *
-     * @param     string    $type
+     * @param   string    $type
      *
-     * @return     string
+     * @return  string
      */
     public function genSelects($type){
         $bcode='';
@@ -2301,8 +2292,8 @@ class forum extends Module{
      * Generates a block for the smilies
      *
      * @version 2.0
-     * @since     1.0.0
-     * @author     xLink
+     * @since   1.0.0
+     * @author  xLink
      */
     public function generateSmilies(){
         //set some vars up
@@ -2350,13 +2341,13 @@ class forum extends Module{
     /**
      * Returns a formated URL for the threads
      *
-     * @version    1.0
+     * @version 1.0
      * @since   1.0.0
-     * @author     xLink
+     * @author  xLink
      *
-     * @param     array     $thread
+     * @param   array     $thread
      *
-     * @return     string
+     * @return  string
      */
     public function generateThreadURL($thread){
         if(!is_array($thread) || is_empty($thread)){
@@ -2368,13 +2359,13 @@ class forum extends Module{
     /**
      * Returns the list of authors along with their post counts
      *
-     * @version    1.0
+     * @version 1.0
      * @since   1.0.0
-     * @author     xLink
+     * @author  xLink
      *
-     * @param     array     $uids
+     * @param   array     $uids
      *
-     * @return     int
+     * @return  int
      */
     public function getPostCounts($uids){
         if(!is_array($uids)){
@@ -2412,14 +2403,14 @@ class forum extends Module{
      * Figures out Combined Posts counts for $cat and subs /
      *         Figured out which 'last post' to show from the sub cats
      *
-     * @version    1.0
+     * @version 1.0
      * @since   0.8.0
-     * @author     xLink
+     * @author  xLink
      *
-     * @param     int     $cat    ID of the parent category
-     * @param    string     $mode
+     * @param   int         $cat    ID of the parent category
+     * @param   string      $mode
      *
-     * @return     int/array    int if $mode == (post || thread), array if $mode == last_post
+     * @return  int/array   int if $mode == (post || thread), array if $mode == last_post
      */
     private function modCat($cat, $mode){
         //make sure we have the right mode
@@ -2488,11 +2479,11 @@ class forum extends Module{
     /**
      * Sets Breadcrumbs from this category to its highest grandparent.
      *
-     * @version    1.3
+     * @version 1.3
      * @since   0.8.0
-     * @author     xLink
+     * @author  xLink
      *
-     * @param     int     $id        ID of the category to start from
+     * @param   int     $id        ID of the category to start from
      */
     private function getSubCrumbs($id){
         //set some vars
@@ -2502,8 +2493,8 @@ class forum extends Module{
         $query = $this->getForumInfo($id);
 
         //and add it to the breadcrumb array
-        $b[$count++]     = $query[0];
-        $countArray[]     = $query[0]['id'];
+        $b[$count++]    = $query[0];
+        $countArray[]   = $query[0]['id'];
 
         //and then loop back through the cats till we have no parent id
         while($query[0]['parent_id'] != 0){
@@ -2531,13 +2522,13 @@ class forum extends Module{
      * Generates a ACL list for categories
      *
      * @version 2.0
-     * @since     1.0.0
-     * @author     xLink
+     * @since   1.0.0
+     * @author  xLink
      *
-     * @param     constant    $type
-     * @param     int         $forum_id
+     * @param   constant    $type
+     * @param   int         $forum_id
      *
-     * @return     array
+     * @return  array
      */
     public function auth($type, $forum_id, $f_access=NULL){
 
@@ -2547,15 +2538,15 @@ class forum extends Module{
                 $auth_fields = array('auth_view', 'auth_read', 'auth_post', 'auth_reply', 'auth_edit', 'auth_del','auth_move', 'auth_special');
             break;
 
-            case AUTH_VIEW:       $a_sql = 'a.auth_view';         $auth_fields = array('auth_view');              break;
-            case AUTH_READ:       $a_sql = 'a.auth_read';         $auth_fields = array('auth_read');              break;
-            case AUTH_POST:       $a_sql = 'a.auth_post';         $auth_fields = array('auth_post');              break;
-            case AUTH_REPLY:      $a_sql = 'a.auth_reply';          $auth_fields = array('auth_reply');             break;
-            case AUTH_EDIT:       $a_sql = 'a.auth_edit';         $auth_fields = array('auth_edit');              break;
-            case AUTH_DELETE:     $a_sql = 'a.auth_del';          $auth_fields = array('auth_del');               break;
-            case AUTH_MOVE:       $a_sql = 'a.auth_move';         $auth_fields = array('auth_move');              break;
-            case AUTH_SPECIAL:    $a_sql = 'a.auth_special';      $auth_fields = array('auth_special');           break;
-            default:                                                                                              break;
+            case AUTH_VIEW:       $a_sql = 'a.auth_view';       $auth_fields = array('auth_view');              break;
+            case AUTH_READ:       $a_sql = 'a.auth_read';       $auth_fields = array('auth_read');              break;
+            case AUTH_POST:       $a_sql = 'a.auth_post';       $auth_fields = array('auth_post');              break;
+            case AUTH_REPLY:      $a_sql = 'a.auth_reply';      $auth_fields = array('auth_reply');             break;
+            case AUTH_EDIT:       $a_sql = 'a.auth_edit';       $auth_fields = array('auth_edit');              break;
+            case AUTH_DELETE:     $a_sql = 'a.auth_del';        $auth_fields = array('auth_del');               break;
+            case AUTH_MOVE:       $a_sql = 'a.auth_move';       $auth_fields = array('auth_move');              break;
+            case AUTH_SPECIAL:    $a_sql = 'a.auth_special';    $auth_fields = array('auth_special');           break;
+            default:                                                                                            break;
         }
 
         //check if we need to return perms for a specific forum or the entire lot
@@ -2703,13 +2694,13 @@ class forum extends Module{
      * Builds the multidimensional array
      *
      * @version 1.0
-     * @since     1.0.0
-     * @author     xLink
+     * @since   1.0.0
+     * @author  xLink
      *
-     * @param     array    $paths
-     * @param     int     $id
+     * @param   array    $paths
+     * @param   int     $id
      *
-     * @return     string
+     * @return  string
      */
     public function buildJumpBoxArray($blank=array()){
         //grab a copy of the entire cat table, grabbing the data we need
@@ -2768,15 +2759,15 @@ class forum extends Module{
      * A custom function to build a select box, specifically for the jumpbox
      *
      * @version 1.0
-     * @since     1.0.0
-     * @author     xLink
+     * @since   1.0.0
+     * @author  xLink
      *
-     * @param     string    $name
-     * @param     array     $options
-     * @param    bool     $selected
-     * @param    bool     $allowMasters        Allow the Root Forums to be selected?
+     * @param   string  $name
+     * @param   array   $options
+     * @param   bool    $selected
+     * @param   bool    $allowMasters        Allow the Root Forums to be selected?
      *
-     * @return     string
+     * @return  string
      */
     public function buildJumpBox($name, $options, $selected=null, $allowMasters=true){
 
@@ -2802,17 +2793,17 @@ class forum extends Module{
      * A recursive function for generating the select box options
      *
      * @version 1.0
-     * @since     1.0.0
-     * @author     xLink
+     * @since   1.0.0
+     * @author  xLink
      *
-     * @param     array    $options
-     * @param     string     $selected
-     * @param    bool     $noKeys
-     * @param     int        $repeat
-     * @param     int     $i
-     * @param     int     $ki
+     * @param   array       $options
+     * @param   string      $selected
+     * @param   bool        $noKeys
+     * @param   int         $repeat
+     * @param   int         $i
+     * @param   int         $ki
      *
-     * @return     string
+     * @return  string
      */
     private function processSelect($options, $selected, $noKeys=false, $repeat=0, $i=0, $ki=0){
         if(!is_array($options)){ return false; }
@@ -2843,13 +2834,13 @@ class forum extends Module{
      * Builds a path for the multi dimensional array the jumpbox uses
      *
      * @version 1.0
-     * @since     1.0.0
-     * @author     xLink
+     * @since   1.0.0
+     * @author  xLink
      *
-     * @param     array    $paths
-     * @param     int     $id
+     * @param   array   $paths
+     * @param   int     $id
      *
-     * @return     string
+     * @return  string
      */
     private function buildArrayPath($paths=array(), $id=0){
         if(!is_array($paths)){ return false; }
@@ -2870,10 +2861,10 @@ class forum extends Module{
      * Performs action based on $action
      *
      * @version 1.0
-     * @since     1.0.0
-     * @author     xLink
+     * @since   1.0.0
+     * @author  xLink
      *
-     * @param     string    $action
+     * @param   string    $action
      */
     public function doAjax($action){
         if(is_empty($action)){ $this->throwHTTP(500); return false; }

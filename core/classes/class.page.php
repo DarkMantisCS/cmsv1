@@ -7,9 +7,9 @@ if(!defined('INDEX_CHECK')){die('Error: Cannot access directly.');}
 /**
  * This class handles page generation
  *
- * @version     1.0
- * @since         1.0.0
- * @author         xLink
+ * @version 1.0
+ * @since   1.0.0
+ * @author  xLink
  */
 class page extends coreClass{
 
@@ -21,7 +21,7 @@ class page extends coreClass{
     /**
      * Init class, and set some options
      *
-     * @version    1.0
+     * @version 1.0
      * @since   1.0.0
      * @author  xLink
      */
@@ -35,7 +35,7 @@ class page extends coreClass{
     /**
      * Sets the current Page's title
      *
-     * @version    1.0
+     * @version 1.0
      * @since   1.0.0
      * @author  xLink
      *
@@ -48,7 +48,7 @@ class page extends coreClass{
     /**
      * Merges values with tplVars
      *
-     * @version    1.0
+     * @version 1.0
      * @since   1.0.0
      * @author  xLink
      *
@@ -61,7 +61,7 @@ class page extends coreClass{
     /**
      * Sets the menu to the version that is wanted.
      *
-     * @version    1.0
+     * @version 1.0
      * @since   1.0.0
      * @author  xLink
      *
@@ -75,7 +75,7 @@ class page extends coreClass{
     /**
      * Adds a JS File to be output
      *
-     * @version    1.0
+     * @version 1.0
      * @since   1.0.0
      * @author  xLink
      *
@@ -95,7 +95,7 @@ class page extends coreClass{
     /**
      * Adds a CSS File to be output
      *
-     * @version    1.0
+     * @version 1.0
      * @since   1.0.0
      * @author  xLink
      *
@@ -115,7 +115,7 @@ class page extends coreClass{
     /**
      * Adds a string of JS to be output
      *
-     * @version    1.0
+     * @version 1.0
      * @since   1.0.0
      * @author  xLink
      *
@@ -135,7 +135,7 @@ class page extends coreClass{
     /**
      * Adds a string of CSS to be output
      *
-     * @version    1.0
+     * @version 1.0
      * @since   1.0.0
      * @author  xLink
      *
@@ -155,7 +155,7 @@ class page extends coreClass{
     /**
      * Adds a pagecrumb to the array
      *
-     * @version    1.0
+     * @version 1.0
      * @since   1.0.0
      * @author  xLink
      *
@@ -168,11 +168,11 @@ class page extends coreClass{
     /**
      * Outputs the pagecrumbs
      *
-     * @version    1.0
+     * @version 1.0
      * @since   1.0.0
      * @author  xLink
      *
-     * @return     string
+     * @return  string
      */
     public function showPagecrumbs(){
         $breadcrumbs = $this->pageCrumbs;
@@ -213,13 +213,13 @@ class page extends coreClass{
     /**
      * Redirect using PHP Header function or JS redirect
      *
-     * @version    1.0
+     * @version 1.0
      * @since   1.0.0
      * @author  xLink
 
-     * @param    string    $location
-     * @param    int     $time
-     * @param    int        $mode         Definitions - 1=>GET['redirect'], 2=>HTTP_REFFERER, => 0=>$location
+     * @param   string    $location
+     * @param   int     $time
+     * @param   int        $mode         Definitions - 1=>GET['redirect'], 2=>HTTP_REFFERER, => 0=>$location
      */
     public function redirect($location=null, $time=0, $mode=0){
         switch($mode) {
@@ -259,13 +259,13 @@ class page extends coreClass{
     /**
      * Set the Page Theme
      *
-     * @version    1.0
+     * @version 1.0
      * @since   1.0.0
      * @author  xLink
-
-     * @param    bool     $theme
      *
-     * @return     bool
+     * @param   bool     $theme
+     *
+     * @return  bool
      */
     public function setTheme($theme=null){
         if(is_empty($theme)){
@@ -305,9 +305,9 @@ class page extends coreClass{
      * Loads the theme header up
      *
      * @version 2.0
-     * @since     1.0.0
+     * @since   1.0.0
      *
-     * @param     bool $simple
+     * @param   bool $simple
      */
     public function showHeader($simple=false){
         if($this->header['completed']){ return; }
@@ -546,9 +546,10 @@ class page extends coreClass{
      * Loads the theme footer and debug up if needed
      *
      * @version 2.0
-     * @since     1.0.0
+     * @since   1.0.0
+     * @author  xLink
      *
-     * @param     bool $simple
+     * @param   bool $simple
      */
     public function showFooter($simple=false){
         global $START_CMS_LOAD, $START_RAM_USE, $config;
@@ -640,7 +641,7 @@ class page extends coreClass{
         $this->timer = isset($START_CMS_LOAD) ? $START_CMS_LOAD : microtime(true);
         $footerVars['sqlQueries'] = $queries;
         $footerVars['sqlTimer'] = $sqlTimer;
-        $footerVars['pageGen'] = round(microtime(true)-$this->timer, 5);
+        $footerVars['pageGen'] = round(microtime(true)-$this->timer, 5)-$sqlTimer;
         $footerVars['nextCron'] = $this->objTime->mk_time($this->config('statistics', 'hourly_cron') + $this->config('cron', 'hourly_time'));
         $footerVars['ramUsage'] = formatBytes(memory_get_usage()-$START_RAM_USE);
 
@@ -672,7 +673,8 @@ class page extends coreClass{
      * Loads the inital vars for the tpls
      *
      * @version 2.0
-     * @since     1.0.0
+     * @since   1.0.0
+     * @author  xLink
      */
     public function setThemeVars(){
         $vars = $this->getVar('tplVars');
@@ -683,32 +685,32 @@ class page extends coreClass{
 
         //define array of vars that we want
         $vars = array(
-            'ROOT'            => root(),
+            'ROOT'          => root(),
             'THEME_ROOT'    => root(). Page::$THEME_ROOT,
-            'ACP_TROOT'        => root(). $this->acpThemeROOT,
+            'ACP_TROOT'     => root(). $this->acpThemeROOT,
 
-            'SITE_NAME'        => $this->config('site', 'site_name'),
+            'SITE_NAME'     => $this->config('site', 'site_name'),
 
             'ROW_COLOR1'    => $vars['row_color1'],
             'ROW_COLOR2'    => $vars['row_color2'],
 
-            'USERNAME'        => $this->objUser->grab('username'),
-            'TIME'            => $this->objTime->mk_time(time(), 'l H:i:s a'),
+            'USERNAME'      => $this->objUser->grab('username'),
+            'TIME'          => $this->objTime->mk_time(time(), 'l H:i:s a'),
 
 
-            'U_UCP'            => '/'.root().'user/',
-            'U_LOGIN'        => '/'.root().'login.php',
-            'U_LOGOUT'        => '/'.root().'login.php?action=logout&check='.$this->objUser->grab('usercode'),
+            'U_UCP'         => '/'.root().'user/',
+            'U_LOGIN'       => '/'.root().'login.php',
+            'U_LOGOUT'      => '/'.root().'login.php?action=logout&check='.$this->objUser->grab('usercode'),
 
-            'L_UCP'            => langVar('L_UCP'),
-            'L_LOGIN'        => langVar('L_LOGIN'),
-            'L_LOGOUT'        => langVar('L_LOGOUT'),
+            'L_UCP'         => langVar('L_UCP'),
+            'L_LOGIN'       => langVar('L_LOGIN'),
+            'L_LOGOUT'      => langVar('L_LOGOUT'),
         );
 
         //this needs to show up if we have admin perms and dont have the acp auth atm
         if($this->objUser->grab('userlevel') == ADMIN){
             $vars += array(
-                'ACP_LINK'     => '- <a href="/'.root().'admin/">'.langVar('L_ACP').'</a>',
+                'ACP_LINK' => '- <a href="/'.root().'admin/">'.langVar('L_ACP').'</a>',
             );
         }
 

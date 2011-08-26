@@ -7,33 +7,33 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 /**
 * Class to create and maintain forms
 *
-* @version     1.0
-* @since       1.0.0
-* @author      xLink
+* @version  1.0
+* @since    1.0.0
+* @author   xLink
 */
 class form extends coreClass{
 
     /**
      * Starts a new form off
      *
-     * @version    1.0
+     * @version 1.0
      * @since   1.0.0
      * @author  xLink
      *
-     * @param   string $name     Name of the form
+     * @param   string $name    Name of the form
      * @param   array  $args    Arguments to pass to the form header
      *
      * @return  string
      */
     public function start($name, $args=array()){
         $args = array(
-            'method'        => strtolower(doArgs('method',         'get',     $args)),
-            'action'        => doArgs('action',                 null,     $args),
-            'onsubmit'      => doArgs('onsubmit',                 false,     $args),
-            'extra'          => doArgs('extra',                     null,     $args),
-            'validate'        => doArgs('validate',                 true,     $args),
+            'method'        => strtolower(doArgs('method','get', $args)),
+            'action'        => doArgs('action', null, $args),
+            'onsubmit'      => doArgs('onsubmit', false, $args),
+            'extra'         => doArgs('extra', null, $args),
+            'validate'      => doArgs('validate', true, $args),
 
-            'autocomplete'  => doArgs('autocomplete',             true,     $args),
+            'autocomplete'  => doArgs('autocomplete', true, $args),
         );
 
         if($this->config('global', 'browser')=='Chrome'){
@@ -41,19 +41,19 @@ class form extends coreClass{
         }
 
         return '<form name="'.$name.'" id="'.$name.'" '.
-                    (!is_empty($args['method'])     ? 'method="'.$args['method'].'" '         : null).
-                    (!is_empty($args['action'])     ? 'action="'.$args['action'].'" '         : 'action="'.$_SERVER['PHP_SELF'].'" ').
-                    ($args['onsubmit']               ? 'onsubmit="'.$args['onsubmit'].'" '     : null).
-                    (!$args['validate']             ? 'novalidate="novalidate" '              : null).
-                    (!$args['autocomplete']         ? 'autocomplete="off" '                  : null).
-                    (!is_empty($args['extra'])      ? $args['extra']                         : null).
+                    (!is_empty($args['method'])     ? 'method="'.$args['method'].'" '       : null).
+                    (!is_empty($args['action'])     ? 'action="'.$args['action'].'" '       : 'action="'.$_SERVER['PHP_SELF'].'" ').
+                    ($args['onsubmit']              ? 'onsubmit="'.$args['onsubmit'].'" '   : null).
+                    (!$args['validate']             ? 'novalidate="novalidate" '            : null).
+                    (!$args['autocomplete']         ? 'autocomplete="off" '                 : null).
+                    (!is_empty($args['extra'])      ? $args['extra']                        : null).
                 '>'."\n";
     }
 
     /**
      * Finishes the form - mebe useful for something else in the future
      *
-     * @version    1.0
+     * @version 1.0
      * @since   1.0.0
      * @author  xLink
      *
@@ -66,39 +66,39 @@ class form extends coreClass{
     /**
      * Mould for the input tag, this supports a fair amount of tags
      *
-     * @version    1.0
+     * @version 1.0
      * @since   1.0.0
      * @author  xLink
      *
-     * @param   string     $name
-     * @param   string     $type
-     * @param   string     $value
-     * @param   array     $args
+     * @param   string  $name
+     * @param   string  $type
+     * @param   string  $value
+     * @param   array   $args
      *
      * @return  string
      */
     public function inputbox($name, $type='text', $value='', $args=array()){
         $args = array(
-            'id'            => doArgs('id',             $name,     $args),
-            'name'            => doArgs('name',             $name,    $args),
-            'class'         => doArgs('class',             null,     $args),
-            'checked'       => doArgs('checked',         false,     $args),
-            'disabled'      => doArgs('disabled',         false,     $args),
-            'br'            => doArgs('br',             false,     $args),
-            'style'         => doArgs('style',             null,     $args),
-            'extra'         => doArgs('extra',             null,     $args),
-            'xssFilter'     => doArgs('xssFilter',         true,     $args),
+            'id'            => doArgs('id',         $name,  $args),
+            'name'          => doArgs('name',       $name,  $args),
+            'class'         => doArgs('class',      null,   $args),
+            'checked'       => doArgs('checked',    false,  $args),
+            'disabled'      => doArgs('disabled',   false,  $args),
+            'br'            => doArgs('br',         false,  $args),
+            'style'         => doArgs('style',      null,   $args),
+            'extra'         => doArgs('extra',      null,   $args),
+            'xssFilter'     => doArgs('xssFilter',  true,   $args),
 
             //HTML5 tag additions
-            'required'         => doArgs('required',         false,     $args),
-            'placeholder'   => doArgs('placeholder',     null,     $args),
-            'autofocus'     => doArgs('autofocus',         false,     $args),
-            'min'           => doArgs('min',             0,         $args, 'is_number'),
-            'max'             => doArgs('max',             0,         $args, 'is_number'),
-            'step'             => doArgs('step',             0,         $args, 'is_number'),
+            'required'      => doArgs('required',   false,  $args),
+            'placeholder'   => doArgs('placeholder',null,   $args),
+            'autofocus'     => doArgs('autofocus',  false,  $args),
+            'min'           => doArgs('min',        0,      $args, 'is_number'),
+            'max'           => doArgs('max',        0,      $args, 'is_number'),
+            'step'          => doArgs('step',       0,      $args, 'is_number'),
 
             //CMS addition - will set the field to auto complete usernames
-            'autocomplete'  => doArgs('autocomplete',     true,     $args),
+            'autocomplete'  => doArgs('autocomplete',true,  $args),
         );
 
         $typeVali = array( 'button', 'checkbox', 'file', 'hidden', 'image', 'password', 'radio', 'reset', 'submit', 'text',
@@ -107,35 +107,35 @@ class form extends coreClass{
 
         return '<input type="'.(in_array($type, $typeVali) ? $type : 'text').'" '.
                     'class="'.$args['class'].'" name="'.$args['name'].'" id="'.$args['id'].'" '.
-                    ($args['xssFilter']===true            ? 'value="'.htmlspecialchars($value).'" '     : 'value="'.$value.'" ').
+                    ($args['xssFilter']===true          ? 'value="'.htmlspecialchars($value).'" '   : 'value="'.$value.'" ').
 
                     (!is_empty($args['placeholder'])    ? 'placeholder="'.$args['placeholder'].'" ' : null).
-                    ($args['required']===true             ? 'required="required" '                     : null).
-                    (!is_empty($args['autofocus'])        ? 'autofocus="'.$args['autofocus'].'" '     : null).
+                    ($args['required']===true           ? 'required="required" '                    : null).
+                    (!is_empty($args['autofocus'])      ? 'autofocus="'.$args['autofocus'].'" '     : null).
 
                     (!is_empty($args['min'])            ? 'min="'.$args['min'].'" '                 : null).
                     (!is_empty($args['max'])            ? 'max="'.$args['max'].'" '                 : null).
-                    (!is_empty($args['step'])            ? 'step="'.$args['step'].'" '                 : null).
+                    (!is_empty($args['step'])           ? 'step="'.$args['step'].'" '               : null).
 
-                    ($args['checked']===true            ? 'checked="checked" '                        : null).
-                    ($args['disabled']===true            ? 'disabled="disabled" '                    : null).
-                    ($args['autocomplete']===false        ? 'autocomplete="off" '                        : null).
+                    ($args['checked']===true            ? 'checked="checked" '                      : null).
+                    ($args['disabled']===true           ? 'disabled="disabled" '                    : null).
+                    ($args['autocomplete']===false      ? 'autocomplete="off" '                     : null).
                     (!is_empty($args['style'])          ? 'style="'.$args['style'].'" '             : null).
-                    (!is_empty($args['extra'])            ? $args['extra']                            : null).
+                    (!is_empty($args['extra'])          ? $args['extra']                            : null).
                 '/>'.
-                    ($args['br']===true                    ? '<br />'."\n"                                : '');
+                    ($args['br']===true                 ? '<br />'."\n"                             : '');
     }
 
     /**
      * Output a textarea input box
      *
-     * @version    1.0
+     * @version 1.0
      * @since   1.0.0
      * @author  xLink
      *
-     * @param   string     $name
-     * @param   string     $value
-     * @param   array    $args
+     * @param   string  $name
+     * @param   string  $value
+     * @param   array   $args
      *
      * @return  string
      */
@@ -148,13 +148,13 @@ class form extends coreClass{
             'class'         => doArgs('class', null, $args),
             'disabled'      => doArgs('disabled', false, $args),
             'br'            => doArgs('br', false, $args),
-            'style'            => doArgs('style', null, $args),
+            'style'         => doArgs('style', null, $args),
             'extra'         => doArgs('extra', null, $args),
             'xssFilter'     => doArgs('xssFilter', true, $args),
             'placeholder'   => doArgs('placeholder', null, $args),
 
-            'resize'         => doArgs('resize', true, $args),
-            'allowTab'       => doArgs('allowTab', true, $args),
+            'resize'        => doArgs('resize', true, $args),
+            'allowTab'      => doArgs('allowTab', true, $args),
         );
 
         return '<textarea '.
@@ -163,8 +163,8 @@ class form extends coreClass{
                         (!$args['resize'] ? ' noResize' : null).
                         (!$args['allowTab'] ? ' noTab' : null).
                     '" '.
-                    'cols="'.(is_number($args['cols'])     ? $args['cols']             : 45).'" '.
-                    'rows="'.(is_number($args['rows'])     ? $args['rows']             : 5).'"'.
+                    'cols="'.(is_number($args['cols'])  ? $args['cols']             : 45).'" '.
+                    'rows="'.(is_number($args['rows'])  ? $args['rows']             : 5).'"'.
                     (!is_empty($args['placeholder'])    ? 'placeholder="'.$args['placeholder'].'" ' : null).
                     (!is_empty($args['style'])          ? 'style="'.$args['style'].'" ' : null).
                     (!is_empty($args['extra'])          ? $args['extra']            : null).
@@ -176,13 +176,13 @@ class form extends coreClass{
     /**
      * Output a submit or reset button
      *
-     * @version    1.2
+     * @version 1.2
      * @since   1.0.0
      * @author  xLink
      *
-     * @param   string     $name
-     * @param   string     $value
-     * @param   array     $args
+     * @param   string  $name
+     * @param   string  $value
+     * @param   array   $args
      *
      * @return  string
      */
@@ -201,14 +201,14 @@ class form extends coreClass{
     /**
      * New Radio Button
      *
-     * @version    1.0
+     * @version 1.0
      * @since   1.0.0
      * @author  xLink
      *
-     * @param   string     $name
-     * @param   array     $values
-     * @param   string     $defaultSetting
-     * @param   array     $args
+     * @param   string  $name
+     * @param   array   $values
+     * @param   string  $defaultSetting
+     * @param   array   $args
      *
      * @return  string
      */
@@ -230,7 +230,7 @@ class form extends coreClass{
                             '<input type="radio"'.
                                 'name="'.$name.'" id="'.$args['id'].'" '.
                                 (!is_empty($args['style'])              ? 'style="'.$args['style'].'" ' : null).
-                                ($args['xssFilter']===true                ? 'value="'.htmlspecialchars($key).'" ' : 'value="'.$key.'" ').
+                                ($args['xssFilter']===true              ? 'value="'.htmlspecialchars($key).'" ' : 'value="'.$key.'" ').
                                 ($defaultSetting==$key                  ? 'checked="checked" '                  : null).
                             '/>'.($args['showValue']===true             ? ' '.$value                            : null).
                         ($args['showLabels']===true ? '</label>' : '').
@@ -244,7 +244,7 @@ class form extends coreClass{
     /**
      * Create a new checkbox
      *
-     * @version    1.0
+     * @version 1.0
      * @since   1.0.0
      * @author  xLink
      *
@@ -264,11 +264,11 @@ class form extends coreClass{
     /**
      * Select box tag - convert any array to a select box...i think :D
      *
-     * @version    1.2
+     * @version 1.2
      * @since   1.0.0
      * @author  xLink
      *
-     * @param   string     $name
+     * @param   string    $name
      * @param   array     $options
      * @param   array     $args
      *
@@ -276,18 +276,19 @@ class form extends coreClass{
      */
     public function select($name, $options, $args=array()){
         $args = array(
-            'id'        => doArgs('id',         $name, $args),
-            'selected'  => doArgs('selected',     null, $args),
-            'noKeys'      => doArgs('noKeys',     false, $args),
-            'multi'        => doArgs('multi',         false, $args),
-            'search'    => doArgs('search',     false, $args),
+            'id'        => doArgs('id',         $name,  $args),
+            'selected'  => doArgs('selected',   null,   $args),
+            'noKeys'    => doArgs('noKeys',     false,  $args),
+            'multi'     => doArgs('multi',      false,  $args),
+            'search'    => doArgs('search',     false,  $args),
 
-            'class'     => doArgs('class',         null, $args),
-            'disabled'  => doArgs('disabled',     false, $args),
-            'style'        => doArgs('style',         null, $args),
-            'extra'     => doArgs('extra',         null, $args),
-            'opt_extra' => doArgs('opt_extra',  null, $args),
-            'xssFilter' => doArgs('xssFilter',     true, $args),
+            'class'     => doArgs('class',      null,   $args),
+            'disabled'  => doArgs('disabled',   false,  $args),
+            'style'     => doArgs('style',      null,   $args),
+            'extra'     => doArgs('extra',      null,   $args),
+            'opt_extra' => doArgs('opt_extra',  null,   $args),
+            'xssFilter' => doArgs('xssFilter',  true,   $args),
+            'fancy'     => doArgs('fancy',      true,   $args),
         );
 
         //added support for multiple selections
@@ -298,7 +299,10 @@ class form extends coreClass{
 
         //add support for Chosen
         $args['extra'] .= ' data-search="'.($args['search']===true ? 'true' : 'false').'"';
-        $args['class'] .= 'chzn-select';
+
+        if($args['fancy']){
+            $args['class'] .= 'chzn-select';
+        }
 
         $extra = $args['extra'];
         $selected = $args['selected'];
@@ -308,9 +312,9 @@ class form extends coreClass{
         $val = sprintf('<select name="%1$s" id="%2$s"%3$s%4$s%5$s%6$s>',
                     $name,
                     $args['id'],
-                    (!is_empty($args['class'])     ? ' class="'.$args['class'].'"' : null),
-                    ($args['disabled']===true     ? ' disabled="disabled"'         : null),
-                    (!is_empty($args['extra'])  ? ' '.$args['extra']             : null),
+                    (!is_empty($args['class'])  ? ' class="'.$args['class'].'"' : null),
+                    ($args['disabled']===true   ? ' disabled="disabled"'        : null),
+                    (!is_empty($args['extra'])  ? ' '.$args['extra']            : null),
                     (!is_empty($args['style'])  ? ' style="'.$args['style'].'"' : null)
                 )."\n";
 
@@ -469,9 +473,9 @@ class form extends coreClass{
                 $this->objTPL->assign_block_vars('_form_row._field', array(
                     'F_ELEMENT'     => $header ? null : $field,
                     'F_INFO'        => (doArgs('parseDesc', false, $options) ? contentParse($desc) : $desc),
-                    'CLASS'            => $header ? ' title' : ($count++%2 ? ' row_color2' : ' row_color1'),
+                    'CLASS'         => $header ? ' title' : ($count++%2 ? ' row_color2' : ' row_color1'),
 
-                    'L_LABEL'         => $label,
+                    'L_LABEL'       => $label,
                     'L_LABELFOR'    => inBetween('name="', '"', $field),
                 ));
 

@@ -30,15 +30,15 @@ $Y = 'Yes';
 $N = 'No';
 
 switch($mode){
-    
+
     default:
     case 1:
         $objTPL->assign_var('SUBMIT', $objForm->button('submit', 'Next',  array('extra'=>' onclick="window.location=\'?action=2\'"')));
         $info = 'Thanks for downloading Cybershade CMS V1.0. Before you can use the CMS we have to run through some small things. Please have your database information to hand, and make sure you have access to your FTP client.';
 
-        
+
         $checks = array();
-        $checks[] = array('check'       => '<strong>PHP Settings</strong>', 
+        $checks[] = array('check'       => '<strong>PHP Settings</strong>',
                           'setting'     => '<strong>Setting</strong>');
 
         if(version_compare(PHP_VERSION, '5.2.0', '<=')){
@@ -53,9 +53,9 @@ switch($mode){
             }
             $result .= '</strong>';
         }
-        $checks[] = array('check'       => 'PHP Version >= 5.0.0', 
+        $checks[] = array('check'       => 'PHP Version >= 5.0.0',
                           'setting'     => $result);
-                          
+
         // Check for sql abilities
         if (function_exists('mysql_connect')){
             $result = '<strong style="color:green">'.$Y.'</strong>';
@@ -64,7 +64,7 @@ switch($mode){
         }
         $checks[] = array('check'       => 'MySQL Support',
                           'setting'     => $result);
-        
+
         // Check for rewrite abilities
         /** Below is commented out till i can figure out wth is goin on and how to fix it
          *         $modules = apache_get_modules();
@@ -76,18 +76,18 @@ switch($mode){
          *         $checks[] = array('check'       => 'Apache Rewrite Module',
          *                           'explain'     => '<b>Required</b> - The CMS uses several Rewrite rules to allow easier access and cleaner URLs for your website. Should this be disabled your website installation will not work as expected.',
          *                           'setting'     => $result);
-         */        
-         
+         */
+
         // Check for register_globals being enabled
         if (@ini_get('register_globals') == '1' || strtolower(@ini_get('register_globals')) == 'on'){
             $result = '<strong style="color:red">Enabled</strong>';
         }else{
             $result = '<strong style="color:green">Disabled</strong>';
         }
-        $checks[] = array('check'       => 'register_globals() is disabled', 
+        $checks[] = array('check'       => 'register_globals() is disabled',
                           'explain'     => '<b>Optional</b> - This setting is optional, it is however recommended that register_globals is disabled on your PHP install for security reasons.',
                           'setting'     => $result);
-                                                    
+
         // Check for url_fopen
         if (@ini_get('allow_url_fopen') == '1' || strtolower(@ini_get('allow_url_fopen')) == 'on'){
             $result = '<strong style="color:green">'.$Y.'</strong>';
@@ -97,7 +97,7 @@ switch($mode){
         $checks[] = array('check'       => 'allow_url_fopen() is enabled',
                           'explain'     => '<b>Optional</b> - This setting is optional, however certain functions like off-site avatars will not work properly without it.',
                           'setting'     => $result);
-                          
+
         // Check for getimagesize
         if(function_exists('gd_info')){
             $a = gd_info(); $ver = preg_replace('/[[:alpha:][:space:]()]+/', '', $a['GD Version']);
@@ -114,7 +114,7 @@ switch($mode){
                           'setting'     => $result);
 
         $checks[] = array('check'       => '&nbsp;', 'setting'     => '');
-        $checks[] = array('check'       => '<strong>Directories and Such</strong>', 
+        $checks[] = array('check'       => '<strong>Directories and Such</strong>',
                           'setting'     => '<strong>Setting</strong>');
 
         $dirs = array('cache/', 'cache/template/', 'cache/media/', 'images/avatars/');
@@ -142,15 +142,15 @@ switch($mode){
 
             @unlink(cmsROOT.$dir.'test_lock');
             $exists = ($exists ? '<strong style="color:green">FOUND</strong>' : '<strong style="color:red">NOT FOUND</strong>');
-            $write = ($write 
-                        ? ', <strong style="color:green">WRITABLE</strong>' 
+            $write = ($write
+                        ? ', <strong style="color:green">WRITABLE</strong>'
                         : ($exists
-                            ? ', <strong style="color:red">UNWRITABLE</strong>' 
+                            ? ', <strong style="color:red">UNWRITABLE</strong>'
                             : ''
                           )
                      );
 
-            $checks[] = array('check'       => $dir, 
+            $checks[] = array('check'       => $dir,
                               'setting'     => $exists.$write);
 
         }
@@ -167,12 +167,12 @@ switch($mode){
                 $objTPL->assign_block_vars('checks.explain', array());
             }
         }
-        
+
     break;
-    
+
     case 2:
         $info = 'Currently, Cybershade CMS only supports MySQL database. No doubt this will change as time goes on but for now it\'ll do.';
-        
+
         if(isset($_GET['try'])){
             if(!mysql_connect($_POST['db_server'], $_POST['db_uname'], $_POST['db_passwd'])){
                 $info .= '<br /><br /><font style="color:red;"><strong>ERROR: Could not connect to MySQL.<br />'.mysql_error().'</strong></font>';
@@ -190,7 +190,7 @@ switch($mode){
                 }
             }
         }
-        
+
         $dbList = array();
         $dbTests = array('mysql_connect', 'mysqli_connect', 'pg_connect', 'mssql_connect', 'sqlite_open');
         foreach($dbTests as $test){
@@ -198,31 +198,31 @@ switch($mode){
             if(function_exists($test) && is_callable($test) && is_readable(cmsROOT.'core/classes/driver.'.$db[0].'.php')){
                 switch($db[0]){
                     default: $text = $db[0]; break;
-    
+
                     case 'mysql': $text = 'MySQL'; break;
                     case 'mysqli': $text = 'MySQLi'; break;
                     case 'sqlite': $text = 'SQLite'; break;
                     case 'pg': $text = 'PostgreSQL'; break;
                 }
-                
+
                 $dbList[$db[0]] = $text;
                }
         }
 
             $vars = array(
-                'Database Driver'        => $objForm->select('db_driver', $dbList),            
+                'Database Driver'        => $objForm->select('db_driver', $dbList),
                 'Database Server'        => $objForm->inputbox('db_server', 'input', 'localhost'),
                 'Database Username'        => $objForm->inputbox('db_uname', 'input', ''),
                 'Database Password'        => $objForm->inputbox('db_passwd', 'password', ''),
                 'Database Name'            => $objForm->inputbox('db_db', 'input', ''),
                 'Database Prefix'        => $objForm->inputbox('db_prefix', 'input', 'cscms_'),
             );
-            $objTPL->assign_vars(array(    
+            $objTPL->assign_vars(array(
                 'FORM_START'    => $objForm->start('databse', array('method' => 'POST', 'action' => '?action=2&try')),
                 'FORM_END'      => $objForm->finish(),
                 'SUBMIT'        => $objForm->button('submit', 'Next'),
             ));
-            
+
             foreach($vars as $key => $value){
                 $objTPL->assign_block_vars('settings', array(
                     'VALUE'     => $key,
@@ -230,13 +230,13 @@ switch($mode){
                 ));
             }
     break;
-    
+
     case 3:
         $info = 'Fill the form below in with your user details, you will be automatically added to the website and made an administrator.';
-        
+
         if(isset($_GET['try'])){
             $fields = array('username', 'passwd', 'v_passwd', 'email');
-            
+
             $errors = array();
             foreach($fields as $f){
                 $field = 'adm_'.$f;
@@ -246,20 +246,20 @@ switch($mode){
                 }
                 switch($f){
                     case 'username':
-                        if(!$objUser->verifyUsername($_POST[$field])){ $errors[] = $field.' contains invalid characters'; continue; }
+                        if(!$objUser->validateUsername($_POST[$field])){ $errors[] = $field.': '.$objUser->getError(); continue; }
                     break;
-                    
+
                     case 'email':
-                        if(!$objUser->DoEmail($_POST[$field])){ $errors[] = $field.' was deemed invalid'; continue; }
+                        if(!$objUser->validateEmail($_POST[$field])){ $errors[] = $field.' was deemed invalid'; continue; }
                     break;
-                    
+
                     case 'v_passwd':
                     case 'passwd':
                         if((strlen($_POST[$field])<4)){ $errors[] = $field.' needs to be >= 4 chars'; continue; }
                     break;
                 }
             }
-            
+
             if(count($errors)){
                 $info .= '<br /><br /><font style="color:red;"><strong>ERROR: <br />-'.implode('<br />-', $errors).'</strong></font>';
             }else{
@@ -269,20 +269,20 @@ switch($mode){
                 header('Location: ?action=4');
             }
         }
-        
+
         $vars = array(
             'Administrator Username'    => $objForm->inputbox('adm_username', 'input', doArgs('adm_username', 'admin', $_POST)),
             'Administrator Password'    => $objForm->inputbox('adm_passwd', 'password', doArgs('adm_passwd', '', $_POST)),
             'Verify Password'            => $objForm->inputbox('adm_v_passwd', 'password', doArgs('adm_v_passwd', '', $_POST)),
             'Administrator Email'        => $objForm->inputbox('adm_email', 'input', doArgs('adm_email', '', $_POST)),
         );
-        
-        $objTPL->assign_vars(array(    
+
+        $objTPL->assign_vars(array(
             'FORM_START'    => $objForm->start('databse', array('method' => 'POST', 'action' => '?action=3&try', 'onsubmit'=>'return confirm(\'Only continue if you are happy with the details you provided.\')')),
             'FORM_END'      => $objForm->finish(),
             'SUBMIT'        => $objForm->button('submit', 'Next'),
         ));
-        
+
         foreach($vars as $key => $value){
             $objTPL->assign_block_vars('settings', array(
                 'VALUE'                => $key,
@@ -290,23 +290,23 @@ switch($mode){
             ));
         }
     break;
-    
+
     case 4:
         $info = 'Use the form below to setup your inital website settings.';
 
         if(isset($_GET['try'])){
             $fields = array('title', 'slogan', 'description', 'keywords', 'time');
-            
+
             $errors = array();
             foreach($fields as $f){
-                if(!isset($_POST[$f]) || is_empty($_POST[$f])){ 
-                    $errors[] = $f.' was empty'; 
+                if(!isset($_POST[$f]) || is_empty($_POST[$f])){
+                    $errors[] = $f.' was empty';
                     $$f = NULL;
                 }else{
                     $$f = $_POST[$f];
                 }
             }
-            
+
             if(count($errors)){
                 $info .= '<br /><br /><font style="color:red;"><strong>ERROR: <br />-'.implode('<br />-', $errors).'</strong></font>';
             }else{
@@ -324,12 +324,12 @@ switch($mode){
             'Site Keywords'                 => $objForm->textarea('keywords', $keywords, array('style' =>'height: 50px;')),
             'Default Time Format'           => $objForm->inputbox('time', 'text', ($time==NULL ? 'jS F h:ia' : $time), $options),
         );
-        $objTPL->assign_vars(array(    
+        $objTPL->assign_vars(array(
             'FORM_START'    => $objForm->start('siteConfig', array('method' => 'POST', 'action' => '?action=4&try')),
             'FORM_END'      => $objForm->finish(),
             'SUBMIT'        => $objForm->button('submit', 'Next'),
         ));
-        
+
         foreach($vars as $key => $value){
             $objTPL->assign_block_vars('settings', array(
                 'VALUE'        => $key,
@@ -337,7 +337,7 @@ switch($mode){
             ));
         }
     break;
-    
+
     case 5:
         $file = cmsROOT.'cache/config.php';
         if(!file_exists($file)){
@@ -349,7 +349,7 @@ switch($mode){
             @chmod($file, 0777);
         }
 
-    
+
         if(is_writable($file)) {
             $open = fopen($file, 'w');
             $_SESSION['db'] = array_map('addslashes', $_SESSION['db']);
@@ -366,15 +366,15 @@ if(!defined(\'INDEX_CHECK\')){die(\'Error: Cannot access directly.\');}
     $config[\'db\'][\'password\']                 = \''.$_SESSION['db']['password'].'\';
     $config[\'db\'][\'database\']                 = \''.$_SESSION['db']['database'].'\';
     $config[\'db\'][\'prefix\']                 = \''.$_SESSION['db']['prefix'].'\';
-//the cookie prefix 
-    $config[\'db\'][\'ckefix\']                 = \'CMS_\'; 
+//the cookie prefix
+    $config[\'db\'][\'ckefix\']                 = \'CMS_\';
 
 //some settings for the cron
     $config[\'cron\'][\'hourly_time\']            = (3600); //1 Hour
     $config[\'cron\'][\'daily_time\']            = (3600*24); //1 Day
     $config[\'cron\'][\'weekly_time\']            = (3600*24*7); //1 Week
 
-//some default settings, incase the cms dies before getting  
+//some default settings, incase the cms dies before getting
 //the chance to populate the config array.
     $config[\'cms\'][\'name\']                  = \'CyberShade CMS\';
     $config[\'cms\'][\'version\']               = \'N/A\';
@@ -393,7 +393,7 @@ if(!defined(\'INDEX_CHECK\')){die(\'Error: Cannot access directly.\');}
             $objTPL->assign_var('MSG', 'CONFIG.PHP isnt writable, please chmod it 0777 before continuing. To continue please press Refresh or F5 and RETRY the process');
         }
     break;
-    
+
     case 6:
         include(cmsROOT.'cache/config.php');
     //
@@ -408,9 +408,9 @@ if(!defined(\'INDEX_CHECK\')){die(\'Error: Cannot access directly.\');}
 
         if(is_readable('sql.php')){
             include_once('sql.php');
-            
+
             if(!is_array($sql) || !count($sql)){ $info = '<font color=red>ERROR: No SQL to process.</font>'; break; }
-            
+
             $content = '';
             foreach($sql as $s){
                 //replace the table prefix's with the wanted version :D
@@ -418,7 +418,7 @@ if(!defined(\'INDEX_CHECK\')){die(\'Error: Cannot access directly.\');}
                 $query = $objSQL->query($s);
                 $content .= ($query===false ? dump($s, mysql_error()) : NULL);
             }
-            
+
             //it worked
             if(is_empty($content)){
                 //reset the cache
@@ -453,17 +453,17 @@ if(!defined(\'INDEX_CHECK\')){die(\'Error: Cannot access directly.\');}
 
     $objTPL->assign_vars(array(
         'ROOT'          => root(),
-    
+
         'TITLE'         => $title,
         'MENU'          => $menu,
-        
+
         'HEADER'        => $header,
         'WELCOME'       => 'Welcome to Cybershade CMS Installer '.$version.'!',
         'IMG_PROGRESS'  => '/'.root().'images/progress.php?current_position='.$mode.'&min=0&max='.$stepsCount.'&width=160',
         'STEPS'         => sprintf('Step %d of %d', $mode, $stepsCount),
         'INFO'          => !is_empty($info) ? $info : '',
     ));
-    
+
     if(!is_empty($info)){
         $objTPL->assign_block_vars('info', array());
     }

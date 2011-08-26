@@ -4,8 +4,13 @@
     </div>
     <div>
         <div class="padding iblock" style="width:98%">
-            <div style="float:left;">{JB_FORM_START}{JUMPBOX}{JB_EDIT} {JB_DELETE}{JB_FORM_END}</div>
-            <div style="float:right;">{ADD_FORM_START}{HID_INPUT}{ADD_SUBMIT}{ADD_FORM_END}</div>
+            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+              <tr>
+                <td width="25%">{JB_FORM_START}{JUMPBOX}</td>
+                <td width="25%"> {JB_EDIT} {JB_DELETE}{JB_FORM_END}</td>
+                <td align="right">{ADD_FORM_START}{HID_INPUT}{ADD_SUBMIT}{ADD_FORM_END}</td>
+              </tr>
+            </table>
         </div>
         <!-- BEGIN group -->
         <fieldset><legend class="padding">{group.NAME} {group.BTNS}</legend>
