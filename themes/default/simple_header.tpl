@@ -4,7 +4,6 @@
 {_META}
 <title>{PAGE_TITLE} || {SITE_TITLE}</title>
 {_JS_HEADER}
-<link rel="stylesheet" id="adapt" />
 {_CSS}
 <link rel="stylesheet" href="/{THEME_ROOT}style.css" type="text/css" />
 

@@ -339,21 +339,25 @@ class page extends coreClass{
     //
         //generate an array of meta lines
         $metaArray = array(
-            'author'             => $this->config('cms', 'name', 'Cybershade CMS'),
-            'description'         => $this->config('site', 'description'),
-            'keywords'            => $this->config('site', 'keywords'),
-            'copyright'            => langVar('L_SITE_COPYRIGHT', $this->config('site', 'title'), $this->config('cms', 'name'), cmsVERSION),
-            'generator'            => $this->config('cms', 'name').' v'.cmsVERSION,
-            'ROBOTS'            => 'INDEX, FOLLOW',
-            'GOOGLEBOT'            => 'INDEX, FOLLOW',
+            'author'        => $this->config('cms', 'name', 'Cybershade CMS'),
+            'description'   => $this->config('site', 'description'),
+            'keywords'      => $this->config('site', 'keywords'),
+            'copyright'     => langVar('L_SITE_COPYRIGHT', $this->config('site', 'title'), $this->config('cms', 'name'), cmsVERSION),
+            'generator'     => $this->config('cms', 'name').' v'.cmsVERSION,
+            'ROBOTS'        => 'INDEX, FOLLOW',
+            'GOOGLEBOT'     => 'INDEX, FOLLOW',
         );
 
         //add a hook to it so it can be added to
         $this->objPlugins->hook('CMSPage_meta', $metaArray);
 
+
         //set a default value, and go with it
         $meta = '<meta http-equiv="content-type" content="text/html; charset=utf-8" />'.$nl;
         $meta .= '<meta http-equiv="content-language" content="'.$this->config('site', 'language').'" />'.$nl;
+
+		//Adding "maximum-scale=1" fixes the Mobile Safari auto-zoom bug: http://filamentgroup.com/examples/iosScaleBug/
+        $meta .= '<meta name="viewport" content="width=device-width, initial-scale=1" />'.$nl;
         if(count($metaArray)){
             foreach($metaArray as $name => $value){
                 $meta .= sprintf('<meta name="%s" content="%s" />', $name, $value).$nl;
@@ -446,6 +450,9 @@ class page extends coreClass{
     //
         $cssTag = '<link rel="stylesheet" href="%s" />';
 
+        //add the adaptive css file
+        $cssFiles[] = '/'.root().'images/grid.adapt.css';
+
         //we want the default css minified dont forget!
         $cssFiles[] = '/'.root().'images/framework-min.css';
         $cssFiles[] = '/'.root().'images/extras-min.css';
@@ -460,7 +467,6 @@ class page extends coreClass{
         foreach($cssFiles as $file){
             $css .= sprintf($cssTag, $file).$nl;
         }
-
 
         //load in the anything thats been passed in via addCSSCode()
         $cssCode = array_merge($cssCode, $this->cssCode);

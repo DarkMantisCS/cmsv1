@@ -56,7 +56,7 @@ if($mode == 'admin' && $objUser->grab('userlevel') == ADMIN){
     //check to see if theyre authed
     if($_SESSION['acp']['adminAuth']!=true && !LOCALHOST){
         $_SESSION['acp']['doAdminCheck'] = true;
-        $objPage->redirect('/'.root().'login.php', 0, 0);
+        $objPage->redirect('/'.root().'login.php', 0);
         hmsgDie('FAIL', 'Error: You need to be auth\'d to access this area.');
     }
 
