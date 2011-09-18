@@ -145,8 +145,7 @@ section#content{
 }
 section #pageContent{
     display: table-cell;
-    float: left;
-    margin: 0 0 0 15px !important
+    float: right;
 }
 section aside#sidebar {
     float: left;

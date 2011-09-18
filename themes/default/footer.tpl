@@ -1,3 +1,24 @@
+		</div>
+		
+	<!-- BEGIN menu -->
+        <aside id="sidebar" class="grid_3">
+    <!-- END menu -->
+            <!-- BEGIN left_menu -->
+            <div class="sideMenu">
+                <header class="title"><h4>{left_menu.TITLE}</h4></header>
+                <section class="content corners-br">{left_menu.CONTENT}</section>
+            </div>
+            <!-- END left_menu -->
+            <!-- BEGIN right_menu -->
+            <div class="sideMenu">
+                <header class="title"><h4>{right_menu.TITLE}</h4></header>
+                <section class="content corners-br">{right_menu.CONTENT}</section>
+            </div>
+            <!-- END right_menu -->
+    <!-- BEGIN menu -->
+        </aside>
+    <!-- END menu -->
+
     </section>
 
     <footer>
