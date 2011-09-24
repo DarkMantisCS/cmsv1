@@ -459,7 +459,7 @@ if(!defined(\'INDEX_CHECK\')){die(\'Error: Cannot access directly.\');}
 
         'HEADER'        => $header,
         'WELCOME'       => 'Welcome to Cybershade CMS Installer '.$version.'!',
-        'IMG_PROGRESS'  => '/'.root().'images/progress.php?current_position='.$mode.'&min=0&max='.$stepsCount.'&width=160',
+        'PROGRESS'  	=> number_format(($mode / $stepsCount) * 100, 0),
         'STEPS'         => sprintf('Step %d of %d', $mode, $stepsCount),
         'INFO'          => !is_empty($info) ? $info : '',
     ));

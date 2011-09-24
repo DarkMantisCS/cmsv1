@@ -18,7 +18,7 @@
   </div>
   <div class="center">
     <h2 style="float: left;">{WELCOME}</h2> 
-    <span style="float: right;"><img src="{IMG_PROGRESS}" /></span>
+    <span class="progress"><progress value="{PROGRESS}" max="100"></progress></span>
     <div style="float: clear;">&nbsp;</div>
     <p class="date">{STEPS}</p>
     <!-- BEGIN info -->
