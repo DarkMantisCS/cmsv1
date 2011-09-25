@@ -84,6 +84,7 @@ header#banner nav{
             position: relative;
             list-style-type: none;
             margin: 0 5px 0 0;
+			background-color: #212020;
 
             border-color: #343536 #1e272a #1e272a #343536;
             border-style: solid;
