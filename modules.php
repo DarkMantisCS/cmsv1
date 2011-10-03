@@ -22,9 +22,9 @@ if(isset($url[1])){
 }
 
 $mode   = doArgs('__mode',      null, $_GET);
-$module = doArgs('__module', null, $_GET);
-$action = doArgs('__action', null, $_GET);
-$extra  = doArgs('__extra', null, $_GET);
+$module = doArgs('__module',    null, $_GET);
+$action = doArgs('__action',    null, $_GET);
+$extra  = doArgs('__extra',     null, $_GET);
 
 if(!preg_match('#install($|/)#i', $action)){
     if(!empty($module) && $objCore->loadModule($module, true)){
