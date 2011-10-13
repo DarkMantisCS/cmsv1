@@ -320,7 +320,7 @@ class coreClass{
 
         $objCore->objSQL->recordMessage('Loading Module: '.$module, 'INFO');
 
-        if(!$this->moduleExists($module)){
+        if(!is_dir(cmsROOT.'modules/'.$module.'/')){
             hmsgDie('FAIL', 'Error loading module file "'.$module.'"');
             return;
         }

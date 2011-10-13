@@ -53,4 +53,9 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
     define('AUTH_MOVE', 7);
     define('AUTH_SPECIAL', 8);
 
+//Avalible in 2.5.7+
+if (!defined('PHP_VERSION_ID')) {
+    $version = explode('.', PHP_VERSION);
+    define('PHP_VERSION_ID', ($version[0] * 10000 + $version[1] * 100 + $version[2]));
+}
 ?>

@@ -28,7 +28,11 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
     define('cmsROOT', (isset($cmsROOT) && !empty($cmsROOT) ? $cmsROOT : null)); unset($cmsROOT);
 
     //so we can turn errors off if we are not running locally
-    define('LOCALHOST', (isset($_SERVER['HTTP_HOST']) && ($_SERVER['HTTP_HOST']=='localhost' || $_SERVER['HTTP_HOST']=='127.0.0.1')) ? true : false);
+    define('LOCALHOST', (isset($_SERVER['HTTP_HOST']) &&
+                            ($_SERVER['HTTP_HOST']=='localhost' ||
+                             $_SERVER['HTTP_HOST']=='127.0.0.1'))
+                        ? true
+                        : false);
 
     //define the error reporting level, dont want PHP errors on the live version now do we :)
     error_reporting(LOCALHOST ? E_ALL & ~E_NOTICE | E_STRICT : 0);
@@ -40,13 +44,13 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 
     //check if we have config
     $file = cmsROOT.'cache/config.php';
-    if(!is_file($file)){
+    if(!is_file($file) || file_get_contents($file)!=''){
         die(sprintf($errorTPL, 'Fatal Error', 'This seems to be your first time running. Are you looking for <a href="install/">Install/</a> ?'));
     }
 
     //make sure the file is readable, if so require it
     if(!is_readable($file)){
-        die(sprintf($errorTPL, 'Fatal Error - 404', 'We have been unable to locate/read the configuration file.'));
+        die(sprintf($errorTPL, 'Fatal Error - 404', 'We have been unable to read the configuration file, please ensure correct owner privledges are given.'));
     }else{ require_once($file); }
 
     //we need constants.php, same deal as above
@@ -54,6 +58,12 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
     if(!is_readable($file)){
         die(sprintf($errorTPL, 'Fatal Error - 404', 'We have been unable to locate/read the constants file.'));
     }else{ require_once($file); }
+
+    //make sure we are running a compatible PHP Version
+    if(PHP_VERSION_ID < '50300'){
+        die(sprintf($errorTPL, 'Fatal Error - 500',
+            'This server is not capable of running this CMS, please upgrade PHP to version 5.3+ before trying to continue.'));
+    }
 
     $redoHandler = false;
     $file = cmsROOT.'core/debugFunctions.php';
@@ -69,10 +79,10 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
     //kill magic quotes completely
     if(@get_magic_quotes_gpc()){
         //strip all the global arrays
-        recursiveArray($_POST,         'stripslashes');
-        recursiveArray($_GET,         'stripslashes');
-        recursiveArray($_COOKIE,     'stripslashes');
-        recursiveArray($_REQUEST,     'stripslashes');
+        recursiveArray($_POST,      'stripslashes');
+        recursiveArray($_GET,       'stripslashes');
+        recursiveArray($_COOKIE,    'stripslashes');
+        recursiveArray($_REQUEST,   'stripslashes');
     }
 
     (LOCALHOST ? set_error_handler('cmsError') : '');
@@ -96,24 +106,24 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 
     //load in outside classes
     $classFiles = array(
-                    $classDir.'base.core.php', # all CMS classes extend this one
-                    $classDir.'base.sql.php', # this is the SQL template
+        $classDir.'base.core.php', # all CMS classes extend this one
+        $classDir.'base.sql.php', # this is the SQL template
 
-                    $classDir.'class.pagination.php', # include pagination functionality
-                    //$classDir.'class.rating.php', # this one includes a rating system
+        $classDir.'class.pagination.php', # include pagination functionality
+        //$classDir.'class.rating.php', # this one includes a rating system
 
-                    $libDir.'phpass/class.phpass.php',
-                    $libDir.'geshi/class.geshi.php',
-                    $libDir.'nbbc/class.nbbc.php'
-                );
-                    
+        $libDir.'phpass/class.phpass.php',
+        $libDir.'geshi/class.geshi.php',
+        $libDir.'nbbc/class.nbbc.php'
+    );
+
         foreach($classFiles as $file){
             $file = $file;
             if(!is_file($file) || !is_readable($file)){
                 msgDie('FAIL', sprintf($errorTPL, 'Fatal Error - 404', 'We have been unable to locate/read the '.$file.' file.'));
             }else{ require_once($file); }
         }
-        
+
     $objCore = new coreClass;
 
     //cache setup
@@ -128,7 +138,7 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
     //try and load in the sql driver
     $file = $classDir.'driver.'.$config['db']['driver'].'.php';
     if(is_file($file) && is_readable($file)){
-        $classes['objSQL']        = array($file, $config['db']);
+        $classes['objSQL']      = array($file, $config['db']);
     }
 
 //
@@ -136,19 +146,19 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 //
     //if its still unset, default back to mysql
     if(!isset($classes['objSQL'])){
-        $classes['objSQL']        = array($classDir.'driver.mysql.php', $config['db']);
+        $classes['objSQL']      = array($classDir.'driver.mysql.php', $config['db']);
     }
     $classes['objCache']        = array($classDir.'class.cache.php', array(
                                     'useCache'     => $cacheWritable,
                                     'cacheDir'     => $cachePath
                                 ));
-    $classes['objLogin']         = array($classDir.'class.login.php');
+    $classes['objLogin']        = array($classDir.'class.login.php');
     $classes['objUser']         = array($classDir.'class.user.php');
 
     //plugins have been moved here so we can hook into the init of stage 2 classes
     //and possibly load some custom ones such as reCaptcha etc ;)
     $classes['objPlugins']        = array($classDir.'class.plugins.php');
-    
+
     //init the sql and cache classes, we need these before we can go any further
     $doneSetup = $objCore->setup($classes);
     if(!$doneSetup){
@@ -181,7 +191,6 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
     //sort through the configuration crap, spit out a useable version :D
     foreach($config_db as $array){ $config[$array['array']][$array['var']] = $array['value']; }
     unset($config_db);
-
 
         //generate an array with names of files that should be added to the master config array()
         //NULL _SHOULD_ be the last 'file'
@@ -245,21 +254,21 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 //
 //-- and now load the rest of the classes
 //
-    $classes['objTPL']            = array($classDir.'class.template.php', array(
-                                    'root'         => '.',
-                                    'useCache'     => $cacheWritable,
-                                    'cacheDir'     => $cachePath.'template/'
+    $classes['objTPL']          = array($classDir.'class.template.php', array(
+                                    'root'          => '.',
+                                    'useCache'      => $cacheWritable,
+                                    'cacheDir'      => $cachePath.'template/'
                                 ));
 
     $classes['objPage']         = array($classDir.'class.page.php');
-    $classes['objGroups']         = array($classDir.'class.groups.php');
+    $classes['objGroups']       = array($classDir.'class.groups.php');
     $classes['objForm']         = array($classDir.'class.form.php');
     $classes['objTime']         = array($classDir.'class.time.php');
-    
+
     //funky functionality classes here :D
-    $classes['objNotify']         = array($classDir.'class.notify.php');
+    $classes['objNotify']       = array($classDir.'class.notify.php');
     $classes['objComments']     = array($classDir.'class.comments.php');
-    
+
     /**
      * this should allow for some custom classes to be init'd
      * keep in mind you can't use any of the classes that get init'd here
@@ -284,26 +293,26 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 //--Generate a 'Template' for the Session
 //
     $guest['user'] = array(
-        'id'            => 0,
-        'username'         => 'Guest',
-        'theme'            => $objCore->config('site', 'theme'),
-        'userkey'         => doArgs('userkey', null, $_SESSION['user']),
-        'timezone'        => doArgs('timezone', $objCore->config('time', 'timezone'), $_SESSION['user']),
+        'id'        => 0,
+        'username'  => 'Guest',
+        'theme'     => $objCore->config('site', 'theme'),
+        'userkey'   => doArgs('userkey', null, $_SESSION['user']),
+        'timezone'  => doArgs('timezone', $objCore->config('time', 'timezone'), $_SESSION['user']),
     );
 
     //generate user stuff
     $config['global'] = array(
-        'user'             => (isset($_SESSION['user']['id']) ? $_SESSION['user'] : $guest['user']),
-        'ip'            => User::getIP(),
-        'useragent'     => doArgs('HTTP_USER_AGENT', null, $_SERVER),
-        'browser'        => getBrowser($_SERVER['HTTP_USER_AGENT']),
-        'language'        => $language,
-        'secure'        => ($_SERVER['HTTPS'] ? true : false),
-        'referer'        => doArgs('HTTP_REFERER', null, $_SERVER),
-        'rootPath'        => '/'.root(),
-        'fullPath'        => $_SERVER['REQUEST_URI'],
-        'rootUrl'        => ($_SERVER['HTTPS'] ? 'https' : 'http').'://'.$_SERVER['HTTP_HOST'].'/'.root(),
-        'url'            => ($_SERVER['HTTPS'] ? 'https' : 'http').'://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'],
+        'user'      => (isset($_SESSION['user']['id']) ? $_SESSION['user'] : $guest['user']),
+        'ip'        => User::getIP(),
+        'useragent' => doArgs('HTTP_USER_AGENT', null, $_SERVER),
+        'browser'   => getBrowser($_SERVER['HTTP_USER_AGENT']),
+        'language'  => $language,
+        'secure'    => ($_SERVER['HTTPS'] ? true : false),
+        'referer'   => doArgs('HTTP_REFERER', null, $_SERVER),
+        'rootPath'  => '/'.root(),
+        'fullPath'  => $_SERVER['REQUEST_URI'],
+        'rootUrl'   => ($_SERVER['HTTPS'] ? 'https' : 'http').'://'.$_SERVER['HTTP_HOST'].'/'.root(),
+        'url'       => ($_SERVER['HTTPS'] ? 'https' : 'http').'://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'],
     );
 
     //hook the session template, this is the place to add some more if you want
@@ -354,9 +363,7 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
         $file = cmsROOT.'core/bbcode_tags.php';
         if(is_readable($file)){
             require_once($file);
-        }else{
-            hmsgDie('FAIL', 'Fatal Error - BBCode\'s not available.');
-        }
+        }else{ hmsgDie('FAIL', 'Fatal Error - BBCode\'s not available.'); }
 
     //
     //--Module Setup
@@ -364,9 +371,7 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
         $file = cmsROOT.'core/classes/class.module.php';
         if(is_readable($file)){
             require_once($file);
-        }else{
-            hmsgDie('FAIL', 'Fatal Error - Modules cannot be loaded.');
-        }
+        }else{ hmsgDie('FAIL', 'Fatal Error - Modules cannot be loaded.'); }
 
     //if site is closed, make it so, kill debug, no menu is needed, 'cmsCLOSED' can be used as a bypass
     if (($objCore->config('site', 'site_closed') == 1) && (!defined('cmsCLOSED'))){
@@ -383,7 +388,5 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
     $file = cmsROOT.'core/cron.php';
     if(is_readable($file)){
         require_once($file);
-    }else{
-        hmsgDie('FAIL', 'Fatal Error - Cron cannot be found.');
-    }
+    }else{ hmsgDie('FAIL', 'Fatal Error - Cron cannot be found.'); }
 

@@ -101,15 +101,15 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
      * Run a function recursivly through an array
      * http://www.php.net/manual/en/function.array-walk-recursive.php#99639
      *
-     * @author     bradbeattie [at] gmail [dot] com
-     * @version    1.0
-     * @since      1.0.0
+     * @author      bradbeattie [at] gmail [dot] com
+     * @version     1.0
+     * @since       1.0.0
      *
-     * @param     array     $array
-     * @param     string    $function Callback
-     * @param     array    $parameters
+     * @param       array   $array
+     * @param       string  $function Callback
+     * @param       array   $parameters
      *
-     * @return     string
+     * @return      string
      */
     function recursiveArray(&$array, $function, $parameters = array()) {
         $reference_function = function(&$value, $key, $userdata) {
@@ -122,15 +122,15 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
     /**
      * Set a cookie, this cookie shouldnt be accessable via scripting languages such as JS.
      *
-     * @version    1.0
+     * @version 1.0
      * @since   1.0.0
      * @author  xLink
      *
-     * @param   string     $name
-     * @param     string    $value
-     * @param     int        $expire
+     * @param   string  $name
+     * @param   string  $value
+     * @param   int     $expire
      *
-     * @return     bool
+     * @return  bool
      */
     function set_cookie($name, $value, $expire){
         //if cookie got set, then temp set it in PHP so its accessable before the next page reload
@@ -146,13 +146,13 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
      * Handles Notifications for CMS Modules.
      *
      * @version 2.0
-     * @since     0.8.0
-     * @author     xLink
+     * @since   0.8.0
+     * @author  xLink
      *
-     * @param     string     $to
-     * @param     string     $module
-     * @param     int     $setting
-     * @param     array    $content
+     * @param   string  $to
+     * @param   string  $module
+     * @param   int     $setting
+     * @param   array   $content
      *
      */
     function doNotification($to, $module, $setting, $content=array()){
