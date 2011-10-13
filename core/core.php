@@ -44,7 +44,7 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 
     //check if we have config
     $file = cmsROOT.'cache/config.php';
-    if(!is_file($file) || empty(file_get_contents($file))){
+    if(!is_file($file) || file_get_contents($file)==''){
         die(sprintf($errorTPL, 'Fatal Error', 'This seems to be your first time running. Are you looking for <a href="install/">Install/</a> ?'));
     }
 
