@@ -46,56 +46,15 @@ $objPage->addPagecrumb(array(
     array('url' => '/'.root().$mode.'/', 'name' => ucwords($mode).' Control Panel')
 ));
 
-//check for admin panel
-if($mode == 'admin' && $objUser->grab('userlevel') == ADMIN){
-
-    if(LOCALHOST){
-        $_SESSION['acp']['adminAuth'] = true;
-    }
-
-    //check to see if theyre authed
-    if($_SESSION['acp']['adminAuth']!=true && !LOCALHOST){
-        $_SESSION['acp']['doAdminCheck'] = true;
-        $objPage->redirect('/'.root().'login.php', 0);
-        hmsgDie('FAIL', 'Error: You need to be auth\'d to access this area.');
-    }
-
-    //we also need to update the timestamp
-    $_SESSION['acp']['adminTimeout'] = time();
-    $objPage->setVar('acpMode', true);
-}
-
-if($mode == 'mod' && !User::$IS_MOD){
-    $objPage->redirect('/'.root().'index.php', 0, 2);
-    hmsgDie('FAIL', 'Error: Your permissions do not let you access this area.');
-}
-if($mode == 'user' && !User::$IS_ONLINE){
-    $objPage->redirect('/'.root().'login.php', 0, 2);
-    hmsgDie('FAIL', 'Error: You need to be logged in to access this area.');
-}
-
-
-//if the desktop files are there then we'll load that and we need to switch to alt mode :D
-if(is_dir($objPage->acpThemeROOT) && $mode == 'admin'){
-    if(!empty($module) && $objCore->loadModule('core', true, $mode)){
-        $objModule = new core($objCore);
-        $objModule->doAction(($module=='core' ? '' : $module));
+//if we are tryin to load a core panel..
+if(strtolower($module)=='core'){
+    require(cmsROOT.'modules/core/handler.panels.php');
+}else{
+    if(!empty($module) && $objPage->loadModule($module, true, $mode)){
+        $objModule = new $module($objCore);
+        $objModule->doAction($action);
     }else{
         $objCore->throwHTTP(404);
-    }
-
-//else we stick to sensible mode
-}else{
-    //if we are tryin to load a core panel..
-    if(strtolower($module)=='core'){
-        require(cmsROOT.'modules/core/handler.panels.php');
-    }else{
-        if(!empty($module) && $objPage->loadModule($module, true, $mode)){
-            $objModule = new $module($objCore);
-            $objModule->doAction($action);
-        }else{
-            $objCore->throwHTTP(404);
-        }
     }
 }
 
