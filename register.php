@@ -45,19 +45,19 @@ if(!HTTP_POST){
         ),
         array(
             'field' => array(
-                'User Info'            => '_header_',
-                'Username'             => $objForm->inputbox('username', 'text', $_POST['username'], array('extra' => 'maxlength="20" size="20"', 'required'=>true)),
-                'Password'             => $objForm->inputbox('password', 'password', $_POST['password'], array('required'=>true)),
-                'Verify Password'     => $objForm->inputbox('password_verify', 'password', $_POST['password_verify'], array('required'=>true)),
+                'User Info'			=> '_header_',
+                'Username'			=> $objForm->inputbox('username', 'text', $_POST['username'], array('extra' => 'maxlength="20" size="20"', 'required'=>true)),
+                'Password'			=> $objForm->inputbox('password', 'password', $_POST['password'], array('required'=>true)),
+                'Verify Password'	=> $objForm->inputbox('password_verify', 'password', $_POST['password_verify'], array('required'=>true)),
 
                 'Email'             => $objForm->inputbox('email', 'text', $_POST['email'], array('required'=>true)),
 
-                'Captcha'            => '_header_',
-                'Recaptcha'            => $objForm->loadCaptcha('captcha'),
+                'Captcha'			=> '_header_',
+                'Recaptcha'			=> $objForm->loadCaptcha('captcha'),
             ),
             'desc' => array(
-                'Username'             => 'This field can be [a-zA-Z0-9-_.]',
-                'Recaptcha'            => $objForm->loadCaptcha('desc').'<br />'.langVar('L_CAPTCHA_DESC'),
+                'Username'			=> 'This field can be [a-zA-Z0-9-_.]',
+                'Recaptcha'			=> $objForm->loadCaptcha('desc').'<br />'.langVar('L_CAPTCHA_DESC'),
             ),
             'errors' => $_SESSION['register']['error'],
         ));
@@ -132,11 +132,11 @@ if(!HTTP_POST){
 
     if($objPage->config('site', 'register_verification')){
         $user = $objUser->getUserInfo($register);
-        $emailVars['URL'] = 'http://'.$_SERVER['HTTP_HOST'].'/'.root().'login.php?action=active&un='.$user['id'].'&check='.$user['code'];
+        $emailVars['URL'] = 'http://'.$_SERVER['HTTP_HOST'].'/'.root().'login.php?action=active&un='.$user['id'].'&check='.$user['usercode'];
         $emailVars['USERNAME'] = $userInfo['username'];
         $emailVars['SITE_NAME'] = $objCore->config('site', 'name');
 
-        sendEmail($userInfo['email'], 'register_successful', $emailVars);
+        sendEmail($userInfo['email'], 'E_REG_SUCCESSFUL', $emailVars);
         $msg = langVar('L_REG_SUCCESS_EMAIL');
     }else{
         $msg = langVar('L_REG_SUCCESS_NO_EMAIL');

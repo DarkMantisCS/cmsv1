@@ -83,7 +83,8 @@ INSERT INTO `cs_config` (`array`, `var`, `value`) VALUES
 
     ('email', 'E_USER_POSTED', 'Hello {USERNAME},\r\n\r\n{AUTHOR} has posted a reply to [b]{THREAD_NAME}[/b]. This was posted at {TIME}.\r\n\r\nYou can view the topic by visiting the following URL: [url]{THREAD_URL}[/url].\r\n\r\n~{SITE_NAME}'),
     ('email', 'E_LOGIN_ATTEMPTS', 'Hello {USERNAME},\r\n\r\nWe''ve become aware of somebody, if not yourself, trying to login to your account with incorrect details.\r\n\r\nYour account has been locked for security purposes.\r\n\r\nTo Reactivate your account, please click the link below, or copy and paste it into your address bar.\r\n\r\n[url]{URL}[/url]\r\n\r\n~{SITE_NAME}'),
-    
+    ('email', 'E_REG_SUCCESSFUL', 'Hello {USERNAME},\r\n\r\nThank you for registering on {SITE_NAME}. If this was not you then please disregard this email.\r\n\r\nThe administrator of {SITE_NAME} has requested that all users validate their email accounts before being allowed to login. The following URL will allow you to do that:\r\n\r\n[url]{URL}[/url]'),
+
     ('site', 'internetCalls', '0'),
 
     ('forum', 'news_category', '2'),

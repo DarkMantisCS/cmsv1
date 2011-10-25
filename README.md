@@ -6,7 +6,7 @@
 
 * PHP5.3+ 
 * MySQL 4+ (no support for other DBMS at this time)
-* Apache Rewrite Module *Enabled*
+* Apache Rewrite Module ***Enabled***
 
 ## Dependencies (included in this project)
 
@@ -22,7 +22,7 @@
 - [Minify](http://code.google.com/p/minify/)
 - [NBBC 1.4.3](http://nbbc.sourceforge.net/)
 - [phpass 0.3](http://www.openwall.com/phpass/)
-- [PHPBB2d's Template Class](http://phpbb.com)
+- [PHPBB2's Template Class](http://phpbb.com)
 
 ## Documentation
 

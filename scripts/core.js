@@ -21,6 +21,8 @@ var ADAPT_CONFIG = {
     '1920px = grid.fluid.css'
   ]
 };
+var ignoreAjax = false; //switch for the ajax spinner, the notifications shouldnt generate a spinner now
+
 
 function updateClock(){
     if(!$('clock')){ return; }
@@ -63,7 +65,9 @@ function inWindow(url, title, width, height){
 function notify(message, header, sticky){
     growler.growl(message, {
         header: header || "",
-        sticky: Boolean(sticky)
+        sticky: Boolean(sticky),
+        created: function(){ ignoreAjax = true; },
+        destroyed: function(){ ignoreAjax = false; }
     });
 }
 
@@ -181,8 +185,17 @@ function spinnerMove(e){
 
 //keep a div updated at the mouse pointed, this will be shown if we fire an ajax event
 Ajax.Responders.register({
-    onCreate: function(){ $('spinner_').show(); },
-    onComplete: function(){ $('spinner_').hide(); },
+    onCreate: function(){ 
+        if(!ignoreAjax){
+            $('spinner_').show();
+        }
+    },
+    onComplete: function(){ 
+        if(!ignoreAjax){
+            $('spinner_').hide(); 
+        }
+        ignoreAjax = false;
+    },
 });
 
 document.observe('dom:loaded', function(){

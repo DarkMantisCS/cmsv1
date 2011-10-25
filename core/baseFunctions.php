@@ -212,10 +212,10 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
      * @since   1.0.0
      * @author  xLink
      *
-     * @param   string     $emailVar
-     * @param   array    $vars
+     * @param   string	$emailVar
+     * @param   array	$vars
      *
-     * @return     string
+     * @retur	string
      */
     function parseEmail($emailVar, $vars){
         global $objCore;
@@ -234,14 +234,14 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
     /**
      * Sends an email to the target.
      *
-     * @version    2.2
+     * @version	2.5
      * @since   1.0.0
      * @author  xLink
      *
-     * @param   string     $to
-     * @param   string     $emailVar
-     * @param   array    $vars
-     * @param   bool     $dontDie
+     * @param   string	$to
+     * @param   string	$emailVar
+     * @param   array	$vars
+     * @param   bool	$dontDie
      */
     function sendEmail($to, $emailVar, $vars=array(), $dontDie=false){
         global $objCore;
@@ -265,17 +265,17 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
     /**
      * Sends an email to the intended target
      *
-     * @version    1.0
+     * @version	1.0
      * @since   1.0.0
      * @author  xLink
-     * @access     private
+     * @access	private
      *
-     * @param   string     $to
-     * @param   string     $from
-     * @param   string     $subject
-     * @param   string     $message
+     * @param   string	$to
+     * @param   string	$from
+     * @param   string	$subject
+     * @param   string	$message
      *
-     * @return     bool
+     * @return	bool
      */
     function _mailer($to, $from, $subject, $message){
         $server = $_SERVER['HTTP_HOST'];
