@@ -1783,17 +1783,17 @@ class forum extends Module{
     public function editPost($id){
         //grab the post were reffering to
         $post = $this->objSQL->getLine('SELECT * FROM `$Pforum_posts` WHERE id ="%s" LIMIT 1;', array($id));
-            if(!$post){ hmsgDie('FAIL', 'Failed to retreive post information'); }
+            if(!is_array($post)){ hmsgDie('FAIL', 'Failed to retreive post information'); }
 
         $thread = $this->objSQL->getLine(
                 'SELECT t.*, COUNT(DISTINCT p.id) as replies
-                    FROM `cscms_forum_threads` t
-                    LEFT JOIN `cscms_forum_posts` p ON p.thread_id = t.id
+                    FROM `$Pforum_threads` t
+                    LEFT JOIN `$Pforum_posts` p ON p.thread_id = t.id
                     WHERE t.id ="%s"
                     GROUP BY t.id',
                 array($post['thread_id'])
         );
-            if(!$thread){ hmsgDie('FAIL', 'Failed to retreive thread information'); }
+            if(!is_array($thread)){ hmsgDie('FAIL', 'Failed to retreive thread information'); }
 
         $category = $this->getForumInfo($thread['cat_id']);
         $category = $category[0];
@@ -1810,7 +1810,7 @@ class forum extends Module{
             $writeTest = true;
         }
 
-        if(!$writeTest){
+        if($writeTest != true){
             $this->objTPL->set_filenames(array(
                 'body' => 'modules/forum/template/forum_category.tpl'
             ));
