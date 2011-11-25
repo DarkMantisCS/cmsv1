@@ -366,6 +366,17 @@ input.icon.email{
 }
 
 span#forum_title a{ font-size: 15px; }
+
 div#loginBox{
-    margin: 0 0 0 20px;
+    margin: 0px;
+}
+
+#loginBox input[type=text]{
+    position: relative;
+    width: 95%;
+}
+
+#loginBox input[type=password]{
+    position: relative;
+    width: 95%;
 }

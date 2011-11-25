@@ -422,7 +422,7 @@ class form extends coreClass{
         //init the template, give it a rand id to stop it clashing with anything else
         $randID = inBetween('name="', '"', $vars['FORM_START']);
         $this->objTPL->set_filenames(array(
-            'form_body_'.$randID => 'modules/core/template/formOutput.tpl',
+            'form_body_'.$randID => 'modules/core/template/outputForm.tpl',
         ));
 
         if(!doArgs('border', true, $options)){
@@ -438,7 +438,7 @@ class form extends coreClass{
 
         $this->objTPL->reset_block_vars('_form_error');
         if(isset($elements['errors']) && !is_empty($elements['errors'])){
-            $this->objTPL->assign_block_vars('_form_error', array(
+            $this->objTPL->assign_block_vars('form_error', array(
                 'ERROR_MSG' => implode('<br />', $elements['errors']),
             ));
         }

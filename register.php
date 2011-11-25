@@ -25,7 +25,6 @@ if(!HTTP_POST){
 
 
     $objPage->showHeader();
-
         //set the fields to blank if they dont already have a value
         $fields = array('username', 'password', 'password_verify', 'email');
         foreach($fields as $e){
@@ -37,7 +36,7 @@ if(!HTTP_POST){
 
     echo $objForm->outputForm(array(
             'FORM_START'     => $objForm->start('register', array('method'=>'POST', 'action'=>'?')),
-            'FORM_END'         => $objForm->finish(),
+            'FORM_END'       => $objForm->finish(),
 
             'FORM_TITLE'     => 'User Registration',
             'FORM_SUBMIT'    => $objForm->button('submit', 'Submit'),
@@ -48,9 +47,9 @@ if(!HTTP_POST){
                 'User Info'			=> '_header_',
                 'Username'			=> $objForm->inputbox('username', 'text', $_POST['username'], array('extra' => 'maxlength="20" size="20"', 'required'=>true)),
                 'Password'			=> $objForm->inputbox('password', 'password', $_POST['password'], array('required'=>true)),
-                'Verify Password'	=> $objForm->inputbox('password_verify', 'password', $_POST['password_verify'], array('required'=>true)),
+                'Verify Password'               => $objForm->inputbox('password_verify', 'password', $_POST['password_verify'], array('required'=>true)),
 
-                'Email'             => $objForm->inputbox('email', 'text', $_POST['email'], array('required'=>true)),
+                'Email'                         => $objForm->inputbox('email', 'text', $_POST['email'], array('required'=>true)),
 
                 'Captcha'			=> '_header_',
                 'Recaptcha'			=> $objForm->loadCaptcha('captcha'),
@@ -67,7 +66,7 @@ if(!HTTP_POST){
     $userInfo = array();
 
     if(is_empty($_POST)){
-        $objPage->redirect($objCore->config('global', 'fullPath'), 3, 0);
+        $objPage->redirect($objCore->config('global', 'fullPath'), 1, 0);
         msgdie('FAIL', 'Error: Please use the form to submit your registration request.');
     }
 
@@ -90,16 +89,19 @@ if(!HTTP_POST){
     if(!isset($_error['username']) && strlen($objUser->getUserInfo($_POST['username'], 'username'))>0){
         $_error['username'] = 'You have chosen an Username that already exists. Please choose another one.';
     }
-
-    //validate the email
-    if(!isset($_error['email']) && strlen($objUser->getUserInfo($_POST['username'], 'email'))>0){
-        $_error['email'] = 'The Email address provided is invalid. Please make sure it is correct and try again.';
-    }
-
+    
     if(!isset($_error['email']) && !$objUser->validateEmail($_POST['email'])){
         $_error['email'] = 'The Email address provided couldn\'t be validated properly. Please make sure it is correct and try again.';
     }
-
+    
+    
+    //validate the email
+    $emailCheck = $objSQL->getTable( 'SELECT email FROM $Pusers WHERE email=\'%s\'', array( $_POST['email'] ) );
+    
+    if(!isset($_error['email']) && ( count( $emailCheck ) > 0 )){
+        $_error['email'] = 'The Email address provided is invalid. Please make sure it is correct and try again.';
+    }
+    
     //check the passwords
     if(!isset($_error['passwords']) && strlen($_POST['password'])<4 || strlen($_POST['password_verify'])<4){
         $_error['passwords'] = 'Your passwords are too small. Please make sure they are longer than 4 characters long.';
