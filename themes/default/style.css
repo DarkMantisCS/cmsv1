@@ -14,11 +14,7 @@ a.button { color: #FFFFFF; }
     position: relative;
 
     border: 2px solid #2B2B2B;
-    -webkit-border-radius: 5px;
-    -moz-border-radius: 5px;
     border-radius: 5px;
-    -webkit-box-shadow: 0 7px 15px #000000;
-    -moz-box-shadow: 0 7px 15px #000000;
     box-shadow: 0 7px 15px #000000;
 }
 #bg-strip{
@@ -66,12 +62,6 @@ header#banner nav{
     font-size: 12pt;
 
     background: #2c2d2f; /* Old browsers */
-    background: -moz-linear-gradient(top, #2c2d2f 0%, #28292c 100%); /* FF3.6+ */
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#2c2d2f), color-stop(100%,#28292c)); /* Chrome,Safari4+ */
-    background: -webkit-linear-gradient(top, #2c2d2f 0%,#28292c 100%); /* Chrome10+,Safari5.1+ */
-    background: -o-linear-gradient(top, #2c2d2f 0%,#28292c 100%); /* Opera11.10+ */
-    background: -ms-linear-gradient(top, #2c2d2f 0%,#28292c 100%); /* IE10+ */
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#2C2D2F', endColorstr='#28292C',GradientType=0 ); /* IE6-9 */
     background: linear-gradient(top, #2c2d2f 0%,#28292c 100%); /* W3C */
 }
     header#banner nav ul {
@@ -164,10 +154,6 @@ section aside#sidebar {
             padding: 5px;
         }
     aside#sidebar header.title{
-        -webkit-border-top-right-radius: 5px;
-        -webkit-border-bottom-right-radius: 5px;
-        -moz-border-radius-topright: 5px;
-        -moz-border-radius-bottomright: 5px;
         border-top-right-radius: 5px;
         border-bottom-right-radius: 5px;
 
@@ -179,8 +165,6 @@ section aside#sidebar {
         border-left: 0;
     }
     #pageContent header.title{
-        -webkit-border-radius: 5px;
-        -moz-border-radius: 5px;
         border-radius: 5px;
     }
 footer{
@@ -223,8 +207,6 @@ form label { font-weight: bold; margin: 5px 0; }
 form label small{ float: left; }
 form fieldset{ border: 1px solid #000000; }
 form fieldset legend {
-    -webkit-border-radius: 5px;
-    -moz-border-radius: 5px;
     border-radius: 5px;
 }
 
@@ -312,10 +294,6 @@ ul.tabs {
         color: #FFFFFF;
         display: inline;
 
-        -webkit-border-top-left-radius: 5px;
-        -webkit-border-top-right-radius: 5px;
-        -moz-border-radius-topleft: 5px;
-        -moz-border-radius-topright: 5px;
         border-top-left-radius: 5px;
         border-top-right-radius: 5px;
     }
@@ -353,8 +331,6 @@ input.icon.email{
 
 /** Specific Stuff **/
 .shadow{
-    -webkit-box-shadow: 0 7px 15px #000000;
-    -moz-box-shadow: 0 7px 15px #000000;
     box-shadow: 0 7px 15px #000000;
 }
 

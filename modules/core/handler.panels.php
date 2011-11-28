@@ -43,12 +43,10 @@ switch($mode){
         $uid = (User::$IS_MOD ? doArgs('uid', $objUser->grab('id'), $_GET, 'is_number') : $objUser->grab('id'));
 
         // mode will change based on what we want, set it to null to begin with, then check for mode, and then for save
+        // not using doArgs() in this instance due to wanting ?save to actually work
         $mode = null;
-        $mode = doArgs('mode', $mode, $_GET, 'quickEmpty');
-        $mode = doArgs('save', $mode, $_GET, 'quickEmpty');
-        function quickEmpty($arg){
-            return !is_empty($arg);
-        }
+        if(isset($_GET['mode']) && !is_empty($_GET['mode'])){ $mode = $_GET['mode']; }
+        if(isset($_GET['save'])){ $mode = 'save'; }
 
         if(!defined('NOMENU')){
             if(!is_readable(cmsROOT.'modules/core/handler.panelTabs.php')){
@@ -66,6 +64,7 @@ switch($mode){
             msg('FAIL', 'Error: Panel did not output any content.', '_CONTENT');
         }
 
+        $objTPL->assign_var('_TABS', $objTPL->output('tabs', false));
         $objTPL->assign_var('_CONTENT', $objTPL->output('body', false));
         $objTPL->parse('panel', false);
     break;

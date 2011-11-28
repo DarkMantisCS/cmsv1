@@ -7,16 +7,16 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
     /**
      * Custom error handler for the cms.
      *
-     * @version    1.0
-     * @since     1.0.0
-     * @author     xLink
+     * @version     1.0
+     * @since       1.0.0
+     * @author      xLink
      */
     function cmsError(){
         $args = func_get_args();
         $filename = explode((stristr(PHP_OS, 'WIN') ? '\\' : '/'), $args[2]);
-        if($args[0]!=8){
+        if($args[0] != 8){
             $msg = '<b>CMS Error:</b> <i>'.$args[1].'</i> in <b>'.
-                        (defined('IS_ADMIN') && User::$IS_ADMIN ? $args[2] : $filename[(count($filename)-1)]).
+                        (User::$IS_ADMIN ? $args[2] : $filename[(count($filename)-1)]).
                     '</b> on line <b>'.$args[3].'</b>';
 
             if(defined('INSTALLER')){
@@ -30,17 +30,17 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
     /**
      * Used to determine the base path of the CMS installation;
      *
-     * @version    1.2
-     * @since     1.0.0
-     * @author     Jesus
+     * @version     1.2
+     * @since       1.0.0
+     * @author      Jesus
      *
-     * @return     string
+     * @return      string
      */
     function root(){
         $path = str_replace('\\', '/', __FILE__);
 
         //if we are dealing with a users home directory
-        if(substr($_SERVER['REQUEST_URI'], 0, 2)=='/~'){
+        if(substr($_SERVER['REQUEST_URI'], 0, 2) == '/~'){
             return substr($_SERVER['REQUEST_URI'], 1);
         }
 
@@ -65,16 +65,16 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
     /**
      * Determines whether to set
      *
-     * @version    1.0
-     * @since     1.0.0
-     * @author     xLink
+     * @version     1.0
+     * @since       1.0.0
+     * @author      xLink
      *
-     * @param     string     $key            Which key to check for
-     * @param     string    $default        A default value to use if our checks fail
-     * @param     array    $args            An array to check against
-     * @param     mixed    $callback         Can be name of a func that returns a bool value or an anonymous function
+     * @param       string  $key            Which key to check for
+     * @param       string  $default        A default value to use if our checks fail
+     * @param       array   $args           An array to check against
+     * @param       mixed   $callback       Can be name of a func that returns a bool value or an anonymous function
      *
-     * @return     string
+     * @return      string
      */
     function doArgs($key, $default, $args, $callback=null){
         $extra = true; //set this to true so the end result will work
@@ -122,15 +122,15 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
     /**
      * Set a cookie, this cookie shouldnt be accessable via scripting languages such as JS.
      *
-     * @version 1.0
-     * @since   1.0.0
-     * @author  xLink
+     * @version     1.0
+     * @since       1.0.0
+     * @author      xLink
      *
-     * @param   string  $name
-     * @param   string  $value
-     * @param   int     $expire
+     * @param       string  $name
+     * @param       string  $value
+     * @param       int     $expire
      *
-     * @return  bool
+     * @return      bool
      */
     function set_cookie($name, $value, $expire){
         //if cookie got set, then temp set it in PHP so its accessable before the next page reload
@@ -145,14 +145,14 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
     /**
      * Handles Notifications for CMS Modules.
      *
-     * @version 2.0
-     * @since   0.8.0
-     * @author  xLink
+     * @version     2.0
+     * @since       0.8.0
+     * @author      xLink
      *
-     * @param   string  $to
-     * @param   string  $module
-     * @param   int     $setting
-     * @param   array   $content
+     * @param       string  $to
+     * @param       string  $module
+     * @param       int     $setting
+     * @param       array   $content
      *
      */
     function doNotification($to, $module, $setting, $content=array()){
@@ -208,14 +208,14 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
     /**
      * Sends an email to the target.
      *
-     * @version 1.0
-     * @since   1.0.0
-     * @author  xLink
+     * @version     1.0
+     * @since       1.0.0
+     * @author      xLink
      *
-     * @param   string	$emailVar
-     * @param   array	$vars
+     * @param       string	$emailVar
+     * @param       array	$vars
      *
-     * @retur	string
+     * @return      string
      */
     function parseEmail($emailVar, $vars){
         global $objCore;
@@ -234,14 +234,14 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
     /**
      * Sends an email to the target.
      *
-     * @version	2.5
-     * @since   1.0.0
-     * @author  xLink
+     * @version	    2.5
+     * @since       1.0.0
+     * @author      xLink
      *
-     * @param   string	$to
-     * @param   string	$emailVar
-     * @param   array	$vars
-     * @param   bool	$dontDie
+     * @param       string	$to
+     * @param       string	$emailVar
+     * @param       array	$vars
+     * @param       bool	$dontDie
      */
     function sendEmail($to, $emailVar, $vars=array(), $dontDie=false){
         global $objCore;
@@ -265,17 +265,17 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
     /**
      * Sends an email to the intended target
      *
-     * @version	1.0
-     * @since   1.0.0
-     * @author  xLink
-     * @access	private
+     * @version	    1.0
+     * @since       1.0.0
+     * @author      xLink
+     * @access      private
      *
-     * @param   string	$to
-     * @param   string	$from
-     * @param   string	$subject
-     * @param   string	$message
+     * @param       string	$to
+     * @param       string	$from
+     * @param       string	$subject
+     * @param       string	$message
      *
-     * @return	bool
+     * @return      bool
      */
     function _mailer($to, $from, $subject, $message){
         $server = $_SERVER['HTTP_HOST'];
@@ -303,12 +303,12 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
     /**
      * Returns a list of all directories and files
      *
-     * @version    1.0
-     * @since   1.0.0
+     * @version     1.0
+     * @since       1.0.0
      *
-     * @param   string     $path
+     * @param       string     $path
      *
-     * @return     array
+     * @return      array
      */
     function getFiles($path) {
         $files = array();
@@ -353,12 +353,12 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
     /**
      * Attempts to figure out what browser the string is relating to
      *
-     * @version    2.0
-     * @since   1.0.0
+     * @version     2.0
+     * @since       1.0.0
      *
-     * @param   string     $useragent
+     * @param       string     $useragent
      *
-     * @return     string
+     * @return      string
      */
     function getBrowser($useragent){
         // BE CAREFUL WHEN MODIFYING AS THE ORDER DOES MATTER!
@@ -419,13 +419,13 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
     /**
      * Returns a language var ready to be used on the page.
      *
-     * @version    2.0
-     * @since    1.0.0
+     * @version     2.0
+     * @since       1.0.0
      *
-     * @param    string     $langVar
-     * @param    ...
+     * @param       string     $langVar
+     * @param       ...
      *
-     * @return     string
+     * @return      string
      */
     function langVar(){
         global $_lang;
@@ -453,12 +453,12 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
     /**
      * Adds a language file to the global language array
      *
-     * @version    1.2
-     * @since   1.0.0
+     * @version     1.2
+     * @since       1.0.0
      *
-     * @param   string     $file
+     * @param       string     $file
      *
-     * @return     bool
+     * @return      bool
      */
     function translateFile($file){
         global $_lang;
@@ -478,11 +478,11 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
     /**
      * Central place to call the cache calls from.
      *
-     * @version    1.0
-     * @since   1.0.0
+     * @version     1.0
+     * @since       1.0.0
      *
-     * @param   string     $file
-     * @param   var     $new_file
+     * @param       string      $file
+     * @param       var         $new_file
      */
     function newCache($file, &$new_file){
         global $objCore;
@@ -537,13 +537,13 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
     /**
      * Parse an .ini string into a useable array
      *
-     * @version 1.0
-     * @since     1.0.0
+     * @version     1.0
+     * @since       1.0.0
      *
-     * @param     string     $string
-     * @param     bool     $processSelections
+     * @param       string      $string
+     * @param       bool        $processSelections
      *
-     * @return     string
+     * @return      string
      */
     function parseMenuParams($str, $processSections=false){
         $lines     = explode("\n", $str);
@@ -581,13 +581,13 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
     /**
      * Configures the Menu system and outputs the requested version
      *
-     * @version 3.5
-     * @since     1.0.0
+     * @version     3.5
+     * @since       1.0.0
      *
-     * @param     string $module
-     * @param     string $page_id
+     * @param       string $module
+     * @param       string $page_id
      *
-     * @return     bool
+     * @return      bool
      */
     function show_menu($module, $page_id='default'){
         global $config, $objCore;
@@ -706,13 +706,13 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
     /**
      * Returns the menu links for a specific menu
      *
-     * @version 2.0
-     * @since     1.0.0
+     * @version     2.0
+     * @since       1.0.0
      *
-     * @param     string $name
-     * @param     string $returnType
+     * @param       string $name
+     * @param       string $returnType
      *
-     * @return     array/string
+     * @return      array/string
      */
     function get_menu($menu_id, $returnType='link'){
         global $objUser, $config;
@@ -757,8 +757,9 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
     /**
      * Borrowed function from phpbb3 to get contents of a file on remote server
      *
-     * @version 1.0
-     * @since     1.0.0
+     * @version     1.0
+     * @since       1.0.0
+     * @author      PHPBB Team
      */
     function get_remote_file($host, $directory, $filename, &$errstr, &$errno, $port=80, $timeout=10) {
         global $objCore;
@@ -806,8 +807,8 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
     /**
      * Search for a value within a multi-dimensional array
      *
-     * @version 1.0
-     * @since     1.0.0
+     * @version     1.0
+     * @since       1.0.0
      */
     function array_searchRecursive($needle, $haystack, $strict=false, $path=array()){
         if(!is_array($haystack)){ return false; }
@@ -828,14 +829,14 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
      * Verifies an IP against a IPv4 range.
      *         127.0.0.1 would verify against 127.0.0.* but not *.*.*.2
      *
-     * @version 1.0
-     * @since   1.0.0
-     * @author  Jesus
+     * @version     1.0
+     * @since       1.0.0
+     * @author      Jesus
      *
-     * @param   string  $range      Range to check the IP against
-     * @param   string  $ip         IP to check
+     * @param       string  $range      Range to check the IP against
+     * @param       string  $ip         IP to check
      *
-     * @return  bool
+     * @return      bool
      */
     function checkIPRange($range, $ip){
         $range = explode('.', $range);
@@ -892,14 +893,14 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
     /**
      * Parses content for viewing in browser.
      *
-     * @version 1.0
-     * @since     1.0.0
+     * @version     1.0
+     * @since       1.0.0
      *
-     * @param     string     $content
-     * @param     bool    $echoContent
-     * @param     bool    $showSmilies
+     * @param       string  $content
+     * @param       bool    $echoContent
+     * @param       bool    $showSmilies
      *
-     * @return     string
+     * @return      string
      */
     function contentParse($content, $echoContent=false, $showSmilies=true){
         global $objCore;
@@ -924,14 +925,14 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
     /**
      * Handles securing input/output
      *
-     * @version    1.0
-     * @since     1.0.0
-     * @author     xLink
+     * @version     1.0
+     * @since       1.0.0
+     * @author      xLink
      *
-     * @param     string     $string
-     * @param     string    $mode
+     * @param       string  $string
+     * @param       string  $mode
      *
-     * @return     string
+     * @return      string
      */
     function secureMe($string, $mode='html') {
         switch(strtolower($mode)) {

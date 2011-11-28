@@ -1,10 +1,8 @@
-nav#panel_tabs{
+﻿nav#panel_tabs{
     display: block;
     background-color: #fff;
     border: 1px solid #2B2B2B;
-    
-    -webkit-border-radius: 5px;
-    -moz-border-radius: 5px;
+
     border-radius: 5px;
 }
 nav#panel_tabs div{
@@ -14,66 +12,77 @@ nav#panel_tabs div{
         height: 45px;
         background-color: #f3f4f6;
         border-bottom: solid 1px #D7DBE6;
-        
-        -webkit-border-top-left-radius: 5px;
-        -webkit-border-top-right-radius: 5px;
-        -moz-border-radius-topleft: 5px;
-        -moz-border-radius-topright: 5px;
+
         border-top-left-radius: 5px;
         border-top-right-radius: 5px;
     }
-        nav#panel_tabs div#top_row ul li {
-            float: left;
-            position: relative;
-            padding: 15px 10px 5px;
-            list-style-type: none;
-            border: 1px solid transparent;
-            
-            -webkit-transition: background 0.3s ease;
-            -moz-transition: background 0.3s ease;
-            -o-transition: background 0.3s ease;
-            transition: background 0.3s ease;
-        }
-            nav#panel_tabs div#top_row ul li:hover {
-                background: #ffffff;
-
-                border: none;
-                border-left: 1px solid #D7DBE6;
-                border-right: 1px solid #D7DBE6;
-                
-                height: 26px;
-            }
-
     nav#panel_tabs div#bottom_row {
         height: 35px;
-        
-        -webkit-border-bottom-right-radius: 5px;
-        -webkit-border-bottom-left-radius: 5px;
-        -moz-border-radius-bottomright: 5px;
-        -moz-border-radius-bottomleft: 5px;
+
         border-bottom-right-radius: 5px;
         border-bottom-left-radius: 5px;
     }
-        nav#panel_tabs div#bottom_row ul li {
-            float: left;
-            position: relative;
-            padding: 10px 10px 5px;
-            list-style-type: none;
-            border: 1px solid transparent;
-        }
-        nav#panel_tabs div#bottom_row ul li:after {
-            content: '';
-            height: 5px;
-            width: 2px;
-            border-left: 1px solid #020202;
-            border-right: 1px solid #3c3c3c;
-        }
-        nav#panel_tabs div#bottom_row ul li:first-child { border-left: 0px; }
-        nav#panel_tabs div#bottom_row ul li:last-child { border-right: 0px; }
-        
-        
-nav#panel_tabs ul{
+
+nav#panel_tabs div#top_row ul {
+    position: relative;
     float: left;
+
     padding: 0 10px;
     margin: 0;
 }
+    nav#panel_tabs div#top_row ul li {
+        position: static;
+        float: left;
+        width: auto;
+
+        padding: 15px 10px 5px;
+        list-style-type: none;
+        border: 1px solid transparent;
+
+        transition: background 0.3s ease;
+    }
+		nav#panel_tabs div#top_row > ul > li:hover,
+        nav#panel_tabs div#top_row > ul > li.on{
+			background: #ffffff;
+
+			border: none;
+			border-left: 1px solid #D7DBE6;
+			border-right: 1px solid #D7DBE6;
+
+			height: 26px;
+		}
+            nav#panel_tabs div#top_row ul li ul {
+                position: absolute;
+                width: 80em;
+				height: 25px;
+                display: none;
+                padding: 0;
+                margin: 0;
+            }
+            nav#panel_tabs div#top_row ul li ul li {
+                margin: 0;
+                padding: 5px 0 0 15px;
+            }
+                nav#panel_tabs div#top_row ul li:hover ul,
+				nav#panel_tabs div#top_row ul li.on ul {
+				    background: none repeat scroll #FFFFFF;
+    				display: inline-table;
+					border: none;
+					height: 10px;
+
+					left: 0;
+					top: 4em;
+					z-index: 99;
+
+                    border-bottom-right-radius: 5px;
+                    border-bottom-left-radius: 5px;
+				}
+                nav#panel_tabs div#top_row ul li ul li a:hover{
+					text-decoration: underline;
+				}
+
+nav#panel_tabs div#top_row a {
+    display: block;
+    position: relative;
+}
+
