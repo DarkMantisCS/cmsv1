@@ -25,7 +25,7 @@ class forum extends Module{
         if(User::$IS_ONLINE){
             $this->forumTrackerInit();
         }
-
+ 
         //view thread
         if(preg_match('_^thread/([a-zA-Z0-9-]*)\-([0-9]*)_i', $action, $threadId)){
             $action = 'thread';
@@ -2977,7 +2977,5 @@ class forum extends Module{
         //everything that happens here dosent need to be output back to the parent template
         exit;
     }
-
 }
-
 ?>
