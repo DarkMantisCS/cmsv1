@@ -28,7 +28,11 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
     define('cmsROOT', (isset($cmsROOT) && !empty($cmsROOT) ? $cmsROOT : null)); unset($cmsROOT);
 
     //so we can turn errors off if we are not running locally
-    define('LOCALHOST', true);
+    define('LOCALHOST', (isset($_SERVER['HTTP_HOST']) &&
+                            ($_SERVER['HTTP_HOST']=='localhost' ||
+                             $_SERVER['HTTP_HOST']=='127.0.0.1'))
+                        ? true
+                        : false);
 
     //define the error reporting level, dont want PHP errors on the live version now do we :)
     error_reporting(LOCALHOST ? E_ALL & ~E_NOTICE | E_STRICT : 0);

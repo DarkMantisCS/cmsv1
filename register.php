@@ -89,7 +89,6 @@ if(!HTTP_POST){
     if(!isset($_error['username']) && strlen($objUser->getUserInfo($_POST['username'], 'username'))>0){
         $_error['username'] = 'You have chosen an Username that already exists. Please choose another one.';
     }
-<<<<<<< HEAD
 
     //validate the email
     if(!isset($_error['email']) && !$objUser->validateEmail($_POST['email'])){
@@ -101,21 +100,6 @@ if(!HTTP_POST){
         $_error['email'] = 'The Email address provided is invalid. Please make sure it is correct and try again.';
     }
 
-=======
-    
-    if(!isset($_error['email']) && !$objUser->validateEmail($_POST['email'])){
-        $_error['email'] = 'The Email address provided couldn\'t be validated properly. Please make sure it is correct and try again.';
-    }
-    
-    
-    //validate the email
-    $emailCheck = $objSQL->getTable( 'SELECT email FROM $Pusers WHERE email=\'%s\'', array( $_POST['email'] ) );
-    
-    if(!isset($_error['email']) && ( count( $emailCheck ) > 0 )){
-        $_error['email'] = 'The Email address provided is invalid. Please make sure it is correct and try again.';
-    }
-    
->>>>>>> 337f44cfc02368a089c84422905f9e9bfa701486
     //check the passwords
     if(!isset($_error['passwords']) && strlen($_POST['password'])<4 || strlen($_POST['password_verify'])<4){
         $_error['passwords'] = 'Your passwords are too small. Please make sure they are longer than 4 characters long.';
