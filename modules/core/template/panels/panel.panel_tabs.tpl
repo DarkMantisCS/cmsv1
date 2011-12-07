@@ -5,5 +5,5 @@
     </div>
     
     <div id="bottom_row"></div>
-</nav><br />
+</nav>
 <!-- END panelMenu -->

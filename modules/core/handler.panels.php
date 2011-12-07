@@ -19,7 +19,7 @@ switch($mode){
 
         //make sure they have the correct privs
         $break = false;
-        if($mode=='admin'   && !User::$IS_ADMIN){   $break = true; }
+        #if($mode=='admin'   && !User::$IS_ADMIN){   $break = true; }
         if($mode=='mod'     && !User::$IS_MOD){     $break = true; }
         if($mode=='user'    && !User::$IS_ONLINE){  $break = true; }
 

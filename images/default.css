@@ -43,6 +43,7 @@ input:-webkit-autofill {
     word-wrap: break-word;      /* IE 5+ */
 }
 .noBorder{ border: 0 !important; }
+.noMargin{ margin: 0 !important; }
 
 .corners-tl { border-top-left-radius: 5px; }
 .corners-tr { border-top-right-radius: 5px; }

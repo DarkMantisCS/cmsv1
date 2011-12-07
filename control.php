@@ -69,7 +69,7 @@ if(isset($_GET['ajax']) || HTTP_AJAX || $objPage->getVar('tplMode')){
 }
 
 $objPage->showHeader($doSimple);
-if(strtolower($module)!='core'){ $objTPL->output('tabs'); }
+if(strtolower($module)!='core'){ $objTPL->output('sys_tabs'); }
     if($__eval = $objTPL->output(($objTPL->isHandle('panel') ? 'panel' : 'body'))){
         msgDie('FAIL', 'No output received from module.');
     }

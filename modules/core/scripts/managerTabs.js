@@ -1,8 +1,9 @@
 document.observe('dom:loaded', function(){
-    document.scrollTo('panel_tabs');
     $$('ul#tabs li a').each(function(ele){
         ele.observe('click', function(e){ ajaxUpdate(e, ele); });
     });
+
+    document.scrollTo('panel_tabs');
 });
 
 function ajaxUpdate(e, ele){

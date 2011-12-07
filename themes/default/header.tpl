@@ -57,7 +57,7 @@
 
     <section id="content" class="grid_12">
         <!-- BEGIN no_menu -->
-        <div id="pageContent" class="grid_12">
+        <div id="pageContent" class="grid_12 no_menu">
         <!-- END no_menu -->
         <!-- BEGIN menu -->
         <div id="pageContent" class="grid_9">

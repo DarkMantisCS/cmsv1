@@ -22,7 +22,7 @@ info["order"] = 2
 info["ico"] = 
 info["name"] = extra
 
-;Module Manager = "admin/core/modules/"
+Module Manager = "admin/core/modules/"
 Plugin Manager = "admin/core/plugins/"
 ;Theme Manager = "admin/core/themes/"
 

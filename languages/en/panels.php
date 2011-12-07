@@ -129,9 +129,6 @@ $_lang['L_MAIN_DESC']           = 'This section enables you to disable the websi
 $_lang['L_DISABLE_SITE']        = 'Disable Site';
 $_lang['L_DISABLE_MSG']         = 'Disable Message';
 
-//ACP: Module Management
-$_lang['L_MOD_MANAGE']          = 'Module Management';
-
 //ACP: file registry
 $_lang['L_FILE_REG']            = 'File Registry';
 $_lang['L_DELETED']             = 'Deleted';
@@ -148,10 +145,14 @@ $_lang['L_SYS_INFO']            = 'System Information';
 $_lang['L_SYSINFO_MSG']         = 'This panel is ment to be an informative guide to help both you as end users and also us as the developers of this CMS. Please be careful about sharing this information as it can be useful to hackers as much as its useful for us developers to debug your problems. Your current configuration information is avalible with the link in this box, any sensitive information has been stripped out of this.';
 
 //ACP: Plugin Management
-$_lang['L_INSTALLED_PLUGINS']   = 'Installed Plugins';
-$_lang['L_PLUGIN_CATA']         = 'Plugin Catalog';
+$_lang['L_PLUGIN_MANAGE']       = 'Plugin Management';
+$_lang['L_PLUGIN_INSTALL']      = 'Installed Plugins';
+$_lang['L_PLUGIN_CATALOGUE']    = 'Plugin Catalogue';
 
-
+//ACP: Module Management
+$_lang['L_MOD_MANAGE']          = 'Module Management';
+$_lang['L_MOD_INSTALL']         = 'Installed Modules';
+$_lang['L_MOD_CATALOGUE']       = 'Module Catalogue';
 
 
 
