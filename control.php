@@ -3,6 +3,7 @@
 ||              Cybershade CMS - Your CMS, Your Way                     ||
 \*======================================================================*/
 define('INDEX_CHECK', 1);
+define('PANEL_CHECK', 1);
 define('cmsDEBUG', 0);
 include_once('core/core.php');
 
@@ -50,6 +51,9 @@ $objPage->addPagecrumb(array(
 if(strtolower($module)=='core'){
     require(cmsROOT.'modules/core/handler.panels.php');
 }else{
+    $controlPanel = $mode;
+    require(cmsROOT.'modules/core/handler.panelTabs.php');
+
     if(!empty($module) && $objPage->loadModule($module, true, $mode)){
         $objModule = new $module($objCore);
         $objModule->doAction($action);
@@ -65,6 +69,7 @@ if(isset($_GET['ajax']) || HTTP_AJAX || $objPage->getVar('tplMode')){
 }
 
 $objPage->showHeader($doSimple);
+if(strtolower($module)!='core'){ $objTPL->output('tabs'); }
     if($__eval = $objTPL->output(($objTPL->isHandle('panel') ? 'panel' : 'body'))){
         msgDie('FAIL', 'No output received from module.');
     }

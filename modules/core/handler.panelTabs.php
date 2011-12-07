@@ -6,7 +6,7 @@ if(!defined('INDEX_CHECK')){die('Error: Cannot access directly.');}
 if(!defined('PANEL_CHECK')){die('Error: Cannot include panel from current location.');}
 
 //setup some vars we are gonna need
-$corePanels = array();
+$corePanels = array(); $menuTabs = array();
 $vars = $objPage->getVar('tplVars');
 
 //check to see which panel group we need
@@ -14,14 +14,21 @@ if(User::$IS_ADMIN){    $corePanels['admin'] = cmsROOT.'modules/core/panels/admi
 if(User::$IS_MOD){      $corePanels['mod']   = cmsROOT.'modules/core/panels/mod/';     }
 if(User::$IS_USER){     $corePanels['user']  = cmsROOT.'modules/core/panels/user/';    }
 
-//setup the tabs
-$tabs = 'modules/core/panels/'.$controlPanel.'/menu.php';
-if(!is_file($tabs) || !is_readable($tabs)){
-    hmsgDie('FAIL', 'Error: Tabs for this panel don\'t exist.');
-}
-$menuTabs = parse_ini_file($tabs, true);
-if(!is_array($menuTabs) || !count($menuTabs)){
-    hmsgDie('FAIL', 'Error: Tabs setup failed.');
+if($module=='core'){
+    //setup the tabs
+    $tabs = 'modules/core/panels/'.$controlPanel.'/menu.php';
+    if(!is_file($tabs) || !is_readable($tabs)){
+        hmsgDie('FAIL', 'Error: Tabs for this panel don\'t exist.');
+    }
+    $menuTabs = parse_ini_file($tabs, true);
+    if(!is_array($menuTabs) || !count($menuTabs)){
+        hmsgDie('FAIL', 'Error: Tabs setup failed.');
+    }
+}else{
+    include(cmsROOT.'modules/'.$module.'/cfg.php');
+    if(isset($mod_menu) && count($mod_menu)){
+        $menuTabs = $mod_menu[$controlPanel];
+    }
 }
 
 $tabs = array();
@@ -54,7 +61,7 @@ if(count($config['modules']) && in_array($controlPanel, $array)){
     }
 }
 
-$menu = null;
+$menu = null; $module = doArgs('__module', 'core', $_GET);
 if(!is_empty($tabs)){
     $_class = 'on';
     $_tab = '<li class="%3$s">%1$s <ul class="grid_8 sub">'."\n".'%2$s</ul></li>'."\n";
@@ -67,7 +74,12 @@ if(!is_empty($tabs)){
 
         $on = false;
         foreach($links as $subTitle => $subLink){
-            $subLink = '/'.root().$subLink;
+            if($module != 'core'){
+                $subLink = '/'.root().$controlPanel.'/'.$module.'/'.$subLink;
+            }else{
+                $subLink = '/'.root().$subLink;
+            }
+
             $link = sprintf($_link, $subLink, $subTitle);
             $subTabs .= sprintf($_subTab, $link);
 

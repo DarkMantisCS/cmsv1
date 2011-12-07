@@ -3,7 +3,6 @@
 ||              Cybershade CMS - Your CMS, Your Way                     ||
 \*======================================================================*/
 if(!defined('INDEX_CHECK')){die('Error: Cannot access directly.');}
-define('PANEL_CHECK', 1);
 
 //this determines what panels we want to use here...
 $panels = array('admin', 'mod', 'user');
@@ -20,7 +19,7 @@ switch($mode){
 
         //make sure they have the correct privs
         $break = false;
-        #if($mode=='admin'   && !User::$IS_ADMIN){   $break = true; }
+        if($mode=='admin'   && !User::$IS_ADMIN){   $break = true; }
         if($mode=='mod'     && !User::$IS_MOD){     $break = true; }
         if($mode=='user'    && !User::$IS_ONLINE){  $break = true; }
 

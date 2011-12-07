@@ -53,7 +53,7 @@ nav#panel_tabs div#top_row ul {
 		}
             nav#panel_tabs div#top_row ul li ul {
                 position: absolute;
-                width: 80em;
+                width: 55em;
 				height: 25px;
                 display: none;
                 padding: 0;
