@@ -63,6 +63,9 @@ nav#panel_tabs div#top_row ul {
                 margin: 0;
                 padding: 5px 0 0 15px;
             }
+                nav#panel_tabs div#top_row ul li:hover ul{
+					z-index: 99;
+				}
                 nav#panel_tabs div#top_row ul li:hover ul,
 				nav#panel_tabs div#top_row ul li.on ul {
 				    background: none repeat scroll #FFFFFF;
@@ -72,7 +75,6 @@ nav#panel_tabs div#top_row ul {
 
 					left: 0;
 					top: 4em;
-					z-index: 99;
 
                     border-bottom-right-radius: 5px;
                     border-bottom-left-radius: 5px;

@@ -1202,8 +1202,13 @@ class user extends coreClass{
             break;
 
             case ADMIN:
-                if($userlevel == ADMIN && doArgs('adminAuth', false, $_SESSION['acp'])){
-                    return true;
+                if($userlevel == ADMIN){
+                    if(LOCALHOST){
+                        return true;
+                    }
+                    if(doArgs('adminAuth', false, $_SESSION['acp'])){
+                        return true;
+                    }
                 }
             break;
 

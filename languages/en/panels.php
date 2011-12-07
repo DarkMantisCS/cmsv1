@@ -143,5 +143,7 @@ $_lang['L_CHECK_FH']            = 'Check File Hashes';
 $_lang['L_UPDATE_FH']           = 'Update File Hashes';
 $_lang['L_CHANGED_ONLY']        = 'Show Changed Files Only';
 
-
+//ACP: System Info
+$_lang['L_SYS_INFO']            = 'System Information';
+$_lang['L_SYSINFO_MSG']         = 'This panel is ment to be an informative guide to help both you as end users and also us as the developers of this CMS. Please be careful about sharing this information as it can be useful to hackers as much as its useful for us developers to debug your problems. You can get configuration information with <a href="%s">this link</a>, any configuration information accessable here cannot be used to cause harm to the system.';
 ?>

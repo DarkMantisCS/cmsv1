@@ -28,10 +28,10 @@ class driver_mysql extends coreClass implements SQLBase{
         if(is_empty($config)){ return false; }
 
         $this->db = array(
-            'host'        => doArgs('host',         '', $config),
-            'username'    => doArgs('username',     '', $config),
-            'password'    => doArgs('password',     '', $config),
-            'database'    => doArgs('database',     '', $config),
+            'host'      => doArgs('host',       '', $config),
+            'username'  => doArgs('username',   '', $config),
+            'password'  => doArgs('password',   '', $config),
+            'database'  => doArgs('database',   '', $config),
             'prefix'    => doArgs('prefix',     '', $config),
         );
 
@@ -286,7 +286,7 @@ class driver_mysql extends coreClass implements SQLBase{
 
         //first arg is the query
         $query = array_shift($args);
-        
+
         //replace $P with the table prefix
         $query = str_replace('$P', $this->prefix(), $query);
 
@@ -373,7 +373,7 @@ class driver_mysql extends coreClass implements SQLBase{
      */
     public function getInfo($table, $clause=null, $log=false){
         $args = array();
-        
+
         $statement = 'SELECT COUNT(*) as count FROM `$P%s`';
         $args[] = $table;
         if(!is_empty($clause)){
@@ -401,7 +401,7 @@ class driver_mysql extends coreClass implements SQLBase{
      */
     public function getValue($table, $field, $clause=null, $log=false){
         $args = array();
-        
+
         $statement = 'SELECT %1$s FROM `$P%2$s`';
         $args[] = $table;
         if(!is_empty($clause)){
@@ -533,7 +533,7 @@ class driver_mysql extends coreClass implements SQLBase{
                 $vars .= '`'.$index.'`="'.$this->escape($value).'", ';
             }
         }
-        
+
         $query = 'UPDATE `$P%s` SET %s WHERE %s';
         $this->query($query, array($table, substr($vars, 0, -2), $this->autoPrepare($clause)), $log);
 
