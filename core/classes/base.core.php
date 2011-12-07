@@ -177,6 +177,44 @@ class coreClass{
     }
 
     /**
+     * Put together a list query list for the url
+     *
+     * @version 1.0
+     * @since   1.0.0
+     *
+     * @param   string  $url        The url to be tested
+     * @param   array   $vars       An array to be added to the string
+     * @param   array   $ignore     An array of values to ignore
+     */
+    public function getQueryString($url, $vars=array(), $ignore=array()){
+        //ensure we have something in $vars
+        $query_string = array();
+        if(!is_array($vars) || !count($vars)){
+            return false;
+        }
+
+        //explode the $url and grab anything after the ?
+        $url = explode('?', $url);
+        parse_str($url[1], $urlVars);
+        $vars = array_merge($urlVars, $vars);
+
+        foreach($vars as $key => $value){
+            if(in_array($key, $ignore)){
+                continue;
+            }
+
+            $query = $key;
+            if(!is_empty($value)){
+                $query .= '='.$value;
+            }
+
+            $query_string[] = $query;
+        }
+
+        return $url[0].'?'. implode('&', $query_string);
+    }
+
+    /**
      * Throws a HTTP Error Code and a pretty CMS Page
      *
      * @version 1.0

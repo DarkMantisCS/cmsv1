@@ -80,7 +80,7 @@ class pagination extends coreClass {
         }
     }
 
-    private function getQueryString($url){
+    private function parseQueryString($url){
         $url = explode('?', $url);
         parse_str($url[1], $vars);
 
@@ -90,14 +90,14 @@ class pagination extends coreClass {
                 $query_string .= $key.'='.urlencode($value).'&';
             }
         }
-        return $query_string;
+        return $url[0].'?'.$query_string;
     }
 
 
     protected function paginationStyle1($url=null){
         global $objForm;
 
-        $url = $url.'?'.$this->getQueryString((is_empty($url) ? $_SERVER['REQUEST_URI'] : $url));
+        $url = $this->parseQueryString((is_empty($url) ? $_SERVER['REQUEST_URI'] : $url));
 
         $pages = $objForm->start('pagination'.rand(1, 99), array('method' => 'GET', 'action' => $url));
         $pages .= '<table border="0" cellspacing="0" cellpadding="0" class="pagination"><tr>';
@@ -126,7 +126,7 @@ class pagination extends coreClass {
     }
 
     protected function paginationStyle2($url=null){
-        $url = $url.'?'.$this->getQueryString((is_empty($url) ? $_SERVER['REQUEST_URI'] : $url));
+        $url = $this->parseQueryString((is_empty($url) ? $_SERVER['REQUEST_URI'] : $url));
 
         //defaults
         $adjacents = 2;
@@ -221,7 +221,7 @@ class pagination extends coreClass {
 
 
     protected function paginationMini($url=null){
-        $url = $url.'?'.$this->getQueryString((is_empty($url) ? $_SERVER['REQUEST_URI'] : $url));
+        $url = $this->parseQueryString((is_empty($url) ? $_SERVER['REQUEST_URI'] : $url));
 
         //defaults
         $adjacents = 2;

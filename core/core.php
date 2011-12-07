@@ -379,7 +379,11 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
             $objSQL->debug = false;
             $objPage->setMenu(false);
             $objPage->setTitle('DISABLED');
-            hmsgDie('INFO', 'Site has been disabled. '.contentParse("\n".$objCore->config('site', 'disabledMsg')));
+            hmsgDie('INFO', 'Site has been disabled. '.contentParse("\n".$objCore->config('site', 'closed_msg')));
+        }else{
+            $objTPL->assign_block_vars('__MSG', array(
+                'MESSAGE' => langVar('L_MAINTENANCE'),
+            ));
         }
     }
 //

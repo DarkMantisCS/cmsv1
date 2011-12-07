@@ -4,7 +4,7 @@ info["ico"] =
 info["name"] = dashboard
 
 General Information = "admin/"
-Notifications = "admin/core/notifications/"
+;Notifications = "admin/core/notifications/"
 Administration Notes = "admin/core/notes/"
 
 [Website]
@@ -14,6 +14,7 @@ info["name"] = website
 
 Site Settings = "admin/core/settings/"
 Site Maintenance = "admin/core/maintenance/"
+Login / Registration = "admin/core/settings/?page=login"
 ReCaptcha Settings = "admin/core/recaptcha/"
 
 [Extra\'s]
