@@ -14,7 +14,7 @@ if(User::$IS_ADMIN){    $corePanels['admin'] = cmsROOT.'modules/core/panels/admi
 if(User::$IS_MOD){      $corePanels['mod']   = cmsROOT.'modules/core/panels/mod/';     }
 if(User::$IS_USER){     $corePanels['user']  = cmsROOT.'modules/core/panels/user/';    }
 
-if($module=='core'){
+if($module == 'core'){
     //setup the tabs
     $tabs = 'modules/core/panels/'.$controlPanel.'/menu.php';
     if(!is_file($tabs) || !is_readable($tabs)){
@@ -62,6 +62,12 @@ if(count($config['modules']) && in_array($controlPanel, $array)){
 }
 
 $menu = null; $module = doArgs('__module', 'core', $_GET);
+
+//add a hook for the tabs, this will allow the plugin developers to add configuration pages, and the links for them
+if($module == 'core'){
+    $objPlugins->hook('CMSCore_panelTabs', $tabs);
+}
+
 if(!is_empty($tabs)){
     $_class = 'on';
     $_tab = '<li class="%3$s">%1$s <ul class="grid_8 sub">'."\n".'%2$s</ul></li>'."\n";

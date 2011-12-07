@@ -26,7 +26,7 @@ if(!HTTP_POST){
 
     $objPage->showHeader();
         //set the fields to blank if they dont already have a value
-        $fields = array('username', 'password', 'password_verify', 'email');
+        $fields = array('uname', 'password', 'password_verify', 'email');
         foreach($fields as $e){
             $_POST[$e] = $_SESSION['register']['form'][$e];
             if(!isset($_SESSION['register']['form'][$e]) || is_empty($_SESSION['register']['form'][$e])){
@@ -45,7 +45,8 @@ if(!HTTP_POST){
         array(
             'field' => array(
                 'User Info'			=> '_header_',
-                'Username'			=> $objForm->inputbox('username', 'text', $_POST['username'], array('extra' => 'maxlength="20" size="20"', 'required'=>true)),
+                'Username'			=> $objForm->inputbox('username', 'hidden'). //this hidden one is to try and stop spam bots
+                                       $objForm->inputbox('uname', 'text', $_POST['username'], array('extra' => 'maxlength="20" size="20"', 'required'=>true)),
                 'Password'			=> $objForm->inputbox('password', 'password', $_POST['password'], array('required'=>true)),
                 'Verify Password'               => $objForm->inputbox('password_verify', 'password', $_POST['password_verify'], array('required'=>true)),
 
@@ -70,10 +71,17 @@ if(!HTTP_POST){
         msgdie('FAIL', 'Error: Please use the form to submit your registration request.');
     }
 
+    //the normal user cannot see this field so if it has value it is in this case,
+    //to be considered as a spam submittion and disregarded
+    if(!is_empty($_POST['username'])){
+        $objPage->redirect($objCore->config('global', 'fullPath'), 1, 0);
+        msgdie('FAIL', 'Error: Spam attempt detected.');
+    }
+
     //run through each of the expected fields and make sure theyre are here
     //we dont add the captcha in here purely cause the admin might hook in another captcha
     //and we wont know what fields it outputs etc
-    $fields = array('username', 'password', 'password_verify', 'email');
+    $fields = array('uname', 'password', 'password_verify', 'email');
     foreach($fields as $e){
         if(!isset($_POST[$e]) || is_empty($_POST[$e])){
             $_error[$e] = 'Please make sure all the fields are populated ('.$e.').';
