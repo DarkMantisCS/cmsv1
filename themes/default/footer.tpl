@@ -24,7 +24,7 @@
     <footer>
         {L_PAGE_GEN}<br />{L_SITE_COPYRIGHT}<br />{L_TPL_INFO}
     </footer>
-    <!-- BEGIN debug -->
+<!-- BEGIN debug -->
     <div id="pageContent" class="grid_12">
         <!-- BEGIN graphs -->
         

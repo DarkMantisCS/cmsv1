@@ -599,7 +599,7 @@ class page extends coreClass{
         //check for admin privs and file(debug) existing in the root
         if(User::$IS_ADMIN && !file_exists('debug')){
             //if the debug happened..
-            if($this->objSQL->debug){
+            if($this->objSQL->debug && cmsDEBUG){
                 //output some debug vars
                 if(!is_array($this->debugVars)){
                     $this->debugVars[] = dump($_POST);
@@ -615,9 +615,9 @@ class page extends coreClass{
                 if(!is_empty($debug)){
                     foreach($debug as $row){
                         $this->objTPL->assign_block_vars('debug.info', array(
-                            'CLASS'        => ($counter++%2==0 ? 'row_color1' : 'row_color2'),
-                            'TIME'        => $row['time'],
-                            'QUERY'        => $row['query']
+                            'CLASS'     => ($counter++%2==0 ? 'row_color1' : 'row_color2'),
+                            'TIME'      => $row['time'],
+                            'QUERY'     => $row['query']
                         ));
                     }
                 }
@@ -634,6 +634,7 @@ class page extends coreClass{
                         ));
                     }
                 }
+
             }
 
             $crons = '<br />
@@ -643,6 +644,8 @@ class page extends coreClass{
             Current Time:       '.$this->objTime->mk_time(time());
         }
 
+        //here we throw some vars into an array to pass to the footer hook,
+        //this will give plugin and module makers critical information about the pages
         $footerVars = array();
         $this->timer = isset($START_CMS_LOAD) ? $START_CMS_LOAD : microtime(true);
         $footerVars['sqlQueries'] = $queries;
@@ -654,6 +657,8 @@ class page extends coreClass{
         $this->objPlugins->hook('CMSPage_footer', $footerVars);
 
         $page_gen = NULL;
+        //i'm not using IS_ADMIN here because it will only be true once the user has auth'd, this is information that isnt mission critical
+        //and thus dosent need the auth, but is still handy under the admin switch
         if($this->objUser->grab('userlevel') == ADMIN){
             $page_gen = langVar('L_PAGE_GEN', $footerVars['sqlQueries'], $footerVars['sqlTimer'], $footerVars['pageGen'], $footerVars['ramUsage'], $footerVars['nextCron']);
         }
@@ -667,7 +672,7 @@ class page extends coreClass{
         }
         $footer += array(
             'L_PAGE_GEN'        => $page_gen,
-            'L_SITE_COPYRIGHT'    => langVar('L_SITE_COPYRIGHT', $this->config('site', 'title'), $this->config('cms', 'name'), cmsVERSION),
+            'L_SITE_COPYRIGHT'  => langVar('L_SITE_COPYRIGHT', $this->config('site', 'title'), $this->config('cms', 'name'), cmsVERSION),
         );
 
 

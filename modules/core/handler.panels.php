@@ -36,8 +36,8 @@ switch($mode){
         } $panel = $panel[1];
 
         //set some vars
-        $path = cmsROOT.'modules/core/panels/'.$mode.'/'.$panel;
-        $url = str_replace('?save', '', $objCore->config('global', 'url'));
+        $path = cmsROOT.'modules/core/panels/'.$controlPanel.'/'.$panel;
+        $url = $objCore->config('global', 'url');
         $saveUrl = $objCore->getQueryString($url, array('save'=>null));
         $uid = (User::$IS_MOD ? doArgs('uid', $objUser->grab('id'), $_GET, 'is_number') : $objUser->grab('id'));
 
@@ -63,7 +63,7 @@ switch($mode){
             msg('FAIL', 'Error: Panel did not output any content.', '_CONTENT');
         }
 
-        $objTPL->assign_var('_TABS', $objTPL->output('tabs', false));
+        $objTPL->assign_var('_TABS', $objTPL->output('sys_tabs', false));
         $objTPL->assign_var('_CONTENT', $objTPL->output('body', false));
         $objTPL->parse('panel', false);
     break;

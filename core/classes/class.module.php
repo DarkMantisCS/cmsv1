@@ -24,7 +24,7 @@ class Module extends coreClass {
         $this->modConf['module'] = doArgs('__module', null, $_GET);
         $this->modConf['action'] = doArgs('__action', null, $_GET);
         $this->modConf['extra']  = doArgs('__extra', null, $_GET);
-        
+
         //global the classes for this module
         $this->objPage      = $objCore->objPage;
         $this->objSQL       = $objCore->objSQL;
@@ -36,10 +36,10 @@ class Module extends coreClass {
         $this->objPlugins   = $objCore->objPlugins;
         $this->objCache     = $objCore->objCache;
         $this->objGroups    = $objCore->objGroups;
-        
+
         $this->objNotify    = $objCore->objNotify;
         $this->objComments  = $objCore->objComments;
-        
+
         if(isset($_GET['ajax'])) {
             $this->objPage->setVar('simpleTpl', true);
         }
@@ -53,8 +53,8 @@ class Module extends coreClass {
 
         $exAction   = explode('/', $this->modConf['action']);
         $this->modConf['filename'] = (!is_empty($this->modConf['action']) && !is_empty($this->modConf['extra'])
-                                            ? $this->objSQL->escape($exAction[count($exAction)-1].$this->modConf['extra'])
-                                            : '');
+                                        ? $this->objSQL->escape($exAction[count($exAction)-1].$this->modConf['extra'])
+                                        : '');
         $this->modConf['ext'] = ((substr_count($this->modConf['filename'], '.') > 0)
                                     ? (substr($this->modConf['filename'], strrpos($this->modConf['filename'], '.') + 1))
                                     : NULL);
@@ -64,9 +64,9 @@ class Module extends coreClass {
         //specify some deafult actions
         if(preg_match('/images\/(.*?)/i', str_replace($this->modConf['extra'], '', $this->modConf['action']))) {
             $imagesTypes = array('jpg', 'gif', 'png', 'jpeg', 'jfif', 'jpe', 'bmp', 'ico', 'tif', 'tiff');
-            if(in_array($this->modConf['ext'], $imagesTypes) && 
+            if(in_array($this->modConf['ext'], $imagesTypes) &&
                 is_readable(cmsROOT . 'modules/' . $this->modConf['module'] . '/images/' . $this->modConf['filename'])) {
-                    
+
                     header('Content-Type: image/' . $this->modConf['ext']);
                     include (cmsROOT . 'modules/' . $this->modConf['module'] . '/images/' . $this->modConf['filename']);
                     exit;

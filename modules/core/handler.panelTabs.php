@@ -16,11 +16,11 @@ if(User::$IS_USER){     $corePanels['user']  = cmsROOT.'modules/core/panels/user
 
 if($module == 'core'){
     //setup the tabs
-    $tabs = 'modules/core/panels/'.$controlPanel.'/menu.php';
-    if(!is_file($tabs) || !is_readable($tabs)){
+    $_cp_tabs = 'modules/core/panels/'.$controlPanel.'/menu.php';
+    if(!is_file($_cp_tabs) || !is_readable($_cp_tabs)){
         hmsgDie('FAIL', 'Error: Tabs for this panel don\'t exist.');
     }
-    $menuTabs = parse_ini_file($tabs, true);
+    $menuTabs = parse_ini_file($_cp_tabs, true);
     if(!is_array($menuTabs) || !count($menuTabs)){
         hmsgDie('FAIL', 'Error: Tabs setup failed.');
     }
@@ -31,7 +31,7 @@ if($module == 'core'){
     }
 }
 
-$tabs = array();
+$_output_tabs = array();
 //make sure we are in a good mode
 $array = array('user', 'mod', 'admin');
 if(count($config['modules']) && in_array($controlPanel, $array)){
@@ -39,7 +39,7 @@ if(count($config['modules']) && in_array($controlPanel, $array)){
         if(is_array($v)){
             foreach($v as $key => $value){
                 if($key != 'info'){
-                    $tabs[$parentKey][$key] = $value;
+                    $_output_tabs[$parentKey][$key] = $value;
                 }
             }
         }
@@ -56,7 +56,7 @@ if(count($config['modules']) && in_array($controlPanel, $array)){
            is_readable($modulePath.'/cfg.php') &&
            is_readable($modulePath.'/'.$controlPanel.'.'.$module['name'].'.php')){
                 include($modulePath.'/cfg.php');
-                $tabs['Modules'][$mod_name] = $controlPanel.'/'.$module['name'].'/';
+                $_output_tabs['Modules'][$mod_name] = $controlPanel.'/'.$module['name'].'/';
         }
     }
 }
@@ -65,16 +65,16 @@ $menu = null; $module = doArgs('__module', 'core', $_GET);
 
 //add a hook for the tabs, this will allow the plugin developers to add configuration pages, and the links for them
 if($module == 'core'){
-    $objPlugins->hook('CMSCore_panelTabs', $tabs);
+    $objPlugins->hook('CMSCore_panelTabs', $_output_tabs);
 }
 
-if(!is_empty($tabs)){
+if(!is_empty($_output_tabs)){
     $_class = 'on';
     $_tab = '<li class="%3$s">%1$s <ul class="grid_8 sub">'."\n".'%2$s</ul></li>'."\n";
     $_subTab = '<li>%s</li>'."\n";
     $_link = '<a href="%s">%s</a>';
 
-    foreach($tabs as $tab => $links){
+    foreach($_output_tabs as $tab => $links){
         $subTabs = null;
         $tab = stripslashes($tab);
 
@@ -101,12 +101,12 @@ if(!is_empty($tabs)){
 $objPage->addCSSFile('/'.root().'images/panels.css');
 
 $objTPL->set_filenames(array(
-    'tabs' => 'modules/core/template/panels/panel.panel_tabs.tpl'
+    'sys_tabs' => 'modules/core/template/panels/panel.panel_tabs.tpl'
 ));
 
-$objTPL->assign_vars(array(
+$objTPL->assign_block_vars('panelMenu', array(
     'TABS' => $menu,
 ));
 
-$objTPL->parse('tabs', false);
+$objTPL->parse('sys_tabs', false);
 ?>
