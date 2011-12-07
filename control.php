@@ -3,7 +3,7 @@
 ||              Cybershade CMS - Your CMS, Your Way                     ||
 \*======================================================================*/
 define('INDEX_CHECK', 1);
-define('cmsDEBUG', 1);
+define('cmsDEBUG', 0);
 include_once('core/core.php');
 
 /**
@@ -22,10 +22,10 @@ if(isset($url[1])){
 }
 #echo dump($_GET);
 
-$mode   = doArgs('__mode',      null, $_GET);
-$module = doArgs('__module', 'core', $_GET);
-$action = doArgs('__action', null, $_GET);
-$extra  = doArgs('__extra', null, $_GET);
+$mode   = doArgs('__mode',      null,   $_GET);
+$module = doArgs('__module',    'core', $_GET);
+$action = doArgs('__action',    null,   $_GET);
+$extra  = doArgs('__extra',     null,   $_GET);
 
 if(false){
     echo dump($mode) . dump($module) . dump($action) . dump($extra);

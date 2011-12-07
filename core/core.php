@@ -17,6 +17,8 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 
     //setup a few things, these are kept out of the constants.php file cause we need em before thats included.
     define('cmsVERSION', '1.0.0');
+    define('cmsVERSIONID', '10000');
+    
     if(!defined('cmsDEBUG')){
         define('cmsDEBUG', false);
     }
