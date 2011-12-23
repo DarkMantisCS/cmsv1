@@ -37,8 +37,9 @@ switch($mode){
 
         //set some vars
         $path = cmsROOT.'modules/core/panels/'.$controlPanel.'/'.$panel;
-        $url = $objCore->config('global', 'url');
-        $saveUrl = $objCore->getQueryString($url, array('save'=>null));
+        $pageUrl = $objCore->config('global', 'url');
+        $saveUrl = $objCore->getQueryString($pageUrl, array('save'=>null));
+        $url = $objCore->getQueryString($pageUrl, array(), array('save'));
         $uid = (User::$IS_MOD ? doArgs('uid', $objUser->grab('id'), $_GET, 'is_number') : $objUser->grab('id'));
 
         // mode will change based on what we want, set it to null to begin with, then check for mode, and then for save

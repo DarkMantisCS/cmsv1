@@ -45,7 +45,7 @@ info["order"] = 5
 info["ico"] = 
 info["name"] = system
 
-;System Information = "admin/core/system/?page=sysinfo"
+System Information = "admin/core/system/?page=sysinfo"
 ;Maintenance and Backup = "admin/system/?page=maintenance"
 ;Update Manager = "admin/core/system/?page=update"
 ;About = "admin/core/system/?page=about"

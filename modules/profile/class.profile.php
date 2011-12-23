@@ -6,7 +6,7 @@ if (!defined('INDEX_CHECK')) die("INDEX_CHECK not defined.");
 
 class profile extends Module{
     
-    
+                
     /**
      * This function acts as the messenger between the CMS and this module.
      * 
@@ -14,6 +14,7 @@ class profile extends Module{
      * @since   0.8.0 
      */    
     function doAction($action){
+        
         if(preg_match('_view/(.*?)($|/)_i', $action, $uid)){
             $action = 'view';
         }
@@ -50,7 +51,7 @@ class profile extends Module{
             //this usually isnt allowed due to the rewrite module ;)
             case 'title':
                 header('Content-Type: application/x-shockwave-flash');
-                include('title.swf');
+                include('./title.swf');
                 exit;
             break;
             
@@ -140,7 +141,9 @@ class profile extends Module{
             $bio_info[] = array('var'=> 'Birthday', 'val'=> $this->objTime->mk_time($tiem, 'D jS M'));
         }
         
-        if(!is_empty($location)){ $bio_info[] = array('var'=> 'Location', 'val'=> $location); }
+        if(!is_empty($location)){
+            $bio_info[] = array('var'=> 'Location', 'val'=> $location); 
+        }
         
         $i = 0;
         foreach($bio_info as $row){
@@ -187,7 +190,7 @@ class profile extends Module{
 
             '---Others',
             'git' =>     array('ico'=>'github.png',      'unique' => false,     'code'=> 'git',       'name'=> 'GitHub'),
-            'bbu' =>     array('ico'=>'bitbucket.png',      'unique' => false,     'code'=> 'bbu',       'name'=> 'BitBucket'),
+            'bbu' =>     array('ico'=>'bitbucket.png',   'unique' => false,     'code'=> 'bbu',       'name'=> 'BitBucket'),
             'ste' =>     array('ico'=>'steam.png',       'unique' => true,     'code'=> 'ste',     'name'=> 'Steam'),
             'spo' =>     array('ico'=>'spotify.png',     'unique' => true,     'code'=> 'spo',     'name'=> 'Spotify'),
             'utb' =>     array('ico'=>'youtube.png',     'unique' => true,     'code'=> 'utb',     'name'=> 'YouTube'),

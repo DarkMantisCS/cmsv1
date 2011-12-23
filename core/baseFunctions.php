@@ -250,8 +250,9 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
 
         //try and grab a title
         $subject = langVar($emailVar);
+        
         if(is_empty($subject)){
-            $subject = $emailVar;
+            $subject = 'Welcome! This email holds the information you need to register.';
         }
 
         if(_mailer($to, $objCore->config('site', 'admin_email'), $subject, $message)){
@@ -427,7 +428,7 @@ if(!defined('INDEX_CHECK')){ die('Error: Cannot access directly.'); }
      *
      * @return      string
      */
-    function langVar(){
+    function langVar($langVar){
         global $_lang;
 
         //get how many arguments the function received

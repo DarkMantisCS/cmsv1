@@ -46,15 +46,15 @@ nav#panel_tabs div#top_row ul {
 			background: #ffffff;
 
 			border: none;
-			border-left: 1px solid #D7DBE6;
-			border-right: 1px solid #D7DBE6;
+			/*border-left: 1px solid #D7DBE6;
+			border-right: 1px solid #D7DBE6;*/
 
-			height: 26px;
+			height: 60px;
 		}
             nav#panel_tabs div#top_row ul li ul {
                 position: absolute;
                 width: 55em;
-				height: 25px;
+				height: 45px;
                 display: none;
                 padding: 0;
                 margin: 0;
